@@ -7,27 +7,29 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,5">
+        <TextBlock Grid.Row="0" Text="Select recreation and activity, enter points, user days, and visitation. Points must follow the table's ascending order." TextWrapping="Wrap" Margin="0,0,0,5"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,5">
             <ComboBox ItemsSource="{Binding RecreationTypes}" SelectedItem="{Binding RecreationType}" Width="120" Margin="0,0,5,0"/>
             <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" Width="180"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,5">
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,0,0,5">
             <TextBlock Text="Points" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox Text="{Binding Points}" Width="60" Margin="0,0,10,0"/>
             <TextBlock Text="Unit Day Value" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:F2}}" VerticalAlignment="Center"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,0,0,5">
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0,0,5">
             <TextBlock Text="Annual User Days" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox Text="{Binding UserDays}" Width="80" Margin="0,0,10,0"/>
             <TextBlock Text="Visitation" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox Text="{Binding Visitation}" Width="60" Margin="0,0,10,0"/>
             <Button Content="Compute" Command="{Binding ComputeCommand}"/>
         </StackPanel>
-        <TextBlock Text="{Binding Result}" Grid.Row="3"/>
-        <Grid Grid.Row="4">
+        <TextBlock Text="{Binding Result}" Grid.Row="4"/>
+        <Grid Grid.Row="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="3*"/>

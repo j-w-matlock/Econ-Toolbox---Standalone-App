@@ -207,6 +207,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ICommand ComputeUpdatedStorageCommand { get; }
         public ICommand ComputeRrrCommand { get; }
         public ICommand ComputeTotalCommand { get; }
+        public ICommand ComputeCommand { get; }
 
         public UpdatedCostViewModel()
         {
@@ -215,6 +216,14 @@ namespace EconToolbox.Desktop.ViewModels
             ComputeUpdatedStorageCommand = new RelayCommand(ComputeUpdatedStorage);
             ComputeRrrCommand = new RelayCommand(ComputeRrr);
             ComputeTotalCommand = new RelayCommand(ComputeTotal);
+            ComputeCommand = new RelayCommand(() =>
+            {
+                ComputeStorage();
+                ComputeJoint();
+                ComputeUpdatedStorage();
+                ComputeRrr();
+                ComputeTotal();
+            });
 
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Lands and Damages" });
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Relocations" });

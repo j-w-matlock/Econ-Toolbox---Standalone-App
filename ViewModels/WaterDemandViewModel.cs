@@ -54,11 +54,13 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ICommand ForecastCommand { get; }
         public ICommand ExportCommand { get; }
+        public ICommand ComputeCommand { get; }
 
         public WaterDemandViewModel()
         {
             ForecastCommand = new RelayCommand(Forecast);
             ExportCommand = new RelayCommand(Export);
+            ComputeCommand = ForecastCommand;
         }
 
         private void Forecast()
