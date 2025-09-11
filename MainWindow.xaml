@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
         xmlns:views="clr-namespace:EconToolbox.Desktop.Views"
-        Title="Economic Toolbox" Height="450" Width="600">
+        Title="Economic Toolbox" Height="700" Width="1000" Background="WhiteSmoke">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -12,7 +12,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TabControl Margin="10" SelectedIndex="{Binding SelectedIndex}" Grid.Row="0">
+        <TabControl Margin="10" SelectedIndex="{Binding SelectedIndex}" Grid.Row="0" FontSize="14">
             <TabItem Header="EAD" DataContext="{Binding Ead}">
                 <views:EadView/>
             </TabItem>
@@ -61,7 +61,7 @@
                     <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
                     <TextBox Text="{Binding ConstructionMonths}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
                     <TextBlock Text="IDC Schedule" Grid.Row="7" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
+                    <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch"/>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
@@ -78,7 +78,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock Text="Future Costs" Grid.Row="8" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
+                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch"/>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
@@ -94,45 +94,12 @@
                             <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <ItemsControl Grid.Row="9" Grid.ColumnSpan="2" ItemsSource="{Binding Results}"/>
+                    <ItemsControl Grid.Row="9" Grid.ColumnSpan="2" ItemsSource="{Binding Results}" FontWeight="Bold"/>
                 </Grid>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Water Demand" DataContext="{Binding WaterDemand}">
-                <StackPanel Margin="10">
-                    <TextBlock Text="Provide historical demand data with years in ascending order and choose forecast length." TextWrapping="Wrap" Margin="0,0,0,10"/>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Historical Data" Margin="0,0,5,5"/>
-                        <DataGrid ItemsSource="{Binding HistoricalData}" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                                <DataGridTextColumn Header="Demand" Binding="{Binding Demand}"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                        <TextBlock Text="Forecast Years" Grid.Row="1" Margin="0,0,5,5"/>
-                        <TextBox Text="{Binding ForecastYears}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
-                                 ToolTip="Number of years to forecast."/>
-                        <CheckBox Content="Use Growth Rate" Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{Binding UseGrowthRate}" Margin="0,0,0,5"/>
-                        <Button Content="Forecast" Command="{Binding ForecastCommand}" Grid.Row="3" Grid.Column="0" Margin="0,5,5,5"/>
-                        <Button Content="Export" Command="{Binding ExportCommand}" Grid.Row="3" Grid.Column="1" Margin="0,5,0,5"/>
-                        <DataGrid ItemsSource="{Binding Results}" Grid.Row="4" Grid.ColumnSpan="2" AutoGenerateColumns="True" Height="150" Margin="0,0,0,5"/>
-                        <Canvas Grid.Row="5" Grid.ColumnSpan="2" Height="150" Width="300">
-                            <Polyline Points="{Binding ChartPoints}" Stroke="Blue" StrokeThickness="2"/>
-                        </Canvas>
-                    </Grid>
-                </StackPanel>
+                <views:WaterDemandView/>
             </TabItem>
         <TabItem Header="Unit Day Value" DataContext="{Binding Udv}">
             <views:UdvView/>
