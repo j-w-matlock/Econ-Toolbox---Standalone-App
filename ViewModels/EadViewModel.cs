@@ -110,6 +110,15 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
+                // Sort rows by probability in descending order to enforce monotonicity
+                var sortedRows = Rows.OrderByDescending(r => r.Probability).ToList();
+                if (!sortedRows.SequenceEqual(Rows))
+                {
+                    Rows.Clear();
+                    foreach (var r in sortedRows)
+                        Rows.Add(r);
+                }
+
                 var probabilities = Rows.Select(r => r.Probability).ToArray();
                 var results = new System.Collections.Generic.List<string>();
                 for (int i = 0; i < DamageColumns.Count; i++)
