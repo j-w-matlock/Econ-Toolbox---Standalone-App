@@ -40,7 +40,7 @@ namespace EconToolbox.Desktop.Services
         {
             using var wb = new XLWorkbook();
             var summary = wb.Worksheets.Add("Summary");
-            var data = new Dictionary<string, object>
+            var data = new Dictionary<string, double>
             {
                 {"First Cost", firstCost},
                 {"Rate", rate},
