@@ -42,7 +42,7 @@
                 <TextBlock Text="Joint Maintenance Cost" Grid.Row="1" Margin="0,0,5,5"/>
                 <TextBox Text="{Binding JointMaintenanceCost}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
                 <Button Content="Compute" Command="{Binding ComputeJointCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
-                <TextBlock Text="{Binding TotalJointOm, StringFormat=Total Joint O&M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding TotalJointOm, StringFormat=Total Joint O&amp;M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2"/>
             </Grid>
         </TabItem>
         <TabItem Header="Updated Storage Cost">
@@ -130,8 +130,8 @@
                     <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}"/>
                     <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}"/>
                     <TextBlock Text="{Binding Capital1, StringFormat=Annualized Storage Cost 1: {0:C2}}"/>
-                    <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&M: {0:C2}}"/>
-                    <TextBlock Text="{Binding RrrScaled, StringFormat=Annualized RR&R/Mitigation: {0:C2}}"/>
+                    <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}"/>
+                    <TextBlock Text="{Binding RrrScaled, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}"/>
                     <TextBlock Text="{Binding Total1, StringFormat=Total Annual Cost 1: {0:C2}}"/>
                     <TextBlock Text="{Binding Capital2, StringFormat=Annualized Storage Cost 2: {0:C2}}"/>
                     <TextBlock Text="{Binding Total2, StringFormat=Total Annual Cost 2: {0:C2}}"/>

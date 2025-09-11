@@ -47,8 +47,8 @@ namespace EconToolbox.Desktop.Views
             EadDataGrid.Columns.Clear();
             EadDataGrid.Columns.Add(new DataGridTextColumn
             {
-                Header = "Frequency",
-                Binding = new Binding("Frequency")
+                Header = "Probability",
+                Binding = new Binding("Probability")
             });
             if (vm.UseStage)
             {

@@ -12,7 +12,11 @@ namespace EconToolbox.Desktop.ViewModels
     {
         private double _firstCost;
         private double _rate = 5.0;
-        private int _periods = 1;
+        private int _analysisPeriod = 1;
+        private int _baseYear = DateTime.Now.Year;
+        private int _constructionMonths = 12;
+        private string _idcCosts = string.Empty;
+        private string _idcTimings = string.Empty;
         private double _annualOm;
         private double _annualBenefits;
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
@@ -35,10 +39,34 @@ namespace EconToolbox.Desktop.ViewModels
             set { _rate = value; OnPropertyChanged(); }
         }
 
-        public int Periods
+        public int AnalysisPeriod
         {
-            get => _periods;
-            set { _periods = value; OnPropertyChanged(); }
+            get => _analysisPeriod;
+            set { _analysisPeriod = value; OnPropertyChanged(); }
+        }
+
+        public int BaseYear
+        {
+            get => _baseYear;
+            set { _baseYear = value; OnPropertyChanged(); }
+        }
+
+        public int ConstructionMonths
+        {
+            get => _constructionMonths;
+            set { _constructionMonths = value; OnPropertyChanged(); }
+        }
+
+        public string IdcCosts
+        {
+            get => _idcCosts;
+            set { _idcCosts = value; OnPropertyChanged(); }
+        }
+
+        public string IdcTimings
+        {
+            get => _idcTimings;
+            set { _idcTimings = value; OnPropertyChanged(); }
         }
 
         public double AnnualOm
@@ -106,7 +134,15 @@ namespace EconToolbox.Desktop.ViewModels
                     .Select(f => (f.Cost, f.Year))
                     .ToList();
 
-                var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future, Periods);
+                double[]? costArr = null;
+                string[]? timingArr = null;
+                if (!string.IsNullOrWhiteSpace(IdcCosts))
+                    costArr = IdcCosts.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => double.Parse(s.Trim())).ToArray();
+                if (!string.IsNullOrWhiteSpace(IdcTimings))
+                    timingArr = IdcTimings.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray();
+
+                var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future,
+                    AnalysisPeriod, ConstructionMonths, costArr, timingArr);
                 Idc = result.Idc;
                 TotalInvestment = result.TotalInvestment;
                 Crf = result.Crf;
