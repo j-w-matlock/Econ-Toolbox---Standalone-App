@@ -11,17 +11,22 @@ namespace EconToolbox.Desktop.Models
     public static class WaterDemandModel
     {
         /// <summary>
+        /// Represents the output of a demand forecast.
+        /// </summary>
+        public record ForecastResult(List<(int Year, double Demand)> Data, string Explanation);
+
+        /// <summary>
         /// Forecasts future demand using linear regression.
         /// </summary>
         /// <param name="historical">Historical data as year and demand pairs.</param>
         /// <param name="yearsToProject">Number of future years to project.</param>
-        /// <returns>List containing historical and forecasted demand.</returns>
-        public static List<(int Year, double Demand)> LinearRegressionForecast(
+        /// <returns>Forecast data and an explanation string.</returns>
+        public static ForecastResult LinearRegressionForecast(
             List<(int Year, double Demand)> historical,
             int yearsToProject)
         {
             if (historical.Count == 0)
-                return new List<(int Year, double Demand)>();
+                return new ForecastResult(new List<(int Year, double Demand)>(), "No data provided.");
 
             // Compute slope and intercept for y = a*x + b
             int n = historical.Count;
@@ -42,7 +47,9 @@ namespace EconToolbox.Desktop.Models
                 double demand = slope * year + intercept;
                 result.Add((year, demand));
             }
-            return result;
+
+            string explanation = $"Demand = {slope:F2} × Year + {intercept:F2}. Forecast produced using linear regression.";
+            return new ForecastResult(result, explanation);
         }
 
         /// <summary>
@@ -51,20 +58,20 @@ namespace EconToolbox.Desktop.Models
         /// </summary>
         /// <param name="historical">Historical data ordered by year.</param>
         /// <param name="yearsToProject">Number of future years to project.</param>
-        /// <returns>List containing historical and forecasted demand.</returns>
-        public static List<(int Year, double Demand)> GrowthRateForecast(
+        /// <returns>Forecast data and an explanation string.</returns>
+        public static ForecastResult GrowthRateForecast(
             List<(int Year, double Demand)> historical,
             int yearsToProject)
         {
             var result = new List<(int Year, double Demand)>(historical);
             if (historical.Count < 2)
-                return result;
+                return new ForecastResult(result, "Insufficient data for growth rate forecast.");
 
             double first = historical.First().Demand;
             double last = historical.Last().Demand;
             double yearSpan = historical.Last().Year - historical.First().Year;
             if (yearSpan <= 0 || first <= 0)
-                return result;
+                return new ForecastResult(result, "Invalid historical data for growth rate forecast.");
 
             double rate = Math.Pow(last / first, 1.0 / yearSpan) - 1.0;
             int lastYear = historical.Last().Year;
@@ -74,7 +81,9 @@ namespace EconToolbox.Desktop.Models
                 previous = previous * (1.0 + rate);
                 result.Add((lastYear + i, previous));
             }
-            return result;
+
+            string explanation = $"Forecast produced using a compound annual growth rate of {rate:P2}.";
+            return new ForecastResult(result, explanation);
         }
     }
 }

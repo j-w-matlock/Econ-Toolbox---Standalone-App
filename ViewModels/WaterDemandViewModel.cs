@@ -21,6 +21,7 @@ namespace EconToolbox.Desktop.ViewModels
         private bool _useGrowthRate;
         private ObservableCollection<DemandEntry> _results = new();
         private PointCollection _chartPoints = new();
+        private string _explanation = string.Empty;
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -52,6 +53,12 @@ namespace EconToolbox.Desktop.ViewModels
             set { _chartPoints = value; OnPropertyChanged(); }
         }
 
+        public string Explanation
+        {
+            get => _explanation;
+            set { _explanation = value; OnPropertyChanged(); }
+        }
+
         public ICommand ForecastCommand { get; }
         public ICommand ExportCommand { get; }
         public ICommand ComputeCommand { get; }
@@ -70,20 +77,22 @@ namespace EconToolbox.Desktop.ViewModels
                 var hist = HistoricalData
                     .Select(h => (h.Year, h.Demand))
                     .ToList();
-                List<(int Year, double Demand)> forecast = UseGrowthRate
+                var forecast = UseGrowthRate
                     ? WaterDemandModel.GrowthRateForecast(hist, ForecastYears)
                     : WaterDemandModel.LinearRegressionForecast(hist, ForecastYears);
 
                 Results = new ObservableCollection<DemandEntry>();
-                foreach (var p in forecast)
+                foreach (var p in forecast.Data)
                     Results.Add(new DemandEntry { Year = p.Year, Demand = p.Demand });
 
-                ChartPoints = CreatePointCollection(forecast);
+                ChartPoints = CreatePointCollection(forecast.Data);
+                Explanation = forecast.Explanation;
             }
             catch
             {
                 Results = new ObservableCollection<DemandEntry>();
                 ChartPoints = new PointCollection();
+                Explanation = string.Empty;
             }
         }
         private static PointCollection CreatePointCollection(List<(int Year, double Demand)> data)
