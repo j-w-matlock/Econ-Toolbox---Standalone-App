@@ -24,7 +24,7 @@
                     <DataGrid ItemsSource="{Binding HistoricalData}" AutoGenerateColumns="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                        <DataGridTextColumn Header="Demand" Binding="{Binding Demand}"/>
+                        <DataGridTextColumn Header="Demand per Capita" Binding="{Binding Demand}"/>
                     </DataGrid.Columns>
                     </DataGrid>
                 </Border>
@@ -32,17 +32,25 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <TextBlock Text="Forecast Years" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox Width="60" Text="{Binding ForecastYears}" Margin="0,0,10,0"/>
-                        <CheckBox Content="Use Growth Rate" IsChecked="{Binding UseGrowthRate}" Margin="0,0,10,0"/>
+                        <CheckBox Content="Use Growth Rate" IsChecked="{Binding UseGrowthRate}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBlock Text="Standard Growth Rate" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Width="60" Text="{Binding StandardGrowthRate}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <TextBlock Text="Current Industrial %" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox Width="60" Text="{Binding CurrentIndustrialPercent}" Margin="0,0,10,0"/>
                         <TextBlock Text="Future Industrial %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox Width="60" Text="{Binding FutureIndustrialPercent}" Margin="0,0,10,0"/>
+                        <TextBox Width="60" Text="{Binding FutureIndustrialPercent}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <TextBlock Text="Improvements %" VerticalAlignment="Center" Margin="0,0,5,0"/>
                         <TextBox Width="60" Text="{Binding SystemImprovementsPercent}" Margin="0,0,10,0"/>
                         <TextBlock Text="Losses %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox Width="60" Text="{Binding SystemLossesPercent}" Margin="0,0,10,0"/>
+                        <TextBox Width="60" Text="{Binding SystemLossesPercent}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
                         <Button Content="Forecast" Command="{Binding ForecastCommand}" Margin="0,0,5,0"/>
                         <Button Content="Export" Command="{Binding ExportCommand}"/>
                     </StackPanel>
@@ -50,11 +58,12 @@
                 <Border Grid.Row="2" Background="White" CornerRadius="4" Padding="5">
                     <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                            <DataGridTextColumn Header="Demand" Binding="{Binding Demand}"/>
-                            <DataGridTextColumn Header="Industrial" Binding="{Binding IndustrialDemand}"/>
-                            <DataGridTextColumn Header="Adjusted" Binding="{Binding AdjustedDemand}"/>
-                        </DataGrid.Columns>
+                        <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                        <DataGridTextColumn Header="Growth Rate" Binding="{Binding GrowthRate, Mode=TwoWay}"/>
+                        <DataGridTextColumn Header="Demand" Binding="{Binding Demand}"/>
+                        <DataGridTextColumn Header="Industrial" Binding="{Binding IndustrialDemand}"/>
+                        <DataGridTextColumn Header="Adjusted" Binding="{Binding AdjustedDemand}"/>
+                    </DataGrid.Columns>
                     </DataGrid>
                 </Border>
             </Grid>

@@ -6,6 +6,7 @@ namespace EconToolbox.Desktop.Models
         private double _demand;
         private double _industrialDemand;
         private double _adjustedDemand;
+        private double _growthRate;
 
         public int Year
         {
@@ -29,6 +30,12 @@ namespace EconToolbox.Desktop.Models
         {
             get => _adjustedDemand;
             set { _adjustedDemand = value; OnPropertyChanged(); }
+        }
+
+        public double GrowthRate
+        {
+            get => _growthRate;
+            set { _growthRate = value; OnPropertyChanged(); }
         }
     }
 }
