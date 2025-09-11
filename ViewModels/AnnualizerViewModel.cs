@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -11,7 +14,7 @@ namespace EconToolbox.Desktop.ViewModels
         private double _rate = 5.0;
         private double _annualOm;
         private double _annualBenefits;
-        private string _futureCosts = string.Empty;
+        private ObservableCollection<FutureCostEntry> _futureCosts = new();
 
         private double _idc;
         private double _totalInvestment;
@@ -43,7 +46,7 @@ namespace EconToolbox.Desktop.ViewModels
             set { _annualBenefits = value; OnPropertyChanged(); }
         }
 
-        public string FutureCosts
+        public ObservableCollection<FutureCostEntry> FutureCosts
         {
             get => _futureCosts;
             set { _futureCosts = value; OnPropertyChanged(); }
@@ -80,31 +83,21 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public ICommand ComputeCommand { get; }
+        public ICommand ExportCommand { get; }
 
         public AnnualizerViewModel()
         {
             ComputeCommand = new RelayCommand(Compute);
+            ExportCommand = new RelayCommand(Export);
         }
 
         private void Compute()
         {
             try
             {
-                List<(double cost, int year)> future = new();
-                if (!string.IsNullOrWhiteSpace(FutureCosts))
-                {
-                    var items = FutureCosts.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var item in items)
-                    {
-                        var parts = item.Split(':', '@');
-                        if (parts.Length == 2)
-                        {
-                            double c = double.Parse(parts[0].Trim());
-                            int y = int.Parse(parts[1].Trim());
-                            future.Add((c, y));
-                        }
-                    }
-                }
+                List<(double cost, int year)> future = FutureCosts
+                    .Select(f => (f.Cost, f.Year))
+                    .ToList();
 
                 var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future);
                 Idc = result.Idc;
@@ -116,6 +109,20 @@ namespace EconToolbox.Desktop.ViewModels
             catch (Exception ex)
             {
                 Idc = TotalInvestment = Crf = AnnualCost = Bcr = double.NaN;
+            }
+        }
+
+        private void Export()
+        {
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                FileName = "annualizer.xlsx"
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                Services.ExcelExporter.ExportAnnualizer(FirstCost, Rate, AnnualOm, AnnualBenefits,
+                    FutureCosts, Idc, TotalInvestment, Crf, AnnualCost, Bcr, dlg.FileName);
             }
         }
     }

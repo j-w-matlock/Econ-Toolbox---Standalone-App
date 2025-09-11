@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -15,13 +16,13 @@ namespace EconToolbox.Desktop.ViewModels
     /// </summary>
     public class WaterDemandViewModel : BaseViewModel
     {
-        private string _historicalData = string.Empty;
+        private ObservableCollection<DemandEntry> _historicalData = new();
         private int _forecastYears = 5;
         private bool _useGrowthRate;
-        private ObservableCollection<DemandPoint> _results = new();
+        private ObservableCollection<DemandEntry> _results = new();
         private PointCollection _chartPoints = new();
 
-        public string HistoricalData
+        public ObservableCollection<DemandEntry> HistoricalData
         {
             get => _historicalData;
             set { _historicalData = value; OnPropertyChanged(); }
@@ -39,7 +40,7 @@ namespace EconToolbox.Desktop.ViewModels
             set { _useGrowthRate = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<DemandPoint> Results
+        public ObservableCollection<DemandEntry> Results
         {
             get => _results;
             set { _results = value; OnPropertyChanged(); }
@@ -52,55 +53,37 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public ICommand ForecastCommand { get; }
+        public ICommand ExportCommand { get; }
 
         public WaterDemandViewModel()
         {
             ForecastCommand = new RelayCommand(Forecast);
+            ExportCommand = new RelayCommand(Export);
         }
 
         private void Forecast()
         {
             try
             {
-                var hist = ParseHistorical(HistoricalData);
+                var hist = HistoricalData
+                    .Select(h => (h.Year, h.Demand))
+                    .ToList();
                 List<(int Year, double Demand)> forecast = UseGrowthRate
                     ? WaterDemandModel.GrowthRateForecast(hist, ForecastYears)
                     : WaterDemandModel.LinearRegressionForecast(hist, ForecastYears);
 
-                Results = new ObservableCollection<DemandPoint>();
+                Results = new ObservableCollection<DemandEntry>();
                 foreach (var p in forecast)
-                    Results.Add(new DemandPoint { Year = p.Year, Demand = p.Demand });
+                    Results.Add(new DemandEntry { Year = p.Year, Demand = p.Demand });
 
                 ChartPoints = CreatePointCollection(forecast);
             }
             catch
             {
-                Results = new ObservableCollection<DemandPoint>();
+                Results = new ObservableCollection<DemandEntry>();
                 ChartPoints = new PointCollection();
             }
         }
-
-        private static List<(int Year, double Demand)> ParseHistorical(string text)
-        {
-            List<(int Year, double Demand)> list = new();
-            if (string.IsNullOrWhiteSpace(text))
-                return list;
-
-            var items = text.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var item in items)
-            {
-                var parts = item.Split(':', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 2 &&
-                    int.TryParse(parts[0].Trim(), out int year) &&
-                    double.TryParse(parts[1].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out double demand))
-                {
-                    list.Add((year, demand));
-                }
-            }
-            list.Sort((a, b) => a.Year.CompareTo(b.Year));
-            return list;
-        }
-
         private static PointCollection CreatePointCollection(List<(int Year, double Demand)> data)
         {
             PointCollection points = new();
@@ -133,10 +116,17 @@ namespace EconToolbox.Desktop.ViewModels
             return points;
         }
 
-        public class DemandPoint
+        private void Export()
         {
-            public int Year { get; set; }
-            public double Demand { get; set; }
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                FileName = "water_demand.xlsx"
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                Services.ExcelExporter.ExportWaterDemand(Results, dlg.FileName);
+            }
         }
     }
 }
