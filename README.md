@@ -80,6 +80,94 @@ The application can be published as a self‑contained `.exe` so that it can run
    `bin/Release/net8.0-windows/win-x64/publish/EconToolbox.Desktop.exe`
 4. Distribute this single file; it includes the .NET runtime and all dependencies.
 
+## Calculations
+
+### Capital Recovery Factor
+
+The capital recovery factor converts a present amount into a uniform annual series:
+
+\[
+\text{CRF} =
+\begin{cases}
+\dfrac{i(1+i)^n}{(1+i)^n - 1}, & i > 0 \\
+\dfrac{1}{n}, & i = 0
+\end{cases}
+\]
+
+where *i* is the interest rate and *n* the number of periods.
+
+### Expected Annual Damage (EAD)
+
+EAD integrates a probability–damage curve assuming probabilities are ordered from high to low:
+
+\[
+\text{EAD} = \sum_{k=0}^{m-2} \tfrac{1}{2}(d_k + d_{k+1})(p_k - p_{k+1})
+\]
+
+where \(d_k\) are damages and \(p_k\) the associated exceedance probabilities.
+
+### Storage Cost Reallocation
+
+Updated cost for reallocated storage is computed as:
+
+\[
+\text{Cost} = (C_T - C_S) \times \frac{S_R}{S_T}
+\]
+
+with total cost \(C_T\), storage price \(C_S\), reallocated storage \(S_R\), and total usable storage \(S_T\).
+
+### Interest During Construction (IDC)
+
+Monthly financing charges accumulate as:
+
+\[
+\text{IDC} = \sum_i c_i r_m t_i
+\]
+
+where \(c_i\) is the cost in month *i*, \(r_m = r/12\) is the monthly rate, and \(t_i\) is the remaining months adjusted for timing (beginning, middle, or end).
+
+### Annualizer
+
+The annualizer combines first cost, IDC, and discounted future costs:
+
+\[
+I = F + \text{IDC} + \sum_j \frac{C_j}{(1+r)^{y_j}}
+\]
+
+\[
+\text{Annual Cost} = I \times \text{CRF} + O\_\text{M}
+\]
+
+\[
+\text{BCR} = \frac{B}{\text{Annual Cost}}
+\]
+
+where *F* is first cost, *O\_M* annual O&M, *B* annual benefits, and *CRF* the capital recovery factor.
+
+### Unit Day Value (UDV)
+
+The model interpolates the USACE unit day value table and estimates recreation benefits:
+
+\[
+\text{Benefit} = \text{UDV} \times D \times V
+\]
+
+with user day value \(\text{UDV}\), user days *D*, and visitation *V*.
+
+### Water Demand Forecasting
+
+Two simple forecasting approaches are provided:
+
+- **Linear regression:** fits \(y = a x + b\) to historical year–demand pairs.
+- **Growth rate:** applies a compound annual growth rate based on the first and last observations.
+
+## Known Issues and Limitations
+
+- Simplified formulas are provided for educational use and may not capture all nuances of USACE policy.
+- Inputs are minimally validated; users must ensure data, discount rates, and assumptions follow current guidance.
+- The repository currently lacks automated tests; manual review and `dotnet build` are the primary verification steps.
+- Results are sensitive to the ordering of probability data in the EAD calculator.
+
 ## Notes
 
 - `bin/` and `obj/` directories are generated during builds and can be cleaned with `dotnet clean`.
