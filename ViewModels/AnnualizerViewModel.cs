@@ -137,14 +137,17 @@ namespace EconToolbox.Desktop.ViewModels
                 foreach (FutureCostEntry entry in e.NewItems)
                     entry.PropertyChanged += EntryOnPropertyChanged;
             UpdatePvFactors();
+            Compute();
         }
 
         private void EntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(FutureCostEntry.Year) ||
-                e.PropertyName == nameof(FutureCostEntry.Timing))
+                e.PropertyName == nameof(FutureCostEntry.Timing) ||
+                e.PropertyName == nameof(FutureCostEntry.Cost))
             {
                 UpdatePvFactors();
+                Compute();
             }
         }
 

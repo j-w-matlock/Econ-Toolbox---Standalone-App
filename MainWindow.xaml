@@ -95,7 +95,13 @@
                             <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <ItemsControl Grid.Row="9" Grid.ColumnSpan="2" ItemsSource="{Binding Results}" FontWeight="Bold"/>
+                    <StackPanel Grid.Row="9" Grid.ColumnSpan="2" FontWeight="Bold">
+                        <TextBlock Text="{Binding Idc, StringFormat=IDC: {0:C2}}" ToolTip="Interest during construction (IDC) based on first cost, rate and schedule."/>
+                        <TextBlock Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:C2}}" ToolTip="Total Investment = First Cost + IDC + PV of Future Costs"/>
+                        <TextBlock Text="{Binding Crf, StringFormat=CRF: {0:F4}}" ToolTip="CRF = r(1+r)^n / ((1+r)^n - 1)"/>
+                        <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:C2}}" ToolTip="Annual Cost = Total Investment × CRF + Annual O&M"/>
+                        <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" ToolTip="BCR = Annual Benefits ÷ Annual Cost"/>
+                    </StackPanel>
                 </Grid>
                 </StackPanel>
             </TabItem>
@@ -107,8 +113,8 @@
         </TabItem>
         </TabControl>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1" Margin="10,0,10,10">
-            <Button Content="Calculate" Command="{Binding CalculateCommand}" Margin="0,0,5,0"/>
-            <Button Content="Export" Command="{Binding ExportCommand}"/>
+            <Button x:Name="CalculateButton" Content="Calculate" Width="100" Command="{Binding CalculateCommand}" Margin="0,0,5,0"/>
+            <Button Content="Export" Width="100" Command="{Binding ExportCommand}"/>
         </StackPanel>
     </Grid>
 </Window>

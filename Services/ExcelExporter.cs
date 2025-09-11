@@ -29,6 +29,9 @@ namespace EconToolbox.Desktop.Services
             ws.Cell(1,2).Value = "Demand";
             ws.Cell(1,3).Value = "Industrial";
             ws.Cell(1,4).Value = "Adjusted";
+            ws.Cell(1,2).Comment.AddText("Demand = Prior Demand × (1 + Growth Rate)");
+            ws.Cell(1,3).Comment.AddText("Industrial = Demand × Industrial %");
+            ws.Cell(1,4).Comment.AddText("Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)");
             int row = 2;
             foreach(var d in data)
             {
@@ -61,7 +64,20 @@ namespace EconToolbox.Desktop.Services
             foreach(var kv in data)
             {
                 summary.Cell(row,1).Value = kv.Key;
-                summary.Cell(row,2).Value = kv.Value;
+                var cell = summary.Cell(row,2);
+                cell.Value = kv.Value;
+                if (kv.Key.Contains("Cost") || kv.Key.Contains("Benefits") || kv.Key.Contains("Investment") || kv.Key == "IDC")
+                    cell.Style.NumberFormat.Format = "$#,##0.00";
+                if (kv.Key == "IDC")
+                    cell.Comment.AddText("Calculated from first cost, discount rate and IDC schedule");
+                else if (kv.Key == "Total Investment")
+                    cell.Comment.AddText("First Cost + IDC + PV of Future Costs");
+                else if (kv.Key == "CRF")
+                    cell.Comment.AddText("r(1+r)^n / ((1+r)^n - 1)");
+                else if (kv.Key == "Annual Cost")
+                    cell.Comment.AddText("Total Investment * CRF + Annual O&M");
+                else if (kv.Key == "BCR")
+                    cell.Comment.AddText("Annual Benefits / Annual Cost");
                 row++;
             }
 
@@ -153,7 +169,20 @@ namespace EconToolbox.Desktop.Services
             foreach (var kv in annData)
             {
                 annSummary.Cell(rowIdx, 1).Value = kv.Key;
-                annSummary.Cell(rowIdx, 2).Value = kv.Value;
+                var cell = annSummary.Cell(rowIdx, 2);
+                cell.Value = kv.Value;
+                if (kv.Key.Contains("Cost") || kv.Key.Contains("Benefits") || kv.Key.Contains("Investment") || kv.Key == "IDC")
+                    cell.Style.NumberFormat.Format = "$#,##0.00";
+                if (kv.Key == "IDC")
+                    cell.Comment.AddText("Calculated from first cost, discount rate and IDC schedule");
+                else if (kv.Key == "Total Investment")
+                    cell.Comment.AddText("First Cost + IDC + PV of Future Costs");
+                else if (kv.Key == "CRF")
+                    cell.Comment.AddText("r(1+r)^n / ((1+r)^n - 1)");
+                else if (kv.Key == "Annual Cost")
+                    cell.Comment.AddText("Total Investment * CRF + Annual O&M");
+                else if (kv.Key == "BCR")
+                    cell.Comment.AddText("Annual Benefits / Annual Cost");
                 rowIdx++;
             }
             var annFc = wb.Worksheets.Add("FutureCosts");
@@ -173,6 +202,9 @@ namespace EconToolbox.Desktop.Services
             wdSheet.Cell(1,2).Value = "Demand";
             wdSheet.Cell(1,3).Value = "Industrial";
             wdSheet.Cell(1,4).Value = "Adjusted";
+            wdSheet.Cell(1,2).Comment.AddText("Demand = Prior Demand × (1 + Growth Rate)");
+            wdSheet.Cell(1,3).Comment.AddText("Industrial = Demand × Industrial %");
+            wdSheet.Cell(1,4).Comment.AddText("Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)");
             rowIdx = 2;
             foreach (var d in waterDemand.Results)
             {
@@ -234,7 +266,34 @@ namespace EconToolbox.Desktop.Services
             foreach (var kv in ucData)
             {
                 ucSummary.Cell(rowIdx,1).Value = kv.Key;
-                ucSummary.Cell(rowIdx,2).Value = kv.Value;
+                var cell = ucSummary.Cell(rowIdx,2);
+                cell.Value = kv.Value;
+                if (kv.Key.Contains("Cost") || kv.Key.Contains("Annualized") || kv.Key.Contains("Scaled") || kv.Key.Contains("Capital") || kv.Key.Contains("OM"))
+                    cell.Style.NumberFormat.Format = "$#,##0.00";
+                if (kv.Key == "Percent")
+                    cell.Comment.AddText("Percent = Storage Recommendation / Total Usable Storage");
+                else if (kv.Key == "Total Joint O&M")
+                    cell.Comment.AddText("Total Joint O&M = Joint Operations Cost + Joint Maintenance Cost");
+                else if (kv.Key == "Total Updated Cost")
+                    cell.Comment.AddText("Total Updated Cost = Σ(Actual Cost × Update Factor)");
+                else if (kv.Key == "RRR Updated Cost")
+                    cell.Comment.AddText("RRR Updated Cost = Present Value × CWCCI");
+                else if (kv.Key == "RRR Annualized")
+                    cell.Comment.AddText("RRR Annualized = RRR Updated Cost × CRF");
+                else if (kv.Key == "OM Scaled")
+                    cell.Comment.AddText("OM Scaled = Total Joint O&M × Percent");
+                else if (kv.Key == "RRR Scaled")
+                    cell.Comment.AddText("RRR Scaled = RRR Annualized × Percent");
+                else if (kv.Key == "Cost Recommendation")
+                    cell.Comment.AddText("Cost Recommendation = Total Updated Cost × Percent");
+                else if (kv.Key == "Capital1")
+                    cell.Comment.AddText("Capital1 = Total Updated Cost × Percent × CRF1");
+                else if (kv.Key == "Total1")
+                    cell.Comment.AddText("Total1 = Capital1 + OM Scaled + RRR Scaled");
+                else if (kv.Key == "Capital2")
+                    cell.Comment.AddText("Capital2 = Total Updated Cost × Percent × CRF2");
+                else if (kv.Key == "Total2")
+                    cell.Comment.AddText("Total2 = Capital2 + OM Scaled");
                 rowIdx++;
             }
 
