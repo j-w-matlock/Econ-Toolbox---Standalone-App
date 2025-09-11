@@ -61,7 +61,7 @@
                     <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
                     <TextBox Text="{Binding ConstructionMonths}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
                     <TextBlock Text="IDC Schedule" Grid.Row="7" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch"/>
+                    <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
@@ -78,7 +78,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock Text="Future Costs" Grid.Row="8" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch"/>
+                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>

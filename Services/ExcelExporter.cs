@@ -253,8 +253,8 @@ namespace EconToolbox.Desktop.Services
             rowIdx = 1;
             foreach (var kv in udvData)
             {
-                udvSheet.Cell(rowIdx,1).Value = kv.Key;
-                udvSheet.Cell(rowIdx,2).Value = kv.Value;
+                udvSheet.Cell(rowIdx,1).SetValue(kv.Key);
+                udvSheet.Cell(rowIdx,2).SetValue(kv.Value);
                 rowIdx++;
             }
 
