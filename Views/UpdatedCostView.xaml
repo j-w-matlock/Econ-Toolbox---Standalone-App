@@ -1,0 +1,142 @@
+<UserControl x:Class="EconToolbox.Desktop.Views.UpdatedCostView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <TabControl>
+        <TabItem Header="Storage Cost">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Total Usable Storage" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding TotalStorage}" Grid.Column="1" Margin="0,0,0,5"/>
+                <TextBlock Text="Storage Recommendation" Grid.Row="1" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding StorageRecommendation}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                <Button Content="Compute" Command="{Binding ComputeStorageCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
+                <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Joint Costs O&amp;M">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Joint Operations Cost" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding JointOperationsCost}" Grid.Column="1" Margin="0,0,0,5"/>
+                <TextBlock Text="Joint Maintenance Cost" Grid.Row="1" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding JointMaintenanceCost}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                <Button Content="Compute" Command="{Binding ComputeJointCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
+                <TextBlock Text="{Binding TotalJointOm, StringFormat=Total Joint O&M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Updated Storage Cost">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <DataGrid ItemsSource="{Binding UpdatedCostItems}" AutoGenerateColumns="False" Grid.Row="0" Height="150" Margin="0,0,0,5">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Category" Binding="{Binding Category}"/>
+                        <DataGridTextColumn Header="Actual Cost" Binding="{Binding ActualCost}"/>
+                        <DataGridTextColumn Header="Update Factor" Binding="{Binding UpdateFactor}"/>
+                        <DataGridTextColumn Header="Updated Cost" Binding="{Binding UpdatedCost}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button Content="Compute" Command="{Binding ComputeUpdatedStorageCommand}" Grid.Row="1" Margin="0,5,0,5"/>
+                <TextBlock Text="{Binding TotalUpdatedCost, StringFormat=Total Updated Cost: {0:C2}}" Grid.Row="2"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="RR&amp;R and Mitigation">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Federal Discount Rate (%)" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding RrrRate}" Grid.Column="1" Margin="0,0,0,5"/>
+                <TextBlock Text="Analysis Years" Grid.Row="1" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding RrrPeriods}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                <TextBlock Text="CWCCI" Grid.Row="2" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding RrrCwcci}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+                <TextBlock Text="Base Year" Grid.Row="3" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding RrrBaseYear}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
+                <DataGrid ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Item" Binding="{Binding Item}"/>
+                        <DataGridTextColumn Header="Future Cost" Binding="{Binding FutureCost}"/>
+                        <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                        <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Present Value" Binding="{Binding PresentValue}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button Content="Compute" Command="{Binding ComputeRrrCommand}" Grid.Row="5" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
+                <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
+                    <TextBlock Text="{Binding RrrUpdatedCost, StringFormat=Updated Cost: {0:C2}}"/>
+                    <TextBlock Text="{Binding RrrAnnualized, StringFormat=Annualized: {0:C2}}"/>
+                </StackPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Total Annual Cost">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Discount Rate 1 (%)" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding DiscountRate1}" Grid.Column="1" Margin="0,0,0,5"/>
+                <TextBlock Text="Analysis Period 1" Grid.Row="1" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding AnalysisPeriod1}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                <TextBlock Text="Discount Rate 2 (%)" Grid.Row="2" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding DiscountRate2}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+                <TextBlock Text="Analysis Period 2" Grid.Row="3" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding AnalysisPeriod2}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
+                <Button Content="Compute" Command="{Binding ComputeTotalCommand}" Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
+                <StackPanel Grid.Row="5" Grid.ColumnSpan="2">
+                    <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}"/>
+                    <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}"/>
+                    <TextBlock Text="{Binding Capital1, StringFormat=Annualized Storage Cost 1: {0:C2}}"/>
+                    <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&M: {0:C2}}"/>
+                    <TextBlock Text="{Binding RrrScaled, StringFormat=Annualized RR&R/Mitigation: {0:C2}}"/>
+                    <TextBlock Text="{Binding Total1, StringFormat=Total Annual Cost 1: {0:C2}}"/>
+                    <TextBlock Text="{Binding Capital2, StringFormat=Annualized Storage Cost 2: {0:C2}}"/>
+                    <TextBlock Text="{Binding Total2, StringFormat=Total Annual Cost 2: {0:C2}}"/>
+                </StackPanel>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</UserControl>

@@ -12,6 +12,7 @@ namespace EconToolbox.Desktop.ViewModels
     {
         private double _firstCost;
         private double _rate = 5.0;
+        private int _periods = 1;
         private double _annualOm;
         private double _annualBenefits;
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
@@ -32,6 +33,12 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get => _rate;
             set { _rate = value; OnPropertyChanged(); }
+        }
+
+        public int Periods
+        {
+            get => _periods;
+            set { _periods = value; OnPropertyChanged(); }
         }
 
         public double AnnualOm
@@ -99,7 +106,7 @@ namespace EconToolbox.Desktop.ViewModels
                     .Select(f => (f.Cost, f.Year))
                     .ToList();
 
-                var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future);
+                var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future, Periods);
                 Idc = result.Idc;
                 TotalInvestment = result.TotalInvestment;
                 Crf = result.Crf;

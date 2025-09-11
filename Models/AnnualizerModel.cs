@@ -13,6 +13,7 @@ namespace EconToolbox.Desktop.Models
             double annualOm,
             double annualBenefits,
             IEnumerable<(double cost, int year)>? futureCosts = null,
+            int periods = 1,
             int constructionMonths = 12)
         {
             double idc = InterestDuringConstructionModel.Compute(firstCost, rate, constructionMonths);
@@ -30,8 +31,8 @@ namespace EconToolbox.Desktop.Models
             }
 
             double totalInvestment = firstCost + idc + pvFuture;
-            int periods = Math.Max(1, maxYear);
-            double crf = CapitalRecoveryModel.Calculate(rate, periods);
+            int finalPeriods = Math.Max(periods, Math.Max(1, maxYear));
+            double crf = CapitalRecoveryModel.Calculate(rate, finalPeriods);
             double annualConstruction = totalInvestment * crf;
             double annualCost = annualConstruction + annualOm;
             double bcr = annualCost == 0 ? double.NaN : annualBenefits / annualCost;
