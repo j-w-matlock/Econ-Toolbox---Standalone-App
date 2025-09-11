@@ -72,5 +72,35 @@ namespace EconToolbox.Desktop.Services
             }
             wb.SaveAs(filePath);
         }
+
+        public static void ExportEad(IEnumerable<ViewModels.EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, string filePath)
+        {
+            using var wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("EAD");
+            int col = 1;
+            ws.Cell(1, col++).Value = "Probability";
+            if (useStage)
+                ws.Cell(1, col++).Value = "Stage";
+            int dcCount = damageColumns.Count();
+            foreach (var name in damageColumns)
+                ws.Cell(1, col++).Value = name;
+
+            int rowIdx = 2;
+            foreach (var r in rows)
+            {
+                col = 1;
+                ws.Cell(rowIdx, col++).Value = r.Probability;
+                if (useStage)
+                    ws.Cell(rowIdx, col++).Value = r.Stage;
+                for (int i = 0; i < dcCount; i++)
+                    ws.Cell(rowIdx, col++).Value = r.Damages.Count > i ? r.Damages[i] : 0;
+                rowIdx++;
+            }
+
+            var summary = wb.Worksheets.Add("Summary");
+            summary.Cell(1,1).Value = "Result";
+            summary.Cell(1,2).Value = result;
+            wb.SaveAs(filePath);
+        }
     }
 }

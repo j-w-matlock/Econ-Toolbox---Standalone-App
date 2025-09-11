@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -50,6 +51,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ICommand AddDamageColumnCommand { get; }
         public ICommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
         public ICommand ComputeCommand { get; }
+        public ICommand ExportCommand { get; }
 
         private readonly RelayCommand _removeDamageColumnCommand;
 
@@ -59,6 +61,7 @@ namespace EconToolbox.Desktop.ViewModels
             AddDamageColumnCommand = new RelayCommand(AddDamageColumn);
             _removeDamageColumnCommand = new RelayCommand(RemoveDamageColumn, () => DamageColumns.Count > 1);
             ComputeCommand = new RelayCommand(Compute);
+            ExportCommand = new RelayCommand(Export);
             AddDamageColumn(); // start with one damage column
         }
 
@@ -107,7 +110,7 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
-                var probabilities = Rows.Select(r => 1.0 / r.Frequency).ToArray();
+                var probabilities = Rows.Select(r => r.Probability).ToArray();
                 var results = new System.Collections.Generic.List<string>();
                 for (int i = 0; i < DamageColumns.Count; i++)
                 {
@@ -132,7 +135,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             var freqData = Rows
                 .Where(r => r.Damages.Count > 0)
-                .Select(r => (X: r.Frequency, Y: r.Damages[0]))
+                .Select(r => (X: r.Probability, Y: r.Damages[0]))
                 .ToList();
             FrequencyDamagePoints = CreatePointCollection(freqData);
 
@@ -177,15 +180,28 @@ namespace EconToolbox.Desktop.ViewModels
             return points;
         }
 
+        private void Export()
+        {
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                FileName = "ead.xlsx"
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                Services.ExcelExporter.ExportEad(Rows, DamageColumns, UseStage, Result, dlg.FileName);
+            }
+        }
+
         public class EadRow : BaseViewModel
         {
-            private double _frequency;
+            private double _probability;
             private double? _stage;
 
-            public double Frequency
+            public double Probability
             {
-                get => _frequency;
-                set { _frequency = value; OnPropertyChanged(); }
+                get => _probability;
+                set { _probability = value; OnPropertyChanged(); }
             }
 
             public double? Stage
