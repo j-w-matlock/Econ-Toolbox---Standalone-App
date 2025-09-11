@@ -9,28 +9,34 @@ namespace EconToolbox.Desktop.Models
             if (probabilities == null || damages == null)
                 throw new ArgumentNullException("Input arrays cannot be null");
 
-            if (probabilities.Length != damages.Length || probabilities.Length < 2)
-                throw new ArgumentException("Probability and damage counts must match and contain at least two points");
+            if (probabilities.Length != damages.Length || probabilities.Length == 0)
+                throw new ArgumentException("Probability and damage counts must match and contain at least one point");
 
-            double prevProb = probabilities[0];
-            if (prevProb < 0.0 || prevProb > 1.0)
-                throw new ArgumentException("Probabilities must be between 0 and 1");
+            // Pair probabilities with damages and sort in descending order of probability
+            var pairs = probabilities.Zip(damages, (p, d) => (p, d))
+                                    .OrderByDescending(t => t.p)
+                                    .ToList();
 
-            // Ensure probabilities are non-increasing and within [0,1]
-            for (int i = 1; i < probabilities.Length; i++)
+            // Validate probabilities and ensure they are within [0,1]
+            foreach (var pair in pairs)
             {
-                double p = probabilities[i];
-                if (p > prevProb)
-                    throw new ArgumentException("Probabilities must be in non-increasing order");
-                if (p < 0.0 || p > 1.0)
+                if (pair.p < 0.0 || pair.p > 1.0)
                     throw new ArgumentException("Probabilities must be between 0 and 1");
-                prevProb = p;
             }
 
+            // Insert 100% probability if missing
+            if (pairs[0].p < 1.0)
+                pairs.Insert(0, (1.0, pairs[0].d));
+
+            // Append 0% probability with zero damage if missing
+            if (pairs[^1].p > 0.0)
+                pairs.Add((0.0, 0.0));
+
+            // Compute EAD using the trapezoidal rule
             double sum = 0.0;
-            for (int i = 0; i < probabilities.Length - 1; i++)
+            for (int i = 0; i < pairs.Count - 1; i++)
             {
-                sum += 0.5 * (damages[i] + damages[i + 1]) * (probabilities[i] - probabilities[i + 1]);
+                sum += 0.5 * (pairs[i].d + pairs[i + 1].d) * (pairs[i].p - pairs[i + 1].p);
             }
             return sum;
         }

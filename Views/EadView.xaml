@@ -10,7 +10,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Enter probabilities (descending) with corresponding damages. Use Add Damage Column for additional categories. Optional stage values must align with probabilities." TextWrapping="Wrap" Margin="0,0,0,5"/>
+        <TextBlock Grid.Row="0" Text="Enter probabilities with corresponding damages. Inputs are automatically sorted and missing 0% and 100% probabilities are added using the trapezoidal method. Use Add Damage Column for additional categories. Optional stage values must align with probabilities." TextWrapping="Wrap" Margin="0,0,0,5"/>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,5">
             <Button Content="Add Damage Column" Command="{Binding AddDamageColumnCommand}" Margin="0,0,5,0"/>
             <Button Content="Remove Damage Column" Command="{Binding RemoveDamageColumnCommand}" Margin="0,0,5,0"/>
@@ -24,6 +24,8 @@
         <Canvas Grid.Row="4" Height="150" Width="300" Margin="0,0,0,5">
             <Polyline Points="{Binding FrequencyDamagePoints}" Stroke="Red" StrokeThickness="2"/>
         </Canvas>
-        <ItemsControl Grid.Row="5" ItemsSource="{Binding Results}"/>
+        <GroupBox Grid.Row="5" Header="Results" Margin="0,5,0,0">
+            <ItemsControl ItemsSource="{Binding Results}"/>
+        </GroupBox>
     </Grid>
 </UserControl>
