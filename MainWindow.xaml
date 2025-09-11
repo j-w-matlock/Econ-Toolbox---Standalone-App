@@ -158,6 +158,34 @@
                 <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" Grid.Row="10" Grid.ColumnSpan="2"/>
             </Grid>
         </TabItem>
+        <TabItem Header="Water Demand" DataContext="{Binding WaterDemand}">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Historical (year:demand,...)" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding HistoricalData}" Grid.Column="1" Margin="0,0,0,5"
+                         ToolTip="Comma-separated year:demand pairs."/>
+                <TextBlock Text="Forecast Years" Grid.Row="1" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding ForecastYears}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
+                         ToolTip="Number of years to forecast."/>
+                <CheckBox Content="Use Growth Rate" Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{Binding UseGrowthRate}" Margin="0,0,0,5"/>
+                <Button Content="Forecast" Command="{Binding ForecastCommand}" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
+                <DataGrid ItemsSource="{Binding Results}" Grid.Row="4" Grid.ColumnSpan="2" AutoGenerateColumns="True" Height="150" Margin="0,0,0,5"/>
+                <Canvas Grid.Row="5" Grid.ColumnSpan="2" Height="150" Width="300">
+                    <Polyline Points="{Binding ChartPoints}" Stroke="Blue" StrokeThickness="2"/>
+                </Canvas>
+            </Grid>
+        </TabItem>
         <TabItem Header="Unit Day Value" DataContext="{Binding Udv}">
             <views:UdvView/>
         </TabItem>
