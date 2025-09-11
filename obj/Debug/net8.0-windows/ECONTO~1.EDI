@@ -1,0 +1,13 @@
+is_global = true
+build_property.TargetFramework = net8.0-windows
+build_property.TargetPlatformMinVersion = 7.0
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = EconToolbox.Desktop
+build_property.ProjectDir = C:\Users\l2pdwjcn\OneDrive - US Army Corps of Engineers\Documents\Tools\ToolBox\Econ-Toolbox-cSharp-and-mvvm\Econ-Toolbox-codex-refactor-tool-using-c-and-mvvm\csharp\EconToolbox.Desktop\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
