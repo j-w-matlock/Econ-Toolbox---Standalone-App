@@ -61,7 +61,8 @@ namespace EconToolbox.Desktop.Models
         /// <returns>Forecast data and an explanation string.</returns>
         public static ForecastResult GrowthRateForecast(
             List<(int Year, double Demand)> historical,
-            int yearsToProject)
+            int yearsToProject,
+            double? rateOverride = null)
         {
             var result = new List<(int Year, double Demand)>(historical);
             if (historical.Count < 2)
@@ -73,7 +74,7 @@ namespace EconToolbox.Desktop.Models
             if (yearSpan <= 0 || first <= 0)
                 return new ForecastResult(result, "Invalid historical data for growth rate forecast.");
 
-            double rate = Math.Pow(last / first, 1.0 / yearSpan) - 1.0;
+            double rate = rateOverride ?? (Math.Pow(last / first, 1.0 / yearSpan) - 1.0);
             int lastYear = historical.Last().Year;
             double previous = last;
             for (int i = 1; i <= yearsToProject; i++)

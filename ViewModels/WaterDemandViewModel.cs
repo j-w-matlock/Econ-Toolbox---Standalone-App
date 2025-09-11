@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Xml.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.ComponentModel;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 
@@ -29,6 +30,7 @@ namespace EconToolbox.Desktop.ViewModels
         private double _futureIndustrialPercent;
         private double _systemImprovementsPercent;
         private double _systemLossesPercent;
+        private double _standardGrowthRate;
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -90,6 +92,12 @@ namespace EconToolbox.Desktop.ViewModels
             set { _systemLossesPercent = value; OnPropertyChanged(); }
         }
 
+        public double StandardGrowthRate
+        {
+            get => _standardGrowthRate;
+            set { _standardGrowthRate = value; OnPropertyChanged(); }
+        }
+
         public ICommand ForecastCommand { get; }
         public ICommand ExportCommand { get; }
         public ICommand ComputeCommand { get; }
@@ -140,15 +148,16 @@ namespace EconToolbox.Desktop.ViewModels
                     .Select(h => (h.Year, h.Demand))
                     .ToList();
                 var forecast = UseGrowthRate
-                    ? WaterDemandModel.GrowthRateForecast(hist, ForecastYears)
+                    ? WaterDemandModel.GrowthRateForecast(hist, ForecastYears, StandardGrowthRate / 100.0)
                     : WaterDemandModel.LinearRegressionForecast(hist, ForecastYears);
 
                 Results = new ObservableCollection<DemandEntry>();
                 int lastHistYear = hist.Count > 0 ? hist[^1].Year : 0;
                 int forecastCount = forecast.Data.Count - hist.Count;
                 int idx = 0;
-                foreach (var p in forecast.Data)
+                for (int i = 0; i < forecast.Data.Count; i++)
                 {
+                    var p = forecast.Data[i];
                     double industrialPercent;
                     if (p.Year <= lastHistYear)
                     {
@@ -162,9 +171,11 @@ namespace EconToolbox.Desktop.ViewModels
                     }
                     double industrialDemand = p.Demand * industrialPercent / 100.0;
                     double adjusted = p.Demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
-                    Results.Add(new DemandEntry { Year = p.Year, Demand = p.Demand, IndustrialDemand = industrialDemand, AdjustedDemand = adjusted });
+                    double growthRate = i >= hist.Count ? StandardGrowthRate : (i == 0 ? 0 : (p.Demand / forecast.Data[i - 1].Demand - 1) * 100.0);
+                    Results.Add(new DemandEntry { Year = p.Year, Demand = p.Demand, IndustrialDemand = industrialDemand, AdjustedDemand = adjusted, GrowthRate = growthRate });
                 }
 
+                AttachResultHandlers();
                 ChartPoints = CreatePointCollection(Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
                 Explanation = forecast.Explanation + $" Industrial share interpolated from {CurrentIndustrialPercent:F1}% to {FutureIndustrialPercent:F1}% with {SystemImprovementsPercent:F1}% improvements and {SystemLossesPercent:F1}% losses.";
             }
@@ -173,6 +184,52 @@ namespace EconToolbox.Desktop.ViewModels
                 Results = new ObservableCollection<DemandEntry>();
                 ChartPoints = new PointCollection();
                 Explanation = string.Empty;
+            }
+        }
+
+        private void AttachResultHandlers()
+        {
+            foreach (var entry in Results)
+            {
+                entry.PropertyChanged -= Entry_PropertyChanged;
+                entry.PropertyChanged += Entry_PropertyChanged;
+            }
+        }
+
+        private void Entry_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DemandEntry.GrowthRate) && sender is DemandEntry entry)
+            {
+                int index = Results.IndexOf(entry);
+                if (index <= 0) return;
+                RecalculateFromIndex(index);
+                ChartPoints = CreatePointCollection(Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
+            }
+        }
+
+        private void RecalculateFromIndex(int index)
+        {
+            int forecastStartIndex = HistoricalData.Count;
+            int lastHistYear = forecastStartIndex > 0 ? HistoricalData[^1].Year : 0;
+            for (int i = index; i < Results.Count; i++)
+            {
+                double baseDemand = Results[i - 1].Demand;
+                double rate = Results[i].GrowthRate / 100.0;
+                Results[i].Demand = baseDemand * (1 + rate);
+
+                double industrialPercent;
+                if (Results[i].Year <= lastHistYear)
+                {
+                    industrialPercent = CurrentIndustrialPercent;
+                }
+                else
+                {
+                    double t = ForecastYears <= 1 ? 1 : (i - forecastStartIndex) / (double)(ForecastYears - 1);
+                    industrialPercent = CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t;
+                }
+
+                Results[i].IndustrialDemand = Results[i].Demand * industrialPercent / 100.0;
+                Results[i].AdjustedDemand = Results[i].Demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
             }
         }
         private static PointCollection CreatePointCollection(List<(int Year, double Demand)> data)
