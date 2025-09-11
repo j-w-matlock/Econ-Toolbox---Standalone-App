@@ -254,7 +254,9 @@ namespace EconToolbox.Desktop.Services
             foreach (var kv in udvData)
             {
                 udvSheet.Cell(rowIdx,1).SetValue(kv.Key);
-                udvSheet.Cell(rowIdx,2).SetValue(kv.Value);
+                // ClosedXML's SetValue does not accept a plain object, so convert
+                // each value explicitly to an XLCellValue before assignment.
+                udvSheet.Cell(rowIdx,2).Value = XLCellValue.FromObject(kv.Value);
                 rowIdx++;
             }
 
