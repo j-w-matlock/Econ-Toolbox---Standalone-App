@@ -27,11 +27,15 @@ namespace EconToolbox.Desktop.Services
             var ws = wb.Worksheets.Add("WaterDemand");
             ws.Cell(1,1).Value = "Year";
             ws.Cell(1,2).Value = "Demand";
+            ws.Cell(1,3).Value = "Industrial";
+            ws.Cell(1,4).Value = "Adjusted";
             int row = 2;
             foreach(var d in data)
             {
                 ws.Cell(row,1).Value = d.Year;
                 ws.Cell(row,2).Value = d.Demand;
+                ws.Cell(row,3).Value = d.IndustrialDemand;
+                ws.Cell(row,4).Value = d.AdjustedDemand;
                 row++;
             }
             wb.SaveAs(filePath);
@@ -167,11 +171,15 @@ namespace EconToolbox.Desktop.Services
             var wdSheet = wb.Worksheets.Add("WaterDemand");
             wdSheet.Cell(1,1).Value = "Year";
             wdSheet.Cell(1,2).Value = "Demand";
+            wdSheet.Cell(1,3).Value = "Industrial";
+            wdSheet.Cell(1,4).Value = "Adjusted";
             rowIdx = 2;
             foreach (var d in waterDemand.Results)
             {
                 wdSheet.Cell(rowIdx,1).Value = d.Year;
                 wdSheet.Cell(rowIdx,2).Value = d.Demand;
+                wdSheet.Cell(rowIdx,3).Value = d.IndustrialDemand;
+                wdSheet.Cell(rowIdx,4).Value = d.AdjustedDemand;
                 rowIdx++;
             }
 

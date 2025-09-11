@@ -22,6 +22,10 @@ namespace EconToolbox.Desktop.ViewModels
         private ObservableCollection<DemandEntry> _results = new();
         private PointCollection _chartPoints = new();
         private string _explanation = string.Empty;
+        private double _currentIndustrialPercent;
+        private double _futureIndustrialPercent;
+        private double _systemImprovementsPercent;
+        private double _systemLossesPercent;
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -59,6 +63,30 @@ namespace EconToolbox.Desktop.ViewModels
             set { _explanation = value; OnPropertyChanged(); }
         }
 
+        public double CurrentIndustrialPercent
+        {
+            get => _currentIndustrialPercent;
+            set { _currentIndustrialPercent = value; OnPropertyChanged(); }
+        }
+
+        public double FutureIndustrialPercent
+        {
+            get => _futureIndustrialPercent;
+            set { _futureIndustrialPercent = value; OnPropertyChanged(); }
+        }
+
+        public double SystemImprovementsPercent
+        {
+            get => _systemImprovementsPercent;
+            set { _systemImprovementsPercent = value; OnPropertyChanged(); }
+        }
+
+        public double SystemLossesPercent
+        {
+            get => _systemLossesPercent;
+            set { _systemLossesPercent = value; OnPropertyChanged(); }
+        }
+
         public ICommand ForecastCommand { get; }
         public ICommand ExportCommand { get; }
         public ICommand ComputeCommand { get; }
@@ -82,11 +110,29 @@ namespace EconToolbox.Desktop.ViewModels
                     : WaterDemandModel.LinearRegressionForecast(hist, ForecastYears);
 
                 Results = new ObservableCollection<DemandEntry>();
+                int lastHistYear = hist.Count > 0 ? hist[^1].Year : 0;
+                int forecastCount = forecast.Data.Count - hist.Count;
+                int idx = 0;
                 foreach (var p in forecast.Data)
-                    Results.Add(new DemandEntry { Year = p.Year, Demand = p.Demand });
+                {
+                    double industrialPercent;
+                    if (p.Year <= lastHistYear)
+                    {
+                        industrialPercent = CurrentIndustrialPercent;
+                    }
+                    else
+                    {
+                        double t = forecastCount <= 1 ? 1 : (double)idx / (forecastCount - 1);
+                        industrialPercent = CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t;
+                        idx++;
+                    }
+                    double industrialDemand = p.Demand * industrialPercent / 100.0;
+                    double adjusted = p.Demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
+                    Results.Add(new DemandEntry { Year = p.Year, Demand = p.Demand, IndustrialDemand = industrialDemand, AdjustedDemand = adjusted });
+                }
 
-                ChartPoints = CreatePointCollection(forecast.Data);
-                Explanation = forecast.Explanation;
+                ChartPoints = CreatePointCollection(Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
+                Explanation = forecast.Explanation + $" Industrial share interpolated from {CurrentIndustrialPercent:F1}% to {FutureIndustrialPercent:F1}% with {SystemImprovementsPercent:F1}% improvements and {SystemLossesPercent:F1}% losses.";
             }
             catch
             {
