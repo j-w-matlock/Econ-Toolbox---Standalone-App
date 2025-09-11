@@ -115,5 +115,47 @@
                 <TextBlock Text="{Binding Result}" Grid.Row="6" Grid.ColumnSpan="2"/>
             </Grid>
         </TabItem>
+        <TabItem Header="Project Annualizer" DataContext="{Binding Annualizer}">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="First Cost" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding FirstCost}" Grid.Column="1" Margin="0,0,0,5"
+                         ToolTip="Initial project cost."/>
+                <TextBlock Text="Rate (%)" Grid.Row="1" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding Rate}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
+                         ToolTip="Discount rate in percent."/>
+                <TextBlock Text="Annual O&amp;M" Grid.Row="2" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding AnnualOm}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"
+                         ToolTip="Annual operations and maintenance cost."/>
+                <TextBlock Text="Annual Benefits" Grid.Row="3" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding AnnualBenefits}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
+                         ToolTip="Expected annual benefits."/>
+                <TextBlock Text="Future Costs (cost:year,...)" Grid.Row="4" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding FutureCosts}" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"
+                         ToolTip="Comma-separated future cost:year pairs."/>
+                <Button Content="Compute" Command="{Binding ComputeCommand}" Grid.Row="5" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
+                <TextBlock Text="{Binding Idc, StringFormat=IDC: {0:F2}}" Grid.Row="6" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:F2}}" Grid.Row="7" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding Crf, StringFormat=CRF: {0:F4}}" Grid.Row="8" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:F2}}" Grid.Row="9" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" Grid.Row="10" Grid.ColumnSpan="2"/>
+            </Grid>
+        </TabItem>
     </TabControl>
 </Window>
