@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 { 
@@ -10,11 +11,11 @@ namespace EconToolbox.Desktop.ViewModels
         public UdvViewModel Udv { get; } = new();
         public WaterDemandViewModel WaterDemand { get; } = new();
 
-        private object? _selectedViewModel;
-        public object? SelectedViewModel
+        private int _selectedIndex;
+        public int SelectedIndex
         {
-            get => _selectedViewModel;
-            set { _selectedViewModel = value; OnPropertyChanged(); }
+            get => _selectedIndex;
+            set { _selectedIndex = value; OnPropertyChanged(); }
         }
 
         public ICommand CalculateCommand { get; }
@@ -28,18 +29,37 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void Calculate()
         {
-            if (SelectedViewModel == null) return;
-            var prop = SelectedViewModel.GetType().GetProperty("ComputeCommand");
-            if (prop?.GetValue(SelectedViewModel) is ICommand cmd && cmd.CanExecute(null))
-                cmd.Execute(null);
+            switch (SelectedIndex)
+            {
+                case 0:
+                    if (Ead.ComputeCommand.CanExecute(null)) Ead.ComputeCommand.Execute(null);
+                    break;
+                case 1:
+                    if (UpdatedCost.ComputeCommand.CanExecute(null)) UpdatedCost.ComputeCommand.Execute(null);
+                    break;
+                case 2:
+                    if (Annualizer.ComputeCommand.CanExecute(null)) Annualizer.ComputeCommand.Execute(null);
+                    break;
+                case 3:
+                    if (WaterDemand.ComputeCommand.CanExecute(null)) WaterDemand.ComputeCommand.Execute(null);
+                    break;
+                case 4:
+                    if (Udv.ComputeCommand.CanExecute(null)) Udv.ComputeCommand.Execute(null);
+                    break;
+            }
         }
 
         private void Export()
         {
-            if (SelectedViewModel == null) return;
-            var prop = SelectedViewModel.GetType().GetProperty("ExportCommand");
-            if (prop?.GetValue(SelectedViewModel) is ICommand cmd && cmd.CanExecute(null))
-                cmd.Execute(null);
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                FileName = "econ_toolbox.xlsx"
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                ExcelExporter.ExportAll(Ead, UpdatedCost, Annualizer, WaterDemand, Udv, dlg.FileName);
+            }
         }
     }
 }

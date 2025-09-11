@@ -4,7 +4,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
-    <TabControl>
+    <StackPanel>
+        <TextBlock Text="Complete each section and ensure year values are ascending. Use Calculate to process all sections." TextWrapping="Wrap" Margin="10,0,10,10"/>
+        <TabControl Margin="10,0,10,10">
         <TabItem Header="Storage Cost">
             <Grid Margin="10">
                 <Grid.RowDefinitions>
@@ -138,5 +140,6 @@
                 </StackPanel>
             </Grid>
         </TabItem>
-    </TabControl>
+        </TabControl>
+    </StackPanel>
 </UserControl>

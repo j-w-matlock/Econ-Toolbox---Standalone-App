@@ -8,20 +8,22 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,5">
+        <TextBlock Grid.Row="0" Text="Enter probabilities (descending) with corresponding damages. Use Add Damage Column for additional categories. Optional stage values must align with probabilities." TextWrapping="Wrap" Margin="0,0,0,5"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,5">
             <Button Content="Add Damage Column" Command="{Binding AddDamageColumnCommand}" Margin="0,0,5,0"/>
             <Button Content="Remove Damage Column" Command="{Binding RemoveDamageColumnCommand}" Margin="0,0,5,0"/>
             <CheckBox Content="Include Stage" IsChecked="{Binding UseStage}" Margin="0,0,5,0"/>
         </StackPanel>
-        <DataGrid x:Name="EadDataGrid" ItemsSource="{Binding Rows}" Grid.Row="1" AutoGenerateColumns="False"
+        <DataGrid x:Name="EadDataGrid" ItemsSource="{Binding Rows}" Grid.Row="2" AutoGenerateColumns="False"
                   CanUserAddRows="True" CanUserDeleteRows="True" Height="120" Margin="0,0,0,5"/>
-        <Canvas Grid.Row="2" Height="150" Width="300" Margin="0,0,0,5">
+        <Canvas Grid.Row="3" Height="150" Width="300" Margin="0,0,0,5">
             <Polyline Points="{Binding StageDamagePoints}" Stroke="Blue" StrokeThickness="2"/>
         </Canvas>
-        <Canvas Grid.Row="3" Height="150" Width="300" Margin="0,0,0,5">
+        <Canvas Grid.Row="4" Height="150" Width="300" Margin="0,0,0,5">
             <Polyline Points="{Binding FrequencyDamagePoints}" Stroke="Red" StrokeThickness="2"/>
         </Canvas>
-        <TextBlock Grid.Row="4" Text="{Binding Result}"/>
+        <TextBlock Grid.Row="5" Text="{Binding Result}"/>
     </Grid>
 </UserControl>

@@ -12,7 +12,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TabControl Margin="10" SelectedItem="{Binding SelectedViewModel}" Grid.Row="0">
+        <TabControl Margin="10" SelectedIndex="{Binding SelectedIndex}" Grid.Row="0">
             <TabItem Header="EAD" DataContext="{Binding Ead}">
                 <views:EadView/>
             </TabItem>
@@ -20,96 +20,102 @@
                 <views:UpdatedCostView/>
             </TabItem>
             <TabItem Header="Cost Annualization" DataContext="{Binding Annualizer}">
-                <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="First Cost" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding FirstCost}" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Initial project cost."/>
-                <TextBlock Text="Rate (%)" Grid.Row="1" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding Rate}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Discount rate in percent."/>
-                <TextBlock Text="Base Year" Grid.Row="2" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding BaseYear}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Analysis Period" Grid.Row="3" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding AnalysisPeriod}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Number of periods for capital recovery."/>
-                <TextBlock Text="Annual O&amp;M" Grid.Row="4" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding AnnualOm}" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Annual operations and maintenance cost."/>
-                <TextBlock Text="Annual Benefits" Grid.Row="5" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding AnnualBenefits}" Grid.Row="5" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Expected annual benefits."/>
-                <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding ConstructionMonths}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="IDC Costs" Grid.Row="7" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding IdcCosts}" Grid.Row="7" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="IDC Timings" Grid.Row="8" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding IdcTimings}" Grid.Row="8" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Future Costs" Grid.Row="9" Margin="0,0,5,5"/>
-                <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="9" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
-                        <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-                <TextBlock Text="{Binding Idc, StringFormat=IDC: {0:F2}}" Grid.Row="10" Grid.ColumnSpan="2"/>
-                <TextBlock Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:F2}}" Grid.Row="11" Grid.ColumnSpan="2"/>
-                <TextBlock Text="{Binding Crf, StringFormat=CRF: {0:F4}}" Grid.Row="12" Grid.ColumnSpan="2"/>
-                <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:F2}}" Grid.Row="13" Grid.ColumnSpan="2"/>
-                <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" Grid.Row="14" Grid.ColumnSpan="2"/>
-            </Grid>
-        </TabItem>
-        <TabItem Header="Water Demand" DataContext="{Binding WaterDemand}">
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Historical Data" Margin="0,0,5,5"/>
-                <DataGrid ItemsSource="{Binding HistoricalData}" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                        <DataGridTextColumn Header="Demand" Binding="{Binding Demand}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-                <TextBlock Text="Forecast Years" Grid.Row="1" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding ForecastYears}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Number of years to forecast."/>
-                <CheckBox Content="Use Growth Rate" Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{Binding UseGrowthRate}" Margin="0,0,0,5"/>
-                <Button Content="Forecast" Command="{Binding ForecastCommand}" Grid.Row="3" Grid.Column="0" Margin="0,5,5,5"/>
-                <Button Content="Export" Command="{Binding ExportCommand}" Grid.Row="3" Grid.Column="1" Margin="0,5,0,5"/>
-                <DataGrid ItemsSource="{Binding Results}" Grid.Row="4" Grid.ColumnSpan="2" AutoGenerateColumns="True" Height="150" Margin="0,0,0,5"/>
-                <Canvas Grid.Row="5" Grid.ColumnSpan="2" Height="150" Width="300">
-                    <Polyline Points="{Binding ChartPoints}" Stroke="Blue" StrokeThickness="2"/>
-                </Canvas>
-            </Grid>
-        </TabItem>
+                <StackPanel Margin="10">
+                    <TextBlock Text="Enter cost data and parameters. Future cost years must be in ascending order." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="First Cost" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding FirstCost}" Grid.Column="1" Margin="0,0,0,5"
+                             ToolTip="Initial project cost."/>
+                    <TextBlock Text="Rate (%)" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding Rate}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
+                             ToolTip="Discount rate in percent."/>
+                    <TextBlock Text="Base Year" Grid.Row="2" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding BaseYear}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Analysis Period" Grid.Row="3" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding AnalysisPeriod}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
+                             ToolTip="Number of periods for capital recovery."/>
+                    <TextBlock Text="Annual O&amp;M" Grid.Row="4" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding AnnualOm}" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"
+                             ToolTip="Annual operations and maintenance cost."/>
+                    <TextBlock Text="Annual Benefits" Grid.Row="5" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding AnnualBenefits}" Grid.Row="5" Grid.Column="1" Margin="0,0,0,5"
+                             ToolTip="Expected annual benefits."/>
+                    <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding ConstructionMonths}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="IDC Costs" Grid.Row="7" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding IdcCosts}" Grid.Row="7" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="IDC Timings" Grid.Row="8" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding IdcTimings}" Grid.Row="8" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Future Costs" Grid.Row="9" Margin="0,0,5,5"/>
+                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="9" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
+                            <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Text="{Binding Idc, StringFormat=IDC: {0:F2}}" Grid.Row="10" Grid.ColumnSpan="2"/>
+                    <TextBlock Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:F2}}" Grid.Row="11" Grid.ColumnSpan="2"/>
+                    <TextBlock Text="{Binding Crf, StringFormat=CRF: {0:F4}}" Grid.Row="12" Grid.ColumnSpan="2"/>
+                    <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:F2}}" Grid.Row="13" Grid.ColumnSpan="2"/>
+                    <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" Grid.Row="14" Grid.ColumnSpan="2"/>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Water Demand" DataContext="{Binding WaterDemand}">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Provide historical demand data with years in ascending order and choose forecast length." TextWrapping="Wrap" Margin="0,0,0,10"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Historical Data" Margin="0,0,5,5"/>
+                        <DataGrid ItemsSource="{Binding HistoricalData}" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                                <DataGridTextColumn Header="Demand" Binding="{Binding Demand}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock Text="Forecast Years" Grid.Row="1" Margin="0,0,5,5"/>
+                        <TextBox Text="{Binding ForecastYears}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
+                                 ToolTip="Number of years to forecast."/>
+                        <CheckBox Content="Use Growth Rate" Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{Binding UseGrowthRate}" Margin="0,0,0,5"/>
+                        <Button Content="Forecast" Command="{Binding ForecastCommand}" Grid.Row="3" Grid.Column="0" Margin="0,5,5,5"/>
+                        <Button Content="Export" Command="{Binding ExportCommand}" Grid.Row="3" Grid.Column="1" Margin="0,5,0,5"/>
+                        <DataGrid ItemsSource="{Binding Results}" Grid.Row="4" Grid.ColumnSpan="2" AutoGenerateColumns="True" Height="150" Margin="0,0,0,5"/>
+                        <Canvas Grid.Row="5" Grid.ColumnSpan="2" Height="150" Width="300">
+                            <Polyline Points="{Binding ChartPoints}" Stroke="Blue" StrokeThickness="2"/>
+                        </Canvas>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
         <TabItem Header="Unit Day Value" DataContext="{Binding Udv}">
             <views:UdvView/>
         </TabItem>
