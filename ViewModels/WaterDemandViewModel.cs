@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.IO;
+using System.IO.Compression;
+using System.Xml.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using EconToolbox.Desktop.Models;
@@ -93,9 +96,40 @@ namespace EconToolbox.Desktop.ViewModels
 
         public WaterDemandViewModel()
         {
+            LoadHistoricalFromWorkbook();
             ForecastCommand = new RelayCommand(Forecast);
             ExportCommand = new RelayCommand(Export);
             ComputeCommand = ForecastCommand;
+        }
+
+        private void LoadHistoricalFromWorkbook()
+        {
+            try
+            {
+                string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                    "Practical Forecast Exercise - Tables 6-28-18.xlsx");
+                if (!File.Exists(file)) return;
+                using var archive = ZipFile.OpenRead(file);
+                var entry = archive.GetEntry("xl/worksheets/sheet3.xml");
+                if (entry == null) return;
+                using var stream = entry.Open();
+                var doc = XDocument.Load(stream);
+                XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+                var rows = doc.Root?.Element(ns + "sheetData")?.Elements(ns + "row");
+                if (rows == null) return;
+                foreach (var r in rows)
+                {
+                    var cells = r.Elements(ns + "c").ToList();
+                    if (cells.Count < 3) continue;
+                    var y = cells[0].Element(ns + "v")?.Value;
+                    var d = cells[2].Element(ns + "v")?.Value;
+                    if (int.TryParse(y, out int year) && double.TryParse(d, out double demand))
+                        HistoricalData.Add(new DemandEntry { Year = year, Demand = demand });
+                }
+            }
+            catch
+            {
+            }
         }
 
         private void Forecast()
