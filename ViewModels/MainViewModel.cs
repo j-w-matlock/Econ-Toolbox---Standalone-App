@@ -6,5 +6,6 @@ namespace EconToolbox.Desktop.ViewModels
         public EadViewModel Ead { get; } = new();
         public StorageCostViewModel StorageCost { get; } = new();
         public InterestDuringConstructionViewModel Idc { get; } = new();
+        public AnnualizerViewModel Annualizer { get; } = new();
     }
 }
