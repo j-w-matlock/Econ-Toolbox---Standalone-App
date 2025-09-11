@@ -95,12 +95,12 @@
                             <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <StackPanel Grid.Row="9" Grid.ColumnSpan="2" FontWeight="Bold">
-                        <TextBlock Text="{Binding Idc, StringFormat=IDC: {0:C2}}" ToolTip="Interest during construction (IDC) based on first cost, rate and schedule."/>
-                        <TextBlock Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:C2}}" ToolTip="Total Investment = First Cost + IDC + PV of Future Costs"/>
-                        <TextBlock Text="{Binding Crf, StringFormat=CRF: {0:F4}}" ToolTip="CRF = r(1+r)^n / ((1+r)^n - 1)"/>
-                        <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:C2}}" ToolTip="Annual Cost = Total Investment × CRF + Annual O&amp;M"/>
-                        <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" ToolTip="BCR = Annual Benefits ÷ Annual Cost"/>
+                    <StackPanel Grid.Row="9" Grid.ColumnSpan="2">
+                        <TextBlock FontWeight="Bold" Text="{Binding Idc, StringFormat=IDC: {0:C2}}" ToolTip="Interest during construction (IDC) based on first cost, rate and schedule."/>
+                        <TextBlock FontWeight="Bold" Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:C2}}" ToolTip="Total Investment = First Cost + IDC + PV of Future Costs"/>
+                        <TextBlock FontWeight="Bold" Text="{Binding Crf, StringFormat=CRF: {0:F4}}" ToolTip="CRF = r(1+r)^n / ((1+r)^n - 1)"/>
+                        <TextBlock FontWeight="Bold" Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:C2}}" ToolTip="Annual Cost = Total Investment × CRF + Annual O&amp;M"/>
+                        <TextBlock FontWeight="Bold" Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" ToolTip="BCR = Annual Benefits ÷ Annual Cost"/>
                     </StackPanel>
                 </Grid>
                 </StackPanel>
