@@ -129,7 +129,7 @@ namespace EconToolbox.Desktop.Services
                 rowIdx++;
             }
             eadSheet.Cell(rowIdx + 1, 1).Value = "Result";
-            eadSheet.Cell(rowIdx + 1, 2).Value = ead.Result;
+            eadSheet.Cell(rowIdx + 1, 2).Value = string.Join(" | ", ead.Results);
 
             // Annualizer Sheets
             var annSummary = wb.Worksheets.Add("Annualizer");

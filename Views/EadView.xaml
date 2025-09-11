@@ -5,7 +5,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -17,13 +17,13 @@
             <CheckBox Content="Include Stage" IsChecked="{Binding UseStage}" Margin="0,0,5,0"/>
         </StackPanel>
         <DataGrid x:Name="EadDataGrid" ItemsSource="{Binding Rows}" Grid.Row="2" AutoGenerateColumns="False"
-                  CanUserAddRows="True" CanUserDeleteRows="True" Height="120" Margin="0,0,0,5"/>
+                  CanUserAddRows="True" CanUserDeleteRows="True" Margin="0,0,0,5"/>
         <Canvas Grid.Row="3" Height="150" Width="300" Margin="0,0,0,5">
             <Polyline Points="{Binding StageDamagePoints}" Stroke="Blue" StrokeThickness="2"/>
         </Canvas>
         <Canvas Grid.Row="4" Height="150" Width="300" Margin="0,0,0,5">
             <Polyline Points="{Binding FrequencyDamagePoints}" Stroke="Red" StrokeThickness="2"/>
         </Canvas>
-        <TextBlock Grid.Row="5" Text="{Binding Result}"/>
+        <ItemsControl Grid.Row="5" ItemsSource="{Binding Results}"/>
     </Grid>
 </UserControl>

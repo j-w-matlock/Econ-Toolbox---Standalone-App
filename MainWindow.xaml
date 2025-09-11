@@ -36,7 +36,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -61,23 +60,42 @@
                              ToolTip="Expected annual benefits."/>
                     <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
                     <TextBox Text="{Binding ConstructionMonths}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="IDC Costs" Grid.Row="7" Margin="0,0,5,5"/>
-                    <TextBox Text="{Binding IdcCosts}" Grid.Row="7" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="IDC Timings" Grid.Row="8" Margin="0,0,5,5"/>
-                    <TextBox Text="{Binding IdcTimings}" Grid.Row="8" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Future Costs" Grid.Row="9" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="9" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
+                    <TextBlock Text="IDC Schedule" Grid.Row="7" Margin="0,0,5,5"/>
+                    <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                            <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
+                                <DataGridComboBoxColumn.ItemsSource>
+                                    <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                        <sys:String>beginning</sys:String>
+                                        <sys:String>midpoint</sys:String>
+                                        <sys:String>end</sys:String>
+                                    </x:Array>
+                                </DataGridComboBoxColumn.ItemsSource>
+                            </DataGridComboBoxColumn>
+                            <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <TextBlock Text="{Binding Idc, StringFormat=IDC: {0:F2}}" Grid.Row="10" Grid.ColumnSpan="2"/>
-                    <TextBlock Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:F2}}" Grid.Row="11" Grid.ColumnSpan="2"/>
-                    <TextBlock Text="{Binding Crf, StringFormat=CRF: {0:F4}}" Grid.Row="12" Grid.ColumnSpan="2"/>
-                    <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:F2}}" Grid.Row="13" Grid.ColumnSpan="2"/>
-                    <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" Grid.Row="14" Grid.ColumnSpan="2"/>
-                    </Grid>
+                    <TextBlock Text="Future Costs" Grid.Row="8" Margin="0,0,5,5"/>
+                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
+                            <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                            <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
+                                <DataGridComboBoxColumn.ItemsSource>
+                                    <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                        <sys:String>beginning</sys:String>
+                                        <sys:String>midpoint</sys:String>
+                                        <sys:String>end</sys:String>
+                                    </x:Array>
+                                </DataGridComboBoxColumn.ItemsSource>
+                            </DataGridComboBoxColumn>
+                            <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <ItemsControl Grid.Row="9" Grid.ColumnSpan="2" ItemsSource="{Binding Results}"/>
+                </Grid>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Water Demand" DataContext="{Binding WaterDemand}">
