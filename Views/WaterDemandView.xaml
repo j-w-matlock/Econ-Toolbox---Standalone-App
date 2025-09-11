@@ -28,41 +28,75 @@
                     </DataGrid.Columns>
                     </DataGrid>
                 </Border>
-                <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,5" VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBlock Text="Forecast Years" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox Width="60" Text="{Binding ForecastYears}" Margin="0,0,10,0"/>
-                        <CheckBox Content="Use Growth Rate" IsChecked="{Binding UseGrowthRate}"/>
+                <Grid Grid.Row="1" Margin="0,0,0,5" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Forecast Years" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ForecastYears}" Margin="0,0,10,0" Width="80"/>
+                    <CheckBox Content="Use Growth Rate" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" IsChecked="{Binding UseGrowthRate}" VerticalAlignment="Center"/>
+
+                    <TextBlock Text="Standard Growth Rate" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding StandardGrowthRate}" Width="80"/>
+
+                    <TextBlock Text="Current Industrial %" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding CurrentIndustrialPercent}" Margin="0,0,10,0" Width="80"/>
+                    <TextBlock Text="Future Industrial %" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding FutureIndustrialPercent}" Width="80"/>
+
+                    <TextBlock Text="Improvements %" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SystemImprovementsPercent}" Margin="0,0,10,0" Width="80"/>
+                    <TextBlock Text="Losses %" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="3" Grid.Column="3" Text="{Binding SystemLossesPercent}" Width="80"/>
+
+                    <StackPanel Grid.Row="4" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Button Content="Forecast" Width="80" Command="{Binding ForecastCommand}" Margin="0,0,5,0"/>
+                        <Button Content="Export" Width="80" Command="{Binding ExportCommand}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBlock Text="Standard Growth Rate" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox Width="60" Text="{Binding StandardGrowthRate}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBlock Text="Current Industrial %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox Width="60" Text="{Binding CurrentIndustrialPercent}" Margin="0,0,10,0"/>
-                        <TextBlock Text="Future Industrial %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox Width="60" Text="{Binding FutureIndustrialPercent}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                        <TextBlock Text="Improvements %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox Width="60" Text="{Binding SystemImprovementsPercent}" Margin="0,0,10,0"/>
-                        <TextBlock Text="Losses %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                        <TextBox Width="60" Text="{Binding SystemLossesPercent}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="Forecast" Command="{Binding ForecastCommand}" Margin="0,0,5,0"/>
-                        <Button Content="Export" Command="{Binding ExportCommand}"/>
-                    </StackPanel>
-                </StackPanel>
+                </Grid>
                 <Border Grid.Row="2" Background="White" CornerRadius="4" Padding="5">
                     <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <DataGrid.Columns>
                         <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                        <DataGridTextColumn Header="Growth Rate" Binding="{Binding GrowthRate, Mode=TwoWay}"/>
-                        <DataGridTextColumn Header="Demand" Binding="{Binding Demand}"/>
-                        <DataGridTextColumn Header="Industrial" Binding="{Binding IndustrialDemand}"/>
-                        <DataGridTextColumn Header="Adjusted" Binding="{Binding AdjustedDemand}"/>
+                        <DataGridTextColumn Header="Growth Rate" Binding="{Binding GrowthRate, Mode=TwoWay, StringFormat={}{0:N2}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" Value="Growth Rate = (Current Demand - Previous Demand) / Previous Demand"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Demand" Binding="{Binding Demand, StringFormat={}{0:N2}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" Value="Demand = Prior Demand × (1 + Growth Rate)"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Industrial" Binding="{Binding IndustrialDemand, StringFormat={}{0:N2}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" Value="Industrial = Demand × Industrial %"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Adjusted" Binding="{Binding AdjustedDemand, StringFormat={}{0:N2}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" Value="Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                     </DataGrid>
                 </Border>
