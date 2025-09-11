@@ -8,61 +8,11 @@
         <vm:MainViewModel/>
     </Window.DataContext>
     <TabControl Margin="10">
-        <TabItem Header="Capital Recovery" DataContext="{Binding CapitalRecovery}">
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Rate (%)" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding Rate}" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Annual interest rate in percent. Higher rates increase the recovery factor."/>
-                <TextBlock Text="Periods" Grid.Row="1" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding Periods}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Number of periods. More periods lower each payment."/>
-                <Button Content="Compute" Command="{Binding ComputeCommand}" Grid.Row="2" Grid.Column="0" Margin="0,5,5,5"/>
-                <Button Content="Export" Command="{Binding ExportCommand}" Grid.Row="2" Grid.Column="1" Margin="0,5,0,5"/>
-                <TextBlock Text="{Binding Result}" Grid.Row="3" Grid.ColumnSpan="2"/>
-            </Grid>
-        </TabItem>
         <TabItem Header="EAD" DataContext="{Binding Ead}">
             <views:EadView/>
         </TabItem>
-        <TabItem Header="Storage Cost" DataContext="{Binding StorageCost}">
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Total Cost" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding TotalCost}" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Original total cost of the asset."/>
-                <TextBlock Text="Storage Price" Grid.Row="1" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding StoragePrice}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Current storage price."/>
-                <TextBlock Text="Reallocated" Grid.Row="2" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding StorageReallocated}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Amount of storage being reallocated."/>
-                <TextBlock Text="Total Storage" Grid.Row="3" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding TotalStorage}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
-                         ToolTip="Total usable storage capacity."/>
-                <Button Content="Compute" Command="{Binding ComputeCommand}" Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
-                <TextBlock Text="{Binding Result}" Grid.Row="5" Grid.ColumnSpan="2"/>
-            </Grid>
+        <TabItem Header="Updated Cost of Storage" DataContext="{Binding UpdatedCost}">
+            <views:UpdatedCostView/>
         </TabItem>
         <TabItem Header="IDC" DataContext="{Binding Idc}">
             <Grid Margin="10">
@@ -98,9 +48,10 @@
                 <TextBlock Text="{Binding Result}" Grid.Row="6" Grid.ColumnSpan="2"/>
             </Grid>
         </TabItem>
-        <TabItem Header="Project Annualizer" DataContext="{Binding Annualizer}">
+        <TabItem Header="Cost Annualization" DataContext="{Binding Annualizer}">
             <Grid Margin="10">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -123,26 +74,29 @@
                 <TextBlock Text="Rate (%)" Grid.Row="1" Margin="0,0,5,5"/>
                 <TextBox Text="{Binding Rate}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
                          ToolTip="Discount rate in percent."/>
-                <TextBlock Text="Annual O&amp;M" Grid.Row="2" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding AnnualOm}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"
+                <TextBlock Text="Periods" Grid.Row="2" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding Periods}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"
+                         ToolTip="Number of periods for capital recovery."/>
+                <TextBlock Text="Annual O&amp;M" Grid.Row="3" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding AnnualOm}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
                          ToolTip="Annual operations and maintenance cost."/>
-                <TextBlock Text="Annual Benefits" Grid.Row="3" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding AnnualBenefits}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
+                <TextBlock Text="Annual Benefits" Grid.Row="4" Margin="0,0,5,5"/>
+                <TextBox Text="{Binding AnnualBenefits}" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"
                          ToolTip="Expected annual benefits."/>
-                <TextBlock Text="Future Costs" Grid.Row="4" Margin="0,0,5,5"/>
-                <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="4" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
+                <TextBlock Text="Future Costs" Grid.Row="5" Margin="0,0,5,5"/>
+                <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="5" Grid.Column="1" AutoGenerateColumns="False" Height="100" Margin="0,0,0,5">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                         <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <Button Content="Compute" Command="{Binding ComputeCommand}" Grid.Row="5" Grid.Column="0" Margin="0,5,5,5"/>
-                <Button Content="Export" Command="{Binding ExportCommand}" Grid.Row="5" Grid.Column="1" Margin="0,5,0,5"/>
-                <TextBlock Text="{Binding Idc, StringFormat=IDC: {0:F2}}" Grid.Row="6" Grid.ColumnSpan="2"/>
-                <TextBlock Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:F2}}" Grid.Row="7" Grid.ColumnSpan="2"/>
-                <TextBlock Text="{Binding Crf, StringFormat=CRF: {0:F4}}" Grid.Row="8" Grid.ColumnSpan="2"/>
-                <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:F2}}" Grid.Row="9" Grid.ColumnSpan="2"/>
-                <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" Grid.Row="10" Grid.ColumnSpan="2"/>
+                <Button Content="Compute" Command="{Binding ComputeCommand}" Grid.Row="6" Grid.Column="0" Margin="0,5,5,5"/>
+                <Button Content="Export" Command="{Binding ExportCommand}" Grid.Row="6" Grid.Column="1" Margin="0,5,0,5"/>
+                <TextBlock Text="{Binding Idc, StringFormat=IDC: {0:F2}}" Grid.Row="7" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:F2}}" Grid.Row="8" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding Crf, StringFormat=CRF: {0:F4}}" Grid.Row="9" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:F2}}" Grid.Row="10" Grid.ColumnSpan="2"/>
+                <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" Grid.Row="11" Grid.ColumnSpan="2"/>
             </Grid>
         </TabItem>
         <TabItem Header="Water Demand" DataContext="{Binding WaterDemand}">

@@ -5,12 +5,14 @@
 This repository contains a Windows Presentation Foundation (WPF) desktop application that provides simple economic analysis tools.
 The project is written in C# using the Model-View-ViewModel (MVVM) pattern and targets **.NET 8**.
 
-The application exposes four calculators:
+The application exposes several calculators:
 
-- **Capital Recovery Factor** – Computes the uniform series capital recovery factor for a given interest rate and number of periods.
 - **Expected Annual Damage (EAD)** – Integrates a probability-damage curve to estimate expected annual damage.
-- **Storage Cost** – Calculates an updated project cost when storage is reallocated.
+- **Updated Cost of Storage** – Provides a multi-step workflow for storage reallocation including O&M and mitigation.
 - **Interest During Construction (IDC)** – Estimates interest charges accrued during project construction.
+- **Cost Annualization** – Combines first cost, capital recovery, O&M, and benefits to annualize project investments.
+- **Water Demand Forecasting** – Projects future demand using simple growth or regression models.
+- **Unit Day Value (UDV)** – Estimates recreation benefits from unit day values.
 
 ## Repository Layout
 
@@ -31,8 +33,8 @@ Each file in `Models/` contains a static class focused solely on computation:
 
 - `CapitalRecoveryModel.cs` – Implements the capital recovery factor formula.
 - `EadModel.cs` – Integrates probability and damage arrays to compute EAD.
-- `StorageCostModel.cs` – Calculates the prorated cost after reallocating storage.
 - `InterestDuringConstructionModel.cs` – Computes financing costs accumulated during construction.
+- `UdvModel.cs` – Calculates unit day value benefits.
 
 ### ViewModels
 
@@ -40,9 +42,8 @@ The `ViewModels/` directory holds the MVVM glue between the user interface and t
 
 - `BaseViewModel.cs` – Provides property change notification support.
 - `RelayCommand.cs` – Lightweight `ICommand` implementation for button bindings.
-- `CapitalRecoveryViewModel.cs` – Exposes rate and period inputs and formats the capital recovery result.
 - `EadViewModel.cs` – Parses comma‑separated probabilities and damages and returns the expected annual damage.
-- `StorageCostViewModel.cs` – Handles inputs related to storage reallocation and displays the updated cost.
+- `UpdatedCostViewModel.cs` – Guides users through storage cost updates, O&M, mitigation, and total annual cost.
 - `InterestDuringConstructionViewModel.cs` – Allows optional monthly cost and timing entries to estimate IDC.
 - `MainViewModel.cs` – Aggregates all sub‑view models for use in `MainWindow`.
 
@@ -106,7 +107,7 @@ EAD integrates a probability–damage curve assuming probabilities are ordered f
 
 where \(d_k\) are damages and \(p_k\) the associated exceedance probabilities.
 
-### Storage Cost Reallocation
+### Updated Cost of Storage
 
 Updated cost for reallocated storage is computed as:
 
