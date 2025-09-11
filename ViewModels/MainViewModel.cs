@@ -7,5 +7,6 @@ namespace EconToolbox.Desktop.ViewModels
         public StorageCostViewModel StorageCost { get; } = new();
         public InterestDuringConstructionViewModel Idc { get; } = new();
         public AnnualizerViewModel Annualizer { get; } = new();
+        public UdvViewModel Udv { get; } = new();
     }
 }

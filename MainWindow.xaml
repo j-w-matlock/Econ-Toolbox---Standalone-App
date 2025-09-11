@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
+        xmlns:views="clr-namespace:EconToolbox.Desktop.Views"
         Title="Economic Toolbox" Height="450" Width="600">
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -156,6 +157,9 @@
                 <TextBlock Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:F2}}" Grid.Row="9" Grid.ColumnSpan="2"/>
                 <TextBlock Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" Grid.Row="10" Grid.ColumnSpan="2"/>
             </Grid>
+        </TabItem>
+        <TabItem Header="Unit Day Value" DataContext="{Binding Udv}">
+            <views:UdvView/>
         </TabItem>
     </TabControl>
 </Window>
