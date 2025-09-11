@@ -28,20 +28,24 @@
                     </DataGrid.Columns>
                     </DataGrid>
                 </Border>
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,5" VerticalAlignment="Top">
-                    <TextBlock Text="Forecast Years" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Width="60" Text="{Binding ForecastYears}" Margin="0,0,10,0"/>
-                    <CheckBox Content="Use Growth Rate" IsChecked="{Binding UseGrowthRate}" Margin="0,0,10,0"/>
-                    <TextBlock Text="Current Industrial %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Width="60" Text="{Binding CurrentIndustrialPercent}" Margin="0,0,10,0"/>
-                    <TextBlock Text="Future Industrial %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Width="60" Text="{Binding FutureIndustrialPercent}" Margin="0,0,10,0"/>
-                    <TextBlock Text="Improvements %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Width="60" Text="{Binding SystemImprovementsPercent}" Margin="0,0,10,0"/>
-                    <TextBlock Text="Losses %" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Width="60" Text="{Binding SystemLossesPercent}" Margin="0,0,10,0"/>
-                    <Button Content="Forecast" Command="{Binding ForecastCommand}" Margin="0,0,5,0"/>
-                    <Button Content="Export" Command="{Binding ExportCommand}"/>
+                <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,5" VerticalAlignment="Top">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBlock Text="Forecast Years" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Width="60" Text="{Binding ForecastYears}" Margin="0,0,10,0"/>
+                        <CheckBox Content="Use Growth Rate" IsChecked="{Binding UseGrowthRate}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Current Industrial %" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Width="60" Text="{Binding CurrentIndustrialPercent}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Future Industrial %" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Width="60" Text="{Binding FutureIndustrialPercent}" Margin="0,0,10,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Improvements %" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Width="60" Text="{Binding SystemImprovementsPercent}" Margin="0,0,10,0"/>
+                        <TextBlock Text="Losses %" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <TextBox Width="60" Text="{Binding SystemLossesPercent}" Margin="0,0,10,0"/>
+                        <Button Content="Forecast" Command="{Binding ForecastCommand}" Margin="0,0,5,0"/>
+                        <Button Content="Export" Command="{Binding ExportCommand}"/>
+                    </StackPanel>
                 </StackPanel>
                 <Border Grid.Row="2" Background="White" CornerRadius="4" Padding="5">
                     <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
