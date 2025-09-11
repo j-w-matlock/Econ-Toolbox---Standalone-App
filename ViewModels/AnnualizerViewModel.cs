@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using EconToolbox.Desktop.Models;
@@ -15,11 +17,11 @@ namespace EconToolbox.Desktop.ViewModels
         private int _analysisPeriod = 1;
         private int _baseYear = DateTime.Now.Year;
         private int _constructionMonths = 12;
-        private string _idcCosts = string.Empty;
-        private string _idcTimings = string.Empty;
         private double _annualOm;
         private double _annualBenefits;
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
+        private ObservableCollection<FutureCostEntry> _idcEntries = new();
+        private ObservableCollection<string> _results = new();
 
         private double _idc;
         private double _totalInvestment;
@@ -36,7 +38,7 @@ namespace EconToolbox.Desktop.ViewModels
         public double Rate
         {
             get => _rate;
-            set { _rate = value; OnPropertyChanged(); }
+            set { _rate = value; OnPropertyChanged(); UpdatePvFactors(); }
         }
 
         public int AnalysisPeriod
@@ -57,18 +59,6 @@ namespace EconToolbox.Desktop.ViewModels
             set { _constructionMonths = value; OnPropertyChanged(); }
         }
 
-        public string IdcCosts
-        {
-            get => _idcCosts;
-            set { _idcCosts = value; OnPropertyChanged(); }
-        }
-
-        public string IdcTimings
-        {
-            get => _idcTimings;
-            set { _idcTimings = value; OnPropertyChanged(); }
-        }
-
         public double AnnualOm
         {
             get => _annualOm;
@@ -85,6 +75,12 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get => _futureCosts;
             set { _futureCosts = value; OnPropertyChanged(); }
+        }
+
+        public ObservableCollection<FutureCostEntry> IdcEntries
+        {
+            get => _idcEntries;
+            set { _idcEntries = value; OnPropertyChanged(); }
         }
 
         public double Idc
@@ -117,6 +113,12 @@ namespace EconToolbox.Desktop.ViewModels
             set { _bcr = value; OnPropertyChanged(); }
         }
 
+        public ObservableCollection<string> Results
+        {
+            get => _results;
+            set { _results = value; OnPropertyChanged(); }
+        }
+
         public ICommand ComputeCommand { get; }
         public ICommand ExportCommand { get; }
 
@@ -124,6 +126,41 @@ namespace EconToolbox.Desktop.ViewModels
         {
             ComputeCommand = new RelayCommand(Compute);
             ExportCommand = new RelayCommand(Export);
+
+            FutureCosts.CollectionChanged += EntriesChanged;
+            IdcEntries.CollectionChanged += EntriesChanged;
+        }
+
+        private void EntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+                foreach (FutureCostEntry entry in e.NewItems)
+                    entry.PropertyChanged += EntryOnPropertyChanged;
+            UpdatePvFactors();
+        }
+
+        private void EntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(FutureCostEntry.Year) ||
+                e.PropertyName == nameof(FutureCostEntry.Timing))
+            {
+                UpdatePvFactors();
+            }
+        }
+
+        private void UpdatePvFactors()
+        {
+            double r = Rate / 100.0;
+            foreach (var entry in FutureCosts.Concat(IdcEntries))
+            {
+                double offset = entry.Timing switch
+                {
+                    "beginning" => 0.0,
+                    "midpoint" => 0.5,
+                    _ => 1.0
+                };
+                entry.PvFactor = Math.Pow(1.0 + r, -(entry.Year + offset));
+            }
         }
 
         private void Compute()
@@ -134,12 +171,8 @@ namespace EconToolbox.Desktop.ViewModels
                     .Select(f => (f.Cost, f.Year))
                     .ToList();
 
-                double[]? costArr = null;
-                string[]? timingArr = null;
-                if (!string.IsNullOrWhiteSpace(IdcCosts))
-                    costArr = IdcCosts.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => double.Parse(s.Trim())).ToArray();
-                if (!string.IsNullOrWhiteSpace(IdcTimings))
-                    timingArr = IdcTimings.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray();
+                double[]? costArr = IdcEntries.Count > 0 ? IdcEntries.Select(e => e.Cost).ToArray() : null;
+                string[]? timingArr = IdcEntries.Count > 0 ? IdcEntries.Select(e => e.Timing).ToArray() : null;
 
                 var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future,
                     AnalysisPeriod, ConstructionMonths, costArr, timingArr);
@@ -148,10 +181,20 @@ namespace EconToolbox.Desktop.ViewModels
                 Crf = result.Crf;
                 AnnualCost = result.AnnualCost;
                 Bcr = result.Bcr;
+
+                Results = new ObservableCollection<string>
+                {
+                    $"IDC: {Idc:F2}",
+                    $"Total Investment: {TotalInvestment:F2}",
+                    $"CRF: {Crf:F4}",
+                    $"Annual Cost: {AnnualCost:F2}",
+                    $"BCR: {Bcr:F2}"
+                };
             }
             catch (Exception ex)
             {
                 Idc = TotalInvestment = Crf = AnnualCost = Bcr = double.NaN;
+                Results = new ObservableCollection<string> { "Error computing results" };
             }
         }
 

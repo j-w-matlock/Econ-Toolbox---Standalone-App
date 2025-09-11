@@ -27,11 +27,11 @@ namespace EconToolbox.Desktop.ViewModels
             set { _useStage = value; OnPropertyChanged(); }
         }
 
-        private string _result = string.Empty;
-        public string Result
+        private ObservableCollection<string> _results = new();
+        public ObservableCollection<string> Results
         {
-            get => _result;
-            set { _result = value; OnPropertyChanged(); }
+            get => _results;
+            set { _results = value; OnPropertyChanged(); }
         }
 
         private PointCollection _stageDamagePoints = new();
@@ -104,7 +104,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 if (Rows.Count == 0 || DamageColumns.Count == 0)
                 {
-                    Result = "No data";
+                    Results = new ObservableCollection<string> { "No data" };
                     StageDamagePoints = new PointCollection();
                     FrequencyDamagePoints = new PointCollection();
                     return;
@@ -118,12 +118,12 @@ namespace EconToolbox.Desktop.ViewModels
                     double ead = EadModel.Compute(probabilities, damages);
                     results.Add($"{DamageColumns[i]}: {ead:F2}");
                 }
-                Result = string.Join(" | ", results);
+                Results = new ObservableCollection<string>(results);
                 UpdateCharts();
             }
             catch (Exception ex)
             {
-                Result = $"Error: {ex.Message}";
+                Results = new ObservableCollection<string> { $"Error: {ex.Message}" };
                 StageDamagePoints = new PointCollection();
                 FrequencyDamagePoints = new PointCollection();
             }
@@ -189,7 +189,8 @@ namespace EconToolbox.Desktop.ViewModels
             };
             if (dlg.ShowDialog() == true)
             {
-                Services.ExcelExporter.ExportEad(Rows, DamageColumns, UseStage, Result, dlg.FileName);
+                string combined = string.Join(" | ", Results);
+                Services.ExcelExporter.ExportEad(Rows, DamageColumns, UseStage, combined, dlg.FileName);
             }
         }
 
