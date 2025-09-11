@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
         xmlns:views="clr-namespace:EconToolbox.Desktop.Views"
-        Title="Economic Toolbox" Height="700" Width="1000" Background="WhiteSmoke">
+        Title="Economic Toolbox" Height="700" Width="1000" 
+        Background="{StaticResource BackgroundBrush}" FontFamily="Segoe UI">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -12,7 +13,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TabControl Margin="10" SelectedIndex="{Binding SelectedIndex}" Grid.Row="0" FontSize="14">
+        <TabControl Margin="10" SelectedIndex="{Binding SelectedIndex}" Grid.Row="0" FontSize="14" Background="White">
             <TabItem Header="EAD" DataContext="{Binding Ead}">
                 <views:EadView/>
             </TabItem>
