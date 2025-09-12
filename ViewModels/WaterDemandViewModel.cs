@@ -187,9 +187,24 @@ namespace EconToolbox.Desktop.ViewModels
 
         public WaterDemandViewModel()
         {
-            Scenarios.Add(new Scenario { Name = "Baseline", LineBrush = Brushes.Blue });
-            Scenarios.Add(new Scenario { Name = "Optimistic", LineBrush = Brushes.Green });
-            Scenarios.Add(new Scenario { Name = "Pessimistic", LineBrush = Brushes.Red });
+            Scenarios.Add(new Scenario
+            {
+                Name = "Baseline",
+                LineBrush = Brushes.Blue,
+                Description = "Most likely projection based on expected population and demand changes"
+            });
+            Scenarios.Add(new Scenario
+            {
+                Name = "Optimistic",
+                LineBrush = Brushes.Green,
+                Description = "Higher growth assumptions resulting in greater future demand"
+            });
+            Scenarios.Add(new Scenario
+            {
+                Name = "Pessimistic",
+                LineBrush = Brushes.Red,
+                Description = "Lower growth assumptions producing reduced future demand"
+            });
             SelectedScenario = Scenarios.FirstOrDefault();
 
             ForecastCommand = new RelayCommand(Forecast);
