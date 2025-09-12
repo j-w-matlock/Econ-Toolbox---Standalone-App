@@ -24,24 +24,9 @@ namespace EconToolbox.Desktop.ViewModels
         private int _forecastYears = 5;
         private bool _useGrowthRate;
         private ObservableCollection<DemandEntry> _results = new();
-        private PointCollection _chartPoints = new();
         private string _explanation = string.Empty;
-        private double _currentIndustrialPercent;
-        private double _futureIndustrialPercent;
-        private double _currentResidentialPercent;
-        private double _futureResidentialPercent;
-        private double _currentCommercialPercent;
-        private double _futureCommercialPercent;
-        private double _currentAgriculturalPercent;
-        private double _futureAgriculturalPercent;
-        private double _systemImprovementsPercent;
-        private double _systemLossesPercent;
-        private double _standardGrowthRate;
-        private int _baseYear;
-        private double _basePopulation;
-        private double _basePerCapitaDemand;
-        private double _populationGrowthRate;
-        private double _perCapitaDemandChangeRate;
+        public ObservableCollection<Scenario> Scenarios { get; } = new();
+        private Scenario? _selectedScenario;
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -67,112 +52,133 @@ namespace EconToolbox.Desktop.ViewModels
             set { _results = value; OnPropertyChanged(); }
         }
 
-        public PointCollection ChartPoints
-        {
-            get => _chartPoints;
-            set { _chartPoints = value; OnPropertyChanged(); }
-        }
-
         public string Explanation
         {
             get => _explanation;
             set { _explanation = value; OnPropertyChanged(); }
         }
 
+        public Scenario? SelectedScenario
+        {
+            get => _selectedScenario;
+            set
+            {
+                _selectedScenario = value;
+                OnPropertyChanged();
+                Results = value?.Results ?? new ObservableCollection<DemandEntry>();
+                OnPropertyChanged(nameof(CurrentIndustrialPercent));
+                OnPropertyChanged(nameof(FutureIndustrialPercent));
+                OnPropertyChanged(nameof(CurrentResidentialPercent));
+                OnPropertyChanged(nameof(FutureResidentialPercent));
+                OnPropertyChanged(nameof(CurrentCommercialPercent));
+                OnPropertyChanged(nameof(FutureCommercialPercent));
+                OnPropertyChanged(nameof(CurrentAgriculturalPercent));
+                OnPropertyChanged(nameof(FutureAgriculturalPercent));
+                OnPropertyChanged(nameof(SystemImprovementsPercent));
+                OnPropertyChanged(nameof(SystemLossesPercent));
+                OnPropertyChanged(nameof(StandardGrowthRate));
+                OnPropertyChanged(nameof(BaseYear));
+                OnPropertyChanged(nameof(BasePopulation));
+                OnPropertyChanged(nameof(BasePerCapitaDemand));
+                OnPropertyChanged(nameof(PopulationGrowthRate));
+                OnPropertyChanged(nameof(PerCapitaDemandChangeRate));
+            }
+        }
+
         public double CurrentIndustrialPercent
         {
-            get => _currentIndustrialPercent;
-            set { _currentIndustrialPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.CurrentIndustrialPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.CurrentIndustrialPercent = value; OnPropertyChanged(); } }
         }
 
         public double FutureIndustrialPercent
         {
-            get => _futureIndustrialPercent;
-            set { _futureIndustrialPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.FutureIndustrialPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.FutureIndustrialPercent = value; OnPropertyChanged(); } }
         }
 
         public double CurrentResidentialPercent
         {
-            get => _currentResidentialPercent;
-            set { _currentResidentialPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.CurrentResidentialPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.CurrentResidentialPercent = value; OnPropertyChanged(); } }
         }
 
         public double FutureResidentialPercent
         {
-            get => _futureResidentialPercent;
-            set { _futureResidentialPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.FutureResidentialPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.FutureResidentialPercent = value; OnPropertyChanged(); } }
         }
 
         public double CurrentCommercialPercent
         {
-            get => _currentCommercialPercent;
-            set { _currentCommercialPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.CurrentCommercialPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.CurrentCommercialPercent = value; OnPropertyChanged(); } }
         }
 
         public double FutureCommercialPercent
         {
-            get => _futureCommercialPercent;
-            set { _futureCommercialPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.FutureCommercialPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.FutureCommercialPercent = value; OnPropertyChanged(); } }
         }
 
         public double CurrentAgriculturalPercent
         {
-            get => _currentAgriculturalPercent;
-            set { _currentAgriculturalPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.CurrentAgriculturalPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.CurrentAgriculturalPercent = value; OnPropertyChanged(); } }
         }
 
         public double FutureAgriculturalPercent
         {
-            get => _futureAgriculturalPercent;
-            set { _futureAgriculturalPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.FutureAgriculturalPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.FutureAgriculturalPercent = value; OnPropertyChanged(); } }
         }
 
         public double SystemImprovementsPercent
         {
-            get => _systemImprovementsPercent;
-            set { _systemImprovementsPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.SystemImprovementsPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.SystemImprovementsPercent = value; OnPropertyChanged(); } }
         }
 
         public double SystemLossesPercent
         {
-            get => _systemLossesPercent;
-            set { _systemLossesPercent = value; OnPropertyChanged(); }
+            get => SelectedScenario?.SystemLossesPercent ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.SystemLossesPercent = value; OnPropertyChanged(); } }
         }
 
         public double StandardGrowthRate
         {
-            get => _standardGrowthRate;
-            set { _standardGrowthRate = value; OnPropertyChanged(); }
+            get => SelectedScenario?.StandardGrowthRate ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.StandardGrowthRate = value; OnPropertyChanged(); } }
         }
 
         public int BaseYear
         {
-            get => _baseYear;
-            set { _baseYear = value; OnPropertyChanged(); }
+            get => SelectedScenario?.BaseYear ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.BaseYear = value; OnPropertyChanged(); } }
         }
 
         public double BasePopulation
         {
-            get => _basePopulation;
-            set { _basePopulation = value; OnPropertyChanged(); }
+            get => SelectedScenario?.BasePopulation ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.BasePopulation = value; OnPropertyChanged(); } }
         }
 
         public double BasePerCapitaDemand
         {
-            get => _basePerCapitaDemand;
-            set { _basePerCapitaDemand = value; OnPropertyChanged(); }
+            get => SelectedScenario?.BasePerCapitaDemand ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.BasePerCapitaDemand = value; OnPropertyChanged(); } }
         }
 
         public double PopulationGrowthRate
         {
-            get => _populationGrowthRate;
-            set { _populationGrowthRate = value; OnPropertyChanged(); }
+            get => SelectedScenario?.PopulationGrowthRate ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.PopulationGrowthRate = value; OnPropertyChanged(); } }
         }
 
         public double PerCapitaDemandChangeRate
         {
-            get => _perCapitaDemandChangeRate;
-            set { _perCapitaDemandChangeRate = value; OnPropertyChanged(); }
+            get => SelectedScenario?.PerCapitaDemandChangeRate ?? 0;
+            set { if (SelectedScenario != null) { SelectedScenario.PerCapitaDemandChangeRate = value; OnPropertyChanged(); } }
         }
 
         public ICommand ForecastCommand { get; }
@@ -181,6 +187,11 @@ namespace EconToolbox.Desktop.ViewModels
 
         public WaterDemandViewModel()
         {
+            Scenarios.Add(new Scenario { Name = "Baseline", LineBrush = Brushes.Blue });
+            Scenarios.Add(new Scenario { Name = "Optimistic", LineBrush = Brushes.Green });
+            Scenarios.Add(new Scenario { Name = "Pessimistic", LineBrush = Brushes.Red });
+            SelectedScenario = Scenarios.FirstOrDefault();
+
             ForecastCommand = new RelayCommand(Forecast);
             ExportCommand = new RelayCommand(Export);
             ComputeCommand = ForecastCommand;
@@ -220,70 +231,82 @@ namespace EconToolbox.Desktop.ViewModels
         {
             try
             {
-                Results = new ObservableCollection<DemandEntry>();
-                for (int t = 0; t <= ForecastYears; t++)
+                foreach (var scenario in Scenarios)
                 {
-                    int year = BaseYear + t;
-                    double population = BasePopulation * Math.Pow(1 + PopulationGrowthRate / 100.0, t);
-                    double perCapita = BasePerCapitaDemand * Math.Pow(1 + PerCapitaDemandChangeRate / 100.0, t);
-                    double demand = population * perCapita;
-
-                    double industrialPercent = ForecastYears <= 0
-                        ? CurrentIndustrialPercent
-                        : CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t / (double)ForecastYears;
-                    double residentialPercent = ForecastYears <= 0
-                        ? CurrentResidentialPercent
-                        : CurrentResidentialPercent + (FutureResidentialPercent - CurrentResidentialPercent) * t / (double)ForecastYears;
-                    double commercialPercent = ForecastYears <= 0
-                        ? CurrentCommercialPercent
-                        : CurrentCommercialPercent + (FutureCommercialPercent - CurrentCommercialPercent) * t / (double)ForecastYears;
-                    double agriculturalPercent = ForecastYears <= 0
-                        ? CurrentAgriculturalPercent
-                        : CurrentAgriculturalPercent + (FutureAgriculturalPercent - CurrentAgriculturalPercent) * t / (double)ForecastYears;
-
-                    double industrialDemand = demand * industrialPercent / 100.0;
-                    double residentialDemand = demand * residentialPercent / 100.0;
-                    double commercialDemand = demand * commercialPercent / 100.0;
-                    double agriculturalDemand = demand * agriculturalPercent / 100.0;
-                    double adjusted = demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
-                    double growthRate = t == 0 ? 0 : (demand / Results[t - 1].Demand - 1) * 100.0;
-
-                    Results.Add(new DemandEntry
+                    scenario.Results.Clear();
+                    for (int t = 0; t <= ForecastYears; t++)
                     {
-                        Year = year,
-                        Demand = demand,
-                        ResidentialDemand = residentialDemand,
-                        CommercialDemand = commercialDemand,
-                        IndustrialDemand = industrialDemand,
-                        AgriculturalDemand = agriculturalDemand,
-                        AdjustedDemand = adjusted,
-                        GrowthRate = growthRate
-                    });
+                        int year = scenario.BaseYear + t;
+                        double population = scenario.BasePopulation * Math.Pow(1 + scenario.PopulationGrowthRate / 100.0, t);
+                        double perCapita = scenario.BasePerCapitaDemand * Math.Pow(1 + scenario.PerCapitaDemandChangeRate / 100.0, t);
+                        double demand = population * perCapita;
+
+                        double industrialPercent = ForecastYears <= 0
+                            ? scenario.CurrentIndustrialPercent
+                            : scenario.CurrentIndustrialPercent + (scenario.FutureIndustrialPercent - scenario.CurrentIndustrialPercent) * t / (double)ForecastYears;
+                        double residentialPercent = ForecastYears <= 0
+                            ? scenario.CurrentResidentialPercent
+                            : scenario.CurrentResidentialPercent + (scenario.FutureResidentialPercent - scenario.CurrentResidentialPercent) * t / (double)ForecastYears;
+                        double commercialPercent = ForecastYears <= 0
+                            ? scenario.CurrentCommercialPercent
+                            : scenario.CurrentCommercialPercent + (scenario.FutureCommercialPercent - scenario.CurrentCommercialPercent) * t / (double)ForecastYears;
+                        double agriculturalPercent = ForecastYears <= 0
+                            ? scenario.CurrentAgriculturalPercent
+                            : scenario.CurrentAgriculturalPercent + (scenario.FutureAgriculturalPercent - scenario.CurrentAgriculturalPercent) * t / (double)ForecastYears;
+
+                        double industrialDemand = demand * industrialPercent / 100.0;
+                        double residentialDemand = demand * residentialPercent / 100.0;
+                        double commercialDemand = demand * commercialPercent / 100.0;
+                        double agriculturalDemand = demand * agriculturalPercent / 100.0;
+                        double adjusted = demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
+                        double growthRate = t == 0 ? 0 : (demand / scenario.Results[t - 1].Demand - 1) * 100.0;
+
+                        scenario.Results.Add(new DemandEntry
+                        {
+                            Year = year,
+                            Demand = demand,
+                            ResidentialDemand = residentialDemand,
+                            CommercialDemand = commercialDemand,
+                            IndustrialDemand = industrialDemand,
+                            AgriculturalDemand = agriculturalDemand,
+                            AdjustedDemand = adjusted,
+                            GrowthRate = growthRate
+                        });
+                    }
+
+                    AttachResultHandlers(scenario);
+                    scenario.ChartPoints = CreatePointCollection(scenario.Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
                 }
 
-                AttachResultHandlers();
-                ChartPoints = CreatePointCollection(Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
-                Explanation =
-                    "Population = BasePopulation × (1 + PopulationGrowthRate)^t, " +
-                    "Per Capita = BasePerCapitaDemand × (1 + PerCapitaDemandChangeRate)^t, " +
-                    "Total Demand = Population × Per Capita. " +
-                    $"Shares interpolated: Res {CurrentResidentialPercent:F1}%→{FutureResidentialPercent:F1}%, " +
-                    $"Com {CurrentCommercialPercent:F1}%→{FutureCommercialPercent:F1}%, " +
-                    $"Ind {CurrentIndustrialPercent:F1}%→{FutureIndustrialPercent:F1}%, " +
-                    $"Ag {CurrentAgriculturalPercent:F1}%→{FutureAgriculturalPercent:F1}% " +
-                    $"with {SystemImprovementsPercent:F1}% improvements and {SystemLossesPercent:F1}% losses.";
+                Results = SelectedScenario?.Results ?? new ObservableCollection<DemandEntry>();
+                if (SelectedScenario != null)
+                {
+                    Explanation =
+                        "Population = BasePopulation × (1 + PopulationGrowthRate)^t, " +
+                        "Per Capita = BasePerCapitaDemand × (1 + PerCapitaDemandChangeRate)^t, " +
+                        "Total Demand = Population × Per Capita. " +
+                        $"Shares interpolated: Res {SelectedScenario.CurrentResidentialPercent:F1}%→{SelectedScenario.FutureResidentialPercent:F1}%, " +
+                        $"Com {SelectedScenario.CurrentCommercialPercent:F1}%→{SelectedScenario.FutureCommercialPercent:F1}%, " +
+                        $"Ind {SelectedScenario.CurrentIndustrialPercent:F1}%→{SelectedScenario.FutureIndustrialPercent:F1}%, " +
+                        $"Ag {SelectedScenario.CurrentAgriculturalPercent:F1}%→{SelectedScenario.FutureAgriculturalPercent:F1}% " +
+                        $"with {SelectedScenario.SystemImprovementsPercent:F1}% improvements and {SelectedScenario.SystemLossesPercent:F1}% losses.";
+                }
             }
             catch
             {
+                foreach (var scenario in Scenarios)
+                {
+                    scenario.Results.Clear();
+                    scenario.ChartPoints = new PointCollection();
+                }
                 Results = new ObservableCollection<DemandEntry>();
-                ChartPoints = new PointCollection();
                 Explanation = string.Empty;
             }
         }
 
-        private void AttachResultHandlers()
+        private void AttachResultHandlers(Scenario scenario)
         {
-            foreach (var entry in Results)
+            foreach (var entry in scenario.Results)
             {
                 entry.PropertyChanged -= Entry_PropertyChanged;
                 entry.PropertyChanged += Entry_PropertyChanged;
@@ -294,45 +317,53 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.PropertyName == nameof(DemandEntry.GrowthRate) && sender is DemandEntry entry)
             {
-                int index = Results.IndexOf(entry);
-                if (index <= 0) return;
-                RecalculateFromIndex(index);
-                ChartPoints = CreatePointCollection(Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
+                foreach (var scenario in Scenarios)
+                {
+                    int index = scenario.Results.IndexOf(entry);
+                    if (index > 0)
+                    {
+                        RecalculateFromIndex(scenario, index);
+                        scenario.ChartPoints = CreatePointCollection(scenario.Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
+                        if (scenario == SelectedScenario)
+                            Results = scenario.Results;
+                        break;
+                    }
+                }
             }
         }
 
-        private void RecalculateFromIndex(int index)
+        private void RecalculateFromIndex(Scenario scenario, int index)
         {
             int forecastStartIndex = HistoricalData.Count;
             int lastHistYear = forecastStartIndex > 0 ? HistoricalData[^1].Year : 0;
-            for (int i = index; i < Results.Count; i++)
+            for (int i = index; i < scenario.Results.Count; i++)
             {
-                double baseDemand = Results[i - 1].Demand;
-                double rate = Results[i].GrowthRate / 100.0;
-                Results[i].Demand = baseDemand * (1 + rate);
+                double baseDemand = scenario.Results[i - 1].Demand;
+                double rate = scenario.Results[i].GrowthRate / 100.0;
+                scenario.Results[i].Demand = baseDemand * (1 + rate);
 
-                double t = Results[i].Year <= lastHistYear
+                double t = scenario.Results[i].Year <= lastHistYear
                     ? 0
                     : (ForecastYears <= 1 ? 1 : (i - forecastStartIndex) / (double)(ForecastYears - 1));
 
-                double industrialPercent = Results[i].Year <= lastHistYear
-                    ? CurrentIndustrialPercent
-                    : CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t;
-                double residentialPercent = Results[i].Year <= lastHistYear
-                    ? CurrentResidentialPercent
-                    : CurrentResidentialPercent + (FutureResidentialPercent - CurrentResidentialPercent) * t;
-                double commercialPercent = Results[i].Year <= lastHistYear
-                    ? CurrentCommercialPercent
-                    : CurrentCommercialPercent + (FutureCommercialPercent - CurrentCommercialPercent) * t;
-                double agriculturalPercent = Results[i].Year <= lastHistYear
-                    ? CurrentAgriculturalPercent
-                    : CurrentAgriculturalPercent + (FutureAgriculturalPercent - CurrentAgriculturalPercent) * t;
+                double industrialPercent = scenario.Results[i].Year <= lastHistYear
+                    ? scenario.CurrentIndustrialPercent
+                    : scenario.CurrentIndustrialPercent + (scenario.FutureIndustrialPercent - scenario.CurrentIndustrialPercent) * t;
+                double residentialPercent = scenario.Results[i].Year <= lastHistYear
+                    ? scenario.CurrentResidentialPercent
+                    : scenario.CurrentResidentialPercent + (scenario.FutureResidentialPercent - scenario.CurrentResidentialPercent) * t;
+                double commercialPercent = scenario.Results[i].Year <= lastHistYear
+                    ? scenario.CurrentCommercialPercent
+                    : scenario.CurrentCommercialPercent + (scenario.FutureCommercialPercent - scenario.CurrentCommercialPercent) * t;
+                double agriculturalPercent = scenario.Results[i].Year <= lastHistYear
+                    ? scenario.CurrentAgriculturalPercent
+                    : scenario.CurrentAgriculturalPercent + (scenario.FutureAgriculturalPercent - scenario.CurrentAgriculturalPercent) * t;
 
-                Results[i].IndustrialDemand = Results[i].Demand * industrialPercent / 100.0;
-                Results[i].ResidentialDemand = Results[i].Demand * residentialPercent / 100.0;
-                Results[i].CommercialDemand = Results[i].Demand * commercialPercent / 100.0;
-                Results[i].AgriculturalDemand = Results[i].Demand * agriculturalPercent / 100.0;
-                Results[i].AdjustedDemand = Results[i].Demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
+                scenario.Results[i].IndustrialDemand = scenario.Results[i].Demand * industrialPercent / 100.0;
+                scenario.Results[i].ResidentialDemand = scenario.Results[i].Demand * residentialPercent / 100.0;
+                scenario.Results[i].CommercialDemand = scenario.Results[i].Demand * commercialPercent / 100.0;
+                scenario.Results[i].AgriculturalDemand = scenario.Results[i].Demand * agriculturalPercent / 100.0;
+                scenario.Results[i].AdjustedDemand = scenario.Results[i].Demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
             }
         }
         private static PointCollection CreatePointCollection(List<(int Year, double Demand)> data)
@@ -376,7 +407,7 @@ namespace EconToolbox.Desktop.ViewModels
             };
             if (dlg.ShowDialog() == true)
             {
-                Services.ExcelExporter.ExportWaterDemand(Results, dlg.FileName);
+                Services.ExcelExporter.ExportWaterDemand(Scenarios, dlg.FileName);
             }
         }
     }
