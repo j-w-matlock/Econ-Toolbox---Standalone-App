@@ -62,7 +62,15 @@ namespace EconToolbox.Desktop.ViewModels
             _removeDamageColumnCommand = new RelayCommand(RemoveDamageColumn, () => DamageColumns.Count > 1);
             ComputeCommand = new RelayCommand(Compute);
             ExportCommand = new RelayCommand(Export);
+            DamageColumns.CollectionChanged += DamageColumns_CollectionChanged;
             AddDamageColumn(); // start with one damage column
+        }
+
+        private void DamageColumns_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            _removeDamageColumnCommand.RaiseCanExecuteChanged();
+            if (e.Action == NotifyCollectionChangedAction.Replace)
+                Compute();
         }
 
         private void Rows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

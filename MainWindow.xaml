@@ -114,7 +114,7 @@
         </TabControl>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1" Margin="10,0,10,10">
             <Button x:Name="CalculateButton" Content="Calculate" Width="100" Command="{Binding CalculateCommand}" Margin="0,0,5,0"/>
-            <Button Content="Export" Width="100" Command="{Binding ExportCommand}"/>
+            <Button Content="Export" Width="{Binding ElementName=CalculateButton, Path=ActualWidth}" Command="{Binding ExportCommand}"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -60,9 +60,16 @@ namespace EconToolbox.Desktop.Views
             }
             for (int i = 0; i < vm.DamageColumns.Count; i++)
             {
+                var headerBox = new TextBox { MinWidth = 80 };
+                BindingOperations.SetBinding(headerBox, TextBox.TextProperty, new Binding($"DamageColumns[{i}]")
+                {
+                    Source = vm,
+                    Mode = BindingMode.TwoWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                });
                 EadDataGrid.Columns.Add(new DataGridTextColumn
                 {
-                    Header = vm.DamageColumns[i],
+                    Header = headerBox,
                     Binding = new Binding($"Damages[{i}]")
                 });
             }
