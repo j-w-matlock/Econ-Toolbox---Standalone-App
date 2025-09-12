@@ -6,6 +6,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Text="Enter probabilities with corresponding damages. Inputs are automatically sorted and missing 0% and 100% probabilities are added using the trapezoidal method. Use Add Damage Column for additional categories. Optional stage values must align with probabilities." TextWrapping="Wrap" Margin="0,0,0,5"/>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,5">
@@ -15,5 +16,6 @@
         </StackPanel>
         <DataGrid x:Name="EadDataGrid" ItemsSource="{Binding Rows}" Grid.Row="2" AutoGenerateColumns="False"
                   CanUserAddRows="True" CanUserDeleteRows="True"/>
+        <ItemsControl ItemsSource="{Binding Results}" Grid.Row="3" Margin="0,5,0,0"/>
     </Grid>
 </UserControl>
