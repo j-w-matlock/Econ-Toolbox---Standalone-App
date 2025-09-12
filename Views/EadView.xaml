@@ -6,9 +6,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Text="Enter probabilities with corresponding damages. Inputs are automatically sorted and missing 0% and 100% probabilities are added using the trapezoidal method. Use Add Damage Column for additional categories. Optional stage values must align with probabilities." TextWrapping="Wrap" Margin="0,0,0,5"/>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,5">
@@ -17,15 +14,6 @@
             <CheckBox Content="Include Stage" IsChecked="{Binding UseStage}" Margin="0,0,5,0"/>
         </StackPanel>
         <DataGrid x:Name="EadDataGrid" ItemsSource="{Binding Rows}" Grid.Row="2" AutoGenerateColumns="False"
-                  CanUserAddRows="True" CanUserDeleteRows="True" Margin="0,0,0,5"/>
-        <Canvas Grid.Row="3" Height="150" Width="300" Margin="0,0,0,5">
-            <Polyline Points="{Binding StageDamagePoints}" Stroke="Blue" StrokeThickness="2"/>
-        </Canvas>
-        <Canvas Grid.Row="4" Height="150" Width="300" Margin="0,0,0,5">
-            <Polyline Points="{Binding FrequencyDamagePoints}" Stroke="Red" StrokeThickness="2"/>
-        </Canvas>
-        <GroupBox Grid.Row="5" Header="Results" Margin="0,5,0,0">
-            <ItemsControl ItemsSource="{Binding Results}" FontWeight="Bold"/>
-        </GroupBox>
+                  CanUserAddRows="True" CanUserDeleteRows="True"/>
     </Grid>
 </UserControl>
