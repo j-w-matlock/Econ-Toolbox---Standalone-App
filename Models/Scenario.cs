@@ -9,6 +9,7 @@ namespace EconToolbox.Desktop.Models
     public class Scenario : ObservableObject
     {
         public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         public int BaseYear { get; set; }
         public double BasePopulation { get; set; }

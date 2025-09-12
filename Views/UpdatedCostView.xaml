@@ -4,7 +4,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
-    <StackPanel>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
         <TextBlock Text="Complete each section and ensure year values are ascending. Use Calculate to process all sections." TextWrapping="Wrap" Margin="10,0,10,10"/>
         <TabControl Margin="10,0,10,10">
         <TabItem Header="Storage Cost">
@@ -54,7 +55,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <DataGrid ItemsSource="{Binding UpdatedCostItems}" AutoGenerateColumns="False" Grid.Row="0" Height="150" Margin="0,0,0,5">
+                <DataGrid ItemsSource="{Binding UpdatedCostItems}" AutoGenerateColumns="False" Grid.Row="0" Height="150" Margin="0,0,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Category" Binding="{Binding Category}"/>
                         <DataGridTextColumn Header="Actual Cost" Binding="{Binding ActualCost}"/>
@@ -89,7 +90,7 @@
                 <TextBox Text="{Binding RrrCwcci}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
                 <TextBlock Text="Base Year" Grid.Row="3" Margin="0,0,5,5"/>
                 <TextBox Text="{Binding RrrBaseYear}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
-                <DataGrid ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5">
+                <DataGrid ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Item" Binding="{Binding Item}"/>
                         <DataGridTextColumn Header="Future Cost" Binding="{Binding FutureCost}"/>
@@ -156,5 +157,6 @@
             </Grid>
         </TabItem>
         </TabControl>
-    </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

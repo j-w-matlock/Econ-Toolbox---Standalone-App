@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
         xmlns:views="clr-namespace:EconToolbox.Desktop.Views"
-        Title="Economic Toolbox" Height="700" Width="1000" 
+        Title="Economic Toolbox" Height="700" Width="1000" ResizeMode="CanResize"
         Background="{StaticResource BackgroundBrush}" FontFamily="Segoe UI">
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -13,7 +13,8 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TabControl Margin="10" SelectedIndex="{Binding SelectedIndex}" Grid.Row="0" FontSize="14" Background="White">
+        <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <TabControl Margin="10" SelectedIndex="{Binding SelectedIndex}" FontSize="14" Background="White">
             <TabItem Header="EAD" DataContext="{Binding Ead}">
                 <views:EadView/>
             </TabItem>
@@ -62,7 +63,7 @@
                     <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
                     <TextBox Text="{Binding ConstructionMonths}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
                     <TextBlock Text="IDC Schedule" Grid.Row="7" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch">
+                    <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                             <DataGridTextColumn Header="Month" Binding="{Binding Year}"/>
@@ -79,7 +80,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock Text="Future Costs" Grid.Row="8" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch">
+                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
@@ -111,7 +112,8 @@
         <TabItem Header="Unit Day Value" DataContext="{Binding Udv}">
             <views:UdvView/>
         </TabItem>
-        </TabControl>
+            </TabControl>
+        </ScrollViewer>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1" Margin="10,0,10,10">
             <Button x:Name="CalculateButton" Content="Calculate" Width="100" Command="{Binding CalculateCommand}" Margin="0,0,5,0"/>
             <Button Content="Export" Width="{Binding ElementName=CalculateButton, Path=ActualWidth}" Command="{Binding ExportCommand}"/>
