@@ -38,6 +38,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -59,19 +62,28 @@
                     <TextBlock Text="Standard Growth Rate" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding StandardGrowthRate}"/>
 
-                    <TextBlock Text="Current Industrial %" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding CurrentIndustrialPercent}"/>
+                    <TextBlock Text="Base Year" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BaseYear}"/>
 
-                    <TextBlock Text="Future Industrial %" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding FutureIndustrialPercent}"/>
+                    <TextBlock Text="Base Population" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding BasePopulation}"/>
 
-                    <TextBlock Text="Improvements %" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding SystemImprovementsPercent}"/>
+                    <TextBlock Text="Base Per Capita" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding BasePerCapitaDemand}"/>
 
-                    <TextBlock Text="Losses %" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding SystemLossesPercent}"/>
+                    <TextBlock Text="Current Industrial %" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding CurrentIndustrialPercent}"/>
 
-                    <StackPanel Grid.Row="7" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="Future Industrial %" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding FutureIndustrialPercent}"/>
+
+                    <TextBlock Text="Improvements %" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding SystemImprovementsPercent}"/>
+
+                    <TextBlock Text="Losses %" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding SystemLossesPercent}"/>
+
+                    <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Left">
                         <Button Content="Forecast" Width="80" Command="{Binding ForecastCommand}" Margin="0,0,5,0"/>
                         <Button Content="Export" Width="80" Command="{Binding ExportCommand}"/>
                     </StackPanel>
