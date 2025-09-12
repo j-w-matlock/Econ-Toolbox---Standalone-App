@@ -15,6 +15,7 @@ namespace EconToolbox.Desktop.Models
         public double BasePerCapitaDemand { get; set; }
         public double PopulationGrowthRate { get; set; }
         public double PerCapitaDemandChangeRate { get; set; }
+        public double StandardGrowthRate { get; set; }
 
         public double CurrentIndustrialPercent { get; set; }
         public double FutureIndustrialPercent { get; set; }
