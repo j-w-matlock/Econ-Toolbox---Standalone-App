@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.102.4" />
+    <PackageReference Include="ClosedXML" Version="0.104.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Practical Forecast Exercise - Tables 6-28-18.xlsx">
