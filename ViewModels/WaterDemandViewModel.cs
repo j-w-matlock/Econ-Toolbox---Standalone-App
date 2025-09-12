@@ -28,6 +28,12 @@ namespace EconToolbox.Desktop.ViewModels
         private string _explanation = string.Empty;
         private double _currentIndustrialPercent;
         private double _futureIndustrialPercent;
+        private double _currentResidentialPercent;
+        private double _futureResidentialPercent;
+        private double _currentCommercialPercent;
+        private double _futureCommercialPercent;
+        private double _currentAgriculturalPercent;
+        private double _futureAgriculturalPercent;
         private double _systemImprovementsPercent;
         private double _systemLossesPercent;
         private double _standardGrowthRate;
@@ -83,6 +89,42 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get => _futureIndustrialPercent;
             set { _futureIndustrialPercent = value; OnPropertyChanged(); }
+        }
+
+        public double CurrentResidentialPercent
+        {
+            get => _currentResidentialPercent;
+            set { _currentResidentialPercent = value; OnPropertyChanged(); }
+        }
+
+        public double FutureResidentialPercent
+        {
+            get => _futureResidentialPercent;
+            set { _futureResidentialPercent = value; OnPropertyChanged(); }
+        }
+
+        public double CurrentCommercialPercent
+        {
+            get => _currentCommercialPercent;
+            set { _currentCommercialPercent = value; OnPropertyChanged(); }
+        }
+
+        public double FutureCommercialPercent
+        {
+            get => _futureCommercialPercent;
+            set { _futureCommercialPercent = value; OnPropertyChanged(); }
+        }
+
+        public double CurrentAgriculturalPercent
+        {
+            get => _currentAgriculturalPercent;
+            set { _currentAgriculturalPercent = value; OnPropertyChanged(); }
+        }
+
+        public double FutureAgriculturalPercent
+        {
+            get => _futureAgriculturalPercent;
+            set { _futureAgriculturalPercent = value; OnPropertyChanged(); }
         }
 
         public double SystemImprovementsPercent
@@ -189,8 +231,20 @@ namespace EconToolbox.Desktop.ViewModels
                     double industrialPercent = ForecastYears <= 0
                         ? CurrentIndustrialPercent
                         : CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t / (double)ForecastYears;
+                    double residentialPercent = ForecastYears <= 0
+                        ? CurrentResidentialPercent
+                        : CurrentResidentialPercent + (FutureResidentialPercent - CurrentResidentialPercent) * t / (double)ForecastYears;
+                    double commercialPercent = ForecastYears <= 0
+                        ? CurrentCommercialPercent
+                        : CurrentCommercialPercent + (FutureCommercialPercent - CurrentCommercialPercent) * t / (double)ForecastYears;
+                    double agriculturalPercent = ForecastYears <= 0
+                        ? CurrentAgriculturalPercent
+                        : CurrentAgriculturalPercent + (FutureAgriculturalPercent - CurrentAgriculturalPercent) * t / (double)ForecastYears;
 
                     double industrialDemand = demand * industrialPercent / 100.0;
+                    double residentialDemand = demand * residentialPercent / 100.0;
+                    double commercialDemand = demand * commercialPercent / 100.0;
+                    double agriculturalDemand = demand * agriculturalPercent / 100.0;
                     double adjusted = demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
                     double growthRate = t == 0 ? 0 : (demand / Results[t - 1].Demand - 1) * 100.0;
 
@@ -198,7 +252,10 @@ namespace EconToolbox.Desktop.ViewModels
                     {
                         Year = year,
                         Demand = demand,
+                        ResidentialDemand = residentialDemand,
+                        CommercialDemand = commercialDemand,
                         IndustrialDemand = industrialDemand,
+                        AgriculturalDemand = agriculturalDemand,
                         AdjustedDemand = adjusted,
                         GrowthRate = growthRate
                     });
@@ -210,7 +267,10 @@ namespace EconToolbox.Desktop.ViewModels
                     "Population = BasePopulation × (1 + PopulationGrowthRate)^t, " +
                     "Per Capita = BasePerCapitaDemand × (1 + PerCapitaDemandChangeRate)^t, " +
                     "Total Demand = Population × Per Capita. " +
-                    $"Industrial share interpolated from {CurrentIndustrialPercent:F1}% to {FutureIndustrialPercent:F1}% " +
+                    $"Shares interpolated: Res {CurrentResidentialPercent:F1}%→{FutureResidentialPercent:F1}%, " +
+                    $"Com {CurrentCommercialPercent:F1}%→{FutureCommercialPercent:F1}%, " +
+                    $"Ind {CurrentIndustrialPercent:F1}%→{FutureIndustrialPercent:F1}%, " +
+                    $"Ag {CurrentAgriculturalPercent:F1}%→{FutureAgriculturalPercent:F1}% " +
                     $"with {SystemImprovementsPercent:F1}% improvements and {SystemLossesPercent:F1}% losses.";
             }
             catch
@@ -251,18 +311,27 @@ namespace EconToolbox.Desktop.ViewModels
                 double rate = Results[i].GrowthRate / 100.0;
                 Results[i].Demand = baseDemand * (1 + rate);
 
-                double industrialPercent;
-                if (Results[i].Year <= lastHistYear)
-                {
-                    industrialPercent = CurrentIndustrialPercent;
-                }
-                else
-                {
-                    double t = ForecastYears <= 1 ? 1 : (i - forecastStartIndex) / (double)(ForecastYears - 1);
-                    industrialPercent = CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t;
-                }
+                double t = Results[i].Year <= lastHistYear
+                    ? 0
+                    : (ForecastYears <= 1 ? 1 : (i - forecastStartIndex) / (double)(ForecastYears - 1));
+
+                double industrialPercent = Results[i].Year <= lastHistYear
+                    ? CurrentIndustrialPercent
+                    : CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t;
+                double residentialPercent = Results[i].Year <= lastHistYear
+                    ? CurrentResidentialPercent
+                    : CurrentResidentialPercent + (FutureResidentialPercent - CurrentResidentialPercent) * t;
+                double commercialPercent = Results[i].Year <= lastHistYear
+                    ? CurrentCommercialPercent
+                    : CurrentCommercialPercent + (FutureCommercialPercent - CurrentCommercialPercent) * t;
+                double agriculturalPercent = Results[i].Year <= lastHistYear
+                    ? CurrentAgriculturalPercent
+                    : CurrentAgriculturalPercent + (FutureAgriculturalPercent - CurrentAgriculturalPercent) * t;
 
                 Results[i].IndustrialDemand = Results[i].Demand * industrialPercent / 100.0;
+                Results[i].ResidentialDemand = Results[i].Demand * residentialPercent / 100.0;
+                Results[i].CommercialDemand = Results[i].Demand * commercialPercent / 100.0;
+                Results[i].AgriculturalDemand = Results[i].Demand * agriculturalPercent / 100.0;
                 Results[i].AdjustedDemand = Results[i].Demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
             }
         }
