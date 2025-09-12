@@ -107,6 +107,10 @@ EAD integrates a probability–damage curve assuming probabilities are ordered f
 
 where \(d_k\) are damages and \(p_k\) the associated exceedance probabilities.
 
+If 100% or 0% probability points are omitted, the tool automatically inserts
+a 100% probability with $0 damage and a 0% probability with the maximum damage
+value from the column.
+
 ### Updated Cost of Storage
 
 Updated cost for reallocated storage is computed as:
