@@ -26,13 +26,16 @@ namespace EconToolbox.Desktop.Models
                     throw new ArgumentException("Probabilities must be between 0 and 1");
             }
 
-            // Insert 100% probability if missing
-            if (pairs[0].p < 1.0)
-                pairs.Insert(0, (1.0, pairs[0].d));
+            // Track the maximum damage to auto-fill the 0% probability row
+            double maxDamage = pairs.Max(t => t.d);
 
-            // Append 0% probability with zero damage if missing
+            // Insert 100% probability with $0 damage if missing
+            if (pairs[0].p < 1.0)
+                pairs.Insert(0, (1.0, 0.0));
+
+            // Append 0% probability with the highest damage if missing
             if (pairs[^1].p > 0.0)
-                pairs.Add((0.0, 0.0));
+                pairs.Add((0.0, maxDamage));
 
             // Compute EAD using the trapezoidal rule
             double sum = 0.0;
