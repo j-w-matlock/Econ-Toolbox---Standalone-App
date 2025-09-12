@@ -65,7 +65,7 @@
                     <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
-                            <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                            <DataGridTextColumn Header="Month" Binding="{Binding Year}"/>
                             <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
                                 <DataGridComboBoxColumn.ItemsSource>
                                     <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">

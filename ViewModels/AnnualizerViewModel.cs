@@ -154,7 +154,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void UpdatePvFactors()
         {
             double r = Rate / 100.0;
-            foreach (var entry in FutureCosts.Concat(IdcEntries))
+            foreach (var entry in FutureCosts)
             {
                 double offset = entry.Timing switch
                 {
@@ -163,6 +163,18 @@ namespace EconToolbox.Desktop.ViewModels
                     _ => 1.0
                 };
                 entry.PvFactor = Math.Pow(1.0 + r, -(entry.Year + offset));
+            }
+
+            foreach (var entry in IdcEntries)
+            {
+                double offsetMonths = entry.Timing switch
+                {
+                    "beginning" => 0.0,
+                    "midpoint" => 0.5,
+                    _ => 1.0
+                };
+                double months = entry.Year + offsetMonths;
+                entry.PvFactor = Math.Pow(1.0 + r, -(months / 12.0));
             }
         }
 
