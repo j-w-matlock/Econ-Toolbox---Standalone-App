@@ -45,6 +45,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.Resources>
                         <Style TargetType="TextBox">
@@ -56,34 +57,42 @@
 
                     <TextBlock Text="Forecast Years" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ForecastYears}"/>
+                    <TextBlock Text="years" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
 
-                    <CheckBox Content="Use Growth Rate" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding UseGrowthRate}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <CheckBox Content="Use Growth Rate" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding UseGrowthRate}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
                     <TextBlock Text="Standard Growth Rate" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding StandardGrowthRate}"/>
+                    <TextBlock Text="%" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
 
                     <TextBlock Text="Base Year" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BaseYear}"/>
 
                     <TextBlock Text="Base Population" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding BasePopulation}"/>
+                    <TextBlock Text="people" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
 
                     <TextBlock Text="Base Per Capita" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding BasePerCapitaDemand}"/>
+                    <TextBlock Text="gallons/person/day" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"/>
 
                     <TextBlock Text="Current Industrial %" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding CurrentIndustrialPercent}"/>
+                    <TextBlock Text="%" Grid.Row="6" Grid.Column="2" VerticalAlignment="Center"/>
 
                     <TextBlock Text="Future Industrial %" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding FutureIndustrialPercent}"/>
+                    <TextBlock Text="%" Grid.Row="7" Grid.Column="2" VerticalAlignment="Center"/>
 
                     <TextBlock Text="Improvements %" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding SystemImprovementsPercent}"/>
+                    <TextBlock Text="%" Grid.Row="8" Grid.Column="2" VerticalAlignment="Center"/>
 
                     <TextBlock Text="Losses %" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding SystemLossesPercent}"/>
+                    <TextBlock Text="%" Grid.Row="9" Grid.Column="2" VerticalAlignment="Center"/>
 
-                    <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <StackPanel Grid.Row="10" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
                         <Button Content="Forecast" Width="80" Command="{Binding ForecastCommand}" Margin="0,0,5,0"/>
                         <Button Content="Export" Width="80" Command="{Binding ExportCommand}"/>
                     </StackPanel>
