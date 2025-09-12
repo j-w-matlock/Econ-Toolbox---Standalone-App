@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
+using System.Collections.Specialized;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 
@@ -22,7 +23,6 @@ namespace EconToolbox.Desktop.ViewModels
     {
         private ObservableCollection<DemandEntry> _historicalData = new();
         private int _forecastYears = 5;
-        private bool _useGrowthRate;
         private ObservableCollection<DemandEntry> _results = new();
         private string _explanation = string.Empty;
         public ObservableCollection<Scenario> Scenarios { get; } = new();
@@ -38,12 +38,6 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get => _forecastYears;
             set { _forecastYears = value; OnPropertyChanged(); }
-        }
-
-        public bool UseGrowthRate
-        {
-            get => _useGrowthRate;
-            set { _useGrowthRate = value; OnPropertyChanged(); }
         }
 
         public ObservableCollection<DemandEntry> Results
@@ -66,17 +60,8 @@ namespace EconToolbox.Desktop.ViewModels
                 _selectedScenario = value;
                 OnPropertyChanged();
                 Results = value?.Results ?? new ObservableCollection<DemandEntry>();
-                OnPropertyChanged(nameof(CurrentIndustrialPercent));
-                OnPropertyChanged(nameof(FutureIndustrialPercent));
-                OnPropertyChanged(nameof(CurrentResidentialPercent));
-                OnPropertyChanged(nameof(FutureResidentialPercent));
-                OnPropertyChanged(nameof(CurrentCommercialPercent));
-                OnPropertyChanged(nameof(FutureCommercialPercent));
-                OnPropertyChanged(nameof(CurrentAgriculturalPercent));
-                OnPropertyChanged(nameof(FutureAgriculturalPercent));
                 OnPropertyChanged(nameof(SystemImprovementsPercent));
                 OnPropertyChanged(nameof(SystemLossesPercent));
-                OnPropertyChanged(nameof(StandardGrowthRate));
                 OnPropertyChanged(nameof(BaseYear));
                 OnPropertyChanged(nameof(BasePopulation));
                 OnPropertyChanged(nameof(BasePerCapitaDemand));
@@ -84,55 +69,6 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(PerCapitaDemandChangeRate));
             }
         }
-
-        public double CurrentIndustrialPercent
-        {
-            get => SelectedScenario?.CurrentIndustrialPercent ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.CurrentIndustrialPercent = value; OnPropertyChanged(); } }
-        }
-
-        public double FutureIndustrialPercent
-        {
-            get => SelectedScenario?.FutureIndustrialPercent ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.FutureIndustrialPercent = value; OnPropertyChanged(); } }
-        }
-
-        public double CurrentResidentialPercent
-        {
-            get => SelectedScenario?.CurrentResidentialPercent ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.CurrentResidentialPercent = value; OnPropertyChanged(); } }
-        }
-
-        public double FutureResidentialPercent
-        {
-            get => SelectedScenario?.FutureResidentialPercent ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.FutureResidentialPercent = value; OnPropertyChanged(); } }
-        }
-
-        public double CurrentCommercialPercent
-        {
-            get => SelectedScenario?.CurrentCommercialPercent ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.CurrentCommercialPercent = value; OnPropertyChanged(); } }
-        }
-
-        public double FutureCommercialPercent
-        {
-            get => SelectedScenario?.FutureCommercialPercent ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.FutureCommercialPercent = value; OnPropertyChanged(); } }
-        }
-
-        public double CurrentAgriculturalPercent
-        {
-            get => SelectedScenario?.CurrentAgriculturalPercent ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.CurrentAgriculturalPercent = value; OnPropertyChanged(); } }
-        }
-
-        public double FutureAgriculturalPercent
-        {
-            get => SelectedScenario?.FutureAgriculturalPercent ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.FutureAgriculturalPercent = value; OnPropertyChanged(); } }
-        }
-
         public double SystemImprovementsPercent
         {
             get => SelectedScenario?.SystemImprovementsPercent ?? 0;
@@ -143,12 +79,6 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get => SelectedScenario?.SystemLossesPercent ?? 0;
             set { if (SelectedScenario != null) { SelectedScenario.SystemLossesPercent = value; OnPropertyChanged(); } }
-        }
-
-        public double StandardGrowthRate
-        {
-            get => SelectedScenario?.StandardGrowthRate ?? 0;
-            set { if (SelectedScenario != null) { SelectedScenario.StandardGrowthRate = value; OnPropertyChanged(); } }
         }
 
         public int BaseYear
@@ -205,11 +135,68 @@ namespace EconToolbox.Desktop.ViewModels
                 LineBrush = Brushes.Red,
                 Description = "Lower growth assumptions producing reduced future demand"
             });
+
+            foreach (var s in Scenarios)
+                InitializeScenario(s);
+
+            HistoricalData.CollectionChanged += HistoricalData_CollectionChanged;
+
             SelectedScenario = Scenarios.FirstOrDefault();
 
             ForecastCommand = new RelayCommand(Forecast);
             ExportCommand = new RelayCommand(Export);
             ComputeCommand = ForecastCommand;
+        }
+
+        private void HistoricalData_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (DemandEntry d in e.NewItems)
+                    d.PropertyChanged += HistoricalEntryChanged;
+            }
+            AutoPopulateBaseline();
+        }
+
+        private void HistoricalEntryChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DemandEntry.Demand) || e.PropertyName == nameof(DemandEntry.Year))
+                AutoPopulateBaseline();
+        }
+
+        private void AutoPopulateBaseline()
+        {
+            if (HistoricalData.Count == 0) return;
+            var last = HistoricalData[^1];
+            foreach (var s in Scenarios)
+            {
+                s.BaseYear = last.Year;
+                s.BasePerCapitaDemand = last.Demand;
+                if (HistoricalData.Count >= 2)
+                {
+                    var prev = HistoricalData[^2];
+                    if (prev.Demand != 0)
+                        s.PerCapitaDemandChangeRate = (last.Demand - prev.Demand) / prev.Demand * 100.0;
+                }
+            }
+            OnPropertyChanged(nameof(BaseYear));
+            OnPropertyChanged(nameof(BasePerCapitaDemand));
+            OnPropertyChanged(nameof(PerCapitaDemandChangeRate));
+        }
+
+        private void InitializeScenario(Scenario scenario)
+        {
+            foreach (var sector in scenario.Sectors.Where(se => !se.IsResidual))
+                sector.PropertyChanged += (_, __) => UpdateResidualShares(scenario);
+            UpdateResidualShares(scenario);
+        }
+
+        private void UpdateResidualShares(Scenario scenario)
+        {
+            var residual = scenario.Sectors.FirstOrDefault(se => se.IsResidual);
+            if (residual == null) return;
+            residual.CurrentPercent = Math.Max(0, 100 - scenario.Sectors.Where(se => !se.IsResidual).Sum(se => se.CurrentPercent));
+            residual.FuturePercent = Math.Max(0, 100 - scenario.Sectors.Where(se => !se.IsResidual).Sum(se => se.FuturePercent));
         }
 
         private void LoadHistoricalFromWorkbook()
@@ -249,6 +236,8 @@ namespace EconToolbox.Desktop.ViewModels
                 foreach (var scenario in Scenarios)
                 {
                     scenario.Results.Clear();
+                    var currentPercents = scenario.Sectors.Select(s => s.CurrentPercent).ToArray();
+                    var futurePercents = scenario.Sectors.Select(s => s.FuturePercent).ToArray();
                     for (int t = 0; t <= ForecastYears; t++)
                     {
                         int year = scenario.BaseYear + t;
@@ -256,23 +245,22 @@ namespace EconToolbox.Desktop.ViewModels
                         double perCapita = scenario.BasePerCapitaDemand * Math.Pow(1 + scenario.PerCapitaDemandChangeRate / 100.0, t);
                         double demand = population * perCapita;
 
-                        double industrialPercent = ForecastYears <= 0
-                            ? scenario.CurrentIndustrialPercent
-                            : scenario.CurrentIndustrialPercent + (scenario.FutureIndustrialPercent - scenario.CurrentIndustrialPercent) * t / (double)ForecastYears;
-                        double residentialPercent = ForecastYears <= 0
-                            ? scenario.CurrentResidentialPercent
-                            : scenario.CurrentResidentialPercent + (scenario.FutureResidentialPercent - scenario.CurrentResidentialPercent) * t / (double)ForecastYears;
-                        double commercialPercent = ForecastYears <= 0
-                            ? scenario.CurrentCommercialPercent
-                            : scenario.CurrentCommercialPercent + (scenario.FutureCommercialPercent - scenario.CurrentCommercialPercent) * t / (double)ForecastYears;
-                        double agriculturalPercent = ForecastYears <= 0
-                            ? scenario.CurrentAgriculturalPercent
-                            : scenario.CurrentAgriculturalPercent + (scenario.FutureAgriculturalPercent - scenario.CurrentAgriculturalPercent) * t / (double)ForecastYears;
+                        double industrialDemand = 0, residentialDemand = 0, commercialDemand = 0, agriculturalDemand = 0;
+                        for (int i = 0; i < scenario.Sectors.Count; i++)
+                        {
+                            double percent = ForecastYears <= 0
+                                ? currentPercents[i]
+                                : currentPercents[i] + (futurePercents[i] - currentPercents[i]) * t / (double)ForecastYears;
+                            double sectorDemand = demand * percent / 100.0;
+                            switch (scenario.Sectors[i].Name)
+                            {
+                                case "Industrial": industrialDemand = sectorDemand; break;
+                                case "Residential": residentialDemand = sectorDemand; break;
+                                case "Commercial": commercialDemand = sectorDemand; break;
+                                case "Agricultural": agriculturalDemand = sectorDemand; break;
+                            }
+                        }
 
-                        double industrialDemand = demand * industrialPercent / 100.0;
-                        double residentialDemand = demand * residentialPercent / 100.0;
-                        double commercialDemand = demand * commercialPercent / 100.0;
-                        double agriculturalDemand = demand * agriculturalPercent / 100.0;
                         double adjusted = demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
                         double growthRate = t == 0 ? 0 : (demand / scenario.Results[t - 1].Demand - 1) * 100.0;
 
@@ -300,11 +288,9 @@ namespace EconToolbox.Desktop.ViewModels
                         "Population = BasePopulation × (1 + PopulationGrowthRate)^t, " +
                         "Per Capita = BasePerCapitaDemand × (1 + PerCapitaDemandChangeRate)^t, " +
                         "Total Demand = Population × Per Capita. " +
-                        $"Shares interpolated: Res {SelectedScenario.CurrentResidentialPercent:F1}%→{SelectedScenario.FutureResidentialPercent:F1}%, " +
-                        $"Com {SelectedScenario.CurrentCommercialPercent:F1}%→{SelectedScenario.FutureCommercialPercent:F1}%, " +
-                        $"Ind {SelectedScenario.CurrentIndustrialPercent:F1}%→{SelectedScenario.FutureIndustrialPercent:F1}%, " +
-                        $"Ag {SelectedScenario.CurrentAgriculturalPercent:F1}%→{SelectedScenario.FutureAgriculturalPercent:F1}% " +
-                        $"with {SelectedScenario.SystemImprovementsPercent:F1}% improvements and {SelectedScenario.SystemLossesPercent:F1}% losses.";
+                        "Shares interpolated: " +
+                        string.Join(", ", SelectedScenario.Sectors.Select(s => $"{s.Name} {s.CurrentPercent:F1}%→{s.FuturePercent:F1}%")) +
+                        $" with {SelectedScenario.SystemImprovementsPercent:F1}% improvements and {SelectedScenario.SystemLossesPercent:F1}% losses.";
                 }
             }
             catch
@@ -361,23 +347,28 @@ namespace EconToolbox.Desktop.ViewModels
                     ? 0
                     : (ForecastYears <= 1 ? 1 : (i - forecastStartIndex) / (double)(ForecastYears - 1));
 
-                double industrialPercent = scenario.Results[i].Year <= lastHistYear
-                    ? scenario.CurrentIndustrialPercent
-                    : scenario.CurrentIndustrialPercent + (scenario.FutureIndustrialPercent - scenario.CurrentIndustrialPercent) * t;
-                double residentialPercent = scenario.Results[i].Year <= lastHistYear
-                    ? scenario.CurrentResidentialPercent
-                    : scenario.CurrentResidentialPercent + (scenario.FutureResidentialPercent - scenario.CurrentResidentialPercent) * t;
-                double commercialPercent = scenario.Results[i].Year <= lastHistYear
-                    ? scenario.CurrentCommercialPercent
-                    : scenario.CurrentCommercialPercent + (scenario.FutureCommercialPercent - scenario.CurrentCommercialPercent) * t;
-                double agriculturalPercent = scenario.Results[i].Year <= lastHistYear
-                    ? scenario.CurrentAgriculturalPercent
-                    : scenario.CurrentAgriculturalPercent + (scenario.FutureAgriculturalPercent - scenario.CurrentAgriculturalPercent) * t;
+                  double industrialDemand = 0, residentialDemand = 0, commercialDemand = 0, agriculturalDemand = 0;
+                  for (int s = 0; s < scenario.Sectors.Count; s++)
+                  {
+                      double current = scenario.Sectors[s].CurrentPercent;
+                      double future = scenario.Sectors[s].FuturePercent;
+                      double percent = scenario.Results[i].Year <= lastHistYear
+                          ? current
+                          : current + (future - current) * t;
+                      double sectorDemand = scenario.Results[i].Demand * percent / 100.0;
+                      switch (scenario.Sectors[s].Name)
+                      {
+                          case "Industrial": industrialDemand = sectorDemand; break;
+                          case "Residential": residentialDemand = sectorDemand; break;
+                          case "Commercial": commercialDemand = sectorDemand; break;
+                          case "Agricultural": agriculturalDemand = sectorDemand; break;
+                      }
+                  }
 
-                scenario.Results[i].IndustrialDemand = scenario.Results[i].Demand * industrialPercent / 100.0;
-                scenario.Results[i].ResidentialDemand = scenario.Results[i].Demand * residentialPercent / 100.0;
-                scenario.Results[i].CommercialDemand = scenario.Results[i].Demand * commercialPercent / 100.0;
-                scenario.Results[i].AgriculturalDemand = scenario.Results[i].Demand * agriculturalPercent / 100.0;
+                  scenario.Results[i].IndustrialDemand = industrialDemand;
+                  scenario.Results[i].ResidentialDemand = residentialDemand;
+                  scenario.Results[i].CommercialDemand = commercialDemand;
+                  scenario.Results[i].AgriculturalDemand = agriculturalDemand;
                 scenario.Results[i].AdjustedDemand = scenario.Results[i].Demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
             }
         }

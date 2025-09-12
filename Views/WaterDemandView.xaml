@@ -50,16 +50,6 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -78,72 +68,47 @@
                                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DataContext.ForecastYears, ElementName=Root}"/>
                                     <TextBlock Text="years" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <CheckBox Content="Use Growth Rate" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding DataContext.UseGrowthRate, ElementName=Root}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="Base Year" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding BaseYear}"/>
 
-                                    <TextBlock Text="Standard Growth Rate" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding StandardGrowthRate}"/>
-                                    <TextBlock Text="%" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Base Population" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding BasePopulation}"/>
+                                    <TextBlock Text="people" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <TextBlock Text="Base Year" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BaseYear}"/>
+                                    <TextBlock Text="Base Per Capita" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BasePerCapitaDemand}"/>
+                                    <TextBlock Text="gallons/person/day" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <TextBlock Text="Base Population" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding BasePopulation}"/>
-                                    <TextBlock Text="people" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Population Growth %" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding PopulationGrowthRate}"/>
+                                    <TextBlock Text="%" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <TextBlock Text="Base Per Capita" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding BasePerCapitaDemand}"/>
-                                    <TextBlock Text="gallons/person/day" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Per Capita Change %" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding PerCapitaDemandChangeRate}"/>
+                                    <TextBlock Text="%" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <TextBlock Text="Population Growth %" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding PopulationGrowthRate}"/>
-                                    <TextBlock Text="%" Grid.Row="6" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <DataGrid Grid.Row="6" Grid.ColumnSpan="3" ItemsSource="{Binding Sectors}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" Margin="0,5,0,5">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Sector" Binding="{Binding Name}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Current %" Binding="{Binding CurrentPercent, Mode=TwoWay}"/>
+                                            <DataGridTextColumn Header="Future %" Binding="{Binding FuturePercent, Mode=TwoWay}"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
 
-                                    <TextBlock Text="Per Capita Change %" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding PerCapitaDemandChangeRate}"/>
-                                    <TextBlock Text="%" Grid.Row="7" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <Expander Grid.Row="7" Grid.ColumnSpan="3" Header="Advanced Adjustments" Margin="0,5,0,5">
+                                        <StackPanel Orientation="Vertical">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Improvements %" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                                <TextBox Text="{Binding SystemImprovementsPercent}"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Losses %" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                                <TextBox Text="{Binding SystemLossesPercent}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Expander>
 
-                                    <TextBlock Text="Current Industrial %" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding CurrentIndustrialPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="8" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Future Industrial %" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding FutureIndustrialPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="9" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Current Residential %" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding CurrentResidentialPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Future Residential %" Grid.Row="11" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding FutureResidentialPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="11" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Current Commercial %" Grid.Row="12" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding CurrentCommercialPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="12" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Future Commercial %" Grid.Row="13" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="13" Grid.Column="1" Text="{Binding FutureCommercialPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="13" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Current Agricultural %" Grid.Row="14" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="14" Grid.Column="1" Text="{Binding CurrentAgriculturalPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="14" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Future Agricultural %" Grid.Row="15" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="15" Grid.Column="1" Text="{Binding FutureAgriculturalPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="15" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Improvements %" Grid.Row="16" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="16" Grid.Column="1" Text="{Binding SystemImprovementsPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="16" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <TextBlock Text="Losses %" Grid.Row="17" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                    <TextBox Grid.Row="17" Grid.Column="1" Text="{Binding SystemLossesPercent}"/>
-                                    <TextBlock Text="%" Grid.Row="17" Grid.Column="2" VerticalAlignment="Center"/>
-
-                                    <StackPanel Grid.Row="18" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
                                         <Button Content="Forecast" Width="80" Command="{Binding DataContext.ForecastCommand, ElementName=Root}" Margin="0,0,5,0"/>
                                         <Button Content="Export" Width="80" Command="{Binding DataContext.ExportCommand, ElementName=Root}"/>
                                     </StackPanel>
