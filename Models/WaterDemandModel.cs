@@ -65,8 +65,26 @@ namespace EconToolbox.Desktop.Models
             double? rateOverride = null)
         {
             var result = new List<(int Year, double Demand)>(historical);
-            if (historical.Count < 2)
-                return new ForecastResult(result, "Insufficient data for growth rate forecast.");
+            if (historical.Count == 0)
+                return new ForecastResult(result, "No data provided.");
+
+            if (historical.Count == 1)
+            {
+                if (rateOverride is null)
+                    return new ForecastResult(result, "Insufficient data for growth rate forecast.");
+
+                double rate = rateOverride.Value;
+                int lastYear = historical[0].Year;
+                double previous = historical[0].Demand;
+                for (int i = 1; i <= yearsToProject; i++)
+                {
+                    previous = previous * (1.0 + rate);
+                    result.Add((lastYear + i, previous));
+                }
+
+                string explanationSingle = $"Forecast produced using a compound annual growth rate of {rate:P2}.";
+                return new ForecastResult(result, explanationSingle);
+            }
 
             double first = historical.First().Demand;
             double last = historical.Last().Demand;
@@ -74,18 +92,24 @@ namespace EconToolbox.Desktop.Models
             if (yearSpan <= 0 || first <= 0)
                 return new ForecastResult(result, "Invalid historical data for growth rate forecast.");
 
-            double rate = rateOverride ?? (Math.Pow(last / first, 1.0 / yearSpan) - 1.0);
-            int lastYear = historical.Last().Year;
-            double previous = last;
+            double rateComputed = rateOverride ?? (Math.Pow(last / first, 1.0 / yearSpan) - 1.0);
+            int lastYearMulti = historical.Last().Year;
+            double previousMulti = last;
             for (int i = 1; i <= yearsToProject; i++)
             {
-                previous = previous * (1.0 + rate);
-                result.Add((lastYear + i, previous));
+                previousMulti = previousMulti * (1.0 + rateComputed);
+                result.Add((lastYearMulti + i, previousMulti));
             }
 
-            string explanation = $"Forecast produced using a compound annual growth rate of {rate:P2}.";
+            string explanation = $"Forecast produced using a compound annual growth rate of {rateComputed:P2}.";
             return new ForecastResult(result, explanation);
         }
+
+        public static ForecastResult LinearRegressionForecast(int baseYear, double baseDemand, int yearsToProject)
+            => LinearRegressionForecast(new List<(int Year, double Demand)> { (baseYear, baseDemand) }, yearsToProject);
+
+        public static ForecastResult GrowthRateForecast(int baseYear, double baseDemand, int yearsToProject, double rate)
+            => GrowthRateForecast(new List<(int Year, double Demand)> { (baseYear, baseDemand) }, yearsToProject, rate);
     }
 }
 

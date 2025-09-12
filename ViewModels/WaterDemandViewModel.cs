@@ -31,6 +31,9 @@ namespace EconToolbox.Desktop.ViewModels
         private double _systemImprovementsPercent;
         private double _systemLossesPercent;
         private double _standardGrowthRate;
+        private int _baseYear;
+        private double _basePopulation;
+        private double _basePerCapitaDemand;
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -98,6 +101,24 @@ namespace EconToolbox.Desktop.ViewModels
             set { _standardGrowthRate = value; OnPropertyChanged(); }
         }
 
+        public int BaseYear
+        {
+            get => _baseYear;
+            set { _baseYear = value; OnPropertyChanged(); }
+        }
+
+        public double BasePopulation
+        {
+            get => _basePopulation;
+            set { _basePopulation = value; OnPropertyChanged(); }
+        }
+
+        public double BasePerCapitaDemand
+        {
+            get => _basePerCapitaDemand;
+            set { _basePerCapitaDemand = value; OnPropertyChanged(); }
+        }
+
         public ICommand ForecastCommand { get; }
         public ICommand ExportCommand { get; }
         public ICommand ComputeCommand { get; }
@@ -146,9 +167,22 @@ namespace EconToolbox.Desktop.ViewModels
                 var hist = HistoricalData
                     .Select(h => (h.Year, h.Demand))
                     .ToList();
-                var forecast = UseGrowthRate
-                    ? WaterDemandModel.GrowthRateForecast(hist, ForecastYears, StandardGrowthRate / 100.0)
-                    : WaterDemandModel.LinearRegressionForecast(hist, ForecastYears);
+
+                WaterDemandModel.ForecastResult forecast;
+                if (hist.Count == 0)
+                {
+                    double baseDemand = BasePopulation * BasePerCapitaDemand;
+                    hist.Add((BaseYear, baseDemand));
+                    forecast = UseGrowthRate
+                        ? WaterDemandModel.GrowthRateForecast(BaseYear, baseDemand, ForecastYears, StandardGrowthRate / 100.0)
+                        : WaterDemandModel.LinearRegressionForecast(BaseYear, baseDemand, ForecastYears);
+                }
+                else
+                {
+                    forecast = UseGrowthRate
+                        ? WaterDemandModel.GrowthRateForecast(hist, ForecastYears, StandardGrowthRate / 100.0)
+                        : WaterDemandModel.LinearRegressionForecast(hist, ForecastYears);
+                }
 
                 Results = new ObservableCollection<DemandEntry>();
                 int lastHistYear = hist.Count > 0 ? hist[^1].Year : 0;
