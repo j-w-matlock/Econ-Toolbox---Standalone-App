@@ -128,16 +128,31 @@
                 <TextBlock Text="Analysis Period 2" Grid.Row="3" Margin="0,0,5,5"/>
                 <TextBox Text="{Binding AnalysisPeriod2}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
                 <Button Content="Compute" Command="{Binding ComputeTotalCommand}" Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
-                <StackPanel Grid.Row="5" Grid.ColumnSpan="2">
-                    <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
-                    <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
-                    <TextBlock Text="{Binding Capital1, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1"/>
-                    <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
-                    <TextBlock Text="{Binding RrrScaled, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent"/>
-                    <TextBlock Text="{Binding Total1, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation"/>
-                    <TextBlock Text="{Binding Capital2, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2"/>
-                    <TextBlock Text="{Binding Total2, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M"/>
-                </StackPanel>
+                <Grid Grid.Row="5" Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Cost 1" Grid.Column="0" Margin="0,0,5,0">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                            <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
+                            <TextBlock Text="{Binding Capital1, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1"/>
+                            <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
+                            <TextBlock Text="{Binding RrrScaled, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent"/>
+                            <TextBlock Text="{Binding Total1, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Cost 2" Grid.Column="1" Margin="5,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                            <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
+                            <TextBlock Text="{Binding Capital2, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2"/>
+                            <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
+                            <TextBlock Text="{Binding Total2, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M"/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
             </Grid>
         </TabItem>
         </TabControl>

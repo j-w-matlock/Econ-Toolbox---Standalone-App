@@ -29,23 +29,14 @@
             <Button Content="Compute" Command="{Binding ComputeCommand}"/>
         </StackPanel>
         <TextBlock Text="{Binding Result}" Grid.Row="4"/>
-        <Grid Grid.Row="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="3*"/>
-            </Grid.ColumnDefinitions>
-            <DataGrid ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False" Grid.Column="0" Margin="0,0,5,0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Points" Binding="{Binding Points}"/>
-                    <DataGridTextColumn Header="General Recreation" Binding="{Binding GeneralRecreation}"/>
-                    <DataGridTextColumn Header="General Fishing &amp; Hunting" Binding="{Binding GeneralFishingHunting}"/>
-                    <DataGridTextColumn Header="Specialized Fishing &amp; Hunting" Binding="{Binding SpecializedFishingHunting}"/>
-                    <DataGridTextColumn Header="Specialized Recreation" Binding="{Binding SpecializedRecreation}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <Canvas Grid.Column="1" Width="200" Height="120" Background="WhiteSmoke" Margin="5,0,0,0">
-                <Polyline Points="{Binding ChartPoints}" Stroke="Blue" StrokeThickness="2"/>
-            </Canvas>
-        </Grid>
+        <DataGrid Grid.Row="5" ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Points" Binding="{Binding Points}"/>
+                <DataGridTextColumn Header="General Recreation" Binding="{Binding GeneralRecreation}"/>
+                <DataGridTextColumn Header="General Fishing &amp; Hunting" Binding="{Binding GeneralFishingHunting}"/>
+                <DataGridTextColumn Header="Specialized Fishing &amp; Hunting" Binding="{Binding SpecializedFishingHunting}"/>
+                <DataGridTextColumn Header="Specialized Recreation" Binding="{Binding SpecializedRecreation}"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>

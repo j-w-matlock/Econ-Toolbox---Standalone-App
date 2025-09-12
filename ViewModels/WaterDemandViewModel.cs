@@ -104,7 +104,6 @@ namespace EconToolbox.Desktop.ViewModels
 
         public WaterDemandViewModel()
         {
-            LoadHistoricalFromWorkbook();
             ForecastCommand = new RelayCommand(Forecast);
             ExportCommand = new RelayCommand(Export);
             ComputeCommand = ForecastCommand;
