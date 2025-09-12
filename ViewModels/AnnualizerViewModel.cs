@@ -194,7 +194,7 @@ namespace EconToolbox.Desktop.ViewModels
                     $"BCR: {Bcr:F2}"
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Idc = TotalInvestment = Crf = AnnualCost = Bcr = double.NaN;
                 Results = new ObservableCollection<string> { "Error computing results" };
