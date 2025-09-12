@@ -43,6 +43,12 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -94,15 +100,39 @@
                     <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding FutureIndustrialPercent}"/>
                     <TextBlock Text="%" Grid.Row="9" Grid.Column="2" VerticalAlignment="Center"/>
 
-                    <TextBlock Text="Improvements %" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding SystemImprovementsPercent}"/>
+                    <TextBlock Text="Current Residential %" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding CurrentResidentialPercent}"/>
                     <TextBlock Text="%" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center"/>
 
-                    <TextBlock Text="Losses %" Grid.Row="11" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding SystemLossesPercent}"/>
+                    <TextBlock Text="Future Residential %" Grid.Row="11" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding FutureResidentialPercent}"/>
                     <TextBlock Text="%" Grid.Row="11" Grid.Column="2" VerticalAlignment="Center"/>
 
-                    <StackPanel Grid.Row="12" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="Current Commercial %" Grid.Row="12" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding CurrentCommercialPercent}"/>
+                    <TextBlock Text="%" Grid.Row="12" Grid.Column="2" VerticalAlignment="Center"/>
+
+                    <TextBlock Text="Future Commercial %" Grid.Row="13" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="13" Grid.Column="1" Text="{Binding FutureCommercialPercent}"/>
+                    <TextBlock Text="%" Grid.Row="13" Grid.Column="2" VerticalAlignment="Center"/>
+
+                    <TextBlock Text="Current Agricultural %" Grid.Row="14" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="14" Grid.Column="1" Text="{Binding CurrentAgriculturalPercent}"/>
+                    <TextBlock Text="%" Grid.Row="14" Grid.Column="2" VerticalAlignment="Center"/>
+
+                    <TextBlock Text="Future Agricultural %" Grid.Row="15" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="15" Grid.Column="1" Text="{Binding FutureAgriculturalPercent}"/>
+                    <TextBlock Text="%" Grid.Row="15" Grid.Column="2" VerticalAlignment="Center"/>
+
+                    <TextBlock Text="Improvements %" Grid.Row="16" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="16" Grid.Column="1" Text="{Binding SystemImprovementsPercent}"/>
+                    <TextBlock Text="%" Grid.Row="16" Grid.Column="2" VerticalAlignment="Center"/>
+
+                    <TextBlock Text="Losses %" Grid.Row="17" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <TextBox Grid.Row="17" Grid.Column="1" Text="{Binding SystemLossesPercent}"/>
+                    <TextBlock Text="%" Grid.Row="17" Grid.Column="2" VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Row="18" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
                         <Button Content="Forecast" Width="80" Command="{Binding ForecastCommand}" Margin="0,0,5,0"/>
                         <Button Content="Export" Width="80" Command="{Binding ExportCommand}"/>
                     </StackPanel>
@@ -125,10 +155,31 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
+                        <DataGridTextColumn Header="Residential" Binding="{Binding ResidentialDemand, StringFormat={}{0:N2}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" Value="Residential = Demand × Residential %"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Commercial" Binding="{Binding CommercialDemand, StringFormat={}{0:N2}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" Value="Commercial = Demand × Commercial %"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="Industrial" Binding="{Binding IndustrialDemand, StringFormat={}{0:N2}}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="ToolTip" Value="Industrial = Demand × Industrial %"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Agricultural" Binding="{Binding AgriculturalDemand, StringFormat={}{0:N2}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="ToolTip" Value="Agricultural = Demand × Agricultural %"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>

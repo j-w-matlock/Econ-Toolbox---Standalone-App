@@ -32,18 +32,27 @@ namespace EconToolbox.Desktop.Services
             var ws = wb.Worksheets.Add("WaterDemand");
             ws.Cell(1,1).Value = "Year";
             ws.Cell(1,2).Value = "Demand";
-            ws.Cell(1,3).Value = "Industrial";
-            ws.Cell(1,4).Value = "Adjusted";
+            ws.Cell(1,3).Value = "Residential";
+            ws.Cell(1,4).Value = "Commercial";
+            ws.Cell(1,5).Value = "Industrial";
+            ws.Cell(1,6).Value = "Agricultural";
+            ws.Cell(1,7).Value = "Adjusted";
             ws.Cell(1,2).GetComment().AddText("Demand = Prior Demand × (1 + Growth Rate)");
-            ws.Cell(1,3).GetComment().AddText("Industrial = Demand × Industrial %");
-            ws.Cell(1,4).GetComment().AddText("Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)");
+            ws.Cell(1,3).GetComment().AddText("Residential = Demand × Residential %");
+            ws.Cell(1,4).GetComment().AddText("Commercial = Demand × Commercial %");
+            ws.Cell(1,5).GetComment().AddText("Industrial = Demand × Industrial %");
+            ws.Cell(1,6).GetComment().AddText("Agricultural = Demand × Agricultural %");
+            ws.Cell(1,7).GetComment().AddText("Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)");
             int row = 2;
             foreach(var d in data)
             {
                 ws.Cell(row,1).Value = d.Year;
                 ws.Cell(row,2).Value = d.Demand;
-                ws.Cell(row,3).Value = d.IndustrialDemand;
-                ws.Cell(row,4).Value = d.AdjustedDemand;
+                ws.Cell(row,3).Value = d.ResidentialDemand;
+                ws.Cell(row,4).Value = d.CommercialDemand;
+                ws.Cell(row,5).Value = d.IndustrialDemand;
+                ws.Cell(row,6).Value = d.AgriculturalDemand;
+                ws.Cell(row,7).Value = d.AdjustedDemand;
                 row++;
             }
             wb.SaveAs(filePath);

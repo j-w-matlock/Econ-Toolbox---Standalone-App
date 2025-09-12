@@ -4,7 +4,10 @@ namespace EconToolbox.Desktop.Models
     {
         private int _year;
         private double _demand;
+        private double _residentialDemand;
+        private double _commercialDemand;
         private double _industrialDemand;
+        private double _agriculturalDemand;
         private double _adjustedDemand;
         private double _growthRate;
 
@@ -20,10 +23,28 @@ namespace EconToolbox.Desktop.Models
             set { _demand = value; OnPropertyChanged(); }
         }
 
+        public double ResidentialDemand
+        {
+            get => _residentialDemand;
+            set { _residentialDemand = value; OnPropertyChanged(); }
+        }
+
+        public double CommercialDemand
+        {
+            get => _commercialDemand;
+            set { _commercialDemand = value; OnPropertyChanged(); }
+        }
+
         public double IndustrialDemand
         {
             get => _industrialDemand;
             set { _industrialDemand = value; OnPropertyChanged(); }
+        }
+
+        public double AgriculturalDemand
+        {
+            get => _agriculturalDemand;
+            set { _agriculturalDemand = value; OnPropertyChanged(); }
         }
 
         public double AdjustedDemand
