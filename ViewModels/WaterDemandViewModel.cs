@@ -34,6 +34,8 @@ namespace EconToolbox.Desktop.ViewModels
         private int _baseYear;
         private double _basePopulation;
         private double _basePerCapitaDemand;
+        private double _populationGrowthRate;
+        private double _perCapitaDemandChangeRate;
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -119,6 +121,18 @@ namespace EconToolbox.Desktop.ViewModels
             set { _basePerCapitaDemand = value; OnPropertyChanged(); }
         }
 
+        public double PopulationGrowthRate
+        {
+            get => _populationGrowthRate;
+            set { _populationGrowthRate = value; OnPropertyChanged(); }
+        }
+
+        public double PerCapitaDemandChangeRate
+        {
+            get => _perCapitaDemandChangeRate;
+            set { _perCapitaDemandChangeRate = value; OnPropertyChanged(); }
+        }
+
         public ICommand ForecastCommand { get; }
         public ICommand ExportCommand { get; }
         public ICommand ComputeCommand { get; }
@@ -164,53 +178,40 @@ namespace EconToolbox.Desktop.ViewModels
         {
             try
             {
-                var hist = HistoricalData
-                    .Select(h => (h.Year, h.Demand))
-                    .ToList();
-
-                WaterDemandModel.ForecastResult forecast;
-                if (hist.Count == 0)
-                {
-                    double baseDemand = BasePopulation * BasePerCapitaDemand;
-                    hist.Add((BaseYear, baseDemand));
-                    forecast = UseGrowthRate
-                        ? WaterDemandModel.GrowthRateForecast(BaseYear, baseDemand, ForecastYears, StandardGrowthRate / 100.0)
-                        : WaterDemandModel.LinearRegressionForecast(BaseYear, baseDemand, ForecastYears);
-                }
-                else
-                {
-                    forecast = UseGrowthRate
-                        ? WaterDemandModel.GrowthRateForecast(hist, ForecastYears, StandardGrowthRate / 100.0)
-                        : WaterDemandModel.LinearRegressionForecast(hist, ForecastYears);
-                }
-
                 Results = new ObservableCollection<DemandEntry>();
-                int lastHistYear = hist.Count > 0 ? hist[^1].Year : 0;
-                int forecastCount = forecast.Data.Count - hist.Count;
-                int idx = 0;
-                for (int i = 0; i < forecast.Data.Count; i++)
+                for (int t = 0; t <= ForecastYears; t++)
                 {
-                    var p = forecast.Data[i];
-                    double industrialPercent;
-                    if (p.Year <= lastHistYear)
+                    int year = BaseYear + t;
+                    double population = BasePopulation * Math.Pow(1 + PopulationGrowthRate / 100.0, t);
+                    double perCapita = BasePerCapitaDemand * Math.Pow(1 + PerCapitaDemandChangeRate / 100.0, t);
+                    double demand = population * perCapita;
+
+                    double industrialPercent = ForecastYears <= 0
+                        ? CurrentIndustrialPercent
+                        : CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t / (double)ForecastYears;
+
+                    double industrialDemand = demand * industrialPercent / 100.0;
+                    double adjusted = demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
+                    double growthRate = t == 0 ? 0 : (demand / Results[t - 1].Demand - 1) * 100.0;
+
+                    Results.Add(new DemandEntry
                     {
-                        industrialPercent = CurrentIndustrialPercent;
-                    }
-                    else
-                    {
-                        double t = forecastCount <= 1 ? 1 : (double)idx / (forecastCount - 1);
-                        industrialPercent = CurrentIndustrialPercent + (FutureIndustrialPercent - CurrentIndustrialPercent) * t;
-                        idx++;
-                    }
-                    double industrialDemand = p.Demand * industrialPercent / 100.0;
-                    double adjusted = p.Demand * (1 + SystemLossesPercent / 100.0) * (1 - SystemImprovementsPercent / 100.0);
-                    double growthRate = i >= hist.Count ? StandardGrowthRate : (i == 0 ? 0 : (p.Demand / forecast.Data[i - 1].Demand - 1) * 100.0);
-                    Results.Add(new DemandEntry { Year = p.Year, Demand = p.Demand, IndustrialDemand = industrialDemand, AdjustedDemand = adjusted, GrowthRate = growthRate });
+                        Year = year,
+                        Demand = demand,
+                        IndustrialDemand = industrialDemand,
+                        AdjustedDemand = adjusted,
+                        GrowthRate = growthRate
+                    });
                 }
 
                 AttachResultHandlers();
                 ChartPoints = CreatePointCollection(Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
-                Explanation = forecast.Explanation + $" Industrial share interpolated from {CurrentIndustrialPercent:F1}% to {FutureIndustrialPercent:F1}% with {SystemImprovementsPercent:F1}% improvements and {SystemLossesPercent:F1}% losses.";
+                Explanation =
+                    "Population = BasePopulation × (1 + PopulationGrowthRate)^t, " +
+                    "Per Capita = BasePerCapitaDemand × (1 + PerCapitaDemandChangeRate)^t, " +
+                    "Total Demand = Population × Per Capita. " +
+                    $"Industrial share interpolated from {CurrentIndustrialPercent:F1}% to {FutureIndustrialPercent:F1}% " +
+                    $"with {SystemImprovementsPercent:F1}% improvements and {SystemLossesPercent:F1}% losses.";
             }
             catch
             {
