@@ -207,7 +207,7 @@ namespace EconToolbox.Desktop.ViewModels
             if (dlg.ShowDialog() == true)
             {
                 string combined = string.Join(" | ", Results);
-                Services.ExcelExporter.ExportEad(Rows, DamageColumns, UseStage, combined, dlg.FileName);
+                Services.ExcelExporter.ExportEad(Rows, DamageColumns, UseStage, combined, StageDamagePoints, FrequencyDamagePoints, dlg.FileName);
             }
         }
 

@@ -3,6 +3,10 @@ using ClosedXML.Excel;
 using EconToolbox.Desktop.Models;
 using System.Linq;
 using EconToolbox.Desktop.ViewModels;
+using System.IO;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace EconToolbox.Desktop.Services
 {
@@ -94,7 +98,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public static void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, string filePath)
+        public static void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, PointCollection stagePoints, PointCollection frequencyPoints, string filePath)
         {
             using var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("EAD");
@@ -121,6 +125,7 @@ namespace EconToolbox.Desktop.Services
             var summary = wb.Worksheets.Add("Summary");
             summary.Cell(1,1).Value = "Result";
             summary.Cell(1,2).Value = result;
+            AddEadChart(summary, stagePoints, frequencyPoints, 3, 1);
             wb.SaveAs(filePath);
         }
 
@@ -150,6 +155,7 @@ namespace EconToolbox.Desktop.Services
             }
             eadSheet.Cell(rowIdx + 1, 1).Value = "Result";
             eadSheet.Cell(rowIdx + 1, 2).Value = string.Join(" | ", ead.Results);
+            AddEadChart(eadSheet, ead.StageDamagePoints, ead.FrequencyDamagePoints, rowIdx + 3, 1);
 
             // Annualizer Sheets
             var annSummary = wb.Worksheets.Add("Annualizer");
@@ -320,6 +326,50 @@ namespace EconToolbox.Desktop.Services
             }
 
             wb.SaveAs(filePath);
+        }
+
+        private static void AddEadChart(IXLWorksheet ws, PointCollection stagePoints, PointCollection frequencyPoints, int row, int column)
+        {
+            if ((stagePoints == null || stagePoints.Count == 0) && (frequencyPoints == null || frequencyPoints.Count == 0))
+                return;
+            byte[] img = CreateEadChartImage(stagePoints, frequencyPoints);
+            using var stream = new MemoryStream(img);
+            var pic = ws.AddPicture(stream, XLPictureFormat.Png, "EADChart");
+            pic.MoveTo(ws.Cell(row, column).Address);
+        }
+
+        private static byte[] CreateEadChartImage(PointCollection stagePoints, PointCollection frequencyPoints)
+        {
+            double width = 300;
+            double height = 150;
+            DrawingVisual dv = new();
+            using (var dc = dv.RenderOpen())
+            {
+                dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+                if (frequencyPoints != null && frequencyPoints.Count > 0)
+                    DrawPolyline(dc, frequencyPoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1ABC9C")), 2));
+                if (stagePoints != null && stagePoints.Count > 0)
+                    DrawPolyline(dc, stagePoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D6A8E")), 2));
+            }
+            RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(dv);
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            using MemoryStream ms = new();
+            encoder.Save(ms);
+            return ms.ToArray();
+        }
+
+        private static void DrawPolyline(DrawingContext dc, PointCollection points, Pen pen)
+        {
+            if (points.Count < 2) return;
+            var geom = new StreamGeometry();
+            using (var ctx = geom.Open())
+            {
+                ctx.BeginFigure(points[0], false, false);
+                ctx.PolyLineTo(points.Skip(1).ToArray(), true, false);
+            }
+            dc.DrawGeometry(null, pen, geom);
         }
     }
 }

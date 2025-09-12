@@ -14,8 +14,24 @@
             <Button Content="Remove Damage Column" Command="{Binding RemoveDamageColumnCommand}" Margin="0,0,5,0"/>
             <CheckBox Content="Include Stage" IsChecked="{Binding UseStage}" Margin="0,0,5,0"/>
         </StackPanel>
-        <DataGrid x:Name="EadDataGrid" ItemsSource="{Binding Rows}" Grid.Row="2" AutoGenerateColumns="False"
-                  CanUserAddRows="True" CanUserDeleteRows="True"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="White" CornerRadius="4" Padding="5">
+                <DataGrid x:Name="EadDataGrid" ItemsSource="{Binding Rows}" AutoGenerateColumns="False"
+                          CanUserAddRows="True" CanUserDeleteRows="True"/>
+            </Border>
+
+            <Border Grid.Column="1" Margin="10,0,0,0" Background="White" CornerRadius="4" Padding="5">
+                <Canvas>
+                    <Polyline Points="{Binding FrequencyDamagePoints}" Stroke="{StaticResource AccentBrush}" StrokeThickness="2"/>
+                    <Polyline Points="{Binding StageDamagePoints}" Stroke="{StaticResource PrimaryBrush}" StrokeThickness="2"/>
+                </Canvas>
+            </Border>
+        </Grid>
         <ItemsControl ItemsSource="{Binding Results}" Grid.Row="3" Margin="0,5,0,0"/>
     </Grid>
 </UserControl>
