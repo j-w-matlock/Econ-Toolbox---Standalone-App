@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
 using EconToolbox.Desktop.Models;
 using System.Linq;
 using EconToolbox.Desktop.ViewModels;
@@ -335,7 +336,7 @@ namespace EconToolbox.Desktop.Services
             byte[] img = CreateEadChartImage(stagePoints, frequencyPoints);
             using var stream = new MemoryStream(img);
             var pic = ws.AddPicture(stream, XLPictureFormat.Png, "EADChart");
-            pic.MoveTo(ws.Cell(row, column).Address);
+            pic.MoveTo(ws.Cell(row, column));
         }
 
         private static byte[] CreateEadChartImage(PointCollection stagePoints, PointCollection frequencyPoints)
