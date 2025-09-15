@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
         xmlns:views="clr-namespace:EconToolbox.Desktop.Views"
-        Title="Economic Toolbox" Height="700" Width="1000" ResizeMode="CanResize"
-        Background="{StaticResource BackgroundBrush}" FontFamily="Segoe UI">
+        Title="Economic Toolbox" Height="700" Width="960" MinWidth="640" MinHeight="600"
+        ResizeMode="CanResize" Background="{StaticResource BackgroundBrush}" FontFamily="Segoe UI">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -20,12 +20,28 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Vertical" Grid.Column="1" Margin="20,0,0,0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="28" Foreground="White" Margin="0,0,10,0"/>
-                        <TextBlock Text="Economic Toolbox" FontSize="28" FontWeight="Bold" Foreground="White"/>
-                    </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Foreground="White" Margin="0,10,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Canvas Grid.Row="0" Grid.RowSpan="2" Width="120" Height="80" Margin="0,0,16,0"
+                        HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <Path Data="M10,70 L30,45 L55,55 L85,20" Stroke="White" StrokeThickness="4" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" Canvas.Left="6" Canvas.Top="65"/>
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" Canvas.Left="26" Canvas.Top="40"/>
+                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" Canvas.Left="51" Canvas.Top="50"/>
+                    <Ellipse Width="12" Height="12" Fill="White" Canvas.Left="79" Canvas.Top="14"/>
+                </Canvas>
+                <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="0" HorizontalAlignment="Stretch">
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontFamily="Segoe MDL2 Assets" Text="" FontSize="28" Foreground="White" Margin="0,0,8,0"/>
+                        <TextBlock Grid.Column="1" Text="Economic Toolbox" FontSize="28" FontWeight="Bold" Foreground="White" TextWrapping="Wrap"/>
+                    </Grid>
+                    <TextBlock TextWrapping="Wrap" Foreground="White">
                         <Run Text="Review each tab to build a complete project narrative."/>
                         <LineBreak/>
                         <Run Text="Enter inputs carefully, press Calculate when available, and use Export to capture your work."/>
@@ -33,210 +49,225 @@
                         <Run Text="Context-sensitive tips below explain what each result means and how your assumptions drive it."/>
                     </TextBlock>
                 </StackPanel>
-                <Canvas Width="120" Height="80" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <Path Data="M10,70 L30,45 L55,55 L85,20" Stroke="White" StrokeThickness="4" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
-                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" Canvas.Left="6" Canvas.Top="65"/>
-                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" Canvas.Left="26" Canvas.Top="40"/>
-                    <Ellipse Width="10" Height="10" Fill="{StaticResource AccentBrush}" Canvas.Left="51" Canvas.Top="50"/>
-                    <Ellipse Width="12" Height="12" Fill="White" Canvas.Left="79" Canvas.Top="14"/>
-                </Canvas>
             </Grid>
         </Border>
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <TabControl Margin="10" SelectedIndex="{Binding SelectedIndex}" FontSize="14" Background="White">
-            <TabItem Header="EAD" DataContext="{Binding Ead}">
-                <views:EadView/>
-            </TabItem>
-            <TabItem Header="Updated Cost of Storage" DataContext="{Binding UpdatedCost}">
-                <views:UpdatedCostView/>
-            </TabItem>
-            <TabItem Header="Cost Annualization" DataContext="{Binding Annualizer}">
-                <StackPanel Margin="10">
-                    <Border Background="#E8F4FB" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,10">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="20" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0"/>
-                                <TextBlock Text="Cost Annualization Workflow" FontWeight="Bold" FontSize="16" Foreground="{StaticResource PrimaryBrush}"/>
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="MinWidth" Value="120"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </TabControl.Resources>
+                
+                <TabItem DataContext="{Binding Ead}">
+                    <TabItem.Header>
+                        <TextBlock Text="EAD" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </TabItem.Header>
+                    <views:EadView/>
+                </TabItem>
+                <TabItem DataContext="{Binding UpdatedCost}">
+                    <TabItem.Header>
+                        <TextBlock Text="Updated Cost of Storage" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </TabItem.Header>
+                    <views:UpdatedCostView/>
+                </TabItem>
+                <TabItem DataContext="{Binding Annualizer}">
+                    <TabItem.Header>
+                        <TextBlock Text="Cost Annualization" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </TabItem.Header>
+                    <StackPanel Margin="10">
+                        <Border Background="#E8F4FB" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,10">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="20" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Cost Annualization Workflow" FontWeight="Bold" FontSize="16" Foreground="{StaticResource PrimaryBrush}"/>
+                                </StackPanel>
+                                <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
+                                    <Run Text="1. Document upfront investments, financing assumptions, and the analysis period."/>
+                                    <LineBreak/>
+                                    <Run Text="2. Capture the construction cash flow in the IDC schedule and list all future costs in the year they occur."/>
+                                    <LineBreak/>
+                                    <Run Text="3. Provide annual O&amp;M and annual benefits so the tool can translate capital outlays into comparable annual metrics."/>
+                                    <LineBreak/>
+                                    <Run Text="Use the Calculate button at the bottom of the window whenever you update inputs."/>
+                                </TextBlock>
                             </StackPanel>
-                            <TextBlock TextWrapping="Wrap" Margin="0,8,0,0">
-                                <Run Text="1. Document upfront investments, financing assumptions, and the analysis period."/>
-                                <LineBreak/>
-                                <Run Text="2. Capture the construction cash flow in the IDC schedule and list all future costs in the year they occur."/>
-                                <LineBreak/>
-                                <Run Text="3. Provide annual O&amp;M and annual benefits so the tool can translate capital outlays into comparable annual metrics."/>
-                                <LineBreak/>
-                                <Run Text="Use the Calculate button at the bottom of the window whenever you update inputs."/>
-                            </TextBlock>
+                        </Border>
+                        <Grid Margin="0,10,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="First Cost" Margin="0,0,5,5" ToolTip="Initial project cost."/>
+                        <TextBox Text="{Binding FirstCost}" Grid.Column="1" Margin="0,0,0,5"
+                                 ToolTip="Initial project cost."/>
+                        <TextBlock Text="Rate (%)" Grid.Row="1" Margin="0,0,5,5" ToolTip="Discount rate in percent."/>
+                        <TextBox Text="{Binding Rate}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
+                                 ToolTip="Discount rate in percent."/>
+                        <TextBlock Text="Base Year" Grid.Row="2" Margin="0,0,5,5"/>
+                        <TextBox Text="{Binding BaseYear}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+                        <TextBlock Text="Analysis Period" Grid.Row="3" Margin="0,0,5,5" ToolTip="Number of periods for capital recovery."/>
+                        <TextBox Text="{Binding AnalysisPeriod}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
+                                 ToolTip="Number of periods for capital recovery."/>
+                        <TextBlock Text="Annual O&amp;M" Grid.Row="4" Margin="0,0,5,5" ToolTip="Annual operations and maintenance cost."/>
+                        <TextBox Text="{Binding AnnualOm}" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"
+                                 ToolTip="Annual operations and maintenance cost."/>
+                        <TextBlock Text="Annual Benefits" Grid.Row="5" Margin="0,0,5,5" ToolTip="Expected annual benefits."/>
+                        <TextBox Text="{Binding AnnualBenefits}" Grid.Row="5" Grid.Column="1" Margin="0,0,0,5"
+                                 ToolTip="Expected annual benefits."/>
+                        <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
+                        <TextBox Text="{Binding ConstructionMonths}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
+                        <TextBlock Text="IDC Schedule" Grid.Row="7" Margin="0,0,5,5"/>
+                        <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
+                                <DataGridTextColumn Header="Month" Binding="{Binding Year}"/>
+                                <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
+                                    <DataGridComboBoxColumn.ItemsSource>
+                                        <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                            <sys:String>beginning</sys:String>
+                                            <sys:String>midpoint</sys:String>
+                                            <sys:String>end</sys:String>
+                                        </x:Array>
+                                    </DataGridComboBoxColumn.ItemsSource>
+                                </DataGridComboBoxColumn>
+                                <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock Text="Future Costs" Grid.Row="8" Margin="0,0,5,5"/>
+                        <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
+                                <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                                <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
+                                    <DataGridComboBoxColumn.ItemsSource>
+                                        <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                            <sys:String>beginning</sys:String>
+                                            <sys:String>midpoint</sys:String>
+                                            <sys:String>end</sys:String>
+                                        </x:Array>
+                                    </DataGridComboBoxColumn.ItemsSource>
+                                </DataGridComboBoxColumn>
+                                <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Grid.Row="9" Grid.ColumnSpan="2">
+                            <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Idc, StringFormat=IDC: {0:C2}}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
+                                        Interest during construction accumulates from the IDC schedule using your month, timing, and rate inputs. Higher rates or longer construction windows increase this value.
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                            <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:C2}}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
+                                        Total investment combines First Cost, IDC, and the present value of Future Costs. Adding more future expenses or higher IDC immediately raises this figure.
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                            <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Crf, StringFormat=CRF: {0:F4}}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
+                                        The capital recovery factor converts present investment into an equivalent annual cost. It is entirely driven by your discount rate and analysis period selections.
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                            <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:C2}}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
+                                        Annual cost reflects how the total investment and your O&amp;M inputs translate into yearly expenses. Increasing either component will raise this annualized value.
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                            <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
+                                        Benefit-cost ratio compares annual benefits against annual costs. Greater benefits or lower annual costs will push the BCR upward, signaling a stronger economic case.
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
                         </StackPanel>
-                    </Border>
-                    <Grid Margin="0,10,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="First Cost" Margin="0,0,5,5" ToolTip="Initial project cost."/>
-                    <TextBox Text="{Binding FirstCost}" Grid.Column="1" Margin="0,0,0,5"
-                             ToolTip="Initial project cost."/>
-                    <TextBlock Text="Rate (%)" Grid.Row="1" Margin="0,0,5,5" ToolTip="Discount rate in percent."/>
-                    <TextBox Text="{Binding Rate}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
-                             ToolTip="Discount rate in percent."/>
-                    <TextBlock Text="Base Year" Grid.Row="2" Margin="0,0,5,5"/>
-                    <TextBox Text="{Binding BaseYear}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Analysis Period" Grid.Row="3" Margin="0,0,5,5" ToolTip="Number of periods for capital recovery."/>
-                    <TextBox Text="{Binding AnalysisPeriod}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
-                             ToolTip="Number of periods for capital recovery."/>
-                    <TextBlock Text="Annual O&amp;M" Grid.Row="4" Margin="0,0,5,5" ToolTip="Annual operations and maintenance cost."/>
-                    <TextBox Text="{Binding AnnualOm}" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"
-                             ToolTip="Annual operations and maintenance cost."/>
-                    <TextBlock Text="Annual Benefits" Grid.Row="5" Margin="0,0,5,5" ToolTip="Expected annual benefits."/>
-                    <TextBox Text="{Binding AnnualBenefits}" Grid.Row="5" Grid.Column="1" Margin="0,0,0,5"
-                             ToolTip="Expected annual benefits."/>
-                    <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
-                    <TextBox Text="{Binding ConstructionMonths}" Grid.Row="6" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="IDC Schedule" Grid.Row="7" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding IdcEntries}" Grid.Row="7" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
-                            <DataGridTextColumn Header="Month" Binding="{Binding Year}"/>
-                            <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
-                                <DataGridComboBoxColumn.ItemsSource>
-                                    <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                                        <sys:String>beginning</sys:String>
-                                        <sys:String>midpoint</sys:String>
-                                        <sys:String>end</sys:String>
-                                    </x:Array>
-                                </DataGridComboBoxColumn.ItemsSource>
-                            </DataGridComboBoxColumn>
-                            <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <TextBlock Text="Future Costs" Grid.Row="8" Margin="0,0,5,5"/>
-                    <DataGrid ItemsSource="{Binding FutureCosts}" Grid.Row="8" Grid.Column="1" AutoGenerateColumns="False" Margin="0,0,0,5" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
-                            <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                            <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
-                                <DataGridComboBoxColumn.ItemsSource>
-                                    <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                                        <sys:String>beginning</sys:String>
-                                        <sys:String>midpoint</sys:String>
-                                        <sys:String>end</sys:String>
-                                    </x:Array>
-                                </DataGridComboBoxColumn.ItemsSource>
-                            </DataGridComboBoxColumn>
-                            <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <StackPanel Grid.Row="9" Grid.ColumnSpan="2">
-                        <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1" Margin="0,0,0,8">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Idc, StringFormat=IDC: {0:C2}}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
-                                    Interest during construction accumulates from the IDC schedule using your month, timing, and rate inputs. Higher rates or longer construction windows increase this value.
-                                </TextBlock>
-                            </Grid>
-                        </Border>
-                        <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1" Margin="0,0,0,8">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:C2}}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
-                                    Total investment combines First Cost, IDC, and the present value of Future Costs. Adding more future expenses or higher IDC immediately raises this figure.
-                                </TextBlock>
-                            </Grid>
-                        </Border>
-                        <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1" Margin="0,0,0,8">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Crf, StringFormat=CRF: {0:F4}}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
-                                    The capital recovery factor converts present investment into an equivalent annual cost. It is entirely driven by your discount rate and analysis period selections.
-                                </TextBlock>
-                            </Grid>
-                        </Border>
-                        <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1" Margin="0,0,0,8">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:C2}}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
-                                    Annual cost reflects how the total investment and your O&amp;M inputs translate into yearly expenses. Increasing either component will raise this annualized value.
-                                </TextBlock>
-                            </Grid>
-                        </Border>
-                        <Border Background="White" CornerRadius="6" Padding="10" BorderBrush="#D0E4F2" BorderThickness="1">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="12,0,0,0" Foreground="#31556F">
-                                    Benefit-cost ratio compares annual benefits against annual costs. Greater benefits or lower annual costs will push the BCR upward, signaling a stronger economic case.
-                                </TextBlock>
-                            </Grid>
-                        </Border>
+                    </Grid>
                     </StackPanel>
-                </Grid>
-                </StackPanel>
-            </TabItem>
-            <TabItem Header="Water Demand" DataContext="{Binding WaterDemand}">
-                <views:WaterDemandView/>
-            </TabItem>
-        <TabItem Header="Unit Day Value" DataContext="{Binding Udv}">
-            <views:UdvView/>
-        </TabItem>
-            </TabControl>
+                </TabItem>
+                <TabItem DataContext="{Binding WaterDemand}">
+                    <TabItem.Header>
+                        <TextBlock Text="Water Demand" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </TabItem.Header>
+                    <views:WaterDemandView/>
+                </TabItem>
+                <TabItem DataContext="{Binding Udv}">
+                    <TabItem.Header>
+                        <TextBlock Text="Unit Day Value" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </TabItem.Header>
+                    <views:UdvView/>
+                </TabItem>
+                </TabControl>
         </ScrollViewer>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2" Margin="10,0,10,10">
-            <Button x:Name="CalculateButton" Command="{Binding CalculateCommand}" Margin="0,0,5,0">
+        <WrapPanel Grid.Row="2" HorizontalAlignment="Right" Margin="10,0,10,10">
+            <Button x:Name="CalculateButton" Command="{Binding CalculateCommand}" Margin="0,0,5,5">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0" FontSize="16"/>
                     <TextBlock Text="Calculate"/>
                 </StackPanel>
             </Button>
-            <Button Width="{Binding ElementName=CalculateButton, Path=ActualWidth}" Command="{Binding ExportCommand}">
+            <Button Width="{Binding ElementName=CalculateButton, Path=ActualWidth}" Command="{Binding ExportCommand}" Margin="0,0,0,5">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0" FontSize="16"/>
                     <TextBlock Text="Export"/>
                 </StackPanel>
             </Button>
-        </StackPanel>
+        </WrapPanel>
     </Grid>
 </Window>
