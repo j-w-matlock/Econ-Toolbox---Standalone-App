@@ -224,11 +224,50 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" MinWidth="160"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
+
+                                <Grid.Resources>
+                                    <Style x:Key="AnnualizerLabelStyle" TargetType="TextBlock">
+                                        <Setter Property="Grid.Column" Value="0"/>
+                                        <Setter Property="Grid.ColumnSpan" Value="1"/>
+                                        <Setter Property="Margin" Value="0,16,12,4"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                         Value="Narrow">
+                                                <Setter Property="Grid.ColumnSpan" Value="2"/>
+                                                <Setter Property="Margin" Value="0,16,0,4"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+
+                                    <Style x:Key="AnnualizerInputStyle" TargetType="FrameworkElement">
+                                        <Setter Property="Grid.Column" Value="0"/>
+                                        <Setter Property="Grid.ColumnSpan" Value="2"/>
+                                        <Setter Property="Margin" Value="0,0,0,16"/>
+                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                         Value="Wide">
+                                                <Setter Property="Grid.Column" Value="1"/>
+                                                <Setter Property="Grid.ColumnSpan" Value="1"/>
+                                                <Setter Property="Margin" Value="12,0,0,16"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Resources>
 
                                 <Border Grid.Row="0" Grid.ColumnSpan="2"
                                         Background="#E8F4FB"
@@ -251,29 +290,128 @@
                                     </StackPanel>
                                 </Border>
 
-                                <TextBlock Grid.Row="1" Text="First Cost" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding FirstCost}" ToolTip="Initial project cost."/>
+                                <TextBlock Grid.Row="1" Text="First Cost" Style="{StaticResource AnnualizerLabelStyle}"/>
+                                <TextBox Grid.Row="2" Text="{Binding FirstCost}" ToolTip="Initial project cost.">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="1"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
 
-                                <TextBlock Grid.Row="2" Text="Rate (%)" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Rate}" ToolTip="Discount rate in percent."/>
+                                <TextBlock Grid.Row="3" Text="Rate (%)" Style="{StaticResource AnnualizerLabelStyle}"/>
+                                <TextBox Grid.Row="4" Text="{Binding Rate}" ToolTip="Discount rate in percent.">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="3"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
 
-                                <TextBlock Grid.Row="3" Text="Base Year" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BaseYear}"/>
+                                <TextBlock Grid.Row="5" Text="Base Year" Style="{StaticResource AnnualizerLabelStyle}"/>
+                                <TextBox Grid.Row="6" Text="{Binding BaseYear}">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="5"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
 
-                                <TextBlock Grid.Row="4" Text="Analysis Period" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding AnalysisPeriod}" ToolTip="Number of periods for capital recovery."/>
+                                <TextBlock Grid.Row="7" Text="Analysis Period" Style="{StaticResource AnnualizerLabelStyle}"/>
+                                <TextBox Grid.Row="8" Text="{Binding AnalysisPeriod}" ToolTip="Number of periods for capital recovery.">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="7"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
 
-                                <TextBlock Grid.Row="5" Text="Annual O&amp;M" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding AnnualOm}" ToolTip="Annual operations and maintenance cost."/>
+                                <TextBlock Grid.Row="9" Text="Annual O&amp;M" Style="{StaticResource AnnualizerLabelStyle}"/>
+                                <TextBox Grid.Row="10" Text="{Binding AnnualOm}" ToolTip="Annual operations and maintenance cost.">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="9"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
 
-                                <TextBlock Grid.Row="6" Text="Annual Benefits" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding AnnualBenefits}" ToolTip="Expected annual benefits."/>
+                                <TextBlock Grid.Row="11" Text="Annual Benefits" Style="{StaticResource AnnualizerLabelStyle}"/>
+                                <TextBox Grid.Row="12" Text="{Binding AnnualBenefits}" ToolTip="Expected annual benefits.">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="11"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
 
-                                <TextBlock Grid.Row="7" Text="Construction Months" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding ConstructionMonths}"/>
+                                <TextBlock Grid.Row="13" Text="Construction Months" Style="{StaticResource AnnualizerLabelStyle}"/>
+                                <TextBox Grid.Row="14" Text="{Binding ConstructionMonths}">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="13"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
 
-                                <TextBlock Grid.Row="8" Text="IDC Schedule" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <DataGrid Grid.Row="8" Grid.Column="1" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False">
+                                <TextBlock Grid.Row="15" Text="IDC Schedule">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource AnnualizerLabelStyle}">
+                                            <Setter Property="Margin" Value="0,24,12,4"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Narrow">
+                                                    <Setter Property="Margin" Value="0,24,0,4"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <DataGrid Grid.Row="16" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False">
+                                    <DataGrid.Style>
+                                        <Style TargetType="DataGrid" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="15"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.Style>
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                                         <DataGridTextColumn Header="Month" Binding="{Binding Year}"/>
@@ -290,8 +428,30 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
 
-                                <TextBlock Grid.Row="9" Text="Future Costs" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                                <DataGrid Grid.Row="9" Grid.Column="1" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False">
+                                <TextBlock Grid.Row="17" Text="Future Costs">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource AnnualizerLabelStyle}">
+                                            <Setter Property="Margin" Value="0,24,12,4"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Narrow">
+                                                    <Setter Property="Margin" Value="0,24,0,4"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <DataGrid Grid.Row="18" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False">
+                                    <DataGrid.Style>
+                                        <Style TargetType="DataGrid" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                             Value="Wide">
+                                                    <Setter Property="Grid.Row" Value="17"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.Style>
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
                                         <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
@@ -308,7 +468,7 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
 
-                                <UniformGrid Grid.Row="10" Grid.ColumnSpan="2" Columns="1" Margin="{StaticResource Margin.TopLarge}">
+                                <UniformGrid Grid.Row="19" Grid.ColumnSpan="2" Columns="1" Margin="{StaticResource Margin.TopLarge}">
                                     <UniformGrid.Style>
                                         <Style TargetType="UniformGrid">
                                             <Setter Property="Columns" Value="1"/>
