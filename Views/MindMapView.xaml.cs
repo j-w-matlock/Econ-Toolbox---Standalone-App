@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using EconToolbox.Desktop.ViewModels;
 
 namespace EconToolbox.Desktop.Views
@@ -25,8 +26,32 @@ namespace EconToolbox.Desktop.Views
         {
             if (sender is ItemsControl itemsControl)
             {
-                _nodeCanvas = itemsControl.ItemsPanelRoot as Canvas;
+                _nodeCanvas = FindItemsPanelCanvas(itemsControl);
             }
+        }
+
+        private static Canvas? FindItemsPanelCanvas(ItemsControl itemsControl)
+        {
+            // In WPF, ItemsControl does not expose the instantiated items panel directly.
+            // We traverse the visual tree to locate the Canvas defined in the ItemsPanel template.
+            return FindVisualChild<Canvas>(itemsControl);
+        }
+
+        private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+
+                if (child is T typedChild)
+                    return typedChild;
+
+                var descendant = FindVisualChild<T>(child);
+                if (descendant != null)
+                    return descendant;
+            }
+
+            return null;
         }
 
         private void OnCanvasRightButtonDown(object sender, MouseButtonEventArgs e)
