@@ -5,7 +5,10 @@
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <Grid>
-        <ScrollViewer Focusable="False" Padding="{StaticResource Padding.Card}">
+        <ScrollViewer Focusable="False"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto"
+                      Padding="{StaticResource Padding.Card}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -93,27 +96,60 @@
                     </Button>
                 </WrapPanel>
 
-                <Grid Grid.Row="2" Margin="{StaticResource Margin.StackLarge}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" MinWidth="280"/>
-                        <ColumnDefinition Width="*" MinWidth="220"/>
-                    </Grid.ColumnDefinitions>
+                <UniformGrid Grid.Row="2"
+                             Margin="{StaticResource Margin.StackLarge}">
+                    <UniformGrid.Style>
+                        <Style TargetType="UniformGrid">
+                            <Setter Property="Columns" Value="1"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                             Value="Wide">
+                                    <Setter Property="Columns" Value="2"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </UniformGrid.Style>
 
-                    <Border Grid.Column="0" Background="{StaticResource Brush.Surface}" CornerRadius="6" Padding="{StaticResource Padding.Content}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
-                        <DataGrid x:Name="EadDataGrid"
-                                  ItemsSource="{Binding Rows}"
-                                  AutoGenerateColumns="False"
-                                  CanUserAddRows="True"
-                                  CanUserDeleteRows="True"/>
-                    </Border>
-
-                    <Border Grid.Column="1"
-                            Margin="{StaticResource Margin.InlineLarge}"
-                            Background="{StaticResource Brush.Surface}"
+                    <Border Background="{StaticResource Brush.Surface}"
                             CornerRadius="6"
                             Padding="{StaticResource Padding.Content}"
                             BorderBrush="{StaticResource Brush.Border}"
                             BorderThickness="1">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Margin" Value="0,0,0,16"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                 Value="Wide">
+                                        <Setter Property="Margin" Value="0,0,16,0"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <DataGrid x:Name="EadDataGrid"
+                                  ItemsSource="{Binding Rows}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="True"
+                                  CanUserDeleteRows="True"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                    </Border>
+
+                    <Border Background="{StaticResource Brush.Surface}"
+                            CornerRadius="6"
+                            Padding="{StaticResource Padding.Content}"
+                            BorderBrush="{StaticResource Brush.Border}"
+                            BorderThickness="1">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Margin" Value="0"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                 Value="Wide">
+                                        <Setter Property="Margin" Value="{StaticResource Margin.InlineLarge}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                         <StackPanel>
                             <TextBlock Text="Visualize Your Curve"
                                        FontWeight="SemiBold"
@@ -131,7 +167,7 @@
                             </TextBlock>
                         </StackPanel>
                     </Border>
-                </Grid>
+                </UniformGrid>
 
                 <ItemsControl ItemsSource="{Binding Results}" Grid.Row="3" Margin="{StaticResource Margin.StackLarge}">
                     <ItemsControl.ItemsPanel>

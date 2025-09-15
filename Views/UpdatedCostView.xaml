@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
         <StackPanel>
         <Border Margin="10,0,10,10" Background="#EEF6F8" BorderBrush="{StaticResource Brush.Primary}" BorderThickness="1" CornerRadius="10" Padding="16">
             <Grid>
@@ -15,16 +15,49 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Top">
                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="24" Foreground="{StaticResource Brush.Primary}" Margin="0,0,10,0"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Grid.Row" Value="0"/>
+                            <Setter Property="Grid.ColumnSpan" Value="1"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                             Value="Narrow">
+                                    <Setter Property="Grid.ColumnSpan" Value="2"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
                     <TextBlock Text="Updated Cost Workflow" FontSize="18" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                         Work through each sub-tab from left to right. Start with storage capacity, capture annual joint costs, update historical line items, then evaluate RR&amp;R/mitigation and total annual cost scenarios. Press Compute within each section before leaving the tab so downstream values stay synchronized.
                     </TextBlock>
                 </StackPanel>
-                <Canvas Grid.Column="2" Width="80" Height="60" Margin="15,0,0,0">
+                <Canvas Width="80" Height="60">
+                    <Canvas.Style>
+                        <Style TargetType="Canvas">
+                            <Setter Property="Grid.Column" Value="2"/>
+                            <Setter Property="Grid.Row" Value="0"/>
+                            <Setter Property="Margin" Value="15,0,0,0"/>
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                             Value="Narrow">
+                                    <Setter Property="Grid.Column" Value="0"/>
+                                    <Setter Property="Grid.Row" Value="1"/>
+                                    <Setter Property="Margin" Value="0,12,0,0"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Canvas.Style>
                     <Rectangle Width="70" Height="40" Fill="White" Stroke="{StaticResource Brush.Accent}" RadiusX="6" RadiusY="6" Canvas.Left="5" Canvas.Top="15"/>
                     <Polyline Points="5,45 25,25 45,30 65,10" Stroke="{StaticResource Brush.Primary}" StrokeThickness="3" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
                     <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="1" Canvas.Top="41"/>
@@ -34,7 +67,7 @@
                 </Canvas>
             </Grid>
         </Border>
-        <TabControl Margin="10,0,10,10">
+        <TabControl Margin="10,0,10,10" HorizontalContentAlignment="Stretch">
         <TabItem Header="Storage Cost">
             <StackPanel Margin="10">
                 <Border Background="#FFF7F0" BorderBrush="#F2C089" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">

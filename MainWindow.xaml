@@ -180,7 +180,9 @@
                 Padding="0"
                 Background="{StaticResource Brush.SurfaceAlt}"
                 CornerRadius="12">
-            <ScrollViewer Focusable="False">
+            <ScrollViewer Focusable="False"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
                 <TabControl SelectedIndex="{Binding SelectedIndex}" Background="{StaticResource Brush.Surface}">
                     <TabControl.Resources>
                         <Style TargetType="TabItem">
