@@ -401,9 +401,9 @@
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
-                                <DataGrid Grid.Row="16" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False">
-                                    <DataGrid.Style>
-                                        <Style TargetType="DataGrid" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                <Grid Grid.Row="16">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid" BasedOn="{StaticResource AnnualizerInputStyle}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
                                                              Value="Wide">
@@ -411,22 +411,38 @@
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </DataGrid.Style>
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
-                                        <DataGridTextColumn Header="Month" Binding="{Binding Year}"/>
-                                        <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
-                                            <DataGridComboBoxColumn.ItemsSource>
-                                                <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                                                    <sys:String>beginning</sys:String>
-                                                    <sys:String>midpoint</sys:String>
-                                                    <sys:String>end</sys:String>
-                                                </x:Array>
-                                            </DataGridComboBoxColumn.ItemsSource>
-                                        </DataGridComboBoxColumn>
-                                        <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                    </Grid.Style>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Background="White" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
+                                        <DataGrid ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
+                                                <DataGridTextColumn Header="Month" Binding="{Binding Year}"/>
+                                                <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
+                                                    <DataGridComboBoxColumn.ItemsSource>
+                                                        <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                                            <sys:String>beginning</sys:String>
+                                                            <sys:String>midpoint</sys:String>
+                                                            <sys:String>end</sys:String>
+                                                        </x:Array>
+                                                    </DataGridComboBoxColumn.ItemsSource>
+                                                </DataGridComboBoxColumn>
+                                                <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Border>
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                        <Button Command="{Binding ResetIdcCommand}" MinWidth="160" ToolTip="Clear all IDC schedule entries">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                                <TextBlock Text="Reset IDC Inputs"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
 
                                 <TextBlock Grid.Row="17" Text="Future Costs">
                                     <TextBlock.Style>
@@ -441,9 +457,9 @@
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
-                                <DataGrid Grid.Row="18" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False">
-                                    <DataGrid.Style>
-                                        <Style TargetType="DataGrid" BasedOn="{StaticResource AnnualizerInputStyle}">
+                                <Grid Grid.Row="18">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid" BasedOn="{StaticResource AnnualizerInputStyle}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=TabItem}, Converter={StaticResource WidthToLayoutModeConverter}}"
                                                              Value="Wide">
@@ -451,22 +467,38 @@
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </DataGrid.Style>
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
-                                        <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                                        <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
-                                            <DataGridComboBoxColumn.ItemsSource>
-                                                <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                                                    <sys:String>beginning</sys:String>
-                                                    <sys:String>midpoint</sys:String>
-                                                    <sys:String>end</sys:String>
-                                                </x:Array>
-                                            </DataGridComboBoxColumn.ItemsSource>
-                                        </DataGridComboBoxColumn>
-                                        <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                    </Grid.Style>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Background="White" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
+                                        <DataGrid ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
+                                                <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                                                <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
+                                                    <DataGridComboBoxColumn.ItemsSource>
+                                                        <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                                            <sys:String>beginning</sys:String>
+                                                            <sys:String>midpoint</sys:String>
+                                                            <sys:String>end</sys:String>
+                                                        </x:Array>
+                                                    </DataGridComboBoxColumn.ItemsSource>
+                                                </DataGridComboBoxColumn>
+                                                <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Border>
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                        <Button Command="{Binding ResetFutureCostsCommand}" MinWidth="160" ToolTip="Clear all future cost entries">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                                <TextBlock Text="Reset Future Costs"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
 
                                 <UniformGrid Grid.Row="19" Grid.ColumnSpan="2" Columns="1" Margin="{StaticResource Margin.TopLarge}">
                                     <UniformGrid.Style>

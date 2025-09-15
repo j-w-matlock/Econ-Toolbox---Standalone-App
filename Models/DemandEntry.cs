@@ -2,6 +2,8 @@ namespace EconToolbox.Desktop.Models
 {
     public class DemandEntry : ObservableObject
     {
+        private const double GallonsPerAcreFoot = 325851.0;
+        private const double DaysPerYear = 365.0;
         private int _year;
         private double _demand;
         private double _residentialDemand;
@@ -20,7 +22,14 @@ namespace EconToolbox.Desktop.Models
         public double Demand
         {
             get => _demand;
-            set { _demand = value; OnPropertyChanged(); }
+            set
+            {
+                if (_demand == value)
+                    return;
+                _demand = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(DemandAcreFeet));
+            }
         }
 
         public double ResidentialDemand
@@ -50,7 +59,14 @@ namespace EconToolbox.Desktop.Models
         public double AdjustedDemand
         {
             get => _adjustedDemand;
-            set { _adjustedDemand = value; OnPropertyChanged(); }
+            set
+            {
+                if (_adjustedDemand == value)
+                    return;
+                _adjustedDemand = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(AdjustedDemandAcreFeet));
+            }
         }
 
         public double GrowthRate
@@ -58,5 +74,9 @@ namespace EconToolbox.Desktop.Models
             get => _growthRate;
             set { _growthRate = value; OnPropertyChanged(); }
         }
+
+        public double DemandAcreFeet => _demand * DaysPerYear / GallonsPerAcreFoot;
+
+        public double AdjustedDemandAcreFeet => _adjustedDemand * DaysPerYear / GallonsPerAcreFoot;
     }
 }

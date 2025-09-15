@@ -215,11 +215,18 @@
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Adjusted (ac-ft/yr)" Binding="{Binding AdjustedDemandAcreFeet, StringFormat={}{0:N2}}">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="ToolTip" Value="Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Border>
                             </Grid>
-                            <Border Background="White" CornerRadius="4" Padding="5">
+                            <Border Background="White" CornerRadius="4" Padding="12">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Grid.Column" Value="1"/>
@@ -235,18 +242,67 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
-                                <ItemsControl ItemsSource="{Binding DataContext.Scenarios, ElementName=Root}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <Canvas/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Polyline Points="{Binding ChartPoints}" Stroke="{Binding LineBrush}" StrokeThickness="2"/>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#1F6AB0" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Forecast Demand Trend" FontWeight="SemiBold" Foreground="#1F6AB0"/>
+                                    </StackPanel>
+                                    <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Stretch" MinHeight="220">
+                                        <Grid Width="360" Height="220">
+                                            <Border Background="#F7FBFF" BorderBrush="#CCE0F5" BorderThickness="1.5" CornerRadius="10"/>
+                                            <Canvas Width="360" Height="220" IsHitTestVisible="False">
+                                                <Line X1="36" Y1="20" X2="36" Y2="200" Stroke="#B6CCE5" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
+                                                <Line X1="36" Y1="200" X2="340" Y2="200" Stroke="#B6CCE5" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
+                                                <Line X1="36" Y1="140" X2="340" Y2="140" Stroke="#E0EBF5" StrokeThickness="1" StrokeDashArray="2 4"/>
+                                                <Line X1="36" Y1="80" X2="340" Y2="80" Stroke="#E0EBF5" StrokeThickness="1" StrokeDashArray="2 4"/>
+                                                <Line X1="130" Y1="20" X2="130" Y2="200" Stroke="#E0EBF5" StrokeThickness="1" StrokeDashArray="2 4"/>
+                                                <Line X1="220" Y1="20" X2="220" Y2="200" Stroke="#E0EBF5" StrokeThickness="1" StrokeDashArray="2 4"/>
+                                            </Canvas>
+                                            <ItemsControl Margin="36,20,20,32"
+                                                          ItemsSource="{Binding DataContext.Scenarios, ElementName=Root}"
+                                                          HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Stretch"
+                                                          ClipToBounds="True">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <Canvas Width="300" Height="168"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Polyline Points="{Binding ChartPoints}"
+                                                                  Stroke="{Binding LineBrush}"
+                                                                  StrokeThickness="3"
+                                                                  StrokeEndLineCap="Round"
+                                                                  StrokeStartLineCap="Round"
+                                                                  Fill="Transparent"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <TextBlock Text="Year"
+                                                       Foreground="#31556F"
+                                                       FontSize="12"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Bottom"
+                                                       Margin="0,0,0,6"/>
+                                            <TextBlock Text="Adjusted Demand (gallons/day)"
+                                                       Foreground="#31556F"
+                                                       FontSize="12"
+                                                       RenderTransformOrigin="0.5,0.5"
+                                                       HorizontalAlignment="Left"
+                                                       VerticalAlignment="Center"
+                                                       Margin="-4,0,0,0">
+                                                <TextBlock.RenderTransform>
+                                                    <RotateTransform Angle="-90"/>
+                                                </TextBlock.RenderTransform>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Viewbox>
+                                </Grid>
                             </Border>
                         </Grid>
                     </DataTemplate>
@@ -282,6 +338,8 @@
                         • Demand shows projected system demand before sector allocations. Each sector column (Residential, Commercial, Industrial, Agricultural) applies the percentages you supplied.
                         <LineBreak/>
                         • Adjusted demand applies the Advanced Adjustments so you can see conservation impacts immediately.
+                        <LineBreak/>
+                        • Adjusted (ac-ft/yr) multiplies the adjusted demand by 365 and divides by 325,851 so you can translate daily demand into reservoir storage requirements.
                     </TextBlock>
                 </StackPanel>
             </Border>

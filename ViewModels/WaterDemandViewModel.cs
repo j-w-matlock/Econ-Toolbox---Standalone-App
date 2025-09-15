@@ -387,8 +387,8 @@ namespace EconToolbox.Desktop.ViewModels
                 if (d.Demand > maxDemand) maxDemand = d.Demand;
             }
 
-            double width = 300; // Canvas width used in XAML
-            double height = 150; // Canvas height used in XAML
+            const double width = 300; // Canvas width used in XAML
+            const double height = 168; // Canvas height used in XAML
             double yearRange = maxYear - minYear;
             if (yearRange == 0) yearRange = 1;
             double demandRange = maxDemand - minDemand;
