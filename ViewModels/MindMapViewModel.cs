@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace EconToolbox.Desktop.ViewModels
@@ -17,6 +18,11 @@ namespace EconToolbox.Desktop.ViewModels
         private int _nodeCounter = 1;
 
         public ObservableCollection<MindMapNodeViewModel> Nodes { get; } = new();
+        public ObservableCollection<MindMapNodeViewModel> CanvasNodes { get; } = new();
+        public ObservableCollection<MindMapConnectionViewModel> Connections { get; } = new();
+
+        public double CanvasWidth { get; } = 2200;
+        public double CanvasHeight { get; } = 1400;
 
         private MindMapNodeViewModel? _selectedNode;
         public MindMapNodeViewModel? SelectedNode
@@ -60,9 +66,9 @@ namespace EconToolbox.Desktop.ViewModels
 
         public MindMapViewModel()
         {
-            AddRootNodeCommand = new RelayCommand(AddRootNode);
-            _addChildCommand = new RelayCommand(AddChildNode, () => SelectedNode != null);
-            _addSiblingCommand = new RelayCommand(AddSiblingNode, () => SelectedNode != null);
+            AddRootNodeCommand = new RelayCommand(() => AddRootAt(null));
+            _addChildCommand = new RelayCommand(() => AddChildAt(SelectedNode, null), () => SelectedNode != null);
+            _addSiblingCommand = new RelayCommand(() => AddSiblingAt(SelectedNode, null), () => SelectedNode != null);
             _removeNodeCommand = new RelayCommand(RemoveNode, () => SelectedNode != null);
 
             var coreIdea = CreateNode("Central Idea");
@@ -72,10 +78,16 @@ namespace EconToolbox.Desktop.ViewModels
             var themes = CreateNode("Key Themes", coreIdea);
             themes.Notes = "Break the central idea into major themes, components, or workstreams.";
             coreIdea.Children.Add(themes);
+            AddConnection(coreIdea, themes);
 
             var actions = CreateNode("Next Actions", coreIdea);
             actions.Notes = "Record immediate tasks, owners, and follow-ups.";
             coreIdea.Children.Add(actions);
+            AddConnection(coreIdea, actions);
+
+            PositionNode(coreIdea, null, new Point(360, CanvasHeight / 2));
+            PositionNode(themes, coreIdea, new Point(coreIdea.X + 260, coreIdea.Y - 160));
+            PositionNode(actions, coreIdea, new Point(coreIdea.X + 260, coreIdea.Y + 160));
 
             coreIdea.IsExpanded = true;
             themes.IsExpanded = true;
@@ -96,44 +108,47 @@ namespace EconToolbox.Desktop.ViewModels
             return node;
         }
 
-        private void AddRootNode()
+        public MindMapNodeViewModel AddRootAt(Point? position)
         {
             var node = CreateNode(GetDefaultTitle());
             node.IsExpanded = true;
             Nodes.Add(node);
+            PositionNode(node, null, position);
             SelectedNode = node;
+            return node;
         }
 
-        private void AddChildNode()
+        public MindMapNodeViewModel? AddChildAt(MindMapNodeViewModel? parent, Point? position)
         {
-            if (SelectedNode == null)
-                return;
+            if (parent == null)
+                return null;
 
-            var child = CreateNode(GetDefaultTitle(), SelectedNode);
-            SelectedNode.Children.Add(child);
-            SelectedNode.IsExpanded = true;
+            var child = CreateNode(GetDefaultTitle(), parent);
+            parent.Children.Add(child);
+            parent.IsExpanded = true;
+            AddConnection(parent, child);
+            PositionNode(child, parent, position);
             SelectedNode = child;
+            return child;
         }
 
-        private void AddSiblingNode()
+        public MindMapNodeViewModel? AddSiblingAt(MindMapNodeViewModel? node, Point? position)
         {
-            if (SelectedNode == null)
-                return;
+            if (node == null)
+                return null;
 
-            if (SelectedNode.Parent == null)
+            if (node.Parent == null)
             {
-                var node = CreateNode(GetDefaultTitle());
-                node.IsExpanded = true;
-                Nodes.Add(node);
-                SelectedNode = node;
+                return AddRootAt(position);
             }
-            else
-            {
-                var parent = SelectedNode.Parent;
-                var sibling = CreateNode(GetDefaultTitle(), parent);
-                parent.Children.Add(sibling);
-                SelectedNode = sibling;
-            }
+
+            var parent = node.Parent;
+            var sibling = CreateNode(GetDefaultTitle(), parent);
+            parent.Children.Add(sibling);
+            AddConnection(parent, sibling);
+            PositionNode(sibling, parent, position);
+            SelectedNode = sibling;
+            return sibling;
         }
 
         private void RemoveNode()
@@ -185,12 +200,15 @@ namespace EconToolbox.Desktop.ViewModels
         private void AttachNode(MindMapNodeViewModel node)
         {
             node.SelectionChanged += NodeOnSelectionChanged;
+            CanvasNodes.Add(node);
         }
 
         private void DetachNode(MindMapNodeViewModel node)
         {
             node.SelectionChanged -= NodeOnSelectionChanged;
             node.PropertyChanged -= PathNodeOnPropertyChanged;
+            RemoveConnectionsFor(node);
+            CanvasNodes.Remove(node);
             foreach (var child in node.Children.ToList())
             {
                 DetachNode(child);
@@ -237,6 +255,50 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(SelectedPath));
         }
 
+        private void PositionNode(MindMapNodeViewModel node, MindMapNodeViewModel? parent, Point? explicitPosition)
+        {
+            if (explicitPosition.HasValue)
+            {
+                node.X = Math.Max(0, explicitPosition.Value.X);
+                node.Y = Math.Max(0, explicitPosition.Value.Y);
+                return;
+            }
+
+            if (parent == null)
+            {
+                var index = Nodes.IndexOf(node);
+                var spacingX = 240;
+                var startX = 280;
+                node.X = startX + index * spacingX;
+                node.Y = CanvasHeight / 2;
+                return;
+            }
+
+            var childIndex = parent.Children.IndexOf(node);
+            var verticalSpacing = 140;
+            var centerOffset = (parent.Children.Count - 1) / 2.0;
+            node.X = parent.X + Math.Max(parent.VisualWidth, 180) + 120;
+            node.Y = parent.Y + (childIndex - centerOffset) * verticalSpacing;
+        }
+
+        private void AddConnection(MindMapNodeViewModel source, MindMapNodeViewModel target)
+        {
+            var connection = new MindMapConnectionViewModel(source, target);
+            Connections.Add(connection);
+        }
+
+        private void RemoveConnectionsFor(MindMapNodeViewModel node)
+        {
+            var matches = Connections
+                .Where(c => c.Source == node || c.Target == node)
+                .ToList();
+            foreach (var connection in matches)
+            {
+                connection.Dispose();
+                Connections.Remove(connection);
+            }
+        }
+
         public IEnumerable<MindMapNodeViewModel> Flatten()
         {
             foreach (var node in Nodes)
@@ -264,6 +326,10 @@ namespace EconToolbox.Desktop.ViewModels
         private string _notes = string.Empty;
         private bool _isExpanded;
         private bool _isSelected;
+        private double _x;
+        private double _y;
+        private double _visualWidth = 180;
+        private double _visualHeight = 120;
 
         public MindMapNodeViewModel(string title)
         {
@@ -299,6 +365,58 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<MindMapNodeViewModel> Children { get; } = new();
 
         public MindMapNodeViewModel? Parent { get; internal set; }
+
+        public double X
+        {
+            get => _x;
+            set
+            {
+                if (Math.Abs(_x - value) > 0.1)
+                {
+                    _x = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public double Y
+        {
+            get => _y;
+            set
+            {
+                if (Math.Abs(_y - value) > 0.1)
+                {
+                    _y = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public double VisualWidth
+        {
+            get => _visualWidth;
+            set
+            {
+                if (Math.Abs(_visualWidth - value) > 0.1)
+                {
+                    _visualWidth = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public double VisualHeight
+        {
+            get => _visualHeight;
+            set
+            {
+                if (Math.Abs(_visualHeight - value) > 0.1)
+                {
+                    _visualHeight = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public bool IsExpanded
         {
