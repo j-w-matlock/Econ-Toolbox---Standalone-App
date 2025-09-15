@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
         <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,10 +25,34 @@
             </StackPanel>
         </Border>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="{StaticResource Margin.Stack}">
-            <ComboBox ItemsSource="{Binding RecreationTypes}" SelectedItem="{Binding RecreationType}" Width="150" Margin="{StaticResource Margin.Inline}"/>
-            <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" Width="220"/>
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                     Value="Narrow">
+                            <Setter Property="Orientation" Value="Vertical"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <ComboBox ItemsSource="{Binding RecreationTypes}" SelectedItem="{Binding RecreationType}" MinWidth="150" Margin="{StaticResource Margin.Inline}"/>
+            <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" MinWidth="200"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="{StaticResource Margin.Stack}">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                     Value="Narrow">
+                            <Setter Property="Orientation" Value="Vertical"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
             <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
             <TextBlock Text="Points" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}"/>
             <TextBox Text="{Binding Points}" Width="60" Margin="{StaticResource Margin.InlineMedium}"/>
@@ -36,6 +60,19 @@
             <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:F2}}" VerticalAlignment="Center" FontWeight="SemiBold"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="{StaticResource Margin.Stack}">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                     Value="Narrow">
+                            <Setter Property="Orientation" Value="Vertical"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
             <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
             <TextBlock Text="Annual User Days" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}"/>
             <TextBox Text="{Binding UserDays}" Width="80" Margin="{StaticResource Margin.InlineMedium}"/>
