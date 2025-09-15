@@ -16,6 +16,9 @@ namespace EconToolbox.Desktop.ViewModels
         private readonly List<MindMapNodeViewModel> _pathSubscriptions = new();
         private bool _suppressSelectionSync;
         private int _nodeCounter = 1;
+        private const double MinZoomLevel = 0.4;
+        private const double MaxZoomLevel = 1.6;
+        private double _zoomLevel = 1.0;
 
         public ObservableCollection<MindMapNodeViewModel> Nodes { get; } = new();
         public ObservableCollection<MindMapNodeViewModel> CanvasNodes { get; } = new();
@@ -58,6 +61,23 @@ namespace EconToolbox.Desktop.ViewModels
         public string SelectedPath => SelectedNode == null
             ? string.Empty
             : string.Join("  ›  ", SelectedNode.GetPath().Select(n => n.Title));
+
+        public double ZoomLevel
+        {
+            get => _zoomLevel;
+            set
+            {
+                var clamped = Math.Clamp(value, MinZoomLevel, MaxZoomLevel);
+                if (Math.Abs(_zoomLevel - clamped) > 0.001)
+                {
+                    _zoomLevel = clamped;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public double ZoomLevelMinimum => MinZoomLevel;
+        public double ZoomLevelMaximum => MaxZoomLevel;
 
         public ICommand AddRootNodeCommand { get; }
         public ICommand AddChildNodeCommand => _addChildCommand;
