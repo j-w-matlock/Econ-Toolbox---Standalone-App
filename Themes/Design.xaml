@@ -131,6 +131,7 @@
         <Setter Property="Padding" Value="12,8"/>
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="MaxWidth" Value="360"/>
+        <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
         <Setter Property="HasDropShadow" Value="True"/>
         <Setter Property="TextElement.FontFamily" Value="Segoe UI"/>
         <Setter Property="TextElement.FontSize" Value="13"/>
@@ -145,8 +146,7 @@
                             Padding="{TemplateBinding Padding}"
                             SnapsToDevicePixels="True">
                         <ContentPresenter Margin="0"
-                                          RecognizesAccessKey="True"
-                                          TextBlock.TextWrapping="Wrap"/>
+                                          RecognizesAccessKey="True"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
