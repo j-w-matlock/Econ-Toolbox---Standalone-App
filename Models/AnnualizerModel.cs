@@ -16,9 +16,10 @@ namespace EconToolbox.Desktop.Models
             int analysisPeriod = 1,
             int constructionMonths = 12,
             double[]? idcCosts = null,
-            string[]? idcTimings = null)
+            string[]? idcTimings = null,
+            int[]? idcMonths = null)
         {
-            double idc = InterestDuringConstructionModel.Compute(firstCost, rate, constructionMonths, idcCosts, idcTimings);
+            double idc = InterestDuringConstructionModel.Compute(firstCost, rate, constructionMonths, idcCosts, idcTimings, idcMonths);
 
             double pvFuture = 0.0;
             int maxYear = 0;
