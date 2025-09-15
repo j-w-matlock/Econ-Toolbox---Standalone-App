@@ -43,21 +43,21 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="First Cost" Margin="0,0,5,5"/>
+                    <TextBlock Text="First Cost" Margin="0,0,5,5" ToolTip="Initial project cost."/>
                     <TextBox Text="{Binding FirstCost}" Grid.Column="1" Margin="0,0,0,5"
                              ToolTip="Initial project cost."/>
-                    <TextBlock Text="Rate (%)" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBlock Text="Rate (%)" Grid.Row="1" Margin="0,0,5,5" ToolTip="Discount rate in percent."/>
                     <TextBox Text="{Binding Rate}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"
                              ToolTip="Discount rate in percent."/>
                     <TextBlock Text="Base Year" Grid.Row="2" Margin="0,0,5,5"/>
                     <TextBox Text="{Binding BaseYear}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Analysis Period" Grid.Row="3" Margin="0,0,5,5"/>
+                    <TextBlock Text="Analysis Period" Grid.Row="3" Margin="0,0,5,5" ToolTip="Number of periods for capital recovery."/>
                     <TextBox Text="{Binding AnalysisPeriod}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"
                              ToolTip="Number of periods for capital recovery."/>
-                    <TextBlock Text="Annual O&amp;M" Grid.Row="4" Margin="0,0,5,5"/>
+                    <TextBlock Text="Annual O&amp;M" Grid.Row="4" Margin="0,0,5,5" ToolTip="Annual operations and maintenance cost."/>
                     <TextBox Text="{Binding AnnualOm}" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"
                              ToolTip="Annual operations and maintenance cost."/>
-                    <TextBlock Text="Annual Benefits" Grid.Row="5" Margin="0,0,5,5"/>
+                    <TextBlock Text="Annual Benefits" Grid.Row="5" Margin="0,0,5,5" ToolTip="Expected annual benefits."/>
                     <TextBox Text="{Binding AnnualBenefits}" Grid.Row="5" Grid.Column="1" Margin="0,0,0,5"
                              ToolTip="Expected annual benefits."/>
                     <TextBlock Text="Construction Months" Grid.Row="6" Margin="0,0,5,5"/>
