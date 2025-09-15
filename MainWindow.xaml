@@ -225,6 +225,12 @@
                         </TabItem.Header>
                         <views:UdvView Margin="{StaticResource Margin.Container}"/>
                     </TabItem>
+                    <TabItem DataContext="{Binding MindMap}">
+                        <TabItem.Header>
+                            <TextBlock Text="Mind Map" TextAlignment="Center"/>
+                        </TabItem.Header>
+                        <views:MindMapView Margin="{StaticResource Margin.Container}"/>
+                    </TabItem>
                 </TabControl>
             </ScrollViewer>
         </Border>

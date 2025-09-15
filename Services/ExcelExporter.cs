@@ -146,7 +146,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public static void ExportAll(EadViewModel ead, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, string filePath)
+        public static void ExportAll(EadViewModel ead, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, MindMapViewModel mindMap, string filePath)
         {
             using var wb = new XLWorkbook();
 
@@ -346,6 +346,27 @@ namespace EconToolbox.Desktop.Services
                 // each value explicitly to an XLCellValue before assignment.
                 udvSheet.Cell(rowIdx,2).Value = XLCellValue.FromObject(kv.Value);
                 rowIdx++;
+            }
+
+            // Mind Map Sheet
+            var mindMapSheet = wb.Worksheets.Add("MindMap");
+            mindMapSheet.Cell(1,1).Value = "Depth";
+            mindMapSheet.Cell(1,2).Value = "Idea";
+            mindMapSheet.Cell(1,3).Value = "Path";
+            mindMapSheet.Cell(1,4).Value = "Notes";
+            int mindMapRow = 2;
+            foreach (var node in mindMap.Flatten())
+            {
+                var path = node.GetPath().ToList();
+                mindMapSheet.Cell(mindMapRow,1).Value = path.Count - 1;
+                mindMapSheet.Cell(mindMapRow,2).Value = node.Title;
+                mindMapSheet.Cell(mindMapRow,3).Value = string.Join(" > ", path.Select(p => p.Title));
+                mindMapSheet.Cell(mindMapRow,4).Value = node.Notes;
+                mindMapRow++;
+            }
+            if (mindMapRow > 2)
+            {
+                mindMapSheet.Columns(1,4).AdjustToContents();
             }
 
             wb.SaveAs(filePath);

@@ -10,6 +10,7 @@ namespace EconToolbox.Desktop.ViewModels
         public AnnualizerViewModel Annualizer { get; } = new();
         public UdvViewModel Udv { get; } = new();
         public WaterDemandViewModel WaterDemand { get; } = new();
+        public MindMapViewModel MindMap { get; } = new();
 
         private int _selectedIndex;
         public int SelectedIndex
@@ -46,6 +47,8 @@ namespace EconToolbox.Desktop.ViewModels
                 case 4:
                     if (Udv.ComputeCommand.CanExecute(null)) Udv.ComputeCommand.Execute(null);
                     break;
+                case 5:
+                    break;
             }
         }
 
@@ -58,7 +61,7 @@ namespace EconToolbox.Desktop.ViewModels
             };
             if (dlg.ShowDialog() == true)
             {
-                ExcelExporter.ExportAll(Ead, UpdatedCost, Annualizer, WaterDemand, Udv, dlg.FileName);
+                ExcelExporter.ExportAll(Ead, UpdatedCost, Annualizer, WaterDemand, Udv, MindMap, dlg.FileName);
             }
         }
     }
