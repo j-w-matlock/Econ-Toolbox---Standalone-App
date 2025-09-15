@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -37,8 +38,20 @@ namespace EconToolbox.Desktop
             var current = source;
             while (current != null && current != root)
             {
-                if (current is ScrollViewer)
+                if (current is ScrollViewer nested)
                 {
+                    if (ReferenceEquals(nested, root))
+                    {
+                        break;
+                    }
+
+                    var templatedParent = nested.TemplatedParent;
+                    if (templatedParent is TextBoxBase || templatedParent is PasswordBox)
+                    {
+                        current = GetParent(nested);
+                        continue;
+                    }
+
                     return true;
                 }
 
