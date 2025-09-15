@@ -180,10 +180,12 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     "beginning" => 0.0,
                     "midpoint" => 0.5,
+                    "middle" => 0.5,
                     _ => 1.0
                 };
-                double months = entry.Year + offsetMonths;
-                entry.PvFactor = Math.Pow(1.0 + r, -(months / 12.0));
+                int monthIndex = entry.Year <= 0 ? 0 : entry.Year - 1;
+                double eventMonth = monthIndex + offsetMonths;
+                entry.PvFactor = Math.Pow(1.0 + r, -(eventMonth / 12.0));
             }
         }
 
@@ -195,11 +197,35 @@ namespace EconToolbox.Desktop.ViewModels
                     .Select(f => (f.Cost, f.Year))
                     .ToList();
 
-                double[]? costArr = IdcEntries.Count > 0 ? IdcEntries.Select(e => e.Cost).ToArray() : null;
-                string[]? timingArr = IdcEntries.Count > 0 ? IdcEntries.Select(e => e.Timing).ToArray() : null;
+                double[]? costArr = null;
+                string[]? timingArr = null;
+                int[]? monthArr = null;
+
+                if (IdcEntries.Count > 0)
+                {
+                    var schedule = IdcEntries
+                        .Select(e => new { e.Cost, Timing = string.IsNullOrWhiteSpace(e.Timing) ? "midpoint" : e.Timing, e.Year })
+                        .OrderBy(e => e.Year)
+                        .ToList();
+
+                    if (schedule.Count > 0)
+                    {
+                        costArr = new double[schedule.Count];
+                        timingArr = new string[schedule.Count];
+                        monthArr = new int[schedule.Count];
+
+                        for (int i = 0; i < schedule.Count; i++)
+                        {
+                            costArr[i] = schedule[i].Cost;
+                            timingArr[i] = schedule[i].Timing;
+                            int monthValue = schedule[i].Year;
+                            monthArr[i] = monthValue <= 0 ? 0 : monthValue - 1;
+                        }
+                    }
+                }
 
                 var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future,
-                    AnalysisPeriod, ConstructionMonths, costArr, timingArr);
+                    AnalysisPeriod, ConstructionMonths, costArr, timingArr, monthArr);
                 Idc = result.Idc;
                 TotalInvestment = result.TotalInvestment;
                 Crf = result.Crf;

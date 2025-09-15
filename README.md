@@ -9,8 +9,7 @@ The application exposes several calculators:
 
 - **Expected Annual Damage (EAD)** – Integrates a probability-damage curve to estimate expected annual damage.
 - **Updated Cost of Storage** – Provides a multi-step workflow for storage reallocation including O&M and mitigation.
-- **Interest During Construction (IDC)** – Estimates interest charges accrued during project construction.
-- **Cost Annualization** – Combines first cost, capital recovery, O&M, and benefits to annualize project investments.
+- **Cost Annualization** – Combines first cost, interest-during-construction schedule, capital recovery, O&M, and benefits to annualize project investments.
 - **Water Demand Forecasting** – Projects future demand using simple growth or regression models.
 - **Unit Day Value (UDV)** – Estimates recreation benefits from unit day values.
 
@@ -31,9 +30,9 @@ The application exposes several calculators:
 
 Each file in `Models/` contains a static class focused solely on computation:
 
+- `AnnualizerModel.cs` – Aggregates first cost, IDC schedule, and future costs to compute annualized metrics.
 - `CapitalRecoveryModel.cs` – Implements the capital recovery factor formula.
 - `EadModel.cs` – Integrates probability and damage arrays to compute EAD.
-- `InterestDuringConstructionModel.cs` – Computes financing costs accumulated during construction.
 - `UdvModel.cs` – Calculates unit day value benefits.
 
 ### ViewModels
@@ -44,7 +43,9 @@ The `ViewModels/` directory holds the MVVM glue between the user interface and t
 - `RelayCommand.cs` – Lightweight `ICommand` implementation for button bindings.
 - `EadViewModel.cs` – Parses comma‑separated probabilities and damages and returns the expected annual damage.
 - `UpdatedCostViewModel.cs` – Guides users through storage cost updates, O&M, mitigation, and total annual cost.
-- `InterestDuringConstructionViewModel.cs` – Allows optional monthly cost and timing entries to estimate IDC.
+- `AnnualizerViewModel.cs` – Manages the cost annualizer workflow, including interest-during-construction schedule entries and annual metrics.
+- `WaterDemandViewModel.cs` – Maintains demand scenarios, computes projections, and prepares chart data.
+- `UdvViewModel.cs` – Wraps the recreation benefit calculator and selected unit day values.
 - `MainViewModel.cs` – Aggregates all sub‑view models for use in `MainWindow`.
 
 ### Views
