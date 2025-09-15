@@ -30,9 +30,9 @@ The application exposes several calculators:
 
 Each file in `Models/` contains a static class focused solely on computation:
 
+- `AnnualizerModel.cs` – Aggregates first cost, IDC schedule, and future costs to compute annualized metrics.
 - `CapitalRecoveryModel.cs` – Implements the capital recovery factor formula.
 - `EadModel.cs` – Integrates probability and damage arrays to compute EAD.
-- `InterestDuringConstructionModel.cs` – Computes financing costs accumulated during construction from a month-by-month schedule.
 - `UdvModel.cs` – Calculates unit day value benefits.
 
 ### ViewModels
