@@ -11,34 +11,69 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Select recreation and activity, enter points, user days, and visitation. Points must follow the table's ascending order." TextWrapping="Wrap" Margin="0,0,0,5"/>
+        <Border Grid.Row="0" Background="#FFF4F7" BorderBrush="#E8A6B8" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,0,0,8">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#C23E64" Margin="0,0,8,0"/>
+                    <TextBlock Text="Unit Day Value Overview" FontWeight="Bold" Foreground="#C23E64"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    Choose the recreation and activity classification, then supply point scores, user days, and visitation. Points must align with the table order to return the correct value tier.
+                </TextBlock>
+            </StackPanel>
+        </Border>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,5">
-            <ComboBox ItemsSource="{Binding RecreationTypes}" SelectedItem="{Binding RecreationType}" Width="120" Margin="0,0,5,0"/>
-            <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" Width="180"/>
+            <ComboBox ItemsSource="{Binding RecreationTypes}" SelectedItem="{Binding RecreationType}" Width="150" Margin="0,0,8,0"/>
+            <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" Width="220"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,0,0,5">
+            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
             <TextBlock Text="Points" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox Text="{Binding Points}" Width="60" Margin="0,0,10,0"/>
             <TextBlock Text="Unit Day Value" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:F2}}" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:F2}}" VerticalAlignment="Center" FontWeight="SemiBold"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0,0,5">
+            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
             <TextBlock Text="Annual User Days" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox Text="{Binding UserDays}" Width="80" Margin="0,0,10,0"/>
             <TextBlock Text="Visitation" VerticalAlignment="Center" Margin="0,0,5,0"/>
             <TextBox Text="{Binding Visitation}" Width="60" Margin="0,0,10,0"/>
-            <Button Content="Compute" Command="{Binding ComputeCommand}"/>
+            <Button Command="{Binding ComputeCommand}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                    <TextBlock Text="Compute"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
-        <TextBlock Text="{Binding Result}" Grid.Row="4"/>
-        <DataGrid Grid.Row="5" ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Points" Binding="{Binding Points}"/>
-                <DataGridTextColumn Header="General Recreation" Binding="{Binding GeneralRecreation}"/>
-                <DataGridTextColumn Header="General Fishing &amp; Hunting" Binding="{Binding GeneralFishingHunting}"/>
-                <DataGridTextColumn Header="Specialized Fishing &amp; Hunting" Binding="{Binding SpecializedFishingHunting}"/>
-                <DataGridTextColumn Header="Specialized Recreation" Binding="{Binding SpecializedRecreation}"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <Border Grid.Row="4" Background="#FFF7F0" BorderBrush="#E9C28E" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,5">
+            <StackPanel>
+                <TextBlock Text="{Binding Result}" FontWeight="Bold"/>
+                <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">
+                    This total monetizes recreation by multiplying the unit day value with annual user days and visitation share. Raising the points score moves you to a higher value tier, while more user days proportionally increase the annual benefit.
+                </TextBlock>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="5" Background="White" BorderBrush="#D0E4F2" BorderThickness="1" CornerRadius="10" Padding="10">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Point Scale Reference" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" FontSize="12" Margin="0,4,0,6">
+                    Reference this table to ensure your point selection matches the published ranges. The highlighted unit day value is chosen by matching your point entry to the correct column.
+                </TextBlock>
+                <DataGrid ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Points" Binding="{Binding Points}"/>
+                        <DataGridTextColumn Header="General Recreation" Binding="{Binding GeneralRecreation}"/>
+                        <DataGridTextColumn Header="General Fishing &amp; Hunting" Binding="{Binding GeneralFishingHunting}"/>
+                        <DataGridTextColumn Header="Specialized Fishing &amp; Hunting" Binding="{Binding SpecializedFishingHunting}"/>
+                        <DataGridTextColumn Header="Specialized Recreation" Binding="{Binding SpecializedRecreation}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

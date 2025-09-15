@@ -10,8 +10,26 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="Provide historical demand data, choose a forecast length and method, then compute results." TextWrapping="Wrap"/>
+            <Border Grid.Row="0" Background="#E6F5FF" BorderBrush="#7DC2E8" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Canvas Width="60" Height="60">
+                        <Path Data="M30,5 C16,20 8,32 8,41 C8,52 17,60 30,60 C43,60 52,52 52,41 C52,32 44,20 30,5 Z" Fill="#7DC2E8"/>
+                        <Path Data="M30,12 C21,23 16,32 16,41 C16,48 22,53 30,53 C38,53 44,48 44,41 C44,32 39,23 30,12 Z" Fill="White" Opacity="0.6"/>
+                    </Canvas>
+                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                        <TextBlock Text="Water Demand Forecast Instructions" FontSize="18" FontWeight="Bold" Foreground="#1F6AB0"/>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            Enter historic data first, choose or add scenarios, then specify forecast horizon and demographic assumptions. Use the Forecast button within each scenario to update charts and tables, and Export when you are ready to archive the scenario.
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Border>
             <TabControl Grid.Row="1" ItemsSource="{Binding Scenarios}" SelectedItem="{Binding SelectedScenario}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
@@ -109,8 +127,18 @@
                                     </Expander>
 
                                     <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
-                                        <Button Content="Forecast" Width="80" Command="{Binding DataContext.ForecastCommand, ElementName=Root}" Margin="0,0,5,0"/>
-                                        <Button Content="Export" Width="80" Command="{Binding DataContext.ExportCommand, ElementName=Root}"/>
+                                        <Button Width="110" Command="{Binding DataContext.ForecastCommand, ElementName=Root}" Margin="0,0,5,0">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                                <TextBlock Text="Forecast"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Width="110" Command="{Binding DataContext.ExportCommand, ElementName=Root}">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                                <TextBlock Text="Export"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                                 <Border Grid.Row="2" Background="White" CornerRadius="4" Padding="5">
@@ -188,8 +216,39 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
-            <TextBlock Grid.Row="2" Text="{Binding SelectedScenario.Description}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,10,0,0"/>
-            <TextBlock Grid.Row="3" Text="{Binding Explanation}" FontWeight="Bold" TextWrapping="Wrap" Margin="0,10,0,0"/>
+            <Border Grid.Row="2" Background="#F0F7FE" BorderBrush="#A6C4EB" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#1F6AB0" Margin="0,0,8,0"/>
+                        <TextBlock Text="Scenario Summary" FontWeight="Bold" Foreground="#1F6AB0"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding SelectedScenario.Description}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="3" Background="#FDF5E6" BorderBrush="#E8C97D" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#B58900" Margin="0,0,8,0"/>
+                        <TextBlock Text="Forecast Logic" FontWeight="Bold" Foreground="#B58900"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="4" Background="#F6FFED" BorderBrush="#9CD06F" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#417505" Margin="0,0,8,0"/>
+                        <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="#417505"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        • Growth Rate reflects the year-over-year percent change driven by your population and per-capita assumptions. Higher growth inputs raise this column.
+                        <LineBreak/>
+                        • Demand shows projected system demand before sector allocations. Each sector column (Residential, Commercial, Industrial, Agricultural) applies the percentages you supplied.
+                        <LineBreak/>
+                        • Adjusted demand applies the Advanced Adjustments so you can see conservation impacts immediately.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

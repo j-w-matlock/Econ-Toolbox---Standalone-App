@@ -8,13 +8,50 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Enter probabilities with corresponding damages. Inputs are automatically sorted and missing 0% and 100% probabilities are added using the trapezoidal method. Use Add Damage Column for additional categories. Optional stage values must align with probabilities." TextWrapping="Wrap" Margin="0,0,0,5"/>
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,5">
-            <Button Content="Add Damage Column" Command="{Binding AddDamageColumnCommand}" Margin="0,0,5,0"/>
-            <Button Content="Remove Damage Column" Command="{Binding RemoveDamageColumnCommand}" Margin="0,0,5,0"/>
-            <CheckBox Content="Include Stage" IsChecked="{Binding UseStage}" Margin="0,0,5,0"/>
-        </StackPanel>
+        <Border Grid.Row="0" Background="#FFF2FBFF" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,5">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="20" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Expected Annual Damage Instructions" FontWeight="Bold" FontSize="16" Foreground="{StaticResource PrimaryBrush}"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    <Run Text="List probability-damage pairs for each category. The tool auto-completes the curve by inserting 0% and 100% points using the trapezoidal method."/>
+                    <LineBreak/>
+                    <Run Text="Toggle Include Stage if you have stage data aligned with the same probabilities."/>
+                    <LineBreak/>
+                    <Run Text="After editing the grid, click Calculate EAD so charts and statistics capture your latest entries."/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+        <WrapPanel Grid.Row="1" Margin="0,0,0,5" ItemHeight="36" ItemWidth="220" MinWidth="200">
+            <Button Command="{Binding AddDamageColumnCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                    <TextBlock Text="Add Damage Column"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding RemoveDamageColumnCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                    <TextBlock Text="Remove Damage Column"/>
+                </StackPanel>
+            </Button>
+            <CheckBox Content="Include Stage" IsChecked="{Binding UseStage}" VerticalAlignment="Center" Margin="4"/>
+            <Button Command="{Binding ComputeCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                    <TextBlock Text="Calculate EAD"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding ExportCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                    <TextBlock Text="Export Summary"/>
+                </StackPanel>
+            </Button>
+        </WrapPanel>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -27,13 +64,41 @@
             </Border>
 
             <Border Grid.Column="1" Margin="10,0,0,0" Background="White" CornerRadius="4" Padding="5">
-                <Canvas>
-                    <Polyline Points="{Binding FrequencyDamagePoints}" Stroke="{StaticResource AccentBrush}" StrokeThickness="2"/>
-                    <Polyline Points="{Binding StageDamagePoints}" Stroke="{StaticResource PrimaryBrush}" StrokeThickness="2"/>
-                </Canvas>
+                <StackPanel>
+                    <TextBlock FontWeight="SemiBold" Text="Visualize Your Curve" Margin="0,0,0,5"/>
+                    <Canvas Height="160">
+                        <Polyline Points="{Binding FrequencyDamagePoints}" Stroke="{StaticResource AccentBrush}" StrokeThickness="2"/>
+                        <Polyline Points="{Binding StageDamagePoints}" Stroke="{StaticResource PrimaryBrush}" StrokeThickness="2"/>
+                    </Canvas>
+                    <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="#31556F">
+                        The teal line plots damages against exceedance probability, while the navy line (when stage is supplied) shows the paired stage-damage curve. Smoother, monotonic inputs yield clearer charts.
+                    </TextBlock>
+                </StackPanel>
             </Border>
         </Grid>
-        <ItemsControl ItemsSource="{Binding Results}" Grid.Row="3" Margin="0,5,0,0"/>
+        <ItemsControl ItemsSource="{Binding Results}" Grid.Row="3" Margin="0,5,0,5">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="White" BorderBrush="#D0E4F2" BorderThickness="1" CornerRadius="6" Padding="8" Margin="0,0,0,5">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="16" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,8,0"/>
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Border Grid.Row="4" Background="#FFF8FD" BorderBrush="#E0CAE7" BorderThickness="1" CornerRadius="8" Padding="12">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#8A4BAF" Margin="0,0,8,0"/>
+                    <TextBlock Text="Result Interpretation" FontWeight="Bold" Foreground="#8A4BAF"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    Each Expected Annual Damage value averages the damage column across the entire probability curve you supplied. Higher damages at frequent events raise the EAD most dramatically. The plotted curves update with every calculation, helping you confirm the shape of the probability and stage relationships before exporting your Excel summary.
+                </TextBlock>
+            </StackPanel>
+        </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

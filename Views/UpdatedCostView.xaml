@@ -6,56 +6,133 @@
              mc:Ignorable="d">
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <StackPanel>
-        <TextBlock Text="Complete each section and ensure year values are ascending. Use Calculate to process all sections." TextWrapping="Wrap" Margin="10,0,10,10"/>
+        <Border Margin="10,0,10,10" Background="#EEF6F8" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" CornerRadius="10" Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Top">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="24" Foreground="{StaticResource PrimaryBrush}" Margin="0,0,10,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="Updated Cost Workflow" FontSize="18" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        Work through each sub-tab from left to right. Start with storage capacity, capture annual joint costs, update historical line items, then evaluate RR&amp;R/mitigation and total annual cost scenarios. Press Compute within each section before leaving the tab so downstream values stay synchronized.
+                    </TextBlock>
+                </StackPanel>
+                <Canvas Grid.Column="2" Width="80" Height="60" Margin="15,0,0,0">
+                    <Rectangle Width="70" Height="40" Fill="White" Stroke="{StaticResource AccentBrush}" RadiusX="6" RadiusY="6" Canvas.Left="5" Canvas.Top="15"/>
+                    <Polyline Points="5,45 25,25 45,30 65,10" Stroke="{StaticResource PrimaryBrush}" StrokeThickness="3" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBrush}" Canvas.Left="1" Canvas.Top="41"/>
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBrush}" Canvas.Left="21" Canvas.Top="21"/>
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBrush}" Canvas.Left="41" Canvas.Top="26"/>
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBrush}" Canvas.Left="61" Canvas.Top="6"/>
+                </Canvas>
+            </Grid>
+        </Border>
         <TabControl Margin="10,0,10,10">
         <TabItem Header="Storage Cost">
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Total Usable Storage" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding TotalStorage}" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Storage Recommendation" Grid.Row="1" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding StorageRecommendation}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
-                <Button Content="Compute" Command="{Binding ComputeStorageCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
-                <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
-            </Grid>
+            <StackPanel Margin="10">
+                <Border Background="#FFF7F0" BorderBrush="#F2C089" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#B96A00" Margin="0,0,8,0"/>
+                            <TextBlock Text="Storage Guidance" FontWeight="Bold" Foreground="#B96A00"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            Record the full system storage and the recommended storage allocation for your study. The compute action scales other sections by this proportion, so double-check the recommendation before proceeding.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Grid Margin="0,10,0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Total Usable Storage" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding TotalStorage}" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Storage Recommendation" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding StorageRecommendation}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                    <Button Command="{Binding ComputeStorageCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                            <TextBlock Text="Compute"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                </Grid>
+                <Border Background="#FFF3E2" BorderBrush="#F2C089" BorderThickness="1" CornerRadius="8" Padding="12">
+                    <TextBlock TextWrapping="Wrap">
+                        The resulting P value shows how much of the joint facilities support your recommendation. Increasing the recommendation or decreasing total storage raises the percentage and, consequently, the share of downstream costs assigned to this project.
+                    </TextBlock>
+                </Border>
+            </StackPanel>
         </TabItem>
         <TabItem Header="Joint Costs O&amp;M">
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Joint Operations Cost" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding JointOperationsCost}" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Joint Maintenance Cost" Grid.Row="1" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding JointMaintenanceCost}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
-                <Button Content="Compute" Command="{Binding ComputeJointCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
-                <TextBlock Text="{Binding TotalJointOm, StringFormat=Total Joint O&amp;M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost"/>
-            </Grid>
+            <StackPanel Margin="10">
+                <Border Background="#EEF9F1" BorderBrush="#8BC999" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#2F855A" Margin="0,0,8,0"/>
+                            <TextBlock Text="Joint O&amp;M Entry" FontWeight="Bold" Foreground="#2F855A"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            Enter the system-wide joint operating and maintenance costs on an annual basis. The compute step keeps a running total that is later scaled by the storage percentage.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Grid Margin="0,10,0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Joint Operations Cost" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding JointOperationsCost}" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Joint Maintenance Cost" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding JointMaintenanceCost}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                    <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                            <TextBlock Text="Compute"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Text="{Binding TotalJointOm, StringFormat=Total Joint O&amp;M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost"/>
+                </Grid>
+                <Border Background="#E5F4EA" BorderBrush="#8BC999" BorderThickness="1" CornerRadius="8" Padding="12">
+                    <TextBlock TextWrapping="Wrap">
+                        This total represents the joint-system expenses before scaling. When the storage percentage increases, more of this amount will be allocated to the recommended plan in the Total Annual Cost tab.
+                    </TextBlock>
+                </Border>
+            </StackPanel>
         </TabItem>
         <TabItem Header="Updated Storage Cost">
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <DataGrid ItemsSource="{Binding UpdatedCostItems}" AutoGenerateColumns="False" Grid.Row="0" Height="150" Margin="0,0,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+                <Border Background="#F1F4FF" BorderBrush="#A2B4F5" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#3A55B5" Margin="0,0,8,0"/>
+                            <TextBlock Text="Update Legacy Costs" FontWeight="Bold" Foreground="#3A55B5"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            Replace historical construction costs with current values by pairing each category with the proper update factor. Keep the categories clear so the export remains audit friendly.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <DataGrid ItemsSource="{Binding UpdatedCostItems}" AutoGenerateColumns="False" Height="160" Margin="0,10,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Category" Binding="{Binding Category}"/>
                         <DataGridTextColumn Header="Actual Cost" Binding="{Binding ActualCost}"/>
@@ -63,98 +140,156 @@
                         <DataGridTextColumn Header="Updated Cost" Binding="{Binding UpdatedCost}" IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <Button Content="Compute" Command="{Binding ComputeUpdatedStorageCommand}" Grid.Row="1" Margin="0,5,0,5"/>
-                <TextBlock Text="{Binding TotalUpdatedCost, StringFormat=Total Updated Cost: {0:C2}}" Grid.Row="2" ToolTip="Total Updated Cost = Σ(Actual Cost × Update Factor)"/>
-            </Grid>
+                <Button Margin="0,5,0,5" Command="{Binding ComputeUpdatedStorageCommand}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                        <TextBlock Text="Compute"/>
+                    </StackPanel>
+                </Button>
+                <Border Background="#E7ECFF" BorderBrush="#A2B4F5" BorderThickness="1" CornerRadius="8" Padding="12">
+                    <StackPanel>
+                        <TextBlock Text="{Binding TotalUpdatedCost, StringFormat=Total Updated Cost: {0:C2}}" FontWeight="Bold"/>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            The total updates each category by multiplying the actual cost with the provided factor. A higher factor or cost pushes the sum upward and flows into the capital cost scenarios later.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
         </TabItem>
         <TabItem Header="RR&amp;R and Mitigation">
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Federal Discount Rate (%)" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding RrrRate}" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Analysis Years" Grid.Row="1" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding RrrPeriods}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="CWCCI" Grid.Row="2" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding RrrCwcci}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Base Year" Grid.Row="3" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding RrrBaseYear}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
-                <DataGrid ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Item" Binding="{Binding Item}"/>
-                        <DataGridTextColumn Header="Future Cost" Binding="{Binding FutureCost}"/>
-                        <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                        <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Present Value" Binding="{Binding PresentValue}" IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-                <Button Content="Compute" Command="{Binding ComputeRrrCommand}" Grid.Row="5" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
-                <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
-                    <TextBlock Text="{Binding RrrUpdatedCost, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value × CWCCI"/>
-                    <TextBlock Text="{Binding RrrAnnualized, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF"/>
-                </StackPanel>
-            </Grid>
-        </TabItem>
-        <TabItem Header="Total Annual Cost">
-            <Grid Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Discount Rate 1 (%)" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding DiscountRate1}" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Analysis Period 1" Grid.Row="1" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding AnalysisPeriod1}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Discount Rate 2 (%)" Grid.Row="2" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding DiscountRate2}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                <TextBlock Text="Analysis Period 2" Grid.Row="3" Margin="0,0,5,5"/>
-                <TextBox Text="{Binding AnalysisPeriod2}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
-                <Button Content="Compute" Command="{Binding ComputeTotalCommand}" Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5"/>
-                <Grid Grid.Row="5" Grid.ColumnSpan="2">
+            <StackPanel Margin="10">
+                <Border Background="#F6F0FF" BorderBrush="#C3A4F6" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#6B35B2" Margin="0,0,8,0"/>
+                            <TextBlock Text="RR&amp;R / Mitigation Planner" FontWeight="Bold" Foreground="#6B35B2"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            Capture future repair, replacement, rehabilitation, and mitigation costs. Use the grid to list each activity, the year it occurs, and its cost in that year dollars. The tool discounts everything back to the base year before applying the CWCCI.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Grid Margin="0,10,0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Header="Cost 1" Grid.Column="0" Margin="0,0,5,0">
-                        <StackPanel>
-                            <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
-                            <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
-                            <TextBlock Text="{Binding Capital1, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1"/>
-                            <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
-                            <TextBlock Text="{Binding RrrScaled, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent"/>
-                            <TextBlock Text="{Binding Total1, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation"/>
+                    <TextBlock Text="Federal Discount Rate (%)" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding RrrRate}" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Analysis Years" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding RrrPeriods}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="CWCCI" Grid.Row="2" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding RrrCwcci}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Base Year" Grid.Row="3" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding RrrBaseYear}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
+                    <DataGrid ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Item" Binding="{Binding Item}"/>
+                            <DataGridTextColumn Header="Future Cost" Binding="{Binding FutureCost}"/>
+                            <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                            <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Present Value" Binding="{Binding PresentValue}" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button Grid.Row="5" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeRrrCommand}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                            <TextBlock Text="Compute"/>
                         </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Cost 2" Grid.Column="1" Margin="5,0,0,0">
-                        <StackPanel>
-                            <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
-                            <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
-                            <TextBlock Text="{Binding Capital2, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2"/>
-                            <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
-                            <TextBlock Text="{Binding Total2, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M"/>
-                        </StackPanel>
-                    </GroupBox>
+                    </Button>
+                    <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
+                        <TextBlock Text="{Binding RrrUpdatedCost, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value × CWCCI" FontWeight="Bold" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding RrrAnnualized, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF" FontWeight="Bold"/>
+                    </StackPanel>
                 </Grid>
-            </Grid>
+                <Border Background="#F1E8FF" BorderBrush="#C3A4F6" BorderThickness="1" CornerRadius="8" Padding="12">
+                    <TextBlock TextWrapping="Wrap">
+                        Present Value aggregates each scheduled cost using the discount rate and base year. The Updated Cost multiplies that total by CWCCI, and the Annualized figure then applies your capital recovery factor. Larger future costs, slower discounting, or higher CWCCI will elevate every downstream total.
+                    </TextBlock>
+                </Border>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Total Annual Cost">
+            <StackPanel Margin="10">
+                <Border Background="#E9F3FF" BorderBrush="#8DB6E3" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#1F6AB0" Margin="0,0,8,0"/>
+                            <TextBlock Text="Compare Annual Cost Scenarios" FontWeight="Bold" Foreground="#1F6AB0"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            Define up to two capital recovery scenarios. Each uses its own discount rate and analysis period to annualize the updated costs, then layers on scaled joint O&amp;M and RR&amp;R/mitigation values.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Grid Margin="0,10,0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Discount Rate 1 (%)" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding DiscountRate1}" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Analysis Period 1" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding AnalysisPeriod1}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Discount Rate 2 (%)" Grid.Row="2" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding DiscountRate2}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBlock Text="Analysis Period 2" Grid.Row="3" Margin="0,0,5,5"/>
+                    <TextBox Text="{Binding AnalysisPeriod2}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
+                    <Button Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeTotalCommand}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                            <TextBlock Text="Compute"/>
+                        </StackPanel>
+                    </Button>
+                    <Grid Grid.Row="5" Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Header="Cost 1" Grid.Column="0" Margin="0,0,5,0">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                                <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
+                                <TextBlock Text="{Binding Capital1, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1"/>
+                                <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
+                                <TextBlock Text="{Binding RrrScaled, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent"/>
+                                <TextBlock Text="{Binding Total1, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation" FontWeight="Bold"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Cost 2" Grid.Column="1" Margin="5,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                                <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
+                                <TextBlock Text="{Binding Capital2, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2"/>
+                                <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
+                                <TextBlock Text="{Binding Total2, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M" FontWeight="Bold"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+                <Border Background="#DBECFF" BorderBrush="#8DB6E3" BorderThickness="1" CornerRadius="8" Padding="12">
+                    <TextBlock TextWrapping="Wrap">
+                        Cost 1 and Cost 2 let you compare alternative discounting assumptions. Lower discount rates or longer analysis periods increase the capital recovery factor and therefore annualized storage costs. Because joint O&amp;M and RR&amp;R values scale with the storage percentage, any change you make on earlier tabs will ripple into both scenarios here.
+                    </TextBlock>
+                </Border>
+            </StackPanel>
         </TabItem>
         </TabControl>
         </StackPanel>
