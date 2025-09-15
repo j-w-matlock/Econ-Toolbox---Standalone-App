@@ -10,7 +10,13 @@
         MinHeight="600"
         ResizeMode="CanResize"
         SnapsToDevicePixels="True"
-        UseLayoutRounding="True">
+        UseLayoutRounding="True"
+        ToolTipService.InitialShowDelay="200"
+        ToolTipService.ShowDuration="20000"
+        ToolTipService.BetweenShowDelay="200"
+        ToolTipService.Placement="Mouse"
+        ToolTipService.HorizontalOffset="12"
+        ToolTipService.VerticalOffset="12">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
