@@ -22,6 +22,26 @@ namespace EconToolbox.Desktop.Views
 
         private MindMapViewModel? ViewModel => DataContext as MindMapViewModel;
 
+        private double GetZoomFactor()
+        {
+            var zoom = ViewModel?.ZoomLevel ?? 1.0;
+            return zoom <= 0 ? 1.0 : zoom;
+        }
+
+        private Point NormalizeToCanvas(Point point)
+        {
+            var zoom = GetZoomFactor();
+            if (Math.Abs(zoom - 1.0) < 0.0001)
+                return point;
+
+            return new Point(point.X / zoom, point.Y / zoom);
+        }
+
+        private Point GetCanvasPosition(MouseEventArgs e, IInputElement reference)
+        {
+            return NormalizeToCanvas(e.GetPosition(reference));
+        }
+
         private void OnNodesLoaded(object sender, RoutedEventArgs e)
         {
             if (sender is ItemsControl itemsControl)
@@ -57,7 +77,7 @@ namespace EconToolbox.Desktop.Views
         private void OnCanvasRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var reference = (IInputElement?)_nodeCanvas ?? (IInputElement)sender;
-            _lastCanvasContextPosition = e.GetPosition(reference);
+            _lastCanvasContextPosition = GetCanvasPosition(e, reference);
         }
 
         private void OnCanvasContextMenuOpened(object sender, RoutedEventArgs e)
@@ -104,7 +124,7 @@ namespace EconToolbox.Desktop.Views
                 ViewModel.SelectedNode = node;
 
             var reference = (IInputElement?)_nodeCanvas ?? element;
-            var position = e.GetPosition(reference);
+            var position = GetCanvasPosition(e, reference);
             _dragOffset = new Point(position.X - node.X, position.Y - node.Y);
 
             _draggingNode = node;
@@ -128,7 +148,7 @@ namespace EconToolbox.Desktop.Views
             }
 
             var reference = (IInputElement?)_nodeCanvas ?? _draggingElement;
-            var position = e.GetPosition(reference);
+            var position = GetCanvasPosition(e, reference);
             var newX = position.X - _dragOffset.X;
             var newY = position.Y - _dragOffset.Y;
 
@@ -162,7 +182,7 @@ namespace EconToolbox.Desktop.Views
                     ViewModel.SelectedNode = node;
 
                 var reference = (IInputElement?)_nodeCanvas ?? element;
-                _lastCanvasContextPosition = e.GetPosition(reference);
+                _lastCanvasContextPosition = GetCanvasPosition(e, reference);
             }
         }
 
