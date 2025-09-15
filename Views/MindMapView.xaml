@@ -2,19 +2,18 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
+             xmlns:local="clr-namespace:EconToolbox.Desktop.Views"
              Background="{StaticResource Brush.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <UserControl.Resources>
-        <HierarchicalDataTemplate DataType="{x:Type vm:MindMapNodeViewModel}" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
-                <Ellipse Width="8"
-                         Height="8"
-                         Fill="{StaticResource Brush.Accent}"
-                         Margin="0,0,6,0"/>
-                <TextBlock Text="{Binding Title}"/>
-            </StackPanel>
-        </HierarchicalDataTemplate>
+        <Style x:Key="ConnectionLineStyle" TargetType="Line">
+            <Setter Property="Stroke" Value="#92A8D4"/>
+            <Setter Property="StrokeThickness" Value="2.4"/>
+            <Setter Property="StrokeStartLineCap" Value="Round"/>
+            <Setter Property="StrokeEndLineCap" Value="Round"/>
+            <Setter Property="Opacity" Value="0.9"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -28,18 +27,17 @@
                 BorderBrush="#AACDF1"
                 BorderThickness="1"
                 CornerRadius="10"
-                Padding="14"
-                Margin="0,0,0,12">
+                Padding="16"
+                Margin="0,0,0,16">
             <StackPanel>
                 <TextBlock Text="Mind Map Planner"
                            FontSize="18"
                            FontWeight="Bold"
                            Foreground="#1F6AB0"/>
-                <TextBlock TextWrapping="Wrap"
-                           Margin="0,6,0,0">
-                    Use the mind map to capture a central theme, break it into connected ideas, and note the actions
-                    needed to move forward. Create root nodes for major pillars, child nodes for deeper details, and keep
-                    explanatory notes on the right.
+                <TextBlock Margin="0,6,0,0"
+                           TextWrapping="Wrap">
+                    Right-click anywhere on the canvas to create new root, child, or sibling ideas. Drag the icons to
+                    arrange your tree and use the panel on the right to fill in the details.
                 </TextBlock>
             </StackPanel>
         </Border>
@@ -47,131 +45,216 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0"
                     Background="White"
-                    CornerRadius="8"
-                    Padding="12"
+                    CornerRadius="12"
+                    Padding="18"
                     Margin="0,0,12,0"
                     BorderBrush="#E2E8F0"
                     BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Structure"
-                               FontWeight="Bold"
-                               FontSize="16"/>
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Interactive Mind Map"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Margin="0,4,0,0"
+                                   Foreground="#5B6C86"
+                                   Text="Right-click to add ideas, and drag icons to re-arrange your thinking."/>
+                    </StackPanel>
 
-                    <WrapPanel Grid.Row="1"
-                               Margin="0,8,0,8"
-                               ItemHeight="36"
-                               ItemWidth="140">
-                        <Button Command="{Binding AddRootNodeCommand}"
-                                Margin="0,0,8,8"
-                                MinWidth="120"
-                                ToolTip="Create a new top-level pillar">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="+"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Margin="0,0,6,0"/>
-                                <TextBlock Text="Add Root"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding AddChildNodeCommand}"
-                                Margin="0,0,8,8"
-                                MinWidth="120"
-                                ToolTip="Add a child idea under the selected node">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="↳"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Margin="0,0,6,0"/>
-                                <TextBlock Text="Add Child"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding AddSiblingNodeCommand}"
-                                Margin="0,0,8,8"
-                                MinWidth="120"
-                                ToolTip="Create another idea at the same level as the selected node">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="⇢"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Margin="0,0,6,0"/>
-                                <TextBlock Text="Add Sibling"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding RemoveNodeCommand}"
-                                Margin="0,0,8,8"
-                                MinWidth="120"
-                                ToolTip="Remove the selected idea and its descendants">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="×"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Margin="0,0,6,0"/>
-                                <TextBlock Text="Remove"/>
-                            </StackPanel>
-                        </Button>
-                    </WrapPanel>
+                    <ScrollViewer Grid.Row="1"
+                                  Margin="0,12,0,0"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+                        <Grid>
+                            <ItemsControl ItemsSource="{Binding Connections}"
+                                          IsHitTestVisible="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas Width="{Binding CanvasWidth}"
+                                                Height="{Binding CanvasHeight}"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:MindMapConnectionViewModel}">
+                                        <Line Style="{StaticResource ConnectionLineStyle}"
+                                              X1="{Binding StartX}"
+                                              Y1="{Binding StartY}"
+                                              X2="{Binding EndX}"
+                                              Y2="{Binding EndY}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
 
-                    <ScrollViewer Grid.Row="2"
-                                  VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled">
-                        <TreeView ItemsSource="{Binding Nodes}">
-                            <TreeView.ItemContainerStyle>
-                                <Style TargetType="TreeViewItem">
-                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
-                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
-                                    <Setter Property="Margin" Value="0,2,0,2"/>
-                                </Style>
-                            </TreeView.ItemContainerStyle>
-                        </TreeView>
+                            <ItemsControl x:Name="NodeItemsControl"
+                                          ItemsSource="{Binding CanvasNodes}"
+                                          Loaded="OnNodesLoaded"
+                                          PreviewMouseRightButtonDown="OnCanvasRightButtonDown">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas Width="{Binding CanvasWidth}"
+                                                Height="{Binding CanvasHeight}"
+                                                Background="#F8FBFF"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style TargetType="ContentPresenter">
+                                        <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                                        <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
+                                <ItemsControl.ContextMenu>
+                                    <ContextMenu Opened="OnCanvasContextMenuOpened">
+                                        <MenuItem Header="Add Root Idea"
+                                                  Click="OnCanvasAddRoot"/>
+                                        <MenuItem Header="Add Child Idea"
+                                                  Click="OnCanvasAddChild"/>
+                                        <MenuItem Header="Add Sibling Idea"
+                                                  Click="OnCanvasAddSibling"/>
+                                    </ContextMenu>
+                                </ItemsControl.ContextMenu>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:MindMapNodeViewModel}">
+                                        <Border Padding="12"
+                                                Background="White"
+                                                CornerRadius="18"
+                                                BorderBrush="#CFDAED"
+                                                BorderThickness="1.2"
+                                                MouseLeftButtonDown="Node_MouseLeftButtonDown"
+                                                MouseLeftButtonUp="Node_MouseLeftButtonUp"
+                                                MouseMove="Node_MouseMove"
+                                                MouseRightButtonDown="Node_MouseRightButtonDown"
+                                                SizeChanged="Node_SizeChanged">
+                                            <Border.Effect>
+                                                <DropShadowEffect BlurRadius="14"
+                                                                  ShadowDepth="3"
+                                                                  Color="#1F3D66"
+                                                                  Opacity="0.18"/>
+                                            </Border.Effect>
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Opacity" Value="0.95"/>
+                                                    <Setter Property="Cursor" Value="Hand"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="Opacity" Value="1"/>
+                                                            <Setter Property="BorderBrush" Value="#2B6CB0"/>
+                                                            <Setter Property="BorderThickness" Value="2.2"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Border.ContextMenu>
+                                                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}"
+                                                             Opened="OnNodeContextMenuOpened">
+                                                    <MenuItem Header="Add Child"
+                                                              Click="OnNodeAddChild"/>
+                                                    <MenuItem Header="Add Sibling"
+                                                              Click="OnNodeAddSibling"/>
+                                                    <Separator/>
+                                                    <MenuItem Header="Remove"
+                                                              Click="OnNodeRemove"/>
+                                                </ContextMenu>
+                                            </Border.ContextMenu>
+                                            <StackPanel Width="180">
+                                                <Grid Width="64"
+                                                      Height="64"
+                                                      HorizontalAlignment="Center">
+                                                    <Ellipse Fill="#E2ECFF"
+                                                             Stroke="#9AB5E5"
+                                                             StrokeThickness="1.4"/>
+                                                    <TextBlock Text="💡"
+                                                               FontSize="30"
+                                                               FontFamily="Segoe UI Emoji"
+                                                               VerticalAlignment="Center"
+                                                               HorizontalAlignment="Center"/>
+                                                </Grid>
+                                                <TextBlock Text="{Binding Title}"
+                                                           Margin="0,10,0,0"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="14"
+                                                           TextAlignment="Center"
+                                                           Foreground="#1E3A5F"
+                                                           TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding Notes}"
+                                                           Margin="0,6,0,0"
+                                                           FontSize="12"
+                                                           Foreground="#64748B"
+                                                           TextAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           TextWrapping="Wrap"
+                                                           MaxHeight="48"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
                     </ScrollViewer>
                 </Grid>
             </Border>
 
             <Border Grid.Column="1"
                     Background="White"
-                    CornerRadius="8"
-                    Padding="16"
+                    CornerRadius="12"
+                    Padding="20"
                     BorderBrush="#E2E8F0"
                     BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0"
-                               Text="{Binding SelectedPath}"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Margin="0,0,0,12">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedNode}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="Idea Details"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Margin="0,4,0,12"
+                                   TextWrapping="Wrap"
+                                   Foreground="#5F6B7C"
+                                   Text="Select an icon from the canvas to capture notes, context, and next steps."/>
+                    </StackPanel>
 
-                    <TextBlock Grid.Row="1"
-                               Text="Select an idea on the left to add notes, context, and next steps."
+                    <Border Grid.Row="1"
+                            Background="#F4F7FB"
+                            BorderBrush="#DFE7F5"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="10"
+                            Margin="0,0,0,12">
+                        <TextBlock Text="{Binding SelectedPath}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#274265"
+                                   TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedNode}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Border>
+
+                    <TextBlock Grid.Row="2"
+                               Text="Right-click on the canvas to add your first idea."
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center"
-                               Foreground="#5F6B7C"
+                               Foreground="#6B7280"
                                FontSize="14"
                                TextWrapping="Wrap"
                                TextAlignment="Center">
@@ -187,7 +270,7 @@
                         </TextBlock.Style>
                     </TextBlock>
 
-                    <ContentControl Grid.Row="1"
+                    <ContentControl Grid.Row="2"
                                     Content="{Binding SelectedNode}">
                         <ContentControl.Style>
                             <Style TargetType="ContentControl">
@@ -208,13 +291,14 @@
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
 
-                                    <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                                    <StackPanel Grid.Row="0" Margin="0,0,0,16">
                                         <TextBlock Text="Idea Title" FontWeight="SemiBold"/>
                                         <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
-                                                 Margin="0,6,0,0"/>
+                                                 Margin="0,6,0,0"
+                                                 MinHeight="28"/>
                                     </StackPanel>
 
-                                    <StackPanel Grid.Row="1" Margin="0,0,0,12">
+                                    <StackPanel Grid.Row="1" Margin="0,0,0,16">
                                         <TextBlock Text="Key Points / Notes" FontWeight="SemiBold"/>
                                         <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
                                                  Margin="0,6,0,0"
@@ -231,7 +315,9 @@
                                             CornerRadius="6"
                                             Padding="12">
                                         <StackPanel>
-                                            <TextBlock Text="Child ideas" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                            <TextBlock Text="Child ideas"
+                                                       FontWeight="SemiBold"
+                                                       Margin="0,0,0,8"/>
                                             <ItemsControl ItemsSource="{Binding Children}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
@@ -255,7 +341,7 @@
                                                     </Style>
                                                 </ItemsControl.Style>
                                             </ItemsControl>
-                                            <TextBlock Text="No child ideas yet. Use “Add Child” to break this topic down further."
+                                            <TextBlock Text="No child ideas yet. Use the context menu to break this topic down further."
                                                        Foreground="#5F6B7C"
                                                        TextWrapping="Wrap">
                                                 <TextBlock.Style>
