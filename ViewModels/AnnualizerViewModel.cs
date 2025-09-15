@@ -121,11 +121,15 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ICommand ComputeCommand { get; }
         public ICommand ExportCommand { get; }
+        public ICommand ResetIdcCommand { get; }
+        public ICommand ResetFutureCostsCommand { get; }
 
         public AnnualizerViewModel()
         {
             ComputeCommand = new RelayCommand(Compute);
             ExportCommand = new RelayCommand(Export);
+            ResetIdcCommand = new RelayCommand(ResetIdcEntries);
+            ResetFutureCostsCommand = new RelayCommand(ResetFutureCostEntries);
 
             FutureCosts.CollectionChanged += EntriesChanged;
             IdcEntries.CollectionChanged += EntriesChanged;
@@ -133,6 +137,11 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void EntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            if (e.OldItems != null)
+            {
+                foreach (FutureCostEntry entry in e.OldItems)
+                    entry.PropertyChanged -= EntryOnPropertyChanged;
+            }
             if (e.NewItems != null)
                 foreach (FutureCostEntry entry in e.NewItems)
                     entry.PropertyChanged += EntryOnPropertyChanged;
@@ -225,6 +234,24 @@ namespace EconToolbox.Desktop.ViewModels
                 Services.ExcelExporter.ExportAnnualizer(FirstCost, Rate, AnnualOm, AnnualBenefits,
                     FutureCosts, Idc, TotalInvestment, Crf, AnnualCost, Bcr, dlg.FileName);
             }
+        }
+
+        private void ResetIdcEntries()
+        {
+            if (IdcEntries.Count == 0)
+                return;
+            foreach (var entry in IdcEntries.ToList())
+                entry.PropertyChanged -= EntryOnPropertyChanged;
+            IdcEntries.Clear();
+        }
+
+        private void ResetFutureCostEntries()
+        {
+            if (FutureCosts.Count == 0)
+                return;
+            foreach (var entry in FutureCosts.ToList())
+                entry.PropertyChanged -= EntryOnPropertyChanged;
+            FutureCosts.Clear();
         }
     }
 }

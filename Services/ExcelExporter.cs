@@ -40,12 +40,14 @@ namespace EconToolbox.Desktop.Services
                 ws.Cell(1,5).Value = "Industrial";
                 ws.Cell(1,6).Value = "Agricultural";
                 ws.Cell(1,7).Value = "Adjusted";
+                ws.Cell(1,8).Value = "Adjusted (ac-ft/yr)";
                 ws.Cell(1,2).GetComment().AddText("Demand = Prior Demand × (1 + Growth Rate)");
                 ws.Cell(1,3).GetComment().AddText("Residential = Demand × Residential %");
                 ws.Cell(1,4).GetComment().AddText("Commercial = Demand × Commercial %");
                 ws.Cell(1,5).GetComment().AddText("Industrial = Demand × Industrial %");
                 ws.Cell(1,6).GetComment().AddText("Agricultural = Demand × Agricultural %");
                 ws.Cell(1,7).GetComment().AddText("Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)");
+                ws.Cell(1,8).GetComment().AddText("Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851");
                 int row = 2;
                 foreach (var d in scenario.Results)
                 {
@@ -56,6 +58,7 @@ namespace EconToolbox.Desktop.Services
                     ws.Cell(row,5).Value = d.IndustrialDemand;
                     ws.Cell(row,6).Value = d.AgriculturalDemand;
                     ws.Cell(row,7).Value = d.AdjustedDemand;
+                    ws.Cell(row,8).Value = d.AdjustedDemandAcreFeet;
                     row++;
                 }
             }
@@ -224,9 +227,11 @@ namespace EconToolbox.Desktop.Services
                 wdSheet.Cell(1,2).Value = "Demand";
                 wdSheet.Cell(1,3).Value = "Industrial";
                 wdSheet.Cell(1,4).Value = "Adjusted";
+                wdSheet.Cell(1,5).Value = "Adjusted (ac-ft/yr)";
                 wdSheet.Cell(1,2).GetComment().AddText("Demand = Prior Demand × (1 + Growth Rate)");
                 wdSheet.Cell(1,3).GetComment().AddText("Industrial = Demand × Industrial %");
                 wdSheet.Cell(1,4).GetComment().AddText("Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)");
+                wdSheet.Cell(1,5).GetComment().AddText("Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851");
                 rowIdx = 2;
                 foreach (var d in scenario.Results)
                 {
@@ -234,6 +239,7 @@ namespace EconToolbox.Desktop.Services
                     wdSheet.Cell(rowIdx,2).Value = d.Demand;
                     wdSheet.Cell(rowIdx,3).Value = d.IndustrialDemand;
                     wdSheet.Cell(rowIdx,4).Value = d.AdjustedDemand;
+                    wdSheet.Cell(rowIdx,5).Value = d.AdjustedDemandAcreFeet;
                     rowIdx++;
                 }
             }

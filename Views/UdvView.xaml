@@ -16,7 +16,16 @@
         <Border Grid.Row="0" Background="#FFF4F7" BorderBrush="#E8A6B8" BorderThickness="1" CornerRadius="10" Padding="12" Margin="{StaticResource Margin.Stack}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#C23E64" Margin="{StaticResource Margin.Inline}"/>
+                    <Viewbox Width="28" Height="28" Margin="{StaticResource Margin.Inline}">
+                        <Canvas Width="28" Height="28">
+                            <Polygon Points="14,3 8,13 11,13 6,20 22,20 17,13 20,13" Fill="#C23E64"/>
+                            <Rectangle Width="3" Height="6" Fill="#7A1F3E" RadiusX="1" RadiusY="1" Canvas.Left="12.5" Canvas.Top="20"/>
+                            <Rectangle Width="18" Height="3" Fill="#C23E64" RadiusX="1.5" RadiusY="1.5" Canvas.Left="5" Canvas.Top="19"/>
+                            <Rectangle Width="2.5" Height="5" Fill="#7A1F3E" RadiusX="1" RadiusY="1" Canvas.Left="7" Canvas.Top="21.5"/>
+                            <Rectangle Width="2.5" Height="5" Fill="#7A1F3E" RadiusX="1" RadiusY="1" Canvas.Left="18.5" Canvas.Top="21.5"/>
+                            <Path Data="M5,25 L23,25" Stroke="#C23E64" StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+                        </Canvas>
+                    </Viewbox>
                     <TextBlock Text="Unit Day Value Overview" FontWeight="Bold" Foreground="#C23E64"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
