@@ -529,15 +529,21 @@ namespace EconToolbox.Desktop.Services
                 ("Unit Day Value", udv.UnitDayValue, "$#,##0.00", "Interpolated value from the recreation tables.", true),
                 ("User Days", udv.UserDays, "#,##0", "Projected annual participation.", false),
                 ("Visitation Multiplier", udv.Visitation, "0.00", "Adjustment applied to user days.", false),
-                ("Annual Recreation Benefit", recreationBenefit, "$#,##0.00", "Unit Day Value × User Days × Visitation.", true),
+                ("Annual Recreation Benefit", recreationBenefit, "$#,##0.00", "Unit Day Value × User Days × Visitation.", true)
+            };
+
+            var mindMapRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+            {
                 ("Ideas Documented", mindMapNodes.Count, "0", "Total nodes captured within the mind map.", false),
                 ("Ideas With Notes", notedIdeas, "0", "Nodes that include detailed notes.", false),
                 ("Primary Themes", primaryThemes, null, "Top-level branches currently defined.", false)
             };
 
             int udvStart = currentRow;
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation & Mind Map Highlights", udvRows);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation Highlights", udvRows);
             AddUdvChart(ws, udv, udvStart, 5);
+
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Mind Map Highlights", mindMapRows);
         }
 
         private static int WriteKeyValueTable(IXLWorksheet ws, int startRow, int startColumn, string title, List<(string Label, object Value, string? Format, string? Comment, bool Highlight)> entries)
