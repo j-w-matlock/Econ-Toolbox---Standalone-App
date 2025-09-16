@@ -15,6 +15,8 @@ namespace EconToolbox.Desktop.Services
 {
     public static class ExcelExporter
     {
+        private const int ExcelMaxPictureNameLength = 31;
+
         private static readonly Color ChartBlue = (Color)ColorConverter.ConvertFromString("#2D6A8E");
         private static readonly Color ChartTeal = (Color)ColorConverter.ConvertFromString("#1ABC9C");
         private static readonly Color ChartOrange = (Color)ColorConverter.ConvertFromString("#F39C12");
@@ -699,11 +701,27 @@ namespace EconToolbox.Desktop.Services
             return row + 2;
         }
 
+        private static string CreatePictureName(string prefix)
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+                prefix = "Picture";
+
+            if (prefix.Length > ExcelMaxPictureNameLength)
+                prefix = prefix.Substring(0, ExcelMaxPictureNameLength);
+
+            var uniquePart = Guid.NewGuid().ToString("N");
+            int maxUniqueLength = ExcelMaxPictureNameLength - prefix.Length;
+            if (maxUniqueLength <= 0)
+                return prefix;
+
+            return prefix + uniquePart.Substring(0, Math.Min(maxUniqueLength, uniquePart.Length));
+        }
+
         private static void AddAnnualizerComparisonChart(IXLWorksheet ws, double annualBenefits, double annualCost, double bcr, int row, int column)
         {
             byte[] bytes = CreateAnnualizerBarChartImage(annualBenefits, annualCost, bcr);
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, $"AnnualizerChart_{Guid.NewGuid():N}");
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("AnnualizerChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
 
@@ -719,7 +737,7 @@ namespace EconToolbox.Desktop.Services
 
             byte[] bytes = CreateEadDashboardChartImage(data, curveName, eadValue);
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, $"EadDashboardChart_{Guid.NewGuid():N}");
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("EadDashboardChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
 
@@ -740,7 +758,7 @@ namespace EconToolbox.Desktop.Services
             var data = series.Select(s => (s.Name, s.Points, s.Color)).ToList();
             byte[] bytes = CreateWaterDemandChartImage(data);
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, $"WaterDemandChart_{Guid.NewGuid():N}");
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("WaterDemandChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
 
@@ -750,7 +768,7 @@ namespace EconToolbox.Desktop.Services
             if (bytes.Length == 0)
                 return;
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, $"UdvChart_{Guid.NewGuid():N}");
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("UdvChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
 
