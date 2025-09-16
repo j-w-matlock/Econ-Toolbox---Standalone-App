@@ -986,22 +986,22 @@ namespace EconToolbox.Desktop.Services
 
             var axisBrush = new SolidColorBrush(ChartGray);
             axisBrush.Freeze();
-            for (int i = 0; i <= verticalTicks; i++)
+            for (int i = 0; i <= verticalTickCount; i++)
             {
-                double fraction = i / (double)verticalTicks;
+                double fraction = i / (double)verticalTickCount;
                 double probability = fraction;
                 var label = new FormattedText($"{probability * 100:0}%", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
                 double x = origin.X + fraction * plotWidth - label.Width / 2.0;
                 double y = origin.Y + 10;
                 dc.DrawText(label, new Point(x, y));
             }
-            for (int i = 0; i <= horizontalTicks; i++)
+            for (int i = 0; i <= horizontalTickCount; i++)
             {
-                double value = maxDamage * i / horizontalTicks;
+                double value = maxDamage * i / horizontalTickCount;
                 string textValue = FormatCurrencyLabel(value);
                 var label = new FormattedText(textValue, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
                 double x = marginLeft - label.Width - 8;
-                double y = origin.Y - (plotHeight * i / horizontalTicks) - label.Height / 2.0;
+                double y = origin.Y - (plotHeight * i / horizontalTickCount) - label.Height / 2.0;
                 dc.DrawText(label, new Point(x, y));
             }
 
