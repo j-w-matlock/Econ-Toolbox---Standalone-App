@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ClosedXML.Excel;
 using ClosedXML.Excel.Drawings;
@@ -8,11 +9,27 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Globalization;
 
 namespace EconToolbox.Desktop.Services
 {
     public static class ExcelExporter
     {
+        private static readonly Color ChartBlue = (Color)ColorConverter.ConvertFromString("#2D6A8E");
+        private static readonly Color ChartTeal = (Color)ColorConverter.ConvertFromString("#1ABC9C");
+        private static readonly Color ChartOrange = (Color)ColorConverter.ConvertFromString("#F39C12");
+        private static readonly Color ChartPlum = (Color)ColorConverter.ConvertFromString("#7F56D9");
+        private static readonly Color ChartGray = (Color)ColorConverter.ConvertFromString("#6B7280");
+
+        private static readonly XLColor DashboardHeaderFill = XLColor.FromHtml("#2D6A8E");
+        private static readonly XLColor DashboardHeaderText = XLColor.White;
+        private static readonly XLColor DashboardSubHeaderFill = XLColor.FromHtml("#EFF5FB");
+        private static readonly XLColor DashboardRowLight = XLColor.FromHtml("#FFFFFF");
+        private static readonly XLColor DashboardRowAlt = XLColor.FromHtml("#F6F9FC");
+        private static readonly XLColor DashboardBorder = XLColor.FromHtml("#D0D7E5");
+        private static readonly XLColor DashboardAccentText = XLColor.FromHtml("#2D6A8E");
+        private static readonly XLColor DashboardPrimaryText = XLColor.FromHtml("#1F2937");
+
         public static void ExportCapitalRecovery(double rate, int periods, double factor, string filePath)
         {
             using var wb = new XLWorkbook();
@@ -369,7 +386,1026 @@ namespace EconToolbox.Desktop.Services
                 mindMapSheet.Columns(1,4).AdjustToContents();
             }
 
+            BuildDashboard(wb, ead, annualizer, updated, waterDemand, udv, mindMap);
+
             wb.SaveAs(filePath);
+        }
+
+        private static void BuildDashboard(XLWorkbook wb, EadViewModel ead, AnnualizerViewModel annualizer, UpdatedCostViewModel updated, WaterDemandViewModel waterDemand, UdvViewModel udv, MindMapViewModel mindMap)
+        {
+            var ws = wb.Worksheets.Add("Dashboard");
+            ws.Position = 1;
+            ws.Style.Font.SetFontName("Segoe UI");
+            ws.Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+
+            ws.Column(1).Width = 32;
+            ws.Column(2).Width = 20;
+            ws.Column(3).Width = 16;
+            ws.Column(4).Width = 4;
+            ws.Column(5).Width = 20;
+            ws.Column(6).Width = 20;
+            ws.Column(7).Width = 20;
+            ws.Column(8).Width = 20;
+
+            var titleRange = ws.Range(1, 1, 1, 8);
+            titleRange.Merge();
+            titleRange.Value = "Economic Toolbox Dashboard";
+            titleRange.Style.Font.SetBold().SetFontSize(20).FontColor = DashboardHeaderText;
+            titleRange.Style.Fill.BackgroundColor = DashboardHeaderFill;
+            titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            var subtitleRange = ws.Range(2, 1, 2, 8);
+            subtitleRange.Merge();
+            subtitleRange.Value = "Consolidated view of key planning results";
+            subtitleRange.Style.Font.SetFontColor(DashboardAccentText);
+            subtitleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            var timestampRange = ws.Range(3, 1, 3, 8);
+            timestampRange.Merge();
+            timestampRange.Value = $"Generated {DateTime.Now:MMMM d, yyyy h:mm tt}";
+            timestampRange.Style.Font.SetFontColor(DashboardPrimaryText).Font.SetFontSize(11);
+            timestampRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            timestampRange.Style.Fill.BackgroundColor = DashboardRowLight;
+
+            ws.SheetView.FreezeRows(3);
+
+            int currentRow = 5;
+
+            var financialRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+            {
+                ("First Cost", annualizer.FirstCost, "$#,##0.00", "Initial capital expenditure before financing.", false),
+                ("Discount Rate", annualizer.Rate / 100.0, "0.00%", "Input discount rate used in the CRF.", false),
+                ("Annual O&M", annualizer.AnnualOm, "$#,##0.00", "Recurring operations and maintenance cost.", false),
+                ("Annual Benefits", annualizer.AnnualBenefits, "$#,##0.00", "Estimated average annual benefits.", true),
+                ("IDC", annualizer.Idc, "$#,##0.00", "Calculated from first cost, discount rate and IDC schedule.", false),
+                ("Total Investment", annualizer.TotalInvestment, "$#,##0.00", "First Cost + IDC + PV of Future Costs.", false),
+                ("CRF", annualizer.Crf, "0.0000", "r(1+r)^n / ((1+r)^n - 1)", false),
+                ("Annual Cost", annualizer.AnnualCost, "$#,##0.00", "Total Investment × CRF + Annual O&M.", false),
+                ("Benefit-Cost Ratio", annualizer.Bcr, "0.00", "Annual Benefits / Annual Cost.", true),
+                ("Storage Utilization", updated.Percent, "0.00%", "Storage Recommendation / Total Usable Storage.", false),
+                ("Total Joint O&M", updated.TotalJointOm, "$#,##0.00", "Joint Operations Cost + Joint Maintenance Cost.", false),
+                ("Total Updated Cost", updated.TotalUpdatedCost, "$#,##0.00", "Σ(Actual Cost × Update Factor).", false),
+                ("RRR Updated Cost", updated.RrrUpdatedCost, "$#,##0.00", "Present Value × CWCCI.", false),
+                ("RRR Annualized", updated.RrrAnnualized, "$#,##0.00", "RRR Updated Cost × CRF.", false),
+                ("O&M Scaled", updated.OmScaled, "$#,##0.00", "Total Joint O&M × Storage Utilization.", false),
+                ("RRR Scaled", updated.RrrScaled, "$#,##0.00", "RRR Annualized × Storage Utilization.", false),
+                ("Cost Recommendation", updated.CostRecommendation, "$#,##0.00", "Total Updated Cost × Storage Utilization.", true),
+                ("Capital (Scenario 1)", updated.Capital1, "$#,##0.00", "Total Updated Cost × Storage Utilization × CRF1.", false),
+                ("Total Annual Cost (Scenario 1)", updated.Total1, "$#,##0.00", "Capital1 + O&M Scaled + RRR Scaled.", false),
+                ("Capital (Scenario 2)", updated.Capital2, "$#,##0.00", "Total Updated Cost × Storage Utilization × CRF2.", false),
+                ("Total Annual Cost (Scenario 2)", updated.Total2, "$#,##0.00", "Capital2 + O&M Scaled.", false)
+            };
+
+            int capitalStart = currentRow;
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Capital Investment Metrics", financialRows);
+            AddAnnualizerComparisonChart(ws, annualizer.AnnualBenefits, annualizer.AnnualCost, annualizer.Bcr, capitalStart, 5);
+
+            double? primaryEadValue = null;
+            string primaryDamageColumn = ead.DamageColumns.Count > 0 ? ead.DamageColumns[0] : "Damage";
+            var eadRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+            {
+                ("Rows Evaluated", ead.Rows.Count, "0", "Number of probability-damage pairs included.", false),
+                ("Includes Stage Data", ead.UseStage ? "Yes" : "No", null, ead.UseStage ? "Stage values informed the visual trend." : "Stage values were not provided.", false)
+            };
+
+            if (ead.Rows.Count > 0 && ead.DamageColumns.Count > 0)
+            {
+                var probabilities = ead.Rows.Select(r => r.Probability).ToArray();
+                for (int i = 0; i < ead.DamageColumns.Count; i++)
+                {
+                    var damages = ead.Rows.Select(r => r.Damages.Count > i ? r.Damages[i] : 0.0).ToArray();
+                    double eadValue = EadModel.Compute(probabilities, damages);
+                    if (i == 0)
+                        primaryEadValue = eadValue;
+                    eadRows.Add(($"{ead.DamageColumns[i]} EAD", eadValue, "$#,##0.00", "Expected annual damage for this damage column.", i == 0));
+                }
+                eadRows.Add(("Summary", string.Join(" | ", ead.Results), null, "Combined textual output from the calculator.", false));
+            }
+            else
+            {
+                eadRows.Add(("EAD Status", "Enter frequency and damage data to compute.", null, null, false));
+            }
+
+            int eadStart = currentRow;
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Expected Annual Damage", eadRows);
+            AddEadDashboardChart(ws, ead, primaryDamageColumn, primaryEadValue, eadStart, 5);
+
+            var waterEntries = new List<(string Scenario, int Year, double Adjusted, string? Description, double? ChangePercent, bool Highlight, bool HasResults)>();
+            foreach (var scenario in waterDemand.Scenarios)
+            {
+                if (scenario.Results.Count == 0)
+                {
+                    waterEntries.Add((scenario.Name, scenario.BaseYear, 0.0, scenario.Description, null, scenario == waterDemand.SelectedScenario, false));
+                    continue;
+                }
+
+                var first = scenario.Results.First();
+                var last = scenario.Results.Last();
+                double? change = first.AdjustedDemand == 0 ? null : (last.AdjustedDemand - first.AdjustedDemand) / first.AdjustedDemand;
+                waterEntries.Add((scenario.Name, last.Year, last.AdjustedDemand, scenario.Description, change, scenario == waterDemand.SelectedScenario, true));
+            }
+
+            int waterStart = currentRow;
+            currentRow = WriteWaterDemandTable(ws, currentRow, 1, "Water Demand Outlook", waterEntries);
+            AddWaterDemandChart(ws, waterDemand.Scenarios, waterStart, 5);
+
+            var mindMapNodes = mindMap.Flatten().ToList();
+            int notedIdeas = mindMapNodes.Count(n => !string.IsNullOrWhiteSpace(n.Notes));
+            string primaryThemes = mindMap.Nodes.Count > 0
+                ? string.Join(" | ", mindMap.Nodes.Select(n => n.Title))
+                : "Add ideas to build the map";
+
+            double recreationBenefit = UdvModel.ComputeBenefit(udv.UnitDayValue, udv.UserDays, udv.Visitation);
+            var udvRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+            {
+                ("Recreation Type", udv.RecreationType, null, null, false),
+                ("Activity Type", udv.ActivityType, null, null, false),
+                ("Point Score", udv.Points, "0.0", "Score applied against the recreation look-up table.", false),
+                ("Unit Day Value", udv.UnitDayValue, "$#,##0.00", "Interpolated value from the recreation tables.", true),
+                ("User Days", udv.UserDays, "#,##0", "Projected annual participation.", false),
+                ("Visitation Multiplier", udv.Visitation, "0.00", "Adjustment applied to user days.", false),
+                ("Annual Recreation Benefit", recreationBenefit, "$#,##0.00", "Unit Day Value × User Days × Visitation.", true),
+                ("Ideas Documented", mindMapNodes.Count, "0", "Total nodes captured within the mind map.", false),
+                ("Ideas With Notes", notedIdeas, "0", "Nodes that include detailed notes.", false),
+                ("Primary Themes", primaryThemes, null, "Top-level branches currently defined.", false)
+            };
+
+            int udvStart = currentRow;
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation & Mind Map Highlights", udvRows);
+            AddUdvChart(ws, udv, udvStart, 5);
+        }
+
+        private static int WriteKeyValueTable(IXLWorksheet ws, int startRow, int startColumn, string title, List<(string Label, object Value, string? Format, string? Comment, bool Highlight)> entries)
+        {
+            if (entries.Count == 0)
+                return startRow;
+
+            var headerRange = ws.Range(startRow, startColumn, startRow, startColumn + 1);
+            headerRange.Merge();
+            headerRange.Value = title;
+            headerRange.Style.Font.SetBold().SetFontSize(13).FontColor = DashboardHeaderText;
+            headerRange.Style.Fill.BackgroundColor = DashboardHeaderFill;
+            headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            headerRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            headerRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+            var columnHeaders = ws.Range(startRow + 1, startColumn, startRow + 1, startColumn + 1);
+            columnHeaders.Style.Font.SetBold();
+            columnHeaders.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
+            columnHeaders.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            columnHeaders.Style.Border.OutsideBorderColor = DashboardBorder;
+            ws.Cell(startRow + 1, startColumn).Value = "Metric";
+            ws.Cell(startRow + 1, startColumn + 1).Value = "Value";
+
+            int row = startRow + 2;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var entry = entries[i];
+                var dataRange = ws.Range(row, startColumn, row, startColumn + 1);
+                dataRange.Style.Fill.BackgroundColor = i % 2 == 0 ? DashboardRowLight : DashboardRowAlt;
+                dataRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                dataRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+                var labelCell = ws.Cell(row, startColumn);
+                labelCell.Value = entry.Label;
+                labelCell.Style.Font.FontColor = DashboardPrimaryText;
+
+                var valueCell = ws.Cell(row, startColumn + 1);
+                valueCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                valueCell.Style.Font.FontColor = entry.Highlight ? DashboardAccentText : DashboardPrimaryText;
+                valueCell.Style.Font.SetBold(entry.Highlight);
+
+                switch (entry.Value)
+                {
+                    case double d:
+                        valueCell.Value = d;
+                        if (!string.IsNullOrWhiteSpace(entry.Format))
+                            valueCell.Style.NumberFormat.Format = entry.Format;
+                        break;
+                    case float f:
+                        valueCell.Value = f;
+                        if (!string.IsNullOrWhiteSpace(entry.Format))
+                            valueCell.Style.NumberFormat.Format = entry.Format;
+                        break;
+                    case int i32:
+                        valueCell.Value = i32;
+                        valueCell.Style.NumberFormat.Format = string.IsNullOrWhiteSpace(entry.Format) ? "0" : entry.Format;
+                        break;
+                    case long i64:
+                        valueCell.Value = i64;
+                        valueCell.Style.NumberFormat.Format = string.IsNullOrWhiteSpace(entry.Format) ? "0" : entry.Format;
+                        break;
+                    case decimal dec:
+                        valueCell.Value = (double)dec;
+                        if (!string.IsNullOrWhiteSpace(entry.Format))
+                            valueCell.Style.NumberFormat.Format = entry.Format;
+                        break;
+                    case null:
+                        valueCell.Value = string.Empty;
+                        valueCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                        break;
+                    default:
+                        valueCell.Value = entry.Value.ToString();
+                        valueCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                        break;
+                }
+
+                if (!string.IsNullOrWhiteSpace(entry.Comment))
+                    valueCell.GetComment().AddText(entry.Comment);
+
+                row++;
+            }
+
+            ws.Range(startRow, startColumn, row - 1, startColumn + 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            return row + 2;
+        }
+
+        private static int WriteWaterDemandTable(IXLWorksheet ws, int startRow, int startColumn, string title, List<(string Scenario, int Year, double Adjusted, string? Description, double? ChangePercent, bool Highlight, bool HasResults)> entries)
+        {
+            var headerRange = ws.Range(startRow, startColumn, startRow, startColumn + 2);
+            headerRange.Merge();
+            headerRange.Value = title;
+            headerRange.Style.Font.SetBold().SetFontSize(13).FontColor = DashboardHeaderText;
+            headerRange.Style.Fill.BackgroundColor = DashboardHeaderFill;
+            headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            headerRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            headerRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+            var columns = ws.Range(startRow + 1, startColumn, startRow + 1, startColumn + 2);
+            columns.Style.Font.SetBold();
+            columns.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
+            columns.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            columns.Style.Border.OutsideBorderColor = DashboardBorder;
+            ws.Cell(startRow + 1, startColumn).Value = "Scenario";
+            ws.Cell(startRow + 1, startColumn + 1).Value = "Final Year";
+            ws.Cell(startRow + 1, startColumn + 2).Value = "Adjusted Demand (MGD)";
+
+            if (entries.Count == 0)
+            {
+                int emptyRow = startRow + 2;
+                var emptyRange = ws.Range(emptyRow, startColumn, emptyRow, startColumn + 2);
+                emptyRange.Merge();
+                emptyRange.Value = "Add forecast inputs to view scenario results.";
+                emptyRange.Style.Fill.BackgroundColor = DashboardRowLight;
+                emptyRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                emptyRange.Style.Border.OutsideBorderColor = DashboardBorder;
+                emptyRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                return emptyRow + 2;
+            }
+
+            int row = startRow + 2;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var entry = entries[i];
+                var range = ws.Range(row, startColumn, row, startColumn + 2);
+                range.Style.Fill.BackgroundColor = i % 2 == 0 ? DashboardRowLight : DashboardRowAlt;
+                range.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                range.Style.Border.OutsideBorderColor = DashboardBorder;
+
+                var nameCell = ws.Cell(row, startColumn);
+                nameCell.Value = entry.Scenario;
+                nameCell.Style.Font.SetBold(entry.Highlight);
+                nameCell.Style.Font.FontColor = entry.Highlight ? DashboardAccentText : DashboardPrimaryText;
+                if (!string.IsNullOrWhiteSpace(entry.Description))
+                    nameCell.GetComment().AddText(entry.Description);
+
+                var yearCell = ws.Cell(row, startColumn + 1);
+                yearCell.Value = entry.Year;
+                yearCell.Style.NumberFormat.Format = "0";
+                yearCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                var demandCell = ws.Cell(row, startColumn + 2);
+                demandCell.Value = entry.Adjusted;
+                demandCell.Style.NumberFormat.Format = "#,##0.00";
+                demandCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                demandCell.Style.Font.SetBold(entry.Highlight);
+                demandCell.Style.Font.FontColor = entry.Highlight ? DashboardAccentText : DashboardPrimaryText;
+                if (entry.ChangePercent.HasValue)
+                    demandCell.GetComment().AddText($"Change from baseline: {entry.ChangePercent.Value:P1}");
+                else if (!entry.HasResults)
+                    demandCell.GetComment().AddText("No forecast results have been generated yet.");
+
+                row++;
+            }
+
+            ws.Range(startRow, startColumn, row - 1, startColumn + 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            return row + 2;
+        }
+
+        private static void AddAnnualizerComparisonChart(IXLWorksheet ws, double annualBenefits, double annualCost, double bcr, int row, int column)
+        {
+            byte[] bytes = CreateAnnualizerBarChartImage(annualBenefits, annualCost, bcr);
+            using var stream = new MemoryStream(bytes);
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, $"AnnualizerChart_{Guid.NewGuid():N}");
+            picture.MoveTo(ws.Cell(row, column));
+        }
+
+        private static void AddEadDashboardChart(IXLWorksheet ws, EadViewModel ead, string curveName, double? eadValue, int row, int column)
+        {
+            var data = ead.Rows
+                .Where(r => r.Damages.Count > 0)
+                .Select(r => (Probability: Math.Clamp(r.Probability, 0.0, 1.0), Stage: ead.UseStage ? r.Stage : null, Damage: r.Damages[0]))
+                .OrderBy(item => item.Probability)
+                .ToList();
+            if (data.Count == 0)
+                return;
+
+            byte[] bytes = CreateEadDashboardChartImage(data, curveName, eadValue);
+            using var stream = new MemoryStream(bytes);
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, $"EadDashboardChart_{Guid.NewGuid():N}");
+            picture.MoveTo(ws.Cell(row, column));
+        }
+
+        private static void AddWaterDemandChart(IXLWorksheet ws, IEnumerable<Scenario> scenarios, int row, int column)
+        {
+            var series = scenarios
+                .Select(s => new
+                {
+                    s.Name,
+                    Points = s.Results.Select(r => ((double)r.Year, r.AdjustedDemand)).ToList(),
+                    Color = GetColorFromBrush(s.LineBrush, ChartBlue)
+                })
+                .Where(s => s.Points.Count >= 2)
+                .ToList();
+            if (series.Count == 0)
+                return;
+
+            var data = series.Select(s => (s.Name, s.Points, s.Color)).ToList();
+            byte[] bytes = CreateWaterDemandChartImage(data);
+            using var stream = new MemoryStream(bytes);
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, $"WaterDemandChart_{Guid.NewGuid():N}");
+            picture.MoveTo(ws.Cell(row, column));
+        }
+
+        private static void AddUdvChart(IXLWorksheet ws, UdvViewModel udv, int row, int column)
+        {
+            byte[] bytes = CreateUdvChartImage(udv);
+            if (bytes.Length == 0)
+                return;
+            using var stream = new MemoryStream(bytes);
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, $"UdvChart_{Guid.NewGuid():N}");
+            picture.MoveTo(ws.Cell(row, column));
+        }
+
+        private static byte[] CreateAnnualizerBarChartImage(double annualBenefits, double annualCost, double bcr)
+        {
+            const double width = 380;
+            const double height = 240;
+            const double marginLeft = 70;
+            const double marginRight = 30;
+            const double marginTop = 50;
+            const double marginBottom = 65;
+
+            double plotWidth = width - marginLeft - marginRight;
+            double plotHeight = height - marginTop - marginBottom;
+
+            DrawingVisual dv = new();
+            using var dc = dv.RenderOpen();
+
+            var background = new LinearGradientBrush(Color.FromRgb(248, 251, 255), Color.FromRgb(228, 236, 250), new Point(0, 0), new Point(0, 1));
+            background.Freeze();
+            dc.DrawRectangle(background, null, new Rect(0, 0, width, height));
+
+            var origin = new Point(marginLeft, marginTop + plotHeight);
+            var axisPen = new Pen(new SolidColorBrush(ChartGray), 1.0);
+            axisPen.Freeze();
+            dc.DrawLine(axisPen, origin, new Point(origin.X + plotWidth, origin.Y));
+            dc.DrawLine(axisPen, origin, new Point(origin.X, marginTop));
+
+            var gridPen = new Pen(new SolidColorBrush(Color.FromArgb(90, ChartGray.R, ChartGray.G, ChartGray.B)), 0.6)
+            {
+                DashStyle = DashStyles.Dot
+            };
+            gridPen.Freeze();
+            int gridLines = 4;
+            for (int i = 1; i <= gridLines; i++)
+            {
+                double y = origin.Y - (plotHeight / gridLines) * i;
+                dc.DrawLine(gridPen, new Point(origin.X, y), new Point(origin.X + plotWidth, y));
+            }
+
+            var values = new[] { annualBenefits, annualCost };
+            var labels = new[] { "Annual Benefits", "Annual Cost" };
+            var colors = new[] { ChartTeal, ChartBlue };
+            double maxValue = Math.Max(values.Max(), 1.0);
+
+            var typeface = new Typeface("Segoe UI");
+            var axisBrush = new SolidColorBrush(ChartGray);
+            axisBrush.Freeze();
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                double columnWidth = plotWidth / values.Length;
+                double barWidth = columnWidth * 0.55;
+                double barHeight = Math.Clamp(values[i] / maxValue, 0.0, 1.0) * plotHeight;
+                double x = marginLeft + columnWidth * i + (columnWidth - barWidth) / 2.0;
+                var rect = new Rect(x, origin.Y - barHeight, barWidth, barHeight);
+
+                var barBrush = new LinearGradientBrush(
+                    Color.FromArgb(210, (byte)Math.Min(colors[i].R + 30, 255), (byte)Math.Min(colors[i].G + 30, 255), (byte)Math.Min(colors[i].B + 30, 255)),
+                    Color.FromArgb(255, colors[i].R, colors[i].G, colors[i].B),
+                    new Point(0.5, 0),
+                    new Point(0.5, 1));
+                barBrush.Freeze();
+                var barGeometry = new RectangleGeometry(rect, 8, 8);
+                dc.DrawGeometry(barBrush, null, barGeometry);
+
+                string valueLabel = FormatCurrencyLabel(values[i]);
+                var valueText = new FormattedText(valueLabel, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 12, new SolidColorBrush(colors[i]), 1.0);
+                valueText.SetFontWeight(FontWeights.SemiBold);
+                double labelX = rect.X + (rect.Width - valueText.Width) / 2.0;
+                double labelY = rect.Y - valueText.Height - 6;
+                if (labelY < marginTop + 4)
+                    labelY = rect.Y + 6;
+                dc.DrawText(valueText, new Point(labelX, labelY));
+
+                var caption = new FormattedText(labels[i], CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, axisBrush, 1.0);
+                double captionX = rect.X + (rect.Width - caption.Width) / 2.0;
+                double captionY = origin.Y + 20;
+                dc.DrawText(caption, new Point(captionX, captionY));
+            }
+
+            for (int i = 0; i <= gridLines; i++)
+            {
+                double value = maxValue * i / gridLines;
+                string label = FormatCurrencyLabel(value);
+                var text = new FormattedText(label, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                double x = marginLeft - text.Width - 8;
+                double y = origin.Y - (plotHeight * i / gridLines) - text.Height / 2.0;
+                dc.DrawText(text, new Point(x, y));
+            }
+
+            string titleText = "Annual Benefits vs. Cost";
+            var title = new FormattedText(titleText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 13, new SolidColorBrush(ChartBlue), 1.0);
+            title.SetFontWeight(FontWeights.SemiBold);
+            dc.DrawText(title, new Point(marginLeft, marginTop - title.Height - 14));
+
+            string bcrLabel = $"BCR: {bcr:0.00}";
+            var bcrText = new FormattedText(bcrLabel, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 12, Brushes.White, 1.0);
+            bcrText.SetFontWeight(FontWeights.SemiBold);
+            var badgeRect = new Rect(origin.X + plotWidth - bcrText.Width - 26, marginTop - bcrText.Height - 18, bcrText.Width + 24, bcrText.Height + 12);
+            var badgeBrush = new SolidColorBrush(ChartOrange) { Opacity = 0.85 };
+            badgeBrush.Freeze();
+            var badgeGeometry = new RectangleGeometry(badgeRect, 8, 8);
+            dc.DrawGeometry(badgeBrush, null, badgeGeometry);
+            dc.DrawText(bcrText, new Point(badgeRect.X + 12, badgeRect.Y + 6));
+
+            var xAxisLabel = new FormattedText("Investment Metrics", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+            dc.DrawText(xAxisLabel, new Point(origin.X + (plotWidth - xAxisLabel.Width) / 2.0, origin.Y + 42));
+
+            RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(dv);
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            using MemoryStream ms = new();
+            encoder.Save(ms);
+            return ms.ToArray();
+        }
+
+        private static byte[] CreateEadDashboardChartImage(List<(double Probability, double? Stage, double Damage)> data, string curveName, double? eadValue)
+        {
+            const double width = 420;
+            const double height = 260;
+            const double marginLeft = 70;
+            const double marginRight = 30;
+            const double marginTop = 60;
+            const double marginBottom = 70;
+
+            double plotWidth = width - marginLeft - marginRight;
+            double plotHeight = height - marginTop - marginBottom;
+            double maxDamage = Math.Max(data.Max(d => d.Damage), 1.0);
+
+            DrawingVisual dv = new();
+            using var dc = dv.RenderOpen();
+
+            var background = new LinearGradientBrush(Color.FromRgb(247, 250, 255), Color.FromRgb(224, 235, 250), new Point(0, 0), new Point(0, 1));
+            background.Freeze();
+            dc.DrawRectangle(background, null, new Rect(0, 0, width, height));
+
+            var origin = new Point(marginLeft, marginTop + plotHeight);
+            var axisPen = new Pen(new SolidColorBrush(ChartGray), 1.0);
+            axisPen.Freeze();
+            dc.DrawLine(axisPen, origin, new Point(origin.X + plotWidth, origin.Y));
+            dc.DrawLine(axisPen, origin, new Point(origin.X, marginTop));
+
+            var gridPen = new Pen(new SolidColorBrush(Color.FromArgb(80, ChartGray.R, ChartGray.G, ChartGray.B)), 0.7)
+            {
+                DashStyle = DashStyles.Dot
+            };
+            gridPen.Freeze();
+            int verticalTicks = 4;
+            for (int i = 1; i <= verticalTicks; i++)
+            {
+                double x = origin.X + (plotWidth / verticalTicks) * i;
+                dc.DrawLine(gridPen, new Point(x, origin.Y), new Point(x, marginTop));
+            }
+            int horizontalTicks = 4;
+            for (int i = 1; i <= horizontalTicks; i++)
+            {
+                double y = origin.Y - (plotHeight / horizontalTicks) * i;
+                dc.DrawLine(gridPen, new Point(origin.X, y), new Point(origin.X + plotWidth, y));
+            }
+
+            var areaGeometry = new StreamGeometry();
+            using (var ctx = areaGeometry.Open())
+            {
+                var firstPoint = data[0];
+                double firstX = origin.X + firstPoint.Probability * plotWidth;
+                double firstY = origin.Y - (firstPoint.Damage / maxDamage) * plotHeight;
+                ctx.BeginFigure(new Point(firstX, origin.Y), true, true);
+                ctx.LineTo(new Point(firstX, firstY), true, true);
+                for (int i = 1; i < data.Count; i++)
+                {
+                    double x = origin.X + data[i].Probability * plotWidth;
+                    double y = origin.Y - (data[i].Damage / maxDamage) * plotHeight;
+                    ctx.LineTo(new Point(x, y), true, true);
+                }
+                double lastX = origin.X + data[^1].Probability * plotWidth;
+                ctx.LineTo(new Point(lastX, origin.Y), true, true);
+            }
+            areaGeometry.Freeze();
+            var areaBrush = new LinearGradientBrush(Color.FromArgb(90, ChartTeal.R, ChartTeal.G, ChartTeal.B), Color.FromArgb(15, ChartTeal.R, ChartTeal.G, ChartTeal.B), new Point(0.5, 0), new Point(0.5, 1));
+            areaBrush.Freeze();
+            dc.DrawGeometry(areaBrush, null, areaGeometry);
+
+            var lineGeometry = new StreamGeometry();
+            using (var ctx = lineGeometry.Open())
+            {
+                for (int i = 0; i < data.Count; i++)
+                {
+                    double x = origin.X + data[i].Probability * plotWidth;
+                    double y = origin.Y - (data[i].Damage / maxDamage) * plotHeight;
+                    if (i == 0)
+                        ctx.BeginFigure(new Point(x, y), false, false);
+                    else
+                        ctx.LineTo(new Point(x, y), true, true);
+                }
+            }
+            lineGeometry.Freeze();
+            var linePen = new Pen(new SolidColorBrush(ChartTeal), 2.3)
+            {
+                StartLineCap = PenLineCap.Round,
+                EndLineCap = PenLineCap.Round,
+                LineJoin = PenLineJoin.Round
+            };
+            linePen.Freeze();
+            dc.DrawGeometry(null, linePen, lineGeometry);
+
+            var markerBrush = new SolidColorBrush(ChartTeal);
+            markerBrush.Freeze();
+            bool showStageLabels = data.Any(d => d.Stage.HasValue) && data.Count <= 6;
+            var stageBrush = new SolidColorBrush(ChartGray);
+            stageBrush.Freeze();
+            var typeface = new Typeface("Segoe UI");
+
+            for (int i = 0; i < data.Count; i++)
+            {
+                double x = origin.X + data[i].Probability * plotWidth;
+                double y = origin.Y - (data[i].Damage / maxDamage) * plotHeight;
+                var point = new Point(x, y);
+                dc.DrawEllipse(markerBrush, null, point, 3.5, 3.5);
+
+                if (showStageLabels && data[i].Stage.HasValue)
+                {
+                    string stageText = $"Stage {data[i].Stage.Value:F1}";
+                    var stageLabel = new FormattedText(stageText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, stageBrush, 1.0);
+                    double labelX = point.X - stageLabel.Width / 2.0;
+                    double labelY = point.Y - stageLabel.Height - 10;
+                    if (labelY < marginTop + 4)
+                        labelY = point.Y + 6;
+                    dc.DrawText(stageLabel, new Point(labelX, labelY));
+                }
+            }
+
+            var axisBrush = new SolidColorBrush(ChartGray);
+            axisBrush.Freeze();
+            for (int i = 0; i <= verticalTicks; i++)
+            {
+                double fraction = i / (double)verticalTicks;
+                double probability = fraction;
+                var label = new FormattedText($"{probability * 100:0}%", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                double x = origin.X + fraction * plotWidth - label.Width / 2.0;
+                double y = origin.Y + 10;
+                dc.DrawText(label, new Point(x, y));
+            }
+            for (int i = 0; i <= horizontalTicks; i++)
+            {
+                double value = maxDamage * i / horizontalTicks;
+                string textValue = FormatCurrencyLabel(value);
+                var label = new FormattedText(textValue, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                double x = marginLeft - label.Width - 8;
+                double y = origin.Y - (plotHeight * i / horizontalTicks) - label.Height / 2.0;
+                dc.DrawText(label, new Point(x, y));
+            }
+
+            var title = new FormattedText($"{curveName} Damage Curve", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 13, new SolidColorBrush(ChartBlue), 1.0);
+            title.SetFontWeight(FontWeights.SemiBold);
+            dc.DrawText(title, new Point(marginLeft, marginTop - title.Height - 16));
+
+            if (eadValue.HasValue)
+            {
+                var eadBadge = new FormattedText($"EAD ≈ {eadValue.Value:C0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 12, Brushes.White, 1.0);
+                eadBadge.SetFontWeight(FontWeights.SemiBold);
+                var rect = new Rect(origin.X + plotWidth - eadBadge.Width - 26, marginTop - eadBadge.Height - 18, eadBadge.Width + 24, eadBadge.Height + 12);
+                var badgeBrush = new SolidColorBrush(ChartBlue) { Opacity = 0.85 };
+                badgeBrush.Freeze();
+                var geometry = new RectangleGeometry(rect, 8, 8);
+                dc.DrawGeometry(badgeBrush, null, geometry);
+                dc.DrawText(eadBadge, new Point(rect.X + 12, rect.Y + 6));
+            }
+
+            var xAxisLabel = new FormattedText("Exceedance Probability", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, axisBrush, 1.0);
+            dc.DrawText(xAxisLabel, new Point(origin.X + (plotWidth - xAxisLabel.Width) / 2.0, origin.Y + 28));
+
+            var yAxisLabel = new FormattedText("Damage ($)", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, axisBrush, 1.0);
+            yAxisLabel.SetFontWeight(FontWeights.SemiBold);
+            dc.PushTransform(new RotateTransform(-90, marginLeft - 50, marginTop + plotHeight / 2.0));
+            dc.DrawText(yAxisLabel, new Point(marginLeft - 50 - yAxisLabel.Width / 2.0, marginTop + plotHeight / 2.0 - yAxisLabel.Height / 2.0));
+            dc.Pop();
+
+            RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(dv);
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            using MemoryStream ms = new();
+            encoder.Save(ms);
+            return ms.ToArray();
+        }
+
+
+        private static byte[] CreateWaterDemandChartImage(List<(string Name, List<(double X, double Y)> Points, Color Color)> series)
+        {
+            const double width = 420;
+            const double height = 260;
+            const double marginLeft = 70;
+            const double marginRight = 30;
+            const double marginTop = 55;
+            const double marginBottom = 70;
+
+            var allPoints = series.SelectMany(s => s.Points).ToList();
+            if (allPoints.Count == 0)
+                return Array.Empty<byte>();
+
+            double minX = allPoints.Min(p => p.X);
+            double maxX = allPoints.Max(p => p.X);
+            double minY = allPoints.Min(p => p.Y);
+            double maxY = allPoints.Max(p => p.Y);
+            if (Math.Abs(maxX - minX) < 0.001)
+            {
+                maxX += 1;
+                minX -= 1;
+            }
+            if (Math.Abs(maxY - minY) < 0.001)
+            {
+                maxY += 1;
+                minY = Math.Max(0, minY - 1);
+            }
+
+            double plotWidth = width - marginLeft - marginRight;
+            double plotHeight = height - marginTop - marginBottom;
+
+            DrawingVisual dv = new();
+            using var dc = dv.RenderOpen();
+
+            var background = new LinearGradientBrush(Color.FromRgb(248, 251, 255), Color.FromRgb(227, 236, 250), new Point(0, 0), new Point(0, 1));
+            background.Freeze();
+            dc.DrawRectangle(background, null, new Rect(0, 0, width, height));
+
+            var origin = new Point(marginLeft, marginTop + plotHeight);
+            var axisPen = new Pen(new SolidColorBrush(ChartGray), 1.0);
+            axisPen.Freeze();
+            dc.DrawLine(axisPen, origin, new Point(origin.X + plotWidth, origin.Y));
+            dc.DrawLine(axisPen, origin, new Point(origin.X, marginTop));
+
+            var gridPen = new Pen(new SolidColorBrush(Color.FromArgb(80, ChartGray.R, ChartGray.G, ChartGray.B)), 0.6)
+            {
+                DashStyle = DashStyles.Dot
+            };
+            gridPen.Freeze();
+            int verticalTicks = 4;
+            for (int i = 1; i <= verticalTicks; i++)
+            {
+                double x = origin.X + (plotWidth / verticalTicks) * i;
+                dc.DrawLine(gridPen, new Point(x, origin.Y), new Point(x, marginTop));
+            }
+            int horizontalTicks = 4;
+            for (int i = 1; i <= horizontalTicks; i++)
+            {
+                double y = origin.Y - (plotHeight / horizontalTicks) * i;
+                dc.DrawLine(gridPen, new Point(origin.X, y), new Point(origin.X + plotWidth, y));
+            }
+
+            var typeface = new Typeface("Segoe UI");
+            var axisBrush = new SolidColorBrush(ChartGray);
+            axisBrush.Freeze();
+
+            foreach (var seriesEntry in series)
+            {
+                var geometry = new StreamGeometry();
+                using (var ctx = geometry.Open())
+                {
+                    for (int i = 0; i < seriesEntry.Points.Count; i++)
+                    {
+                        var (xValue, yValue) = seriesEntry.Points[i];
+                        double x = origin.X + (xValue - minX) / (maxX - minX) * plotWidth;
+                        double y = origin.Y - (yValue - minY) / (maxY - minY) * plotHeight;
+                        if (i == 0)
+                            ctx.BeginFigure(new Point(x, y), false, false);
+                        else
+                            ctx.LineTo(new Point(x, y), true, true);
+                    }
+                }
+                geometry.Freeze();
+
+                var lineBrush = new SolidColorBrush(seriesEntry.Color);
+                lineBrush.Freeze();
+                var pen = new Pen(lineBrush, 2.2)
+                {
+                    StartLineCap = PenLineCap.Round,
+                    EndLineCap = PenLineCap.Round,
+                    LineJoin = PenLineJoin.Round
+                };
+                pen.Freeze();
+                dc.DrawGeometry(null, pen, geometry);
+            }
+
+            int legendRow = 0;
+            foreach (var seriesEntry in series)
+            {
+                var swatch = new Rect(origin.X + plotWidth + 10, marginTop + legendRow * 20, 12, 12);
+                var swatchBrush = new SolidColorBrush(seriesEntry.Color);
+                swatchBrush.Freeze();
+                dc.DrawRectangle(swatchBrush, null, swatch);
+
+                var label = new FormattedText(seriesEntry.Name, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                dc.DrawText(label, new Point(swatch.Right + 6, swatch.Top - 2));
+                legendRow++;
+            }
+
+            for (int i = 0; i <= verticalTicks; i++)
+            {
+                double year = minX + (maxX - minX) * i / verticalTicks;
+                var label = new FormattedText(f"{year:0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                double x = origin.X + (plotWidth * i / verticalTicks) - label.Width / 2.0;
+                double y = origin.Y + 10;
+                dc.DrawText(label, new Point(x, y));
+            }
+
+            for (int i = 0; i <= horizontalTicks; i++)
+            {
+                double demand = minY + (maxY - minY) * i / horizontalTicks;
+                var label = new FormattedText(FormatNumberLabel(demand), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                double x = marginLeft - label.Width - 8;
+                double y = origin.Y - (plotHeight * i / horizontalTicks) - label.Height / 2.0;
+                dc.DrawText(label, new Point(x, y));
+            }
+
+            var title = new FormattedText("Adjusted Demand by Scenario", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 13, new SolidColorBrush(ChartBlue), 1.0);
+            title.SetFontWeight(FontWeights.SemiBold);
+            dc.DrawText(title, new Point(marginLeft, marginTop - title.Height - 16));
+
+            var xAxisLabel = new FormattedText("Year", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, axisBrush, 1.0);
+            dc.DrawText(xAxisLabel, new Point(origin.X + (plotWidth - xAxisLabel.Width) / 2.0, origin.Y + 28));
+
+            var yAxisLabel = new FormattedText("Adjusted Demand", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, axisBrush, 1.0);
+            yAxisLabel.SetFontWeight(FontWeights.SemiBold);
+            dc.PushTransform(new RotateTransform(-90, marginLeft - 50, marginTop + plotHeight / 2.0));
+            dc.DrawText(yAxisLabel, new Point(marginLeft - 50 - yAxisLabel.Width / 2.0, marginTop + plotHeight / 2.0 - yAxisLabel.Height / 2.0));
+            dc.Pop();
+
+            RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(dv);
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            using MemoryStream ms = new();
+            encoder.Save(ms);
+            return ms.ToArray();
+        }
+
+
+        private static byte[] CreateUdvChartImage(UdvViewModel udv)
+        {
+            string columnKey = GetUdvColumnKey(udv);
+            var data = udv.Table
+                .Select(row => ((double)row.Points, GetUdvColumnValue(row, columnKey)))
+                .OrderBy(p => p.Item1)
+                .ToList();
+            if (data.Count < 2)
+                return Array.Empty<byte>();
+
+            const double width = 360;
+            const double height = 220;
+            const double marginLeft = 60;
+            const double marginRight = 26;
+            const double marginTop = 45;
+            const double marginBottom = 65;
+
+            double minX = data.Min(p => p.Item1);
+            double maxX = data.Max(p => p.Item1);
+            double minY = 0;
+            double maxY = Math.Max(data.Max(p => p.Item2), Math.Max(udv.UnitDayValue, 1.0));
+
+            double plotWidth = width - marginLeft - marginRight;
+            double plotHeight = height - marginTop - marginBottom;
+
+            DrawingVisual dv = new();
+            using var dc = dv.RenderOpen();
+
+            var background = new LinearGradientBrush(Color.FromRgb(248, 251, 255), Color.FromRgb(230, 239, 252), new Point(0, 0), new Point(0, 1));
+            background.Freeze();
+            dc.DrawRectangle(background, null, new Rect(0, 0, width, height));
+
+            var origin = new Point(marginLeft, marginTop + plotHeight);
+            var axisPen = new Pen(new SolidColorBrush(ChartGray), 1.0);
+            axisPen.Freeze();
+            dc.DrawLine(axisPen, origin, new Point(origin.X + plotWidth, origin.Y));
+            dc.DrawLine(axisPen, origin, new Point(origin.X, marginTop));
+
+            var gridPen = new Pen(new SolidColorBrush(Color.FromArgb(85, ChartGray.R, ChartGray.G, ChartGray.B)), 0.6)
+            {
+                DashStyle = DashStyles.Dot
+            };
+            gridPen.Freeze();
+            int verticalTicks = 4;
+            for (int i = 1; i <= verticalTicks; i++)
+            {
+                double x = origin.X + (plotWidth / verticalTicks) * i;
+                dc.DrawLine(gridPen, new Point(x, origin.Y), new Point(x, marginTop));
+            }
+            int horizontalTicks = 4;
+            for (int i = 1; i <= horizontalTicks; i++)
+            {
+                double y = origin.Y - (plotHeight / horizontalTicks) * i;
+                dc.DrawLine(gridPen, new Point(origin.X, y), new Point(origin.X + plotWidth, y));
+            }
+
+            var areaGeometry = new StreamGeometry();
+            using (var ctx = areaGeometry.Open())
+            {
+                double firstX = origin.X + (data[0].Item1 - minX) / (maxX - minX) * plotWidth;
+                double firstY = origin.Y - (data[0].Item2 - minY) / (maxY - minY) * plotHeight;
+                ctx.BeginFigure(new Point(firstX, origin.Y), true, true);
+                ctx.LineTo(new Point(firstX, firstY), true, true);
+                for (int i = 1; i < data.Count; i++)
+                {
+                    double x = origin.X + (data[i].Item1 - minX) / (maxX - minX) * plotWidth;
+                    double y = origin.Y - (data[i].Item2 - minY) / (maxY - minY) * plotHeight;
+                    ctx.LineTo(new Point(x, y), true, true);
+                }
+                double lastX = origin.X + (data[^1].Item1 - minX) / (maxX - minX) * plotWidth;
+                ctx.LineTo(new Point(lastX, origin.Y), true, true);
+            }
+            areaGeometry.Freeze();
+            var areaBrush = new LinearGradientBrush(Color.FromArgb(90, ChartPlum.R, ChartPlum.G, ChartPlum.B), Color.FromArgb(20, ChartPlum.R, ChartPlum.G, ChartPlum.B), new Point(0.5, 0), new Point(0.5, 1));
+            areaBrush.Freeze();
+            dc.DrawGeometry(areaBrush, null, areaGeometry);
+
+            var lineGeometry = new StreamGeometry();
+            using (var ctx = lineGeometry.Open())
+            {
+                for (int i = 0; i < data.Count; i++)
+                {
+                    double x = origin.X + (data[i].Item1 - minX) / (maxX - minX) * plotWidth;
+                    double y = origin.Y - (data[i].Item2 - minY) / (maxY - minY) * plotHeight;
+                    if (i == 0)
+                        ctx.BeginFigure(new Point(x, y), false, false);
+                    else
+                        ctx.LineTo(new Point(x, y), true, true);
+                }
+            }
+            lineGeometry.Freeze();
+            var linePen = new Pen(new SolidColorBrush(ChartPlum), 2.3)
+            {
+                StartLineCap = PenLineCap.Round,
+                EndLineCap = PenLineCap.Round,
+                LineJoin = PenLineJoin.Round
+            };
+            linePen.Freeze();
+            dc.DrawGeometry(null, linePen, lineGeometry);
+
+            var markerBrush = new SolidColorBrush(ChartPlum);
+            markerBrush.Freeze();
+            foreach (var point in data)
+            {
+                double x = origin.X + (point.Item1 - minX) / (maxX - minX) * plotWidth;
+                double y = origin.Y - (point.Item2 - minY) / (maxY - minY) * plotHeight;
+                dc.DrawEllipse(markerBrush, null, new Point(x, y), 3.0, 3.0);
+            }
+
+            double highlightX = origin.X + (Math.Clamp(udv.Points, minX, maxX) - minX) / (maxX - minX) * plotWidth;
+            double highlightY = origin.Y - (Math.Clamp(udv.UnitDayValue, minY, maxY) - minY) / (maxY - minY) * plotHeight;
+            var highlightBrush = new SolidColorBrush(ChartOrange);
+            highlightBrush.Freeze();
+            dc.DrawEllipse(highlightBrush, null, new Point(highlightX, highlightY), 5.0, 5.0);
+
+            var typeface = new Typeface("Segoe UI");
+            var axisBrush = new SolidColorBrush(ChartGray);
+            axisBrush.Freeze();
+
+            int verticalTicks = 4;
+            for (int i = 0; i <= verticalTicks; i++)
+            {
+                double value = minX + (maxX - minX) * i / verticalTicks;
+                var label = new FormattedText($"{value:0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                double x = origin.X + (plotWidth * i / verticalTicks) - label.Width / 2.0;
+                double y = origin.Y + 10;
+                dc.DrawText(label, new Point(x, y));
+            }
+            int horizontalTicks = 4;
+            for (int i = 0; i <= horizontalTicks; i++)
+            {
+                double value = minY + (maxY - minY) * i / horizontalTicks;
+                var label = new FormattedText(FormatCurrencyLabel(value), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                double x = marginLeft - label.Width - 8;
+                double y = origin.Y - (plotHeight * i / horizontalTicks) - label.Height / 2.0;
+                dc.DrawText(label, new Point(x, y));
+            }
+
+            var title = new FormattedText("Recreation Value Curve", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 13, new SolidColorBrush(ChartPlum), 1.0);
+            title.SetFontWeight(FontWeights.SemiBold);
+            dc.DrawText(title, new Point(marginLeft, marginTop - title.Height - 14));
+
+            var highlightLabel = new FormattedText($"Selected UDV: {udv.UnitDayValue:C2}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, Brushes.White, 1.0);
+            highlightLabel.SetFontWeight(FontWeights.SemiBold);
+            var badgeRect = new Rect(origin.X + plotWidth - highlightLabel.Width - 24, marginTop - highlightLabel.Height - 16, highlightLabel.Width + 20, highlightLabel.Height + 10);
+            var badgeBrush = new SolidColorBrush(ChartPlum) { Opacity = 0.9 };
+            badgeBrush.Freeze();
+            var badgeGeometry = new RectangleGeometry(badgeRect, 8, 8);
+            dc.DrawGeometry(badgeBrush, null, badgeGeometry);
+            dc.DrawText(highlightLabel, new Point(badgeRect.X + 10, badgeRect.Y + 5));
+
+            var xAxisLabel = new FormattedText("Point Score", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, axisBrush, 1.0);
+            dc.DrawText(xAxisLabel, new Point(origin.X + (plotWidth - xAxisLabel.Width) / 2.0, origin.Y + 28));
+
+            var yAxisLabel = new FormattedText("Unit Day Value ($)", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, axisBrush, 1.0);
+            yAxisLabel.SetFontWeight(FontWeights.SemiBold);
+            dc.PushTransform(new RotateTransform(-90, marginLeft - 50, marginTop + plotHeight / 2.0));
+            dc.DrawText(yAxisLabel, new Point(marginLeft - 50 - yAxisLabel.Width / 2.0, marginTop + plotHeight / 2.0 - yAxisLabel.Height / 2.0));
+            dc.Pop();
+
+            RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(dv);
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            using MemoryStream ms = new();
+            encoder.Save(ms);
+            return ms.ToArray();
+        }
+
+        private static Color GetColorFromBrush(Brush brush, Color fallback)
+        {
+            return brush switch
+            {
+                SolidColorBrush solid => solid.Color,
+                LinearGradientBrush gradient when gradient.GradientStops.Count > 0 => gradient.GradientStops[^1].Color,
+                _ => fallback
+            };
+        }
+
+        private static string FormatCurrencyLabel(double value)
+        {
+            double abs = Math.Abs(value);
+            if (abs >= 1_000_000_000)
+                return $"${value / 1_000_000_000:0.##}B";
+            if (abs >= 1_000_000)
+                return $"${value / 1_000_000:0.##}M";
+            if (abs >= 1_000)
+                return $"${value / 1_000:0.#}K";
+            return $"${value:0}";
+        }
+
+        private static string FormatNumberLabel(double value)
+        {
+            double abs = Math.Abs(value);
+            if (abs >= 1_000_000)
+                return $"{value / 1_000_000:0.##}M";
+            if (abs >= 1_000)
+                return $"{value / 1_000:0.#}K";
+            return $"{value:0}";
+        }
+
+        private static string GetUdvColumnKey(UdvViewModel udv)
+        {
+            return (udv.RecreationType, udv.ActivityType) switch
+            {
+                ("General", "General Recreation") => "General Recreation",
+                ("General", "Fishing and Hunting") => "General Fishing and Hunting",
+                ("Specialized", "Fishing and Hunting") => "Specialized Fishing and Hunting",
+                ("Specialized", "Other (e.g., Boating)") => "Specialized Recreation",
+                _ => "General Recreation"
+            };
+        }
+
+        private static double GetUdvColumnValue(PointValueRow row, string columnKey)
+        {
+            return columnKey switch
+            {
+                "General Recreation" => row.GeneralRecreation,
+                "General Fishing and Hunting" => row.GeneralFishingHunting,
+                "Specialized Fishing and Hunting" => row.SpecializedFishingHunting,
+                "Specialized Recreation" => row.SpecializedRecreation,
+                _ => row.GeneralRecreation
+            };
         }
 
         private static void AddEadChart(IXLWorksheet ws, PointCollection stagePoints, PointCollection frequencyPoints, int row, int column)
