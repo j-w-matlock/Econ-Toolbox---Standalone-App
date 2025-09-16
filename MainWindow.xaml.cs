@@ -22,7 +22,7 @@ namespace EconToolbox.Desktop
                 return;
             }
 
-            if (IsInsideNestedScrollViewer(e.OriginalSource as DependencyObject, scrollViewer))
+            if (ShouldHandleInNestedScrollViewer(e.OriginalSource as DependencyObject, scrollViewer, e.Delta))
             {
                 return;
             }
@@ -33,7 +33,7 @@ namespace EconToolbox.Desktop
             e.Handled = true;
         }
 
-        private static bool IsInsideNestedScrollViewer(DependencyObject? source, ScrollViewer root)
+        private static bool ShouldHandleInNestedScrollViewer(DependencyObject? source, ScrollViewer root, double delta)
         {
             var current = source;
             while (current != null && current != root)
@@ -52,7 +52,24 @@ namespace EconToolbox.Desktop
                         continue;
                     }
 
-                    return true;
+                    bool hasScrollableContent = nested.ScrollableHeight > 0 || nested.ComputedVerticalScrollBarVisibility == Visibility.Visible;
+                    if (!hasScrollableContent)
+                    {
+                        current = GetParent(nested);
+                        continue;
+                    }
+
+                    bool scrollingUp = delta > 0;
+                    bool canScrollUp = nested.VerticalOffset > 0;
+                    bool canScrollDown = nested.VerticalOffset < nested.ScrollableHeight;
+
+                    if ((scrollingUp && canScrollUp) || (!scrollingUp && canScrollDown))
+                    {
+                        return true;
+                    }
+
+                    current = GetParent(nested);
+                    continue;
                 }
 
                 current = GetParent(current);
