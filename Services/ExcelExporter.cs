@@ -410,7 +410,9 @@ namespace EconToolbox.Desktop.Services
             var titleRange = ws.Range(1, 1, 1, 8);
             titleRange.Merge();
             titleRange.Value = "Economic Toolbox Dashboard";
-            titleRange.Style.Font.SetBold().SetFontSize(20).FontColor = DashboardHeaderText;
+            titleRange.Style.Font.SetBold();
+            titleRange.Style.Font.FontSize = 20;
+            titleRange.Style.Font.FontColor = DashboardHeaderText;
             titleRange.Style.Fill.BackgroundColor = DashboardHeaderFill;
             titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -423,7 +425,8 @@ namespace EconToolbox.Desktop.Services
             var timestampRange = ws.Range(3, 1, 3, 8);
             timestampRange.Merge();
             timestampRange.Value = $"Generated {DateTime.Now:MMMM d, yyyy h:mm tt}";
-            timestampRange.Style.Font.SetFontColor(DashboardPrimaryText).Font.SetFontSize(11);
+            timestampRange.Style.Font.SetFontColor(DashboardPrimaryText);
+            timestampRange.Style.Font.FontSize = 11;
             timestampRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             timestampRange.Style.Fill.BackgroundColor = DashboardRowLight;
 
@@ -543,7 +546,9 @@ namespace EconToolbox.Desktop.Services
             var headerRange = ws.Range(startRow, startColumn, startRow, startColumn + 1);
             headerRange.Merge();
             headerRange.Value = title;
-            headerRange.Style.Font.SetBold().SetFontSize(13).FontColor = DashboardHeaderText;
+            headerRange.Style.Font.SetBold();
+            headerRange.Style.Font.FontSize = 13;
+            headerRange.Style.Font.FontColor = DashboardHeaderText;
             headerRange.Style.Fill.BackgroundColor = DashboardHeaderFill;
             headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             headerRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
@@ -625,7 +630,9 @@ namespace EconToolbox.Desktop.Services
             var headerRange = ws.Range(startRow, startColumn, startRow, startColumn + 2);
             headerRange.Merge();
             headerRange.Value = title;
-            headerRange.Style.Font.SetBold().SetFontSize(13).FontColor = DashboardHeaderText;
+            headerRange.Style.Font.SetBold();
+            headerRange.Style.Font.FontSize = 13;
+            headerRange.Style.Font.FontColor = DashboardHeaderText;
             headerRange.Style.Fill.BackgroundColor = DashboardHeaderFill;
             headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             headerRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
@@ -893,16 +900,16 @@ namespace EconToolbox.Desktop.Services
                 DashStyle = DashStyles.Dot
             };
             gridPen.Freeze();
-            int verticalTicks = 4;
-            for (int i = 1; i <= verticalTicks; i++)
+            const int verticalTickCount = 4;
+            for (int i = 1; i <= verticalTickCount; i++)
             {
-                double x = origin.X + (plotWidth / verticalTicks) * i;
+                double x = origin.X + (plotWidth / verticalTickCount) * i;
                 dc.DrawLine(gridPen, new Point(x, origin.Y), new Point(x, marginTop));
             }
-            int horizontalTicks = 4;
-            for (int i = 1; i <= horizontalTicks; i++)
+            const int horizontalTickCount = 4;
+            for (int i = 1; i <= horizontalTickCount; i++)
             {
-                double y = origin.Y - (plotHeight / horizontalTicks) * i;
+                double y = origin.Y - (plotHeight / horizontalTickCount) * i;
                 dc.DrawLine(gridPen, new Point(origin.X, y), new Point(origin.X + plotWidth, y));
             }
 
@@ -967,7 +974,7 @@ namespace EconToolbox.Desktop.Services
 
                 if (showStageLabels && data[i].Stage.HasValue)
                 {
-                    string stageText = $"Stage {data[i].Stage.Value:F1}";
+                    string stageText = $"Stage {data[i].Stage!.Value:F1}";
                     var stageLabel = new FormattedText(stageText, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, stageBrush, 1.0);
                     double labelX = point.X - stageLabel.Width / 2.0;
                     double labelY = point.Y - stageLabel.Height - 10;
@@ -1082,16 +1089,16 @@ namespace EconToolbox.Desktop.Services
                 DashStyle = DashStyles.Dot
             };
             gridPen.Freeze();
-            int verticalTicks = 4;
-            for (int i = 1; i <= verticalTicks; i++)
+            const int verticalTickCount = 4;
+            for (int i = 1; i <= verticalTickCount; i++)
             {
-                double x = origin.X + (plotWidth / verticalTicks) * i;
+                double x = origin.X + (plotWidth / verticalTickCount) * i;
                 dc.DrawLine(gridPen, new Point(x, origin.Y), new Point(x, marginTop));
             }
-            int horizontalTicks = 4;
-            for (int i = 1; i <= horizontalTicks; i++)
+            const int horizontalTickCount = 4;
+            for (int i = 1; i <= horizontalTickCount; i++)
             {
-                double y = origin.Y - (plotHeight / horizontalTicks) * i;
+                double y = origin.Y - (plotHeight / horizontalTickCount) * i;
                 dc.DrawLine(gridPen, new Point(origin.X, y), new Point(origin.X + plotWidth, y));
             }
 
@@ -1142,21 +1149,21 @@ namespace EconToolbox.Desktop.Services
                 legendRow++;
             }
 
-            for (int i = 0; i <= verticalTicks; i++)
+            for (int i = 0; i <= verticalTickCount; i++)
             {
-                double year = minX + (maxX - minX) * i / verticalTicks;
-                var label = new FormattedText(f"{year:0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
-                double x = origin.X + (plotWidth * i / verticalTicks) - label.Width / 2.0;
+                double year = minX + (maxX - minX) * i / verticalTickCount;
+                var label = new FormattedText($"{year:0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
+                double x = origin.X + (plotWidth * i / verticalTickCount) - label.Width / 2.0;
                 double y = origin.Y + 10;
                 dc.DrawText(label, new Point(x, y));
             }
 
-            for (int i = 0; i <= horizontalTicks; i++)
+            for (int i = 0; i <= horizontalTickCount; i++)
             {
-                double demand = minY + (maxY - minY) * i / horizontalTicks;
+                double demand = minY + (maxY - minY) * i / horizontalTickCount;
                 var label = new FormattedText(FormatNumberLabel(demand), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
                 double x = marginLeft - label.Width - 8;
-                double y = origin.Y - (plotHeight * i / horizontalTicks) - label.Height / 2.0;
+                double y = origin.Y - (plotHeight * i / horizontalTickCount) - label.Height / 2.0;
                 dc.DrawText(label, new Point(x, y));
             }
 
@@ -1226,16 +1233,16 @@ namespace EconToolbox.Desktop.Services
                 DashStyle = DashStyles.Dot
             };
             gridPen.Freeze();
-            int verticalTicks = 4;
-            for (int i = 1; i <= verticalTicks; i++)
+            const int verticalTickCount = 4;
+            for (int i = 1; i <= verticalTickCount; i++)
             {
-                double x = origin.X + (plotWidth / verticalTicks) * i;
+                double x = origin.X + (plotWidth / verticalTickCount) * i;
                 dc.DrawLine(gridPen, new Point(x, origin.Y), new Point(x, marginTop));
             }
-            int horizontalTicks = 4;
-            for (int i = 1; i <= horizontalTicks; i++)
+            const int horizontalTickCount = 4;
+            for (int i = 1; i <= horizontalTickCount; i++)
             {
-                double y = origin.Y - (plotHeight / horizontalTicks) * i;
+                double y = origin.Y - (plotHeight / horizontalTickCount) * i;
                 dc.DrawLine(gridPen, new Point(origin.X, y), new Point(origin.X + plotWidth, y));
             }
 
@@ -1302,22 +1309,20 @@ namespace EconToolbox.Desktop.Services
             var axisBrush = new SolidColorBrush(ChartGray);
             axisBrush.Freeze();
 
-            int verticalTicks = 4;
-            for (int i = 0; i <= verticalTicks; i++)
+            for (int i = 0; i <= verticalTickCount; i++)
             {
-                double value = minX + (maxX - minX) * i / verticalTicks;
+                double value = minX + (maxX - minX) * i / verticalTickCount;
                 var label = new FormattedText($"{value:0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
-                double x = origin.X + (plotWidth * i / verticalTicks) - label.Width / 2.0;
+                double x = origin.X + (plotWidth * i / verticalTickCount) - label.Width / 2.0;
                 double y = origin.Y + 10;
                 dc.DrawText(label, new Point(x, y));
             }
-            int horizontalTicks = 4;
-            for (int i = 0; i <= horizontalTicks; i++)
+            for (int i = 0; i <= horizontalTickCount; i++)
             {
-                double value = minY + (maxY - minY) * i / horizontalTicks;
+                double value = minY + (maxY - minY) * i / horizontalTickCount;
                 var label = new FormattedText(FormatCurrencyLabel(value), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, axisBrush, 1.0);
                 double x = marginLeft - label.Width - 8;
-                double y = origin.Y - (plotHeight * i / horizontalTicks) - label.Height / 2.0;
+                double y = origin.Y - (plotHeight * i / horizontalTickCount) - label.Height / 2.0;
                 dc.DrawText(label, new Point(x, y));
             }
 
@@ -1408,7 +1413,7 @@ namespace EconToolbox.Desktop.Services
             };
         }
 
-        private static void AddEadChart(IXLWorksheet ws, PointCollection stagePoints, PointCollection frequencyPoints, int row, int column)
+        private static void AddEadChart(IXLWorksheet ws, PointCollection? stagePoints, PointCollection? frequencyPoints, int row, int column)
         {
             if ((stagePoints == null || stagePoints.Count == 0) && (frequencyPoints == null || frequencyPoints.Count == 0))
                 return;
@@ -1418,7 +1423,7 @@ namespace EconToolbox.Desktop.Services
             pic.MoveTo(ws.Cell(row, column));
         }
 
-        private static byte[] CreateEadChartImage(PointCollection stagePoints, PointCollection frequencyPoints)
+        private static byte[] CreateEadChartImage(PointCollection? stagePoints, PointCollection? frequencyPoints)
         {
             double width = 300;
             double height = 150;
@@ -1426,10 +1431,10 @@ namespace EconToolbox.Desktop.Services
             using (var dc = dv.RenderOpen())
             {
                 dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
-                if (frequencyPoints != null && frequencyPoints.Count > 0)
-                    DrawPolyline(dc, frequencyPoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1ABC9C")), 2));
-                if (stagePoints != null && stagePoints.Count > 0)
-                    DrawPolyline(dc, stagePoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D6A8E")), 2));
+                if (frequencyPoints is { Count: > 0 } freqPoints)
+                    DrawPolyline(dc, freqPoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1ABC9C")), 2));
+                if (stagePoints is { Count: > 0 } stagePts)
+                    DrawPolyline(dc, stagePts, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D6A8E")), 2));
             }
             RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
             rtb.Render(dv);
