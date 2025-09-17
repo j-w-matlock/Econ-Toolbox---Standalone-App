@@ -69,16 +69,19 @@
                   </Grid.Resources>
 
                   <Border Grid.Row="0" Grid.ColumnSpan="2"
-                          Background="#E8F4FB"
-                          BorderBrush="{StaticResource Brush.Primary}"
-                          BorderThickness="1"
-                          CornerRadius="8"
-                          Padding="{StaticResource Padding.Card}"
-                          Margin="{StaticResource Margin.StackLarge}">
+                          Style="{StaticResource Border.Explainer}"
+                          Padding="{StaticResource Padding.Card}">
                       <StackPanel>
                           <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}">
-                              <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="20" Foreground="{StaticResource Brush.SurfaceAlt}" Margin="{StaticResource Margin.Inline}"/>
-                              <TextBlock Text="Cost Annualization Workflow" FontWeight="Bold" FontSize="16" Foreground="{StaticResource Brush.Primary}"/>
+                              <TextBlock FontFamily="Segoe MDL2 Assets"
+                                         Text=""
+                                         FontSize="22"
+                                         Foreground="{StaticResource Brush.Primary}"
+                                         Margin="{StaticResource Margin.Inline}"/>
+                              <TextBlock Text="Cost Annualization Workflow"
+                                         FontWeight="Bold"
+                                         FontSize="16"
+                                         Foreground="{StaticResource Brush.Primary}"/>
                           </StackPanel>
                           <TextBlock TextWrapping="Wrap">
                               1. Document upfront investments, financing assumptions, and the analysis period.
@@ -311,75 +314,60 @@
                               </Style.Triggers>
                           </Style>
                       </UniformGrid.Style>
-                      <Border Background="White" CornerRadius="6" Padding="{StaticResource Padding.Content}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" Margin="{StaticResource Margin.Stack}">
-                          <Grid>
-                              <Grid.ColumnDefinitions>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="*"/>
-                              </Grid.ColumnDefinitions>
-                              <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Idc, StringFormat=IDC: {0:C2}}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="{StaticResource Margin.InlineMedium}" Foreground="{StaticResource Brush.TextSecondary}">
+                      <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.Stack}">
+                          <StackPanel>
+                              <TextBlock FontWeight="Bold"
+                                         Text="{Binding Idc, StringFormat=IDC: {0:C2}}"/>
+                              <TextBlock TextWrapping="Wrap"
+                                         Margin="{StaticResource Margin.TopSmall}"
+                                         Foreground="{StaticResource Brush.TextSecondary}">
                                   Interest during construction accumulates from the IDC schedule using your month, timing, and rate inputs. Higher rates or longer construction windows increase this value.
                               </TextBlock>
-                          </Grid>
+                          </StackPanel>
                       </Border>
-                      <Border Background="White" CornerRadius="6" Padding="{StaticResource Padding.Content}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" Margin="{StaticResource Margin.Stack}">
-                          <Grid>
-                              <Grid.ColumnDefinitions>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="*"/>
-                              </Grid.ColumnDefinitions>
-                              <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:C2}}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="{StaticResource Margin.InlineMedium}" Foreground="{StaticResource Brush.TextSecondary}">
+                      <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.Stack}">
+                          <StackPanel>
+                              <TextBlock FontWeight="Bold"
+                                         Text="{Binding TotalInvestment, StringFormat=Total Investment: {0:C2}}"/>
+                              <TextBlock TextWrapping="Wrap"
+                                         Margin="{StaticResource Margin.TopSmall}"
+                                         Foreground="{StaticResource Brush.TextSecondary}">
                                   Total investment combines First Cost, IDC, and the present value of Future Costs. Adding more future expenses or higher IDC immediately raises this figure.
                               </TextBlock>
-                          </Grid>
+                          </StackPanel>
                       </Border>
-                      <Border Background="White" CornerRadius="6" Padding="{StaticResource Padding.Content}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" Margin="{StaticResource Margin.Stack}">
-                          <Grid>
-                              <Grid.ColumnDefinitions>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="*"/>
-                              </Grid.ColumnDefinitions>
-                              <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Crf, StringFormat=CRF: {0:F4}}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="{StaticResource Margin.InlineMedium}" Foreground="{StaticResource Brush.TextSecondary}">
+                      <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.Stack}">
+                          <StackPanel>
+                              <TextBlock FontWeight="Bold"
+                                         Text="{Binding Crf, StringFormat=CRF: {0:F4}}"/>
+                              <TextBlock TextWrapping="Wrap"
+                                         Margin="{StaticResource Margin.TopSmall}"
+                                         Foreground="{StaticResource Brush.TextSecondary}">
                                   The capital recovery factor converts present investment into an equivalent annual cost. It is entirely driven by your discount rate and analysis period selections.
                               </TextBlock>
-                          </Grid>
+                          </StackPanel>
                       </Border>
-                      <Border Background="White" CornerRadius="6" Padding="{StaticResource Padding.Content}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" Margin="{StaticResource Margin.Stack}">
-                          <Grid>
-                              <Grid.ColumnDefinitions>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="*"/>
-                              </Grid.ColumnDefinitions>
-                              <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:C2}}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="{StaticResource Margin.InlineMedium}" Foreground="{StaticResource Brush.TextSecondary}">
+                      <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.Stack}">
+                          <StackPanel>
+                              <TextBlock FontWeight="Bold"
+                                         Text="{Binding AnnualCost, StringFormat=Annual Cost: {0:C2}}"/>
+                              <TextBlock TextWrapping="Wrap"
+                                         Margin="{StaticResource Margin.TopSmall}"
+                                         Foreground="{StaticResource Brush.TextSecondary}">
                                   Annual cost reflects how the total investment and your O&amp;M inputs translate into yearly expenses. Increasing either component will raise this annualized value.
                               </TextBlock>
-                          </Grid>
+                          </StackPanel>
                       </Border>
-                      <Border Background="White" CornerRadius="6" Padding="{StaticResource Padding.Content}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
-                          <Grid>
-                              <Grid.ColumnDefinitions>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="Auto"/>
-                                  <ColumnDefinition Width="*"/>
-                              </Grid.ColumnDefinitions>
-                              <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Bcr, StringFormat=BCR: {0:F2}}" VerticalAlignment="Center"/>
-                              <TextBlock Grid.Column="2" TextWrapping="Wrap" Margin="{StaticResource Margin.InlineMedium}" Foreground="{StaticResource Brush.TextSecondary}">
+                      <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.Stack}">
+                          <StackPanel>
+                              <TextBlock FontWeight="Bold"
+                                         Text="{Binding Bcr, StringFormat=BCR: {0:F2}}"/>
+                              <TextBlock TextWrapping="Wrap"
+                                         Margin="{StaticResource Margin.TopSmall}"
+                                         Foreground="{StaticResource Brush.TextSecondary}">
                                   Benefit-cost ratio compares annual benefits against annual costs. Greater benefits or lower annual costs will push the BCR upward, signaling a stronger economic case.
                               </TextBlock>
-                          </Grid>
+                          </StackPanel>
                       </Border>
                   </UniformGrid>
               </Grid>

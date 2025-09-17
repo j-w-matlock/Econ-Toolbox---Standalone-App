@@ -19,16 +19,11 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0"
-                        Background="#FFF2FBFF"
-                        BorderBrush="{StaticResource Brush.Primary}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="{StaticResource Padding.Content}"
-                        Margin="{StaticResource Margin.StackLarge}">
+                        Style="{StaticResource Border.Explainer}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
+                                       Text=""
                                        FontSize="20"
                                        Foreground="{StaticResource Brush.Primary}"
                                        Margin="{StaticResource Margin.Inline}"/>
@@ -197,17 +192,12 @@
                 </ItemsControl>
 
                 <Border Grid.Row="4"
-                        Background="#FFF8FD"
-                        BorderBrush="#E0CAE7"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="{StaticResource Padding.Content}"
-                        Margin="{StaticResource Margin.StackLarge}">
+                        Style="{StaticResource Border.ResultInfo}">
                     <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#8A4BAF" Margin="{StaticResource Margin.Inline}"/>
-                            <TextBlock Text="Result Interpretation" FontWeight="Bold" Foreground="#8A4BAF"/>
-                        </StackPanel>
+                        <TextBlock Text="Result Interpretation"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Style="{StaticResource Text.Body}">
                             Each Expected Annual Damage value averages the damage column across the entire probability curve you supplied. Higher damages at frequent events raise the EAD most dramatically. The plotted curves update with every calculation, helping you confirm the shape of the probability and stage relationships before exporting your Excel summary.
                         </TextBlock>

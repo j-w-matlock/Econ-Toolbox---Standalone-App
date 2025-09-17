@@ -8,7 +8,9 @@
              UseLayoutRounding="True">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
         <StackPanel>
-        <Border Margin="10,0,10,10" Background="#EEF6F8" BorderBrush="{StaticResource Brush.Primary}" BorderThickness="1" CornerRadius="10" Padding="16">
+        <Border Margin="10,0,10,10"
+                Style="{StaticResource Border.Explainer}"
+                Padding="{StaticResource Padding.Card}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -20,7 +22,26 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Top">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="24" Foreground="{StaticResource Brush.Primary}" Margin="0,0,10,0"/>
+                    <Viewbox Width="32" Height="32" Margin="0,0,10,0">
+                        <Canvas Width="32" Height="32">
+                            <Rectangle Width="24"
+                                       Height="16"
+                                       RadiusX="2"
+                                       RadiusY="2"
+                                       Fill="{StaticResource Brush.Primary}"
+                                       Canvas.Left="4"
+                                       Canvas.Top="8"/>
+                            <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="6" Canvas.Top="10"/>
+                            <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="14" Canvas.Top="10"/>
+                            <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="22" Canvas.Top="10"/>
+                            <Path Data="M4,24 C7,22 9,22 12,24 C15,26 17,26 20,24 C23,22 25,22 28,24"
+                                  Stroke="{StaticResource Brush.Accent}"
+                                  StrokeThickness="2"
+                                  StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round"
+                                  Fill="Transparent"/>
+                        </Canvas>
+                    </Viewbox>
                 </StackPanel>
                 <StackPanel Grid.Column="1">
                     <StackPanel.Style>
@@ -70,11 +91,17 @@
         <TabControl Margin="10,0,10,10" HorizontalContentAlignment="Stretch">
         <TabItem Header="Storage Cost">
             <StackPanel Margin="10">
-                <Border Background="#FFF7F0" BorderBrush="#F2C089" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#B96A00" Margin="0,0,8,0"/>
-                            <TextBlock Text="Storage Guidance" FontWeight="Bold" Foreground="#B96A00"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text=""
+                                       FontSize="18"
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Text="Storage Guidance"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                             Record the full system storage and the recommended storage allocation for your study. The compute action scales other sections by this proportion, so double-check the recommendation before proceeding.
@@ -104,7 +131,7 @@
                     </Button>
                     <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
                 </Grid>
-                <Border Background="#FFF3E2" BorderBrush="#F2C089" BorderThickness="1" CornerRadius="8" Padding="12">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
                         The resulting P value shows how much of the joint facilities support your recommendation. Increasing the recommendation or decreasing total storage raises the percentage and, consequently, the share of downstream costs assigned to this project.
                     </TextBlock>
@@ -113,11 +140,17 @@
         </TabItem>
         <TabItem Header="Joint Costs O&amp;M">
             <StackPanel Margin="10">
-                <Border Background="#EEF9F1" BorderBrush="#8BC999" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#2F855A" Margin="0,0,8,0"/>
-                            <TextBlock Text="Joint O&amp;M Entry" FontWeight="Bold" Foreground="#2F855A"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text=""
+                                       FontSize="18"
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Text="Joint O&amp;M Entry"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                             Enter the system-wide joint operating and maintenance costs on an annual basis. The compute step keeps a running total that is later scaled by the storage percentage.
@@ -147,7 +180,7 @@
                     </Button>
                     <TextBlock Text="{Binding TotalJointOm, StringFormat=Total Joint O&amp;M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost"/>
                 </Grid>
-                <Border Background="#E5F4EA" BorderBrush="#8BC999" BorderThickness="1" CornerRadius="8" Padding="12">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
                         This total represents the joint-system expenses before scaling. When the storage percentage increases, more of this amount will be allocated to the recommended plan in the Total Annual Cost tab.
                     </TextBlock>
@@ -156,11 +189,17 @@
         </TabItem>
         <TabItem Header="Updated Storage Cost">
             <StackPanel Margin="10">
-                <Border Background="#F1F4FF" BorderBrush="#A2B4F5" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#3A55B5" Margin="0,0,8,0"/>
-                            <TextBlock Text="Update Legacy Costs" FontWeight="Bold" Foreground="#3A55B5"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text=""
+                                       FontSize="18"
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Text="Update Legacy Costs"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                             Replace historical construction costs with current values by pairing each category with the proper update factor. Keep the categories clear so the export remains audit friendly.
@@ -181,7 +220,7 @@
                         <TextBlock Text="Compute"/>
                     </StackPanel>
                 </Button>
-                <Border Background="#E7ECFF" BorderBrush="#A2B4F5" BorderThickness="1" CornerRadius="8" Padding="12">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <StackPanel>
                         <TextBlock Text="{Binding TotalUpdatedCost, StringFormat=Total Updated Cost: {0:C2}}" FontWeight="Bold"/>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
@@ -193,11 +232,17 @@
         </TabItem>
         <TabItem Header="RR&amp;R and Mitigation">
             <StackPanel Margin="10">
-                <Border Background="#F6F0FF" BorderBrush="#C3A4F6" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#6B35B2" Margin="0,0,8,0"/>
-                            <TextBlock Text="RR&amp;R / Mitigation Planner" FontWeight="Bold" Foreground="#6B35B2"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text=""
+                                       FontSize="18"
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Text="RR&amp;R / Mitigation Planner"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                             Capture future repair, replacement, rehabilitation, and mitigation costs. Use the grid to list each activity, the year it occurs, and its cost in that year dollars. The tool discounts everything back to the base year before applying the CWCCI.
@@ -246,7 +291,7 @@
                         <TextBlock Text="{Binding RrrAnnualized, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF" FontWeight="Bold"/>
                     </StackPanel>
                 </Grid>
-                <Border Background="#F1E8FF" BorderBrush="#C3A4F6" BorderThickness="1" CornerRadius="8" Padding="12">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
                         Present Value aggregates each scheduled cost using the discount rate and base year. The Updated Cost multiplies that total by CWCCI, and the Annualized figure then applies your capital recovery factor. Larger future costs, slower discounting, or higher CWCCI will elevate every downstream total.
                     </TextBlock>
@@ -255,11 +300,17 @@
         </TabItem>
         <TabItem Header="Total Annual Cost">
             <StackPanel Margin="10">
-                <Border Background="#E9F3FF" BorderBrush="#8DB6E3" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#1F6AB0" Margin="0,0,8,0"/>
-                            <TextBlock Text="Compare Annual Cost Scenarios" FontWeight="Bold" Foreground="#1F6AB0"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text=""
+                                       FontSize="18"
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Text="Compare Annual Cost Scenarios"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                             Define up to two capital recovery scenarios. Each uses its own discount rate and analysis period to annualize the updated costs, then layers on scaled joint O&amp;M and RR&amp;R/mitigation values.
@@ -319,7 +370,7 @@
                         </GroupBox>
                     </Grid>
                 </Grid>
-                <Border Background="#DBECFF" BorderBrush="#8DB6E3" BorderThickness="1" CornerRadius="8" Padding="12">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
                         Cost 1 and Cost 2 let you compare alternative discounting assumptions. Lower discount rates or longer analysis periods increase the capital recovery factor and therefore annualized storage costs. Because joint O&amp;M and RR&amp;R values scale with the storage percentage, any change you make on earlier tabs will ripple into both scenarios here.
                     </TextBlock>
