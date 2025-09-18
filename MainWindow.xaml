@@ -23,6 +23,7 @@
 
     <Window.Resources>
         <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <DataTemplate x:Key="HeroWideTemplate">
                 <Grid Margin="0"
                       HorizontalAlignment="Stretch">
@@ -107,7 +108,9 @@
                     <Button x:Name="CalculateButton"
                             Command="{Binding CalculateCommand}"
                             Margin="{StaticResource Margin.Inline}"
-                            HorizontalAlignment="Stretch">
+                            HorizontalAlignment="Stretch"
+                            Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                            IsEnabled="{Binding IsCalculateVisible}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""
@@ -132,7 +135,9 @@
 
             <DataTemplate x:Key="ActionsNarrowTemplate">
                 <StackPanel>
-                    <Button Command="{Binding CalculateCommand}">
+                    <Button Command="{Binding CalculateCommand}"
+                            Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                            IsEnabled="{Binding IsCalculateVisible}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""

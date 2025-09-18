@@ -16,40 +16,54 @@ namespace EconToolbox.Desktop.ViewModels
         public int SelectedIndex
         {
             get => _selectedIndex;
-            set { _selectedIndex = value; OnPropertyChanged(); }
+            set
+            {
+                if (_selectedIndex == value) return;
+                _selectedIndex = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsCalculateVisible));
+            }
         }
 
         public ICommand CalculateCommand { get; }
         public ICommand ExportCommand { get; }
 
+        public bool IsCalculateVisible => SelectedComputeCommand?.CanExecute(null) == true;
+
         public MainViewModel()
         {
             CalculateCommand = new RelayCommand(Calculate);
             ExportCommand = new RelayCommand(Export);
+
+            SubscribeToComputeCommand(Ead.ComputeCommand);
+            SubscribeToComputeCommand(UpdatedCost.ComputeCommand);
+            SubscribeToComputeCommand(Annualizer.ComputeCommand);
+            SubscribeToComputeCommand(WaterDemand.ComputeCommand);
+            SubscribeToComputeCommand(Udv.ComputeCommand);
         }
 
         private void Calculate()
         {
-            switch (SelectedIndex)
+            var command = SelectedComputeCommand;
+            if (command?.CanExecute(null) == true)
             {
-                case 0:
-                    if (Ead.ComputeCommand.CanExecute(null)) Ead.ComputeCommand.Execute(null);
-                    break;
-                case 1:
-                    if (UpdatedCost.ComputeCommand.CanExecute(null)) UpdatedCost.ComputeCommand.Execute(null);
-                    break;
-                case 2:
-                    if (Annualizer.ComputeCommand.CanExecute(null)) Annualizer.ComputeCommand.Execute(null);
-                    break;
-                case 3:
-                    if (WaterDemand.ComputeCommand.CanExecute(null)) WaterDemand.ComputeCommand.Execute(null);
-                    break;
-                case 4:
-                    if (Udv.ComputeCommand.CanExecute(null)) Udv.ComputeCommand.Execute(null);
-                    break;
-                case 5:
-                    break;
+                command.Execute(null);
             }
+        }
+
+        private ICommand? SelectedComputeCommand => SelectedIndex switch
+        {
+            0 => Ead.ComputeCommand,
+            1 => UpdatedCost.ComputeCommand,
+            2 => Annualizer.ComputeCommand,
+            3 => WaterDemand.ComputeCommand,
+            4 => Udv.ComputeCommand,
+            _ => null
+        };
+
+        private void SubscribeToComputeCommand(ICommand command)
+        {
+            command.CanExecuteChanged += (_, _) => OnPropertyChanged(nameof(IsCalculateVisible));
         }
 
         private void Export()
