@@ -397,9 +397,11 @@ namespace EconToolbox.Desktop.Services
             ganttSheet.Cell(1, 3).Value = "Start";
             ganttSheet.Cell(1, 4).Value = "Finish";
             ganttSheet.Cell(1, 5).Value = "Duration (days)";
-            ganttSheet.Cell(1, 6).Value = "Dependencies";
-            ganttSheet.Cell(1, 7).Value = "% Complete";
-            ganttSheet.Cell(1, 8).Value = "Milestone";
+            ganttSheet.Cell(1, 6).Value = "Labor Cost $/day";
+            ganttSheet.Cell(1, 7).Value = "Task Cost $";
+            ganttSheet.Cell(1, 8).Value = "Dependencies";
+            ganttSheet.Cell(1, 9).Value = "Milestone";
+            ganttSheet.Cell(1, 10).Value = "% Complete";
             rowIdx = 2;
             foreach (var task in gantt.Tasks)
             {
@@ -408,15 +410,19 @@ namespace EconToolbox.Desktop.Services
                 ganttSheet.Cell(rowIdx, 3).Value = task.StartDate;
                 ganttSheet.Cell(rowIdx, 4).Value = task.EndDate;
                 ganttSheet.Cell(rowIdx, 5).Value = task.DurationDays;
-                ganttSheet.Cell(rowIdx, 6).Value = task.Dependencies;
-                ganttSheet.Cell(rowIdx, 7).Value = task.PercentComplete / 100.0;
-                ganttSheet.Cell(rowIdx, 7).Style.NumberFormat.Format = "0.00%";
-                ganttSheet.Cell(rowIdx, 8).Value = task.IsMilestone ? "Yes" : "No";
+                ganttSheet.Cell(rowIdx, 6).Value = task.LaborCostPerDay;
+                ganttSheet.Cell(rowIdx, 6).Style.NumberFormat.Format = "$#,##0.00";
+                ganttSheet.Cell(rowIdx, 7).Value = task.TotalCost;
+                ganttSheet.Cell(rowIdx, 7).Style.NumberFormat.Format = "$#,##0.00";
+                ganttSheet.Cell(rowIdx, 8).Value = task.Dependencies;
+                ganttSheet.Cell(rowIdx, 9).Value = task.IsMilestone ? "Yes" : "No";
+                ganttSheet.Cell(rowIdx, 10).Value = task.PercentComplete / 100.0;
+                ganttSheet.Cell(rowIdx, 10).Style.NumberFormat.Format = "0.00%";
                 rowIdx++;
             }
             if (rowIdx > 2)
             {
-                var ganttRange = ganttSheet.Range(1, 1, rowIdx - 1, 8);
+                var ganttRange = ganttSheet.Range(1, 1, rowIdx - 1, 10);
                 var ganttTable = ganttRange.CreateTable(GetTableName("GanttTasks", tableNames));
                 ganttTable.Theme = XLTableTheme.TableStyleMedium2;
             }
@@ -619,6 +625,7 @@ namespace EconToolbox.Desktop.Services
                 ("Project Start", ganttStart.HasValue ? (object)ganttStart.Value : "Not scheduled", ganttStart.HasValue ? "mmmm d, yyyy" : null, null, false),
                 ("Project Finish", ganttFinish.HasValue ? (object)ganttFinish.Value : "Not scheduled", ganttFinish.HasValue ? "mmmm d, yyyy" : null, null, false),
                 ("Duration (days)", ganttTaskCount > 0 ? gantt.TotalDurationDays : 0, "0", "Total span between start and finish.", false),
+                ("Total Labor Cost", gantt.TotalLaborCost, "$#,##0.00", "Sum of labor spending computed from task rates and durations.", gantt.TotalLaborCost > 0),
                 ("Milestones", milestoneCount, "0", "Tasks flagged as milestones.", milestoneCount > 0),
                 ("Average % Complete", ganttTaskCount > 0 ? averagePercent / 100.0 : 0, "0.0%", "Mean percent complete across all tasks.", false)
             };

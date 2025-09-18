@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using EconToolbox.Desktop.Models;
@@ -77,6 +79,8 @@ namespace EconToolbox.Desktop.ViewModels
         public ICommand ClearTasksCommand => _clearTasksCommand;
         public ICommand ComputeCommand => _computeCommand;
 
+        public double TotalLaborCost => Tasks.Sum(t => t.TotalCost);
+
         public GanttViewModel()
         {
             _addTaskCommand = new RelayCommand(AddTask);
@@ -84,8 +88,10 @@ namespace EconToolbox.Desktop.ViewModels
             _clearTasksCommand = new RelayCommand(ClearTasks);
             _computeCommand = new RelayCommand(ComputeSchedule);
 
+            Tasks.CollectionChanged += OnTasksCollectionChanged;
             SeedDefaultTasks();
             ComputeSchedule();
+            OnPropertyChanged(nameof(TotalLaborCost));
         }
 
         private void SeedDefaultTasks()
@@ -99,7 +105,8 @@ namespace EconToolbox.Desktop.ViewModels
                 Workstream = "Initiation",
                 StartDate = DateTime.Today,
                 DurationDays = 2,
-                PercentComplete = 100
+                PercentComplete = 100,
+                LaborCostPerDay = 1200
             };
             kickoff.EndDate = kickoff.StartDate.AddDays(kickoff.DurationDays);
 
@@ -110,7 +117,8 @@ namespace EconToolbox.Desktop.ViewModels
                 StartDate = kickoff.EndDate,
                 DurationDays = 5,
                 Dependencies = kickoff.Name,
-                PercentComplete = 60
+                PercentComplete = 60,
+                LaborCostPerDay = 950
             };
             planning.EndDate = planning.StartDate.AddDays(planning.DurationDays);
 
@@ -121,7 +129,8 @@ namespace EconToolbox.Desktop.ViewModels
                 StartDate = planning.EndDate,
                 DurationDays = 7,
                 Dependencies = planning.Name,
-                PercentComplete = 25
+                PercentComplete = 25,
+                LaborCostPerDay = 1100
             };
             baseline.EndDate = baseline.StartDate.AddDays(baseline.DurationDays);
 
@@ -158,12 +167,17 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void ClearTasks()
         {
+            foreach (var task in Tasks)
+            {
+                task.PropertyChanged -= OnTaskPropertyChanged;
+            }
             Tasks.Clear();
             Bars.Clear();
             ScheduleSummary = string.Empty;
             ProjectStart = DateTime.Today;
             ProjectFinish = DateTime.Today;
             OnPropertyChanged(nameof(TotalDurationDays));
+            OnPropertyChanged(nameof(TotalLaborCost));
         }
 
         public void ComputeSchedule()
@@ -225,6 +239,7 @@ namespace EconToolbox.Desktop.ViewModels
             ScheduleSummary = totalDays <= 0
                 ? "Schedule contains a single-day milestone sequence."
                 : $"Project spans {(int)Math.Ceiling(totalDays)} days across {Tasks.Count} activities.";
+            OnPropertyChanged(nameof(TotalLaborCost));
         }
 
         private static List<string> ParseDependencies(string dependencies)
@@ -234,6 +249,42 @@ namespace EconToolbox.Desktop.ViewModels
                 .Select(d => d.Trim())
                 .Where(d => !string.IsNullOrWhiteSpace(d))
                 .ToList();
+        }
+
+        private void OnTasksCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach (var task in Tasks)
+                {
+                    task.PropertyChanged -= OnTaskPropertyChanged;
+                    task.PropertyChanged += OnTaskPropertyChanged;
+                }
+                OnPropertyChanged(nameof(TotalLaborCost));
+                return;
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (GanttTask task in e.OldItems)
+                    task.PropertyChanged -= OnTaskPropertyChanged;
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (GanttTask task in e.NewItems)
+                    task.PropertyChanged += OnTaskPropertyChanged;
+            }
+
+            OnPropertyChanged(nameof(TotalLaborCost));
+        }
+
+        private void OnTaskPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GanttTask.TotalCost) || e.PropertyName == nameof(GanttTask.DurationDays))
+            {
+                OnPropertyChanged(nameof(TotalLaborCost));
+            }
         }
 
         public record GanttBar(GanttTask Task, int RowIndex, double OffsetDays, double DurationDays)

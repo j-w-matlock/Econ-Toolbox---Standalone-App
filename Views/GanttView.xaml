@@ -64,6 +64,13 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                     <DataGridTextColumn Header="Duration (days)" Binding="{Binding DurationDays, Mode=TwoWay}" Width="100"/>
+                                    <DataGridTextColumn Header="Labor Cost $/day"
+                                                        Binding="{Binding LaborCostPerDay, Mode=TwoWay, StringFormat={}{0:N2}}"
+                                                        Width="120"/>
+                                    <DataGridTextColumn Header="Task Cost $"
+                                                        Binding="{Binding TotalCost, Mode=OneWay, StringFormat={}{0:N2}}"
+                                                        Width="120"
+                                                        IsReadOnly="True"/>
                                     <DataGridTextColumn Header="Dependencies" Binding="{Binding Dependencies, Mode=TwoWay}" Width="140"/>
                                     <DataGridCheckBoxColumn Header="Milestone" Binding="{Binding IsMilestone, Mode=TwoWay}" Width="80"/>
                                     <DataGridTextColumn Header="% Complete" Binding="{Binding PercentComplete, Mode=TwoWay}" Width="90"/>
@@ -88,6 +95,11 @@
                                         <TextBlock Text="Clear"/>
                                     </StackPanel>
                                 </Button>
+                                <TextBlock Text="{Binding TotalLaborCost, StringFormat=Total Cost: {0:C2}}"
+                                           Margin="16,0,0,0"
+                                           VerticalAlignment="Center"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource Brush.Primary}"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
