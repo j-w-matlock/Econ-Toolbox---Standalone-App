@@ -211,7 +211,7 @@
                                             <DataGridTextColumn Header="Adjusted" Binding="{Binding AdjustedDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)"/>
+                                                        <Setter Property="ToolTip" Value="Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)"/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
