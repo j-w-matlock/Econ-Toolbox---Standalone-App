@@ -35,6 +35,7 @@
     <Thickness x:Key="Padding.Section">20</Thickness>
     <Thickness x:Key="Padding.Content">12</Thickness>
     <Thickness x:Key="Margin.Container">16</Thickness>
+    <Thickness x:Key="Margin.StackSmall">0,0,0,4</Thickness>
     <Thickness x:Key="Margin.Stack">0,0,0,8</Thickness>
     <Thickness x:Key="Margin.StackLarge">0,0,0,16</Thickness>
     <Thickness x:Key="Margin.Inline">0,0,8,0</Thickness>
