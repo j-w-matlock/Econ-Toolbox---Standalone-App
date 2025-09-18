@@ -169,6 +169,7 @@ namespace EconToolbox.Desktop.Services
         public static void ExportAll(EadViewModel ead, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, string filePath)
         {
             using var wb = new XLWorkbook();
+            var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // EAD Sheet
             var eadSheet = wb.Worksheets.Add("EAD");
@@ -615,8 +616,8 @@ namespace EconToolbox.Desktop.Services
             var ganttRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
                 ("Tasks Planned", ganttTaskCount, "0", "Number of activities scheduled in the Gantt module.", false),
-                ("Project Start", ganttStart ?? "Not scheduled", ganttStart.HasValue ? "mmmm d, yyyy" : null, null, false),
-                ("Project Finish", ganttFinish ?? "Not scheduled", ganttFinish.HasValue ? "mmmm d, yyyy" : null, null, false),
+                ("Project Start", ganttStart.HasValue ? (object)ganttStart.Value : "Not scheduled", ganttStart.HasValue ? "mmmm d, yyyy" : null, null, false),
+                ("Project Finish", ganttFinish.HasValue ? (object)ganttFinish.Value : "Not scheduled", ganttFinish.HasValue ? "mmmm d, yyyy" : null, null, false),
                 ("Duration (days)", ganttTaskCount > 0 ? gantt.TotalDurationDays : 0, "0", "Total span between start and finish.", false),
                 ("Milestones", milestoneCount, "0", "Tasks flagged as milestones.", milestoneCount > 0),
                 ("Average % Complete", ganttTaskCount > 0 ? averagePercent / 100.0 : 0, "0.0%", "Mean percent complete across all tasks.", false)
