@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Background="#FFF4F7" BorderBrush="#E8A6B8" BorderThickness="1" CornerRadius="10" Padding="12" Margin="{StaticResource Margin.Stack}">
+        <Border Grid.Row="0" Style="{StaticResource Border.Explainer}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Viewbox Width="28" Height="28" Margin="{StaticResource Margin.Inline}">
