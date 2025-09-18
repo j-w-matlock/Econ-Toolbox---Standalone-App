@@ -132,7 +132,13 @@
                       </TextBox.Style>
                   </TextBox>
 
-                  <TextBlock Grid.Row="5" Text="Base Year" Style="{StaticResource AnnualizerLabelStyle}"/>
+                  <TextBlock Grid.Row="5" Style="{StaticResource AnnualizerLabelStyle}">
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="Reference year that anchors discounting for future costs and benefits."/>
+                      </InlineUIContainer>
+                      <Run Text="Base Year"/>
+                  </TextBlock>
                   <TextBox Grid.Row="6" Text="{Binding BaseYear}">
                       <TextBox.Style>
                           <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
@@ -206,7 +212,13 @@
                       </TextBox.Style>
                   </TextBox>
 
-                  <TextBlock Grid.Row="13" Text="Construction Months" Style="{StaticResource AnnualizerLabelStyle}"/>
+                  <TextBlock Grid.Row="13" Style="{StaticResource AnnualizerLabelStyle}">
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="Total construction duration in months used to accumulate IDC."/>
+                      </InlineUIContainer>
+                      <Run Text="Construction Months"/>
+                  </TextBlock>
                   <TextBox Grid.Row="14" Text="{Binding ConstructionMonths}">
                       <TextBox.Style>
                           <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
@@ -220,7 +232,7 @@
                       </TextBox.Style>
                   </TextBox>
 
-                  <TextBlock Grid.Row="15" Text="IDC Schedule">
+                  <TextBlock Grid.Row="15">
                       <TextBlock.Style>
                           <Style TargetType="TextBlock" BasedOn="{StaticResource AnnualizerLabelStyle}">
                               <Setter Property="Margin" Value="0,24,12,4"/>
@@ -232,6 +244,11 @@
                               </Style.Triggers>
                           </Style>
                       </TextBlock.Style>
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="List construction outlays by month and timing so the tool can compute interest during construction."/>
+                      </InlineUIContainer>
+                      <Run Text="IDC Schedule"/>
                   </TextBlock>
                   <Grid Grid.Row="16">
                       <Grid.Style>
@@ -251,9 +268,32 @@
                       <Border Background="White" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
                           <DataGrid ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All">
                               <DataGrid.Columns>
-                                  <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
-                                  <DataGridTextColumn Header="Month" Binding="{Binding Year}"/>
-                                  <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
+                                  <DataGridTextColumn Binding="{Binding Cost}">
+                                      <DataGridTextColumn.Header>
+                                          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                              ToolTip="Amount of capital spent in the specified month."/>
+                                              <TextBlock Text="Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                          </StackPanel>
+                                      </DataGridTextColumn.Header>
+                                  </DataGridTextColumn>
+                                  <DataGridTextColumn Binding="{Binding Year}">
+                                      <DataGridTextColumn.Header>
+                                          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                              ToolTip="Construction month when the cost occurs, starting at 1."/>
+                                              <TextBlock Text="Month" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                          </StackPanel>
+                                      </DataGridTextColumn.Header>
+                                  </DataGridTextColumn>
+                                  <DataGridComboBoxColumn SelectedItemBinding="{Binding Timing}">
+                                      <DataGridComboBoxColumn.Header>
+                                          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                              ToolTip="Select whether the cost hits at the beginning, midpoint, or end of the month."/>
+                                              <TextBlock Text="Timing" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                          </StackPanel>
+                                      </DataGridComboBoxColumn.Header>
                                       <DataGridComboBoxColumn.ItemsSource>
                                           <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                                               <sys:String>beginning</sys:String>
@@ -276,7 +316,7 @@
                       </StackPanel>
                   </Grid>
 
-                  <TextBlock Grid.Row="17" Text="Future Costs">
+                  <TextBlock Grid.Row="17">
                       <TextBlock.Style>
                           <Style TargetType="TextBlock" BasedOn="{StaticResource AnnualizerLabelStyle}">
                               <Setter Property="Margin" Value="0,24,12,4"/>
@@ -288,6 +328,11 @@
                               </Style.Triggers>
                           </Style>
                       </TextBlock.Style>
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="Add future capital expenses in the year and timing they occur to include their present value."/>
+                      </InlineUIContainer>
+                      <Run Text="Future Costs"/>
                   </TextBlock>
                   <Grid Grid.Row="18">
                       <Grid.Style>
@@ -307,9 +352,32 @@
                       <Border Background="White" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
                           <DataGrid ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0">
                               <DataGrid.Columns>
-                                  <DataGridTextColumn Header="Cost" Binding="{Binding Cost}"/>
-                                  <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                                  <DataGridComboBoxColumn Header="Timing" SelectedItemBinding="{Binding Timing}">
+                                  <DataGridTextColumn Binding="{Binding Cost}">
+                                      <DataGridTextColumn.Header>
+                                          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                              ToolTip="Future cost amount entered in nominal dollars."/>
+                                              <TextBlock Text="Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                          </StackPanel>
+                                      </DataGridTextColumn.Header>
+                                  </DataGridTextColumn>
+                                  <DataGridTextColumn Binding="{Binding Year}">
+                                      <DataGridTextColumn.Header>
+                                          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                              ToolTip="Calendar year when the future cost will be incurred."/>
+                                              <TextBlock Text="Year" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                          </StackPanel>
+                                      </DataGridTextColumn.Header>
+                                  </DataGridTextColumn>
+                                  <DataGridComboBoxColumn SelectedItemBinding="{Binding Timing}">
+                                      <DataGridComboBoxColumn.Header>
+                                          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                              ToolTip="Timing within the year to align present value factors."/>
+                                              <TextBlock Text="Timing" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                          </StackPanel>
+                                      </DataGridComboBoxColumn.Header>
                                       <DataGridComboBoxColumn.ItemsSource>
                                           <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                                               <sys:String>beginning</sys:String>

@@ -263,7 +263,8 @@ namespace EconToolbox.Desktop.ViewModels
             ColumnDefinitions.Add(new DataGridColumnDescriptor(nameof(EadRow.Probability))
             {
                 HeaderText = "Probability",
-                MinWidth = 120
+                MinWidth = 120,
+                ToolTip = "Exceedance probability for the row of damage and stage inputs."
             });
 
             if (UseStage)
@@ -271,7 +272,8 @@ namespace EconToolbox.Desktop.ViewModels
                 ColumnDefinitions.Add(new DataGridColumnDescriptor(nameof(EadRow.Stage))
                 {
                     HeaderText = "Stage",
-                    MinWidth = 120
+                    MinWidth = 120,
+                    ToolTip = "Water surface elevation or stage aligned with the probability."
                 });
             }
 
@@ -282,7 +284,8 @@ namespace EconToolbox.Desktop.ViewModels
                     HeaderContext = DamageColumns[i],
                     HeaderBindingPath = nameof(DamageColumn.Name),
                     IsHeaderEditable = true,
-                    MinWidth = 140
+                    MinWidth = 140,
+                    ToolTip = "Damage amount for this category at the selected probability."
                 });
             }
         }
