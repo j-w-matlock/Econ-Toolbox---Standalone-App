@@ -1,6 +1,7 @@
 <UserControl x:Class="EconToolbox.Desktop.Views.EadView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="clr-namespace:EconToolbox.Desktop.Behaviors"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
@@ -121,12 +122,12 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <DataGrid x:Name="EadDataGrid"
-                                  ItemsSource="{Binding Rows}"
+                        <DataGrid ItemsSource="{Binding Rows}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="True"
                                   CanUserDeleteRows="True"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
                     </Border>
 
                     <Border Background="{StaticResource Brush.Surface}"

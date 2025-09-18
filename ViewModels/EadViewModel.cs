@@ -1,10 +1,12 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using EconToolbox.Desktop.Behaviors;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 
@@ -18,13 +20,25 @@ namespace EconToolbox.Desktop.ViewModels
     public class EadViewModel : BaseViewModel
     {
         public ObservableCollection<EadRow> Rows { get; } = new();
-        public ObservableCollection<string> DamageColumns { get; } = new();
+        public ObservableCollection<DamageColumn> DamageColumns { get; } = new();
+        public ObservableCollection<DataGridColumnDescriptor> ColumnDefinitions { get; } = new();
 
         private bool _useStage;
         public bool UseStage
         {
             get => _useStage;
-            set { _useStage = value; OnPropertyChanged(); }
+            set
+            {
+                if (_useStage == value)
+                {
+                    return;
+                }
+
+                _useStage = value;
+                OnPropertyChanged();
+                UpdateColumnDefinitions();
+                Compute();
+            }
         }
 
         private ObservableCollection<string> _results = new();
@@ -64,13 +78,52 @@ namespace EconToolbox.Desktop.ViewModels
             ExportCommand = new RelayCommand(Export);
             DamageColumns.CollectionChanged += DamageColumns_CollectionChanged;
             AddDamageColumn(); // start with one damage column
+            UpdateColumnDefinitions();
         }
 
         private void DamageColumns_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            if (e.OldItems != null)
+            {
+                foreach (DamageColumn column in e.OldItems)
+                {
+                    column.PropertyChanged -= DamageColumn_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (DamageColumn column in e.NewItems)
+                {
+                    column.PropertyChanged += DamageColumn_PropertyChanged;
+                }
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+            {
+                foreach (var _ in e.NewItems)
+                {
+                    foreach (var row in Rows)
+                    {
+                        row.Damages.Add(0);
+                    }
+                }
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Remove || e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach (var row in Rows)
+                {
+                    while (row.Damages.Count > DamageColumns.Count)
+                    {
+                        row.Damages.RemoveAt(row.Damages.Count - 1);
+                    }
+                }
+            }
+
             _removeDamageColumnCommand.RaiseCanExecuteChanged();
-            if (e.Action == NotifyCollectionChangedAction.Replace)
-                Compute();
+            UpdateColumnDefinitions();
+            Compute();
         }
 
         private void Rows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -87,22 +140,14 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void AddDamageColumn()
         {
-            DamageColumns.Add($"Damage {DamageColumns.Count + 1}");
-            foreach (var row in Rows)
-                row.Damages.Add(0);
+            DamageColumns.Add(new DamageColumn { Name = $"Damage {DamageColumns.Count + 1}" });
             _removeDamageColumnCommand.RaiseCanExecuteChanged();
         }
 
         private void RemoveDamageColumn()
         {
             if (DamageColumns.Count == 0) return;
-            int idx = DamageColumns.Count - 1;
-            DamageColumns.RemoveAt(idx);
-            foreach (var row in Rows)
-            {
-                if (row.Damages.Count > idx)
-                    row.Damages.RemoveAt(idx);
-            }
+            DamageColumns.RemoveAt(DamageColumns.Count - 1);
             _removeDamageColumnCommand.RaiseCanExecuteChanged();
         }
 
@@ -133,7 +178,7 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     var damages = Rows.Select(r => r.Damages[i]).ToArray();
                     double ead = EadModel.Compute(probabilities, damages);
-                    results.Add($"{DamageColumns[i]}: {ead:F2}");
+                    results.Add($"{DamageColumns[i].Name}: {ead:F2}");
                 }
                 Results = new ObservableCollection<string>(results);
                 UpdateCharts();
@@ -207,7 +252,46 @@ namespace EconToolbox.Desktop.ViewModels
             if (dlg.ShowDialog() == true)
             {
                 string combined = string.Join(" | ", Results);
-                Services.ExcelExporter.ExportEad(Rows, DamageColumns, UseStage, combined, StageDamagePoints, FrequencyDamagePoints, dlg.FileName);
+                Services.ExcelExporter.ExportEad(Rows, DamageColumns.Select(c => c.Name), UseStage, combined, StageDamagePoints, FrequencyDamagePoints, dlg.FileName);
+            }
+        }
+
+        private void UpdateColumnDefinitions()
+        {
+            ColumnDefinitions.Clear();
+
+            ColumnDefinitions.Add(new DataGridColumnDescriptor(nameof(EadRow.Probability))
+            {
+                HeaderText = "Probability",
+                MinWidth = 120
+            });
+
+            if (UseStage)
+            {
+                ColumnDefinitions.Add(new DataGridColumnDescriptor(nameof(EadRow.Stage))
+                {
+                    HeaderText = "Stage",
+                    MinWidth = 120
+                });
+            }
+
+            for (int i = 0; i < DamageColumns.Count; i++)
+            {
+                ColumnDefinitions.Add(new DataGridColumnDescriptor($"Damages[{i}]")
+                {
+                    HeaderContext = DamageColumns[i],
+                    HeaderBindingPath = nameof(DamageColumn.Name),
+                    IsHeaderEditable = true,
+                    MinWidth = 140
+                });
+            }
+        }
+
+        private void DamageColumn_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DamageColumn.Name))
+            {
+                Compute();
             }
         }
 
@@ -229,6 +313,26 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             public ObservableCollection<double> Damages { get; } = new();
+        }
+
+        public class DamageColumn : BaseViewModel
+        {
+            private string _name = string.Empty;
+
+            public string Name
+            {
+                get => _name;
+                set
+                {
+                    if (_name == value)
+                    {
+                        return;
+                    }
+
+                    _name = value;
+                    OnPropertyChanged();
+                }
+            }
         }
     }
 }

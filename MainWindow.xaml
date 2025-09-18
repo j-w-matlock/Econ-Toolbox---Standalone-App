@@ -24,15 +24,33 @@
     <Window.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <DataTemplate DataType="{x:Type vm:EadViewModel}">
+                <views:EadView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UpdatedCostViewModel}">
+                <views:UpdatedCostView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AnnualizerViewModel}">
+                <views:AnnualizerView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:WaterDemandViewModel}">
+                <views:WaterDemandView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UdvViewModel}">
+                <views:UdvView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:MindMapViewModel}">
+                <views:MindMapView/>
+            </DataTemplate>
             <DataTemplate x:Key="HeroWideTemplate">
                 <Grid Margin="0"
                       HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*" MinWidth="300"/>
+                        <ColumnDefinition Width="*" MinWidth="320"/>
                     </Grid.ColumnDefinitions>
                     <Canvas Width="120"
-                            Height="80"
+                            Height="90"
                             Margin="{StaticResource Margin.InlineLarge}">
                         <Path Data="M10,70 L30,45 L55,55 L85,20"
                               Stroke="White"
@@ -44,23 +62,39 @@
                         <Ellipse Width="10" Height="10" Fill="{StaticResource Brush.Accent}" Canvas.Left="51" Canvas.Top="50"/>
                         <Ellipse Width="12" Height="12" Fill="White" Canvas.Left="79" Canvas.Top="14"/>
                     </Canvas>
-                    <StackPanel Grid.Column="1">
-                        <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       FontSize="30"
-                                       Foreground="White"
-                                       Margin="{StaticResource Margin.Inline}"/>
-                            <TextBlock Text="Economic Toolbox"
-                                       Style="{StaticResource Text.Title}"/>
-                        </StackPanel>
-                        <TextBlock Style="{StaticResource Text.Body}"
+                    <StackPanel Grid.Column="1"
+                                Margin="{StaticResource Margin.StackLarge}">
+                        <TextBlock Text="Economic Toolbox"
                                    Foreground="White"
-                                   Margin="{StaticResource Margin.Stack}">
-                            Review each tab to build a complete project narrative. Enter inputs carefully, press Calculate when
-                            available, and use Export to capture your work. Context-sensitive tips below explain what each result
-                            means and how your assumptions drive it.
-                        </TextBlock>
+                                   FontWeight="SemiBold"
+                                   FontSize="14"/>
+                        <TextBlock Text="{Binding SelectedModule.Title}"
+                                   Style="{StaticResource Text.Title}"/>
+                        <TextBlock Text="{Binding SelectedModule.Description}"
+                                   Style="{StaticResource Text.Body}"
+                                   Foreground="White"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Text="To prepare your inputs:"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}"
+                                      Margin="{StaticResource Margin.StackSmall}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,2">
+                                        <TextBlock Text="•"
+                                                   Foreground="White"
+                                                   FontSize="16"
+                                                   Margin="0,0,6,0"/>
+                                        <TextBlock Text="{Binding}"
+                                                   Style="{StaticResource Text.Body}"
+                                                   Foreground="White"
+                                                   TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </Grid>
             </DataTemplate>
@@ -85,57 +119,130 @@
                     <StackPanel Margin="{StaticResource Margin.Stack}"
                                 HorizontalAlignment="Center">
                         <TextBlock Text="Economic Toolbox"
-                                   Style="{StaticResource Text.Title}"/>
+                                   Foreground="White"
+                                   FontWeight="SemiBold"
+                                   FontSize="14"/>
+                        <TextBlock Text="{Binding SelectedModule.Title}"
+                                   Style="{StaticResource Text.Title}"
+                                   TextAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                Foreground="White"
                                TextAlignment="Center"
-                               Margin="{StaticResource Margin.Stack}">
-                        Review each tab to build a complete project narrative. Enter inputs carefully, press Calculate when
-                        available, and use Export to capture your work. Context-sensitive tips below explain what each result means
-                        and how your assumptions drive it.
-                    </TextBlock>
+                               Margin="{StaticResource Margin.Stack}"
+                               Text="{Binding SelectedModule.Description}"/>
+                    <TextBlock Text="To prepare your inputs:"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               TextAlignment="Center"
+                               Margin="{StaticResource Margin.Stack}"/>
+                    <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}"
+                                  Margin="{StaticResource Margin.StackSmall}"
+                                  HorizontalAlignment="Center">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                    <TextBlock Text="•"
+                                               Foreground="White"
+                                               FontSize="16"
+                                               Margin="0,0,6,0"/>
+                                    <TextBlock Text="{Binding}"
+                                               Style="{StaticResource Text.Body}"
+                                               Foreground="White"
+                                               TextWrapping="Wrap"
+                                               Width="240"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </DataTemplate>
 
             <DataTemplate x:Key="ActionsWideTemplate">
-                <Grid HorizontalAlignment="Right"
-                      Grid.IsSharedSizeScope="True">
+                <Grid HorizontalAlignment="Stretch"
+                      Margin="0,0,0,8">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActionButtons"/>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ActionButtons"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <Button x:Name="CalculateButton"
-                            Command="{Binding CalculateCommand}"
-                            Margin="{StaticResource Margin.Inline}"
-                            HorizontalAlignment="Stretch"
-                            Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                            IsEnabled="{Binding IsCalculateVisible}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       Margin="{StaticResource Margin.Inline}"
-                                       FontSize="16"/>
-                            <TextBlock Text="Calculate"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Grid.Column="1"
-                            Command="{Binding ExportCommand}"
-                            HorizontalAlignment="Stretch">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       Margin="{StaticResource Margin.Inline}"
-                                       FontSize="16"/>
-                            <TextBlock Text="Export"/>
-                        </StackPanel>
-                    </Button>
+                    <StackPanel Grid.Column="0"
+                                Margin="{StaticResource Margin.StackLarge}">
+                        <TextBlock Text="What the outputs show"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource Brush.Primary}"/>
+                        <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}"
+                                      Margin="{StaticResource Margin.StackSmall}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,2">
+                                        <TextBlock Text="•"
+                                                   Foreground="{StaticResource Brush.Accent}"
+                                                   FontSize="16"
+                                                   Margin="0,0,6,0"/>
+                                        <TextBlock Text="{Binding}"
+                                                   Style="{StaticResource Text.Body}"
+                                                   TextWrapping="Wrap"
+                                                   Width="320"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Margin="{StaticResource Margin.Stack}">
+                        <Button x:Name="CalculateButton"
+                                Command="{Binding CalculateCommand}"
+                                Margin="{StaticResource Margin.Inline}"
+                                Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                                IsEnabled="{Binding IsCalculateVisible}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                           Text=""
+                                           Margin="{StaticResource Margin.Inline}"
+                                           FontSize="16"/>
+                                <TextBlock Text="Calculate"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding ExportCommand}"
+                                Margin="{StaticResource Margin.Inline}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                           Text=""
+                                           Margin="{StaticResource Margin.Inline}"
+                                           FontSize="16"/>
+                                <TextBlock Text="Export"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                 </Grid>
             </DataTemplate>
 
             <DataTemplate x:Key="ActionsNarrowTemplate">
                 <StackPanel>
+                    <TextBlock Text="What the outputs show"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.Primary}"
+                               Margin="{StaticResource Margin.Stack}"/>
+                    <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}"
+                                  Margin="{StaticResource Margin.StackSmall}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                    <TextBlock Text="•"
+                                               Foreground="{StaticResource Brush.Accent}"
+                                               FontSize="16"
+                                               Margin="0,0,6,0"/>
+                                    <TextBlock Text="{Binding}"
+                                               Style="{StaticResource Text.Body}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                     <Button Command="{Binding CalculateCommand}"
+                            Margin="{StaticResource Margin.Inline}"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -146,7 +253,8 @@
                             <TextBlock Text="Calculate"/>
                         </StackPanel>
                     </Button>
-                    <Button Command="{Binding ExportCommand}">
+                    <Button Command="{Binding ExportCommand}"
+                            Margin="{StaticResource Margin.Inline}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""
@@ -196,7 +304,9 @@
                           HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto"
                           PreviewMouseWheel="MainScrollViewer_PreviewMouseWheel">
-                <TabControl SelectedIndex="{Binding SelectedIndex}" Background="{StaticResource Brush.Surface}">
+                <TabControl ItemsSource="{Binding Modules}"
+                            SelectedIndex="{Binding SelectedIndex}"
+                            Background="{StaticResource Brush.Surface}">
                     <TabControl.Resources>
                         <Style TargetType="TabItem">
                             <Setter Property="Margin" Value="{StaticResource Margin.TopSmall}"/>
@@ -205,43 +315,17 @@
                             <Setter Property="FontSize" Value="14"/>
                         </Style>
                     </TabControl.Resources>
-
-                    <TabItem DataContext="{Binding Ead}">
-                        <TabItem.Header>
-                            <TextBlock Text="EAD" TextAlignment="Center"/>
-                        </TabItem.Header>
-                        <views:EadView Margin="{StaticResource Margin.Container}"/>
-                    </TabItem>
-                    <TabItem DataContext="{Binding UpdatedCost}">
-                        <TabItem.Header>
-                            <TextBlock Text="Updated Cost of Storage" TextAlignment="Center"/>
-                        </TabItem.Header>
-                        <views:UpdatedCostView Margin="{StaticResource Margin.Container}"/>
-                    </TabItem>
-                    <TabItem DataContext="{Binding Annualizer}">
-                        <TabItem.Header>
-                            <TextBlock Text="Cost Annualization" TextAlignment="Center"/>
-                        </TabItem.Header>
-                        <views:AnnualizerView Margin="{StaticResource Margin.Container}"/>
-                    </TabItem>
-                    <TabItem DataContext="{Binding WaterDemand}">
-                        <TabItem.Header>
-                            <TextBlock Text="Water Demand" TextAlignment="Center"/>
-                        </TabItem.Header>
-                        <views:WaterDemandView Margin="{StaticResource Margin.Container}"/>
-                    </TabItem>
-                    <TabItem DataContext="{Binding Udv}">
-                        <TabItem.Header>
-                            <TextBlock Text="Unit Day Value" TextAlignment="Center"/>
-                        </TabItem.Header>
-                        <views:UdvView Margin="{StaticResource Margin.Container}"/>
-                    </TabItem>
-                    <TabItem DataContext="{Binding MindMap}">
-                        <TabItem.Header>
-                            <TextBlock Text="Mind Map" TextAlignment="Center"/>
-                        </TabItem.Header>
-                        <views:MindMapView Margin="{StaticResource Margin.Container}"/>
-                    </TabItem>
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}" TextAlignment="Center"/>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{Binding ContentViewModel}"
+                                            Margin="{StaticResource Margin.Container}"/>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
                 </TabControl>
             </ScrollViewer>
         </Border>
