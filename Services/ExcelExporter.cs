@@ -176,7 +176,7 @@ namespace EconToolbox.Desktop.Services
             if (ead.UseStage)
                 eadSheet.Cell(1, col++).Value = "Stage";
             int dcCount = ead.DamageColumns.Count;
-            foreach (var name in ead.DamageColumns)
+            foreach (var name in ead.DamageColumns.Select(c => c.Name))
                 eadSheet.Cell(1, col++).Value = name;
             int rowIdx = 2;
             foreach (var r in ead.Rows)
@@ -466,7 +466,7 @@ namespace EconToolbox.Desktop.Services
             AddAnnualizerComparisonChart(ws, annualizer.AnnualBenefits, annualizer.AnnualCost, annualizer.Bcr, capitalStart, 5);
 
             double? primaryEadValue = null;
-            string primaryDamageColumn = ead.DamageColumns.Count > 0 ? ead.DamageColumns[0] : "Damage";
+            string primaryDamageColumn = ead.DamageColumns.Count > 0 ? ead.DamageColumns[0].Name : "Damage";
             var eadRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
                 ("Rows Evaluated", ead.Rows.Count, "0", "Number of probability-damage pairs included.", false),
@@ -482,7 +482,7 @@ namespace EconToolbox.Desktop.Services
                     double eadValue = EadModel.Compute(probabilities, damages);
                     if (i == 0)
                         primaryEadValue = eadValue;
-                    eadRows.Add(($"{ead.DamageColumns[i]} EAD", eadValue, "$#,##0.00", "Expected annual damage for this damage column.", i == 0));
+                    eadRows.Add(($"{ead.DamageColumns[i].Name} EAD", eadValue, "$#,##0.00", "Expected annual damage for this damage column.", i == 0));
                 }
                 eadRows.Add(("Summary", string.Join(" | ", ead.Results), null, "Combined textual output from the calculator.", false));
             }
