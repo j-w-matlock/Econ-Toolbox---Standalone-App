@@ -261,7 +261,10 @@ namespace EconToolbox.Desktop.ViewModels
                             }
                         }
 
-                        double adjusted = demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
+                        double adjusted = CalculateAdjustedDemand(
+                            demand,
+                            scenario.SystemImprovementsPercent,
+                            scenario.SystemLossesPercent);
                         double growthRate = t == 0 ? 0 : (demand / scenario.Results[t - 1].Demand - 1) * 100.0;
 
                         scenario.Results.Add(new DemandEntry
@@ -290,7 +293,12 @@ namespace EconToolbox.Desktop.ViewModels
                         "Total Demand = Population × Per Capita. " +
                         "Shares interpolated: " +
                         string.Join(", ", SelectedScenario.Sectors.Select(s => $"{s.Name} {s.CurrentPercent:F1}%→{s.FuturePercent:F1}%")) +
-                        $" with {SelectedScenario.SystemImprovementsPercent:F1}% improvements and {SelectedScenario.SystemLossesPercent:F1}% losses.";
+                        " Adjusted Demand = Total Demand ÷ (1 - Losses %) × (1 - Improvements %). " +
+                        $"Scenario uses {SelectedScenario.SystemImprovementsPercent:F1}% improvements and {SelectedScenario.SystemLossesPercent:F1}% losses.";
+                    if (SelectedScenario.SystemLossesPercent >= 100)
+                    {
+                        Explanation += " Adjusted demand is undefined when losses are 100% or greater.";
+                    }
                 }
             }
             catch
@@ -394,7 +402,10 @@ namespace EconToolbox.Desktop.ViewModels
                 scenario.Results[i].ResidentialDemand = residentialDemand;
                 scenario.Results[i].CommercialDemand = commercialDemand;
                 scenario.Results[i].AgriculturalDemand = agriculturalDemand;
-                scenario.Results[i].AdjustedDemand = scenario.Results[i].Demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
+                scenario.Results[i].AdjustedDemand = CalculateAdjustedDemand(
+                    scenario.Results[i].Demand,
+                    scenario.SystemImprovementsPercent,
+                    scenario.SystemLossesPercent);
             }
         }
 
@@ -425,10 +436,21 @@ namespace EconToolbox.Desktop.ViewModels
                         scenarioUpdated = true;
                     }
 
-                    double expectedAdjusted = current.Demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
-                    if (!NearlyEqual(current.AdjustedDemand, expectedAdjusted))
+                    double expectedAdjusted = CalculateAdjustedDemand(
+                        current.Demand,
+                        scenario.SystemImprovementsPercent,
+                        scenario.SystemLossesPercent);
+                    if (double.IsFinite(expectedAdjusted))
                     {
-                        current.AdjustedDemand = expectedAdjusted;
+                        if (!NearlyEqual(current.AdjustedDemand, expectedAdjusted))
+                        {
+                            current.AdjustedDemand = expectedAdjusted;
+                            scenarioUpdated = true;
+                        }
+                    }
+                    else if (!double.IsNaN(current.AdjustedDemand))
+                    {
+                        current.AdjustedDemand = double.NaN;
                         scenarioUpdated = true;
                     }
                 }
@@ -447,16 +469,34 @@ namespace EconToolbox.Desktop.ViewModels
             double scale = Math.Max(1.0, Math.Max(Math.Abs(value1), Math.Abs(value2)));
             return Math.Abs(value1 - value2) <= tolerance * scale;
         }
+        private static double CalculateAdjustedDemand(double demand, double improvementsPercent, double lossesPercent)
+        {
+            if (!double.IsFinite(demand))
+                return double.NaN;
+
+            double improvementsFactor = 1 - improvementsPercent / 100.0;
+            double lossesFraction = lossesPercent / 100.0;
+            if (!double.IsFinite(improvementsFactor) || !double.IsFinite(lossesFraction))
+                return double.NaN;
+
+            double denominator = 1 - lossesFraction;
+            if (denominator <= 0 || !double.IsFinite(denominator))
+                return double.NaN;
+
+            return demand / denominator * improvementsFactor;
+        }
+
         private static PointCollection CreatePointCollection(List<(int Year, double Demand)> data)
         {
             PointCollection points = new();
-            if (data.Count == 0) return points;
+            var finiteData = data.Where(d => double.IsFinite(d.Demand)).ToList();
+            if (finiteData.Count == 0) return points;
 
-            double minYear = data[0].Year;
-            double maxYear = data[^1].Year;
+            double minYear = finiteData[0].Year;
+            double maxYear = finiteData[^1].Year;
             double minDemand = double.MaxValue;
             double maxDemand = double.MinValue;
-            foreach (var d in data)
+            foreach (var d in finiteData)
             {
                 if (d.Demand < minDemand) minDemand = d.Demand;
                 if (d.Demand > maxDemand) maxDemand = d.Demand;
@@ -469,7 +509,7 @@ namespace EconToolbox.Desktop.ViewModels
             double demandRange = maxDemand - minDemand;
             if (demandRange == 0) demandRange = 1;
 
-            foreach (var d in data)
+            foreach (var d in finiteData)
             {
                 double x = (d.Year - minYear) / yearRange * width;
                 double y = height - (d.Demand - minDemand) / demandRange * height;

@@ -65,7 +65,7 @@ namespace EconToolbox.Desktop.Services
                 ws.Cell(1,4).GetComment().AddText("Commercial = Demand × Commercial %");
                 ws.Cell(1,5).GetComment().AddText("Industrial = Demand × Industrial %");
                 ws.Cell(1,6).GetComment().AddText("Agricultural = Demand × Agricultural %");
-                ws.Cell(1,7).GetComment().AddText("Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)");
+                ws.Cell(1,7).GetComment().AddText("Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)");
                 ws.Cell(1,8).GetComment().AddText("Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851");
                 int row = 2;
                 foreach (var d in scenario.Results)
@@ -249,7 +249,7 @@ namespace EconToolbox.Desktop.Services
                 wdSheet.Cell(1,5).Value = "Adjusted (ac-ft/yr)";
                 wdSheet.Cell(1,2).GetComment().AddText("Demand = Prior Demand × (1 + Growth Rate)");
                 wdSheet.Cell(1,3).GetComment().AddText("Industrial = Demand × Industrial %");
-                wdSheet.Cell(1,4).GetComment().AddText("Adjusted = Demand × (1 - Improvements %) × (1 - Losses %)");
+                wdSheet.Cell(1,4).GetComment().AddText("Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)");
                 wdSheet.Cell(1,5).GetComment().AddText("Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851");
                 rowIdx = 2;
                 foreach (var d in scenario.Results)
