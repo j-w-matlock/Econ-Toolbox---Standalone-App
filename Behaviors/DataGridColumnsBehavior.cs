@@ -184,6 +184,8 @@ namespace EconToolbox.Desktop.Behaviors
 
             private static object CreateHeader(DataGridColumnDescriptor descriptor)
             {
+                FrameworkElement headerElement;
+
                 if (descriptor.HeaderContext != null && !string.IsNullOrWhiteSpace(descriptor.HeaderBindingPath))
                 {
                     if (descriptor.IsHeaderEditable)
@@ -195,7 +197,8 @@ namespace EconToolbox.Desktop.Behaviors
                             MinWidth = descriptor.MinWidth ?? 80,
                             HorizontalAlignment = HorizontalAlignment.Stretch,
                             BorderThickness = new Thickness(0),
-                            Background = System.Windows.Media.Brushes.Transparent
+                            Background = System.Windows.Media.Brushes.Transparent,
+                            VerticalAlignment = VerticalAlignment.Center
                         };
 
                         headerBox.SetBinding(TextBox.TextProperty, new Binding(descriptor.HeaderBindingPath)
@@ -204,21 +207,64 @@ namespace EconToolbox.Desktop.Behaviors
                             UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                         });
 
-                        return headerBox;
+                        headerElement = headerBox;
                     }
-
-                    var headerText = new TextBlock
+                    else
                     {
-                        DataContext = descriptor.HeaderContext,
-                        Margin = new Thickness(0),
-                        TextTrimming = TextTrimming.CharacterEllipsis
-                    };
+                        var headerText = new TextBlock
+                        {
+                            DataContext = descriptor.HeaderContext,
+                            Margin = new Thickness(0),
+                            TextTrimming = TextTrimming.CharacterEllipsis,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
 
-                    headerText.SetBinding(TextBlock.TextProperty, new Binding(descriptor.HeaderBindingPath));
-                    return headerText;
+                        headerText.SetBinding(TextBlock.TextProperty, new Binding(descriptor.HeaderBindingPath));
+                        headerElement = headerText;
+                    }
+                }
+                else
+                {
+                    headerElement = new TextBlock
+                    {
+                        Text = descriptor.HeaderText ?? descriptor.BindingPath,
+                        Margin = new Thickness(0),
+                        TextTrimming = TextTrimming.CharacterEllipsis,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
                 }
 
-                return descriptor.HeaderText ?? descriptor.BindingPath;
+                if (!string.IsNullOrWhiteSpace(descriptor.ToolTip))
+                {
+                    var panel = new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+
+                    var icon = new ContentControl
+                    {
+                        ToolTip = descriptor.ToolTip,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+
+                    if (Application.Current?.TryFindResource("Content.InfoIcon") is Style iconStyle)
+                    {
+                        icon.Style = iconStyle;
+                    }
+
+                    panel.Children.Add(icon);
+
+                    if (headerElement.Margin.Left < 4)
+                    {
+                        headerElement.Margin = new Thickness(4, headerElement.Margin.Top, headerElement.Margin.Right, headerElement.Margin.Bottom);
+                    }
+
+                    panel.Children.Add(headerElement);
+                    return panel;
+                }
+
+                return headerElement;
             }
         }
     }

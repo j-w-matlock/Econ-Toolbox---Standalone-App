@@ -46,8 +46,26 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
-            <ComboBox ItemsSource="{Binding RecreationTypes}" SelectedItem="{Binding RecreationType}" MinWidth="150" Margin="{StaticResource Margin.Inline}"/>
-            <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" MinWidth="200"/>
+            <StackPanel Margin="{StaticResource Margin.Inline}">
+                <TextBlock>
+                    <InlineUIContainer BaselineAlignment="Center">
+                        <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                        ToolTip="Choose the overall recreation classification to filter available activity point tables."/>
+                    </InlineUIContainer>
+                    <Run Text="Recreation Type"/>
+                </TextBlock>
+                <ComboBox ItemsSource="{Binding RecreationTypes}" SelectedItem="{Binding RecreationType}" MinWidth="150"/>
+            </StackPanel>
+            <StackPanel Margin="{StaticResource Margin.Inline}">
+                <TextBlock>
+                    <InlineUIContainer BaselineAlignment="Center">
+                        <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                        ToolTip="Select the specific activity that matches your study to retrieve the proper unit day scale."/>
+                    </InlineUIContainer>
+                    <Run Text="Activity Type"/>
+                </TextBlock>
+                <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" MinWidth="200"/>
+            </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="{StaticResource Margin.Stack}">
             <StackPanel.Style>
@@ -63,7 +81,11 @@
                 </Style>
             </StackPanel.Style>
             <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-            <TextBlock Text="Points" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}">
+                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                ToolTip="Enter the point score from the Unit Day Value table that reflects recreation quality."/>
+                <TextBlock Text="Points" Margin="4,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
             <TextBox Text="{Binding Points}" Width="60" Margin="{StaticResource Margin.InlineMedium}"/>
             <TextBlock Text="Unit Day Value" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}"/>
             <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:F2}}" VerticalAlignment="Center" FontWeight="SemiBold"/>
@@ -83,9 +105,17 @@
                 </Style>
             </StackPanel.Style>
             <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-            <TextBlock Text="Annual User Days" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}">
+                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                ToolTip="Provide the total projected recreation user days per year for the study area."/>
+                <TextBlock Text="Annual User Days" Margin="4,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
             <TextBox Text="{Binding UserDays}" Width="80" Margin="{StaticResource Margin.InlineMedium}"/>
-            <TextBlock Text="Visitation" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}">
+                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                ToolTip="Fraction of total user days attributable to the plan or alternative being valued."/>
+                <TextBlock Text="Visitation" Margin="4,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
             <TextBox Text="{Binding Visitation}" Width="60" Margin="{StaticResource Margin.InlineMedium}"/>
             <Button Command="{Binding ComputeCommand}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

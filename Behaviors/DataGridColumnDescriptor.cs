@@ -40,6 +40,8 @@ namespace EconToolbox.Desktop.Behaviors
 
         public bool IsHeaderEditable { get; init; }
 
+        public string? ToolTip { get; init; }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)

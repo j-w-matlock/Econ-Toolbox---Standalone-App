@@ -119,9 +119,21 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Total Usable Storage" Margin="0,0,5,5"/>
+                    <TextBlock Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Enter the system's total usable storage before any plan allocation."/>
+                        </InlineUIContainer>
+                        <Run Text="Total Usable Storage"/>
+                    </TextBlock>
                     <TextBox Text="{Binding TotalStorage}" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Storage Recommendation" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBlock Grid.Row="1" Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Recommended portion of the joint storage allocated to this alternative."/>
+                        </InlineUIContainer>
+                        <Run Text="Storage Recommendation"/>
+                    </TextBlock>
                     <TextBox Text="{Binding StorageRecommendation}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
                     <Button Command="{Binding ComputeStorageCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -168,9 +180,21 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Joint Operations Cost" Margin="0,0,5,5"/>
+                    <TextBlock Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Annual system-wide joint operations expense before scaling."/>
+                        </InlineUIContainer>
+                        <Run Text="Joint Operations Cost"/>
+                    </TextBlock>
                     <TextBox Text="{Binding JointOperationsCost}" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Joint Maintenance Cost" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBlock Grid.Row="1" Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Annual joint maintenance expense for the entire system."/>
+                        </InlineUIContainer>
+                        <Run Text="Joint Maintenance Cost"/>
+                    </TextBlock>
                     <TextBox Text="{Binding JointMaintenanceCost}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
                     <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -208,9 +232,33 @@
                 </Border>
                 <DataGrid ItemsSource="{Binding UpdatedCostItems}" AutoGenerateColumns="False" Height="160" Margin="0,10,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Category" Binding="{Binding Category}"/>
-                        <DataGridTextColumn Header="Actual Cost" Binding="{Binding ActualCost}"/>
-                        <DataGridTextColumn Header="Update Factor" Binding="{Binding UpdateFactor}"/>
+                        <DataGridTextColumn Binding="{Binding Category}">
+                            <DataGridTextColumn.Header>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                    ToolTip="Name or description of the cost item being escalated."/>
+                                    <TextBlock Text="Category" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding ActualCost}">
+                            <DataGridTextColumn.Header>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                    ToolTip="Original cost expressed in the historical price level."/>
+                                    <TextBlock Text="Actual Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding UpdateFactor}">
+                            <DataGridTextColumn.Header>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                    ToolTip="Escalation factor (e.g., CWCCI ratio) applied to the actual cost."/>
+                                    <TextBlock Text="Update Factor" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="Updated Cost" Binding="{Binding UpdatedCost}" IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -263,19 +311,67 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Federal Discount Rate (%)" Margin="0,0,5,5"/>
+                    <TextBlock Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Real federal discount rate applied to future RR&amp;R and mitigation costs."/>
+                        </InlineUIContainer>
+                        <Run Text="Federal Discount Rate (%)"/>
+                    </TextBlock>
                     <TextBox Text="{Binding RrrRate}" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Analysis Years" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBlock Grid.Row="1" Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Number of years used when discounting recurring RR&amp;R and mitigation items."/>
+                        </InlineUIContainer>
+                        <Run Text="Analysis Years"/>
+                    </TextBlock>
                     <TextBox Text="{Binding RrrPeriods}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="CWCCI" Grid.Row="2" Margin="0,0,5,5"/>
+                    <TextBlock Grid.Row="2" Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Civil Works Construction Cost Index factor applied after discounting."/>
+                        </InlineUIContainer>
+                        <Run Text="CWCCI"/>
+                    </TextBlock>
                     <TextBox Text="{Binding RrrCwcci}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Base Year" Grid.Row="3" Margin="0,0,5,5"/>
+                    <TextBlock Grid.Row="3" Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Reference year to which all RR&amp;R and mitigation costs are discounted."/>
+                        </InlineUIContainer>
+                        <Run Text="Base Year"/>
+                    </TextBlock>
                     <TextBox Text="{Binding RrrBaseYear}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
                     <DataGrid ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Item" Binding="{Binding Item}"/>
-                            <DataGridTextColumn Header="Future Cost" Binding="{Binding FutureCost}"/>
-                            <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+                            <DataGridTextColumn Binding="{Binding Item}">
+                                <DataGridTextColumn.Header>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                        ToolTip="Name of the repair, replacement, rehabilitation, or mitigation activity."/>
+                                        <TextBlock Text="Item" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding FutureCost}">
+                                <DataGridTextColumn.Header>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                        ToolTip="Cost of the activity stated in the year it occurs."/>
+                                        <TextBlock Text="Future Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Year}">
+                                <DataGridTextColumn.Header>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                        ToolTip="Calendar year when the activity is scheduled."/>
+                                        <TextBlock Text="Year" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
                             <DataGridTextColumn Header="Present Value" Binding="{Binding PresentValue}" IsReadOnly="True"/>
                         </DataGrid.Columns>
@@ -330,13 +426,37 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Discount Rate 1 (%)" Margin="0,0,5,5"/>
+                    <TextBlock Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Discount rate used for the first annualization scenario."/>
+                        </InlineUIContainer>
+                        <Run Text="Discount Rate 1 (%)"/>
+                    </TextBlock>
                     <TextBox Text="{Binding DiscountRate1}" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Analysis Period 1" Grid.Row="1" Margin="0,0,5,5"/>
+                    <TextBlock Grid.Row="1" Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Number of years in the first capital recovery scenario."/>
+                        </InlineUIContainer>
+                        <Run Text="Analysis Period 1"/>
+                    </TextBlock>
                     <TextBox Text="{Binding AnalysisPeriod1}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Discount Rate 2 (%)" Grid.Row="2" Margin="0,0,5,5"/>
+                    <TextBlock Grid.Row="2" Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Discount rate for the second comparison scenario."/>
+                        </InlineUIContainer>
+                        <Run Text="Discount Rate 2 (%)"/>
+                    </TextBlock>
                     <TextBox Text="{Binding DiscountRate2}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Text="Analysis Period 2" Grid.Row="3" Margin="0,0,5,5"/>
+                    <TextBlock Grid.Row="3" Margin="0,0,5,5">
+                        <InlineUIContainer BaselineAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Years covered by the second capital recovery scenario."/>
+                        </InlineUIContainer>
+                        <Run Text="Analysis Period 2"/>
+                    </TextBlock>
                     <TextBox Text="{Binding AnalysisPeriod2}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
                     <Button Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeTotalCommand}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

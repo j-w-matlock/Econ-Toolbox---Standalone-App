@@ -74,10 +74,15 @@
                             <TextBlock Text="Remove Damage Column"/>
                         </StackPanel>
                     </Button>
-                    <CheckBox Content="Include Stage"
-                              IsChecked="{Binding UseStage}"
+                    <CheckBox IsChecked="{Binding UseStage}"
                               VerticalAlignment="Center"
-                              Margin="{StaticResource Margin.Inline}"/>
+                              Margin="{StaticResource Margin.Inline}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                            ToolTip="Toggle to add a stage column so you can enter paired stage values."/>
+                            <TextBlock Text="Include Stage" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </CheckBox>
                     <Button Command="{Binding ComputeCommand}" Margin="{StaticResource Margin.Inline}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>

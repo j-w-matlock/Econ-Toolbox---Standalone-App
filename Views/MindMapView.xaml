@@ -113,9 +113,14 @@
                         <StackPanel Orientation="Horizontal"
                                     Margin="0,10,0,0"
                                     VerticalAlignment="Center">
-                            <TextBlock Text="Zoom"
-                                       VerticalAlignment="Center"
-                                       Foreground="{StaticResource Brush.TextSecondary}"/>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                ToolTip="Adjust to zoom the canvas in or out."/>
+                                <TextBlock Text="Zoom"
+                                           Margin="4,0,0,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource Brush.TextSecondary}"/>
+                            </StackPanel>
                             <Slider Width="160"
                                     Margin="10,0,0,0"
                                     Minimum="{Binding ZoomLevelMinimum}"
@@ -125,7 +130,8 @@
                                     IsSnapToTickEnabled="False"
                                     SmallChange="0.05"
                                     LargeChange="0.2"
-                                    VerticalAlignment="Center"/>
+                                    VerticalAlignment="Center"
+                                    ToolTip="Drag to change the zoom level of the mind map."/>
                             <TextBlock Text="{Binding ZoomLevel, StringFormat={}{0:P0}}"
                                        Margin="10,0,0,0"
                                        FontWeight="SemiBold"
@@ -358,14 +364,26 @@
                                     </Grid.RowDefinitions>
 
                                     <StackPanel Grid.Row="0" Margin="0,0,0,16">
-                                        <TextBlock Text="Idea Title" FontWeight="SemiBold"/>
+                                        <TextBlock FontWeight="SemiBold">
+                                            <InlineUIContainer BaselineAlignment="Center">
+                                                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                                ToolTip="Name this idea or topic as it should appear on the map."/>
+                                            </InlineUIContainer>
+                                            <Run Text="Idea Title"/>
+                                        </TextBlock>
                                         <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
                                                  Margin="0,6,0,0"
                                                  MinHeight="28"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="1" Margin="0,0,0,16">
-                                        <TextBlock Text="Key Points / Notes" FontWeight="SemiBold"/>
+                                        <TextBlock FontWeight="SemiBold">
+                                            <InlineUIContainer BaselineAlignment="Center">
+                                                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                                ToolTip="Capture supporting notes, context, or actions for the selected idea."/>
+                                            </InlineUIContainer>
+                                            <Run Text="Key Points / Notes"/>
+                                        </TextBlock>
                                         <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
                                                  Margin="0,6,0,0"
                                                  AcceptsReturn="True"
