@@ -74,27 +74,72 @@
                                    Style="{StaticResource Text.Body}"
                                    Foreground="White"
                                    Margin="{StaticResource Margin.Stack}"/>
-                        <TextBlock Text="To prepare your inputs:"
-                                   FontWeight="SemiBold"
-                                   Foreground="White"
-                                   Margin="{StaticResource Margin.Stack}"/>
-                        <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}"
-                                      Margin="{StaticResource Margin.StackSmall}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Margin="0,2">
-                                        <TextBlock Text="•"
-                                                   Foreground="White"
-                                                   FontSize="16"
-                                                   Margin="0,0,6,0"/>
-                                        <TextBlock Text="{Binding}"
-                                                   Style="{StaticResource Text.Body}"
-                                                   Foreground="White"
-                                                   TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <Grid Margin="{StaticResource Margin.Stack}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" MinWidth="260"/>
+                                <ColumnDefinition Width="*" MinWidth="260"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0"
+                                        Margin="0,0,16,0">
+                                <TextBlock Text="To prepare your inputs:"
+                                           FontWeight="SemiBold"
+                                           Foreground="White"
+                                           Margin="0,0,0,6"/>
+                                <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                <TextBlock Text="•"
+                                                           Foreground="White"
+                                                           FontSize="16"
+                                                           Margin="0,0,6,0"/>
+                                                <TextBlock Text="{Binding}"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="White"
+                                                           FontSize="14"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1"
+                                        Margin="16,0,0,0">
+                                <TextBlock Text="What the outputs show"
+                                           FontWeight="SemiBold"
+                                           Foreground="White"
+                                           Margin="0,0,0,6"/>
+                                <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Margin="0,2">
+                                                <TextBlock Text="•"
+                                                           Foreground="{StaticResource Brush.Accent}"
+                                                           FontSize="16"
+                                                           Margin="0,0,6,0"/>
+                                                <TextBlock Text="{Binding}"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="White"
+                                                           FontSize="14"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Grid>
+                        <Border Background="#3312212F"
+                                CornerRadius="10"
+                                Padding="12"
+                                Margin="{StaticResource Margin.Stack}">
+                            <StackPanel>
+                                <TextBlock Text="Real-world example"
+                                           FontWeight="SemiBold"
+                                           Foreground="White"/>
+                                <TextBlock Text="{Binding SelectedModule.Example}"
+                                           TextWrapping="Wrap"
+                                           Foreground="White"
+                                           Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Grid>
             </DataTemplate>
@@ -147,7 +192,6 @@
                                                FontSize="16"
                                                Margin="0,0,6,0"/>
                                     <TextBlock Text="{Binding}"
-                                               Style="{StaticResource Text.Body}"
                                                Foreground="White"
                                                TextWrapping="Wrap"
                                                Width="240"/>
@@ -155,78 +199,14 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </StackPanel>
-            </DataTemplate>
-
-            <DataTemplate x:Key="ActionsWideTemplate">
-                <Grid HorizontalAlignment="Stretch"
-                      Margin="0,0,0,8">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0"
-                                Margin="{StaticResource Margin.StackLarge}">
-                        <TextBlock Text="What the outputs show"
-                                   FontWeight="SemiBold"
-                                   Foreground="{StaticResource Brush.Primary}"/>
-                        <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}"
-                                      Margin="{StaticResource Margin.StackSmall}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Margin="0,2">
-                                        <TextBlock Text="•"
-                                                   Foreground="{StaticResource Brush.Accent}"
-                                                   FontSize="16"
-                                                   Margin="0,0,6,0"/>
-                                        <TextBlock Text="{Binding}"
-                                                   Style="{StaticResource Text.Body}"
-                                                   TextWrapping="Wrap"
-                                                   Width="320"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                    <StackPanel Grid.Column="1"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                Margin="{StaticResource Margin.Stack}">
-                        <Button x:Name="CalculateButton"
-                                Command="{Binding CalculateCommand}"
-                                Margin="{StaticResource Margin.Inline}"
-                                Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                                IsEnabled="{Binding IsCalculateVisible}">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock FontFamily="Segoe MDL2 Assets"
-                                           Text=""
-                                           Margin="{StaticResource Margin.Inline}"
-                                           FontSize="16"/>
-                                <TextBlock Text="Calculate"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding ExportCommand}"
-                                Margin="{StaticResource Margin.Inline}">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock FontFamily="Segoe MDL2 Assets"
-                                           Text=""
-                                           Margin="{StaticResource Margin.Inline}"
-                                           FontSize="16"/>
-                                <TextBlock Text="Export"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </DataTemplate>
-
-            <DataTemplate x:Key="ActionsNarrowTemplate">
-                <StackPanel>
                     <TextBlock Text="What the outputs show"
                                FontWeight="SemiBold"
-                               Foreground="{StaticResource Brush.Primary}"
+                               Foreground="White"
+                               TextAlignment="Center"
                                Margin="{StaticResource Margin.Stack}"/>
                     <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}"
-                                  Margin="{StaticResource Margin.StackSmall}">
+                                  Margin="{StaticResource Margin.StackSmall}"
+                                  HorizontalAlignment="Center">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="0,2">
@@ -235,32 +215,104 @@
                                                FontSize="16"
                                                Margin="0,0,6,0"/>
                                     <TextBlock Text="{Binding}"
-                                               Style="{StaticResource Text.Body}"
-                                               TextWrapping="Wrap"/>
+                                               Foreground="White"
+                                               TextWrapping="Wrap"
+                                               Width="240"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <Button Command="{Binding CalculateCommand}"
-                            Margin="{StaticResource Margin.Inline}"
+                    <Border Background="#3312212F"
+                            CornerRadius="10"
+                            Padding="12"
+                            Margin="{StaticResource Margin.Stack}">
+                        <StackPanel>
+                            <TextBlock Text="Real-world example"
+                                       FontWeight="SemiBold"
+                                       Foreground="White"
+                                       TextAlignment="Center"/>
+                            <TextBlock Text="{Binding SelectedModule.Example}"
+                                       TextWrapping="Wrap"
+                                       Foreground="White"
+                                       Margin="0,6,0,0"
+                                       TextAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </DataTemplate>
+
+            <DataTemplate x:Key="ActionsWideTemplate">
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="CalculateButton"
+                            Grid.Column="0"
+                            Command="{Binding CalculateCommand}"
+                            Margin="0,0,12,0"
+                            Height="64"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       Margin="{StaticResource Margin.Inline}"
+                                       Text="&#xE8EF;"
+                                       Margin="0,0,8,0"
+                                       FontSize="20"/>
+                            <TextBlock Text="Calculate"
                                        FontSize="16"/>
-                            <TextBlock Text="Calculate"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Column="1"
+                            Command="{Binding ExportCommand}"
+                            Margin="0"
+                            Height="64">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xEDE1;"
+                                       Margin="0,0,8,0"
+                                       FontSize="20"/>
+                            <TextBlock Text="Export"
+                                       FontSize="16"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="ActionsNarrowTemplate">
+                <StackPanel>
+                    <Button Command="{Binding CalculateCommand}"
+                            Margin="0,0,0,12"
+                            Height="56"
+                            Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                            IsEnabled="{Binding IsCalculateVisible}">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE8EF;"
+                                       Margin="0,0,8,0"
+                                       FontSize="20"/>
+                            <TextBlock Text="Calculate"
+                                       FontSize="16"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ExportCommand}"
-                            Margin="{StaticResource Margin.Inline}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            Margin="0"
+                            Height="56">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       Margin="{StaticResource Margin.Inline}"
+                                       Text="&#xEDE1;"
+                                       Margin="0,0,8,0"
+                                       FontSize="20"/>
+                            <TextBlock Text="Export"
                                        FontSize="16"/>
-                            <TextBlock Text="Export"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>

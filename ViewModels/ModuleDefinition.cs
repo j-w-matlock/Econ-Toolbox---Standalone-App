@@ -12,6 +12,7 @@ namespace EconToolbox.Desktop.ViewModels
             string description,
             IEnumerable<string> inputSteps,
             IEnumerable<string> outputHighlights,
+            string example,
             BaseViewModel contentViewModel,
             ICommand? computeCommand)
         {
@@ -19,6 +20,7 @@ namespace EconToolbox.Desktop.ViewModels
             Description = description;
             InputSteps = new ReadOnlyCollection<string>(inputSteps.ToList());
             OutputHighlights = new ReadOnlyCollection<string>(outputHighlights.ToList());
+            Example = example;
             ContentViewModel = contentViewModel;
             ComputeCommand = computeCommand;
         }
@@ -30,6 +32,8 @@ namespace EconToolbox.Desktop.ViewModels
         public IReadOnlyList<string> InputSteps { get; }
 
         public IReadOnlyList<string> OutputHighlights { get; }
+
+        public string Example { get; }
 
         public BaseViewModel ContentViewModel { get; }
 

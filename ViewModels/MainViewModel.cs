@@ -60,6 +60,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Draws frequency-damage and stage-damage curves so you can visually QA the shape of the inputs.",
                         "Exports the full grid, summary text, and charts to Excel for documentation."
                     },
+                    "Example: The Cedar River levee district pairs 0.5, 0.1, and 0.01 annual exceedance probabilities with $250K, $1.2M, and $6.8M structure damage estimates captured in its 2019 flood study.",
                     Ead,
                     Ead.ComputeCommand),
                 new ModuleDefinition(
@@ -77,6 +78,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Summarizes updated capital, annualized RR&R, and total annual cost comparisons across scenarios.",
                         "Provides an export-ready workbook covering every sub-tab for auditability."
                     },
+                    "Example: Modernizing the North Bay joint-use reservoir assigns 70% of its 850 acre-feet to the recommended diversion plan while escalating $2.3M of 2010 construction costs to FY24 dollars.",
                     UpdatedCost,
                     UpdatedCost.ComputeCommand),
                 new ModuleDefinition(
@@ -94,6 +96,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Generates schedules for future costs and IDC contributions for traceability.",
                         "Exports a concise summary table and supporting detail to Excel."
                     },
+                    "Example: Annualizing a $45M pump station replacement uses a 3.5% discount rate over 50 years, includes $250K in annual O&M, and captures a $1.1M mid-life rehab cost occurring in year 25.",
                     Annualizer,
                     Annualizer.ComputeCommand),
                 new ModuleDefinition(
@@ -111,6 +114,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Displays comparison charts and tables to highlight divergence across scenarios.",
                         "Allows exporting to Excel with data tables and visualizations for stakeholder review."
                     },
+                    "Example: Forecasting demand for a city of 180,000 residents that used 120 gallons per capita in 2023 while expecting 1.5% annual population growth and system improvements cutting losses by 8%.",
                     WaterDemand,
                     WaterDemand.ComputeCommand),
                 new ModuleDefinition(
@@ -128,6 +132,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Highlights how quality point adjustments influence the composite value.",
                         "Supports exporting the evaluation for integration into economic reports."
                     },
+                    "Example: Evaluating the Riverwalk trail system anticipates 42,000 annual user days split between day hiking and cycling with average facility quality scores of 27 points.",
                     Udv,
                     Udv.ComputeCommand),
                 new ModuleDefinition(
@@ -145,6 +150,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Supports quick export alongside other modules for project documentation.",
                         "Provides an always-on workspace to summarize qualitative findings."
                     },
+                    "Example: Mapping insights from a coastal storm resilience workshop organizes nodes for risk drivers, mitigation concepts, funding leads, and assigned follow-up tasks.",
                     MindMap,
                     null)
             };
