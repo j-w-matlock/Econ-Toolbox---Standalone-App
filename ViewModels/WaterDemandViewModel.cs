@@ -318,6 +318,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.PropertyName == nameof(DemandEntry.GrowthRate) && sender is DemandEntry entry)
             {
+                bool recalculated = false;
                 foreach (var scenario in Scenarios)
                 {
                     int index = scenario.Results.IndexOf(entry);
@@ -327,50 +328,124 @@ namespace EconToolbox.Desktop.ViewModels
                         scenario.ChartPoints = CreatePointCollection(scenario.Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
                         if (scenario == SelectedScenario)
                             Results = scenario.Results;
+                        recalculated = true;
                         break;
                     }
                 }
+
+                if (recalculated)
+                    ValidateAllScenarioResults();
             }
         }
 
         private void RecalculateFromIndex(Scenario scenario, int index)
         {
-            int forecastStartIndex = HistoricalData.Count;
-            int lastHistYear = forecastStartIndex > 0 ? HistoricalData[^1].Year : 0;
+            int lastHistYear = HistoricalData.Count > 0
+                ? HistoricalData[^1].Year
+                : (scenario.Results.Count > 0 ? scenario.Results[0].Year : 0);
+
+            int forecastStartIndex = GetFirstForecastIndex(scenario, lastHistYear);
+            bool hasForecast = forecastStartIndex >= 0 && forecastStartIndex < scenario.Results.Count;
+            int forecastBaseYear = hasForecast ? scenario.Results[forecastStartIndex].Year : lastHistYear;
+            int finalForecastYear = hasForecast ? scenario.Results[^1].Year : forecastBaseYear;
+            int forecastYearRange = finalForecastYear - forecastBaseYear;
+            bool singleForecastStep = hasForecast && forecastYearRange == 0;
+            double forecastYearSpan = singleForecastStep ? 1 : Math.Max(1, forecastYearRange);
+
             for (int i = index; i < scenario.Results.Count; i++)
             {
                 double baseDemand = scenario.Results[i - 1].Demand;
                 double rate = scenario.Results[i].GrowthRate / 100.0;
                 scenario.Results[i].Demand = baseDemand * (1 + rate);
 
-                double t = scenario.Results[i].Year <= lastHistYear
-                    ? 0
-                    : (ForecastYears <= 1 ? 1 : (i - forecastStartIndex) / (double)(ForecastYears - 1));
+                double t = 0;
+                if (hasForecast && scenario.Results[i].Year > lastHistYear)
+                {
+                    if (singleForecastStep)
+                    {
+                        t = 1;
+                    }
+                    else
+                    {
+                        double progress = scenario.Results[i].Year - forecastBaseYear;
+                        t = Math.Clamp(progress / forecastYearSpan, 0, 1);
+                    }
+                }
 
-                  double industrialDemand = 0, residentialDemand = 0, commercialDemand = 0, agriculturalDemand = 0;
-                  for (int s = 0; s < scenario.Sectors.Count; s++)
-                  {
-                      double current = scenario.Sectors[s].CurrentPercent;
-                      double future = scenario.Sectors[s].FuturePercent;
-                      double percent = scenario.Results[i].Year <= lastHistYear
-                          ? current
-                          : current + (future - current) * t;
-                      double sectorDemand = scenario.Results[i].Demand * percent / 100.0;
-                      switch (scenario.Sectors[s].Name)
-                      {
-                          case "Industrial": industrialDemand = sectorDemand; break;
-                          case "Residential": residentialDemand = sectorDemand; break;
-                          case "Commercial": commercialDemand = sectorDemand; break;
-                          case "Agricultural": agriculturalDemand = sectorDemand; break;
-                      }
-                  }
+                double industrialDemand = 0, residentialDemand = 0, commercialDemand = 0, agriculturalDemand = 0;
+                for (int s = 0; s < scenario.Sectors.Count; s++)
+                {
+                    double current = scenario.Sectors[s].CurrentPercent;
+                    double future = scenario.Sectors[s].FuturePercent;
+                    double percent = scenario.Results[i].Year <= lastHistYear
+                        ? current
+                        : current + (future - current) * t;
+                    double sectorDemand = scenario.Results[i].Demand * percent / 100.0;
+                    switch (scenario.Sectors[s].Name)
+                    {
+                        case "Industrial": industrialDemand = sectorDemand; break;
+                        case "Residential": residentialDemand = sectorDemand; break;
+                        case "Commercial": commercialDemand = sectorDemand; break;
+                        case "Agricultural": agriculturalDemand = sectorDemand; break;
+                    }
+                }
 
-                  scenario.Results[i].IndustrialDemand = industrialDemand;
-                  scenario.Results[i].ResidentialDemand = residentialDemand;
-                  scenario.Results[i].CommercialDemand = commercialDemand;
-                  scenario.Results[i].AgriculturalDemand = agriculturalDemand;
+                scenario.Results[i].IndustrialDemand = industrialDemand;
+                scenario.Results[i].ResidentialDemand = residentialDemand;
+                scenario.Results[i].CommercialDemand = commercialDemand;
+                scenario.Results[i].AgriculturalDemand = agriculturalDemand;
                 scenario.Results[i].AdjustedDemand = scenario.Results[i].Demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
             }
+        }
+
+        private static int GetFirstForecastIndex(Scenario scenario, int lastHistoricalYear)
+        {
+            for (int i = 0; i < scenario.Results.Count; i++)
+            {
+                if (scenario.Results[i].Year > lastHistoricalYear)
+                    return i;
+            }
+            return scenario.Results.Count;
+        }
+
+        private void ValidateAllScenarioResults()
+        {
+            foreach (var scenario in Scenarios)
+            {
+                bool scenarioUpdated = false;
+                for (int i = 1; i < scenario.Results.Count; i++)
+                {
+                    var current = scenario.Results[i];
+                    var previous = scenario.Results[i - 1];
+
+                    double expectedDemand = previous.Demand * (1 + current.GrowthRate / 100.0);
+                    if (!NearlyEqual(current.Demand, expectedDemand))
+                    {
+                        current.Demand = expectedDemand;
+                        scenarioUpdated = true;
+                    }
+
+                    double expectedAdjusted = current.Demand * (1 + scenario.SystemLossesPercent / 100.0) * (1 - scenario.SystemImprovementsPercent / 100.0);
+                    if (!NearlyEqual(current.AdjustedDemand, expectedAdjusted))
+                    {
+                        current.AdjustedDemand = expectedAdjusted;
+                        scenarioUpdated = true;
+                    }
+                }
+
+                if (scenarioUpdated)
+                {
+                    scenario.ChartPoints = CreatePointCollection(scenario.Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
+                    if (scenario == SelectedScenario)
+                        Results = scenario.Results;
+                }
+            }
+        }
+
+        private static bool NearlyEqual(double value1, double value2, double tolerance = 1e-6)
+        {
+            double scale = Math.Max(1.0, Math.Max(Math.Abs(value1), Math.Abs(value2)));
+            return Math.Abs(value1 - value2) <= tolerance * scale;
         }
         private static PointCollection CreatePointCollection(List<(int Year, double Demand)> data)
         {
