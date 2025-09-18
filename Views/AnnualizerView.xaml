@@ -92,145 +92,142 @@
                       </StackPanel>
                   </Border>
 
-                  <TextBlock Grid.Row="1" Style="{StaticResource AnnualizerLabelStyle}">
-                      <InlineUIContainer BaselineAlignment="Center">
-                          <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                          ToolTip="Initial project cost."/>
-                      </InlineUIContainer>
-                      <Run Text="First Cost"/>
-                  </TextBlock>
-                  <TextBox Grid.Row="2" Text="{Binding FirstCost}">
-                      <TextBox.Style>
-                          <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
+                  <Grid Grid.Row="1"
+                        Grid.RowSpan="14"
+                        Grid.ColumnSpan="2"
+                        Margin="0,16,0,0"
+                        Grid.IsSharedSizeScope="True">
+                      <Grid.Resources>
+                          <Style x:Key="AnnualizerFieldLabelStyle" TargetType="TextBlock">
+                              <Setter Property="Grid.Column" Value="0"/>
+                              <Setter Property="Grid.ColumnSpan" Value="1"/>
+                              <Setter Property="Margin" Value="0,16,12,4"/>
+                              <Setter Property="VerticalAlignment" Value="Center"/>
                               <Style.Triggers>
                                   <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                               Value="Wide">
-                                      <Setter Property="Grid.Row" Value="1"/>
+                                               Value="Narrow">
+                                      <Setter Property="Grid.ColumnSpan" Value="3"/>
+                                      <Setter Property="Margin" Value="0,16,0,4"/>
                                   </DataTrigger>
                               </Style.Triggers>
                           </Style>
-                      </TextBox.Style>
-                  </TextBox>
+                          <Style x:Key="AnnualizerFieldInputStyle" TargetType="TextBox">
+                              <Setter Property="Grid.Column" Value="2"/>
+                              <Setter Property="Grid.ColumnSpan" Value="1"/>
+                              <Setter Property="Margin" Value="0,0,0,16"/>
+                              <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                              <Style.Triggers>
+                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                               Value="Narrow">
+                                      <Setter Property="Grid.Column" Value="0"/>
+                                      <Setter Property="Grid.ColumnSpan" Value="3"/>
+                                      <Setter Property="Grid.Row" Value="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
+                                      <Setter Property="Margin" Value="0,4,0,16"/>
+                                  </DataTrigger>
+                              </Style.Triggers>
+                          </Style>
+                      </Grid.Resources>
+                      <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="Auto" SharedSizeGroup="AnnualizerLabel"/>
+                          <ColumnDefinition Width="16"/>
+                          <ColumnDefinition Width="*" SharedSizeGroup="AnnualizerInput"/>
+                      </Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                      </Grid.RowDefinitions>
 
-                  <TextBlock Grid.Row="3" Style="{StaticResource AnnualizerLabelStyle}">
-                      <InlineUIContainer BaselineAlignment="Center">
-                          <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                          ToolTip="Discount rate in percent."/>
-                      </InlineUIContainer>
-                      <Run Text="Rate (%)"/>
-                  </TextBlock>
-                  <TextBox Grid.Row="4" Text="{Binding Rate}">
-                      <TextBox.Style>
-                          <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
-                              <Style.Triggers>
-                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                               Value="Wide">
-                                      <Setter Property="Grid.Row" Value="3"/>
-                                  </DataTrigger>
-                              </Style.Triggers>
-                          </Style>
-                      </TextBox.Style>
-                  </TextBox>
+                      <TextBlock Grid.Row="0"
+                                 Style="{StaticResource AnnualizerFieldLabelStyle}"
+                                 Margin="0,0,12,4">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Initial project cost."/>
+                          </InlineUIContainer>
+                          <Run Text="First Cost"/>
+                      </TextBlock>
+                      <TextBox Grid.Row="0"
+                               Text="{Binding FirstCost}"
+                               Tag="1">
+                          <TextBox.Style>
+                              <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerFieldInputStyle}">
+                                  <Setter Property="Margin" Value="0,0,0,16"/>
+                                  <Style.Triggers>
+                                      <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                   Value="Narrow">
+                                          <Setter Property="Margin" Value="0,4,0,16"/>
+                                      </DataTrigger>
+                                  </Style.Triggers>
+                              </Style>
+                          </TextBox.Style>
+                      </TextBox>
 
-                  <TextBlock Grid.Row="5" Style="{StaticResource AnnualizerLabelStyle}">
-                      <InlineUIContainer BaselineAlignment="Center">
-                          <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                          ToolTip="Reference year that anchors discounting for future costs and benefits."/>
-                      </InlineUIContainer>
-                      <Run Text="Base Year"/>
-                  </TextBlock>
-                  <TextBox Grid.Row="6" Text="{Binding BaseYear}">
-                      <TextBox.Style>
-                          <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
-                              <Style.Triggers>
-                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                               Value="Wide">
-                                      <Setter Property="Grid.Row" Value="5"/>
-                                  </DataTrigger>
-                              </Style.Triggers>
-                          </Style>
-                      </TextBox.Style>
-                  </TextBox>
+                      <TextBlock Grid.Row="2" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Discount rate in percent."/>
+                          </InlineUIContainer>
+                          <Run Text="Rate (%)"/>
+                      </TextBlock>
+                      <TextBox Grid.Row="2" Text="{Binding Rate}" Tag="3" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
-                  <TextBlock Grid.Row="7" Style="{StaticResource AnnualizerLabelStyle}">
-                      <InlineUIContainer BaselineAlignment="Center">
-                          <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                          ToolTip="Number of periods for capital recovery."/>
-                      </InlineUIContainer>
-                      <Run Text="Analysis Period"/>
-                  </TextBlock>
-                  <TextBox Grid.Row="8" Text="{Binding AnalysisPeriod}">
-                      <TextBox.Style>
-                          <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
-                              <Style.Triggers>
-                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                               Value="Wide">
-                                      <Setter Property="Grid.Row" Value="7"/>
-                                  </DataTrigger>
-                              </Style.Triggers>
-                          </Style>
-                      </TextBox.Style>
-                  </TextBox>
+                      <TextBlock Grid.Row="4" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Reference year that anchors discounting for future costs and benefits."/>
+                          </InlineUIContainer>
+                          <Run Text="Base Year"/>
+                      </TextBlock>
+                      <TextBox Grid.Row="4" Text="{Binding BaseYear}" Tag="5" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
-                  <TextBlock Grid.Row="9" Style="{StaticResource AnnualizerLabelStyle}">
-                      <InlineUIContainer BaselineAlignment="Center">
-                          <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                          ToolTip="Annual operations and maintenance cost."/>
-                      </InlineUIContainer>
-                      <Run Text="Annual O&amp;M"/>
-                  </TextBlock>
-                  <TextBox Grid.Row="10" Text="{Binding AnnualOm}">
-                      <TextBox.Style>
-                          <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
-                              <Style.Triggers>
-                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                               Value="Wide">
-                                      <Setter Property="Grid.Row" Value="9"/>
-                                  </DataTrigger>
-                              </Style.Triggers>
-                          </Style>
-                      </TextBox.Style>
-                  </TextBox>
+                      <TextBlock Grid.Row="6" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Number of periods for capital recovery."/>
+                          </InlineUIContainer>
+                          <Run Text="Analysis Period"/>
+                      </TextBlock>
+                      <TextBox Grid.Row="6" Text="{Binding AnalysisPeriod}" Tag="7" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
-                  <TextBlock Grid.Row="11" Style="{StaticResource AnnualizerLabelStyle}">
-                      <InlineUIContainer BaselineAlignment="Center">
-                          <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                          ToolTip="Expected annual benefits."/>
-                      </InlineUIContainer>
-                      <Run Text="Annual Benefits"/>
-                  </TextBlock>
-                  <TextBox Grid.Row="12" Text="{Binding AnnualBenefits}">
-                      <TextBox.Style>
-                          <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
-                              <Style.Triggers>
-                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                               Value="Wide">
-                                      <Setter Property="Grid.Row" Value="11"/>
-                                  </DataTrigger>
-                              </Style.Triggers>
-                          </Style>
-                      </TextBox.Style>
-                  </TextBox>
+                      <TextBlock Grid.Row="8" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Annual operations and maintenance cost."/>
+                          </InlineUIContainer>
+                          <Run Text="Annual O&amp;M"/>
+                      </TextBlock>
+                      <TextBox Grid.Row="8" Text="{Binding AnnualOm}" Tag="9" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
-                  <TextBlock Grid.Row="13" Style="{StaticResource AnnualizerLabelStyle}">
-                      <InlineUIContainer BaselineAlignment="Center">
-                          <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                          ToolTip="Total construction duration in months used to accumulate IDC."/>
-                      </InlineUIContainer>
-                      <Run Text="Construction Months"/>
-                  </TextBlock>
-                  <TextBox Grid.Row="14" Text="{Binding ConstructionMonths}">
-                      <TextBox.Style>
-                          <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
-                              <Style.Triggers>
-                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                               Value="Wide">
-                                      <Setter Property="Grid.Row" Value="13"/>
-                                  </DataTrigger>
-                              </Style.Triggers>
-                          </Style>
-                      </TextBox.Style>
-                  </TextBox>
+                      <TextBlock Grid.Row="10" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Expected annual benefits."/>
+                          </InlineUIContainer>
+                          <Run Text="Annual Benefits"/>
+                      </TextBlock>
+                      <TextBox Grid.Row="10" Text="{Binding AnnualBenefits}" Tag="11" Style="{StaticResource AnnualizerFieldInputStyle}"/>
+
+                      <TextBlock Grid.Row="12" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Total construction duration in months used to accumulate IDC."/>
+                          </InlineUIContainer>
+                          <Run Text="Construction Months"/>
+                      </TextBlock>
+                      <TextBox Grid.Row="12" Text="{Binding ConstructionMonths}" Tag="13" Style="{StaticResource AnnualizerFieldInputStyle}"/>
+                  </Grid>
 
                   <TextBlock Grid.Row="15">
                       <TextBlock.Style>

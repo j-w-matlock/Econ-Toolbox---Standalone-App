@@ -12,6 +12,7 @@ namespace EconToolbox.Desktop.Models
         private string _dependencies = string.Empty;
         private double _percentComplete;
         private bool _isMilestone;
+        private double _laborCostPerDay;
 
         public string Name
         {
@@ -58,6 +59,7 @@ namespace EconToolbox.Desktop.Models
                     return;
                 _durationDays = Math.Max(0, value);
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(TotalCost));
             }
         }
 
@@ -109,5 +111,21 @@ namespace EconToolbox.Desktop.Models
                 OnPropertyChanged();
             }
         }
+
+        public double LaborCostPerDay
+        {
+            get => _laborCostPerDay;
+            set
+            {
+                var sanitized = Math.Max(0, value);
+                if (Math.Abs(_laborCostPerDay - sanitized) < 0.0001)
+                    return;
+                _laborCostPerDay = sanitized;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(TotalCost));
+            }
+        }
+
+        public double TotalCost => Math.Max(0, _durationDays) * _laborCostPerDay;
     }
 }

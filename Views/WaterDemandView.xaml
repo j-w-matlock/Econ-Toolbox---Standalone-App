@@ -241,7 +241,7 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Border.Style>
-                                        <Grid>
+                                        <Grid Grid.IsSharedSizeScope="True">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="Auto"/>
@@ -252,30 +252,30 @@
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*" SharedSizeGroup="ScenarioLabel"/>
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="ScenarioValue"/>
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="ScenarioValue"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="SemiBold" Foreground="#1F6AB0" Margin="0,0,0,8" Text="Scenario Variations (% change applied to baseline rates)"/>
                                             <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="SemiBold" Foreground="#31556F" Text="Parameter"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Foreground="#31556F" Margin="24,0,24,0" Text="Optimistic"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="#31556F" Text="Pessimistic"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Foreground="#31556F" Margin="16,0,16,0" Text="Optimistic" HorizontalAlignment="Left"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="#31556F" Text="Pessimistic" HorizontalAlignment="Left"/>
 
                                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Population growth"/>
-                                            <TextBox Grid.Row="2" Grid.Column="1" Width="80" HorizontalAlignment="Center" Text="{Binding DataContext.OptimisticPopulationGrowthChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline population growth rate for the optimistic scenario."/>
-                                            <TextBox Grid.Row="2" Grid.Column="2" Width="80" HorizontalAlignment="Center" Text="{Binding DataContext.PessimisticPopulationGrowthChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline population growth rate for the pessimistic scenario."/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Text="{Binding DataContext.OptimisticPopulationGrowthChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline population growth rate for the optimistic scenario."/>
+                                            <TextBox Grid.Row="2" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Text="{Binding DataContext.PessimisticPopulationGrowthChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline population growth rate for the pessimistic scenario."/>
 
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="Per capita demand change"/>
-                                            <TextBox Grid.Row="3" Grid.Column="1" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticPerCapitaChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline per capita demand growth rate for the optimistic scenario."/>
-                                            <TextBox Grid.Row="3" Grid.Column="2" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticPerCapitaChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline per capita demand growth rate for the pessimistic scenario."/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticPerCapitaChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline per capita demand growth rate for the optimistic scenario."/>
+                                            <TextBox Grid.Row="3" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticPerCapitaChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline per capita demand growth rate for the pessimistic scenario."/>
 
                                             <TextBlock Grid.Row="4" Grid.Column="0" Text="System improvements"/>
-                                            <TextBox Grid.Row="4" Grid.Column="1" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticImprovementChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline system improvements for the optimistic scenario."/>
-                                            <TextBox Grid.Row="4" Grid.Column="2" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticImprovementChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline system improvements for the pessimistic scenario."/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticImprovementChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline system improvements for the optimistic scenario."/>
+                                            <TextBox Grid.Row="4" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticImprovementChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline system improvements for the pessimistic scenario."/>
 
                                             <TextBlock Grid.Row="5" Grid.Column="0" Text="System losses"/>
-                                            <TextBox Grid.Row="5" Grid.Column="1" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticLossChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline loss percentages for the optimistic scenario."/>
-                                            <TextBox Grid.Row="5" Grid.Column="2" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticLossChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline loss percentages for the pessimistic scenario."/>
+                                            <TextBox Grid.Row="5" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticLossChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline loss percentages for the optimistic scenario."/>
+                                            <TextBox Grid.Row="5" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticLossChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline loss percentages for the pessimistic scenario."/>
 
                                             <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="#31556F" TextWrapping="Wrap">
                                                 Positive values increase the baseline rate, while negative values decrease it. Changes apply automatically to the Optimistic and Pessimistic tabs without altering the Baseline inputs.
