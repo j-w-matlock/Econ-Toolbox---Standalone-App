@@ -92,8 +92,14 @@
                       </StackPanel>
                   </Border>
 
-                  <TextBlock Grid.Row="1" Text="First Cost" Style="{StaticResource AnnualizerLabelStyle}"/>
-                  <TextBox Grid.Row="2" Text="{Binding FirstCost}" ToolTip="Initial project cost.">
+                  <TextBlock Grid.Row="1" Style="{StaticResource AnnualizerLabelStyle}">
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="Initial project cost."/>
+                      </InlineUIContainer>
+                      <Run Text="First Cost"/>
+                  </TextBlock>
+                  <TextBox Grid.Row="2" Text="{Binding FirstCost}">
                       <TextBox.Style>
                           <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
                               <Style.Triggers>
@@ -106,8 +112,14 @@
                       </TextBox.Style>
                   </TextBox>
 
-                  <TextBlock Grid.Row="3" Text="Rate (%)" Style="{StaticResource AnnualizerLabelStyle}"/>
-                  <TextBox Grid.Row="4" Text="{Binding Rate}" ToolTip="Discount rate in percent.">
+                  <TextBlock Grid.Row="3" Style="{StaticResource AnnualizerLabelStyle}">
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="Discount rate in percent."/>
+                      </InlineUIContainer>
+                      <Run Text="Rate (%)"/>
+                  </TextBlock>
+                  <TextBox Grid.Row="4" Text="{Binding Rate}">
                       <TextBox.Style>
                           <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
                               <Style.Triggers>
@@ -134,8 +146,14 @@
                       </TextBox.Style>
                   </TextBox>
 
-                  <TextBlock Grid.Row="7" Text="Analysis Period" Style="{StaticResource AnnualizerLabelStyle}"/>
-                  <TextBox Grid.Row="8" Text="{Binding AnalysisPeriod}" ToolTip="Number of periods for capital recovery.">
+                  <TextBlock Grid.Row="7" Style="{StaticResource AnnualizerLabelStyle}">
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="Number of periods for capital recovery."/>
+                      </InlineUIContainer>
+                      <Run Text="Analysis Period"/>
+                  </TextBlock>
+                  <TextBox Grid.Row="8" Text="{Binding AnalysisPeriod}">
                       <TextBox.Style>
                           <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
                               <Style.Triggers>
@@ -148,8 +166,14 @@
                       </TextBox.Style>
                   </TextBox>
 
-                  <TextBlock Grid.Row="9" Text="Annual O&amp;M" Style="{StaticResource AnnualizerLabelStyle}"/>
-                  <TextBox Grid.Row="10" Text="{Binding AnnualOm}" ToolTip="Annual operations and maintenance cost.">
+                  <TextBlock Grid.Row="9" Style="{StaticResource AnnualizerLabelStyle}">
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="Annual operations and maintenance cost."/>
+                      </InlineUIContainer>
+                      <Run Text="Annual O&amp;M"/>
+                  </TextBlock>
+                  <TextBox Grid.Row="10" Text="{Binding AnnualOm}">
                       <TextBox.Style>
                           <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
                               <Style.Triggers>
@@ -162,8 +186,14 @@
                       </TextBox.Style>
                   </TextBox>
 
-                  <TextBlock Grid.Row="11" Text="Annual Benefits" Style="{StaticResource AnnualizerLabelStyle}"/>
-                  <TextBox Grid.Row="12" Text="{Binding AnnualBenefits}" ToolTip="Expected annual benefits.">
+                  <TextBlock Grid.Row="11" Style="{StaticResource AnnualizerLabelStyle}">
+                      <InlineUIContainer BaselineAlignment="Center">
+                          <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                          ToolTip="Expected annual benefits."/>
+                      </InlineUIContainer>
+                      <Run Text="Annual Benefits"/>
+                  </TextBlock>
+                  <TextBox Grid.Row="12" Text="{Binding AnnualBenefits}">
                       <TextBox.Style>
                           <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerInputStyle}">
                               <Style.Triggers>
