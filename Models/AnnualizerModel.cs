@@ -22,20 +22,18 @@ namespace EconToolbox.Desktop.Models
             double idc = ComputeIdc(firstCost, rate, constructionMonths, idcCosts, idcTimings, idcMonths);
 
             double pvFuture = 0.0;
-            int maxYear = 0;
             if (futureCosts != null)
             {
                 foreach (var (cost, year) in futureCosts)
                 {
                     double pvFactor = 1.0 / Math.Pow(1.0 + rate, year);
                     pvFuture += cost * pvFactor;
-                    if (year > maxYear) maxYear = year;
                 }
             }
 
             double totalInvestment = firstCost + idc + pvFuture;
-            int finalPeriods = Math.Max(analysisPeriod, Math.Max(1, maxYear));
-            double crf = CapitalRecoveryModel.Calculate(rate, finalPeriods);
+            int normalizedAnalysisPeriod = analysisPeriod <= 0 ? 1 : analysisPeriod;
+            double crf = CapitalRecoveryModel.Calculate(rate, normalizedAnalysisPeriod);
             double annualConstruction = totalInvestment * crf;
             double annualCost = annualConstruction + annualOm;
             double bcr = annualCost == 0 ? double.NaN : annualBenefits / annualCost;
