@@ -42,6 +42,12 @@
             <DataTemplate DataType="{x:Type vm:MindMapViewModel}">
                 <views:MindMapView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:GanttViewModel}">
+                <views:GanttView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:DrawingViewModel}">
+                <views:DrawingView/>
+            </DataTemplate>
             <DataTemplate x:Key="HeroWideTemplate">
                 <Grid Margin="0"
                       HorizontalAlignment="Stretch">
@@ -49,19 +55,20 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*" MinWidth="320"/>
                     </Grid.ColumnDefinitions>
-                    <Canvas Width="120"
+                    <Border Width="120"
                             Height="90"
+                            Background="#1F3C52"
+                            CornerRadius="12"
                             Margin="{StaticResource Margin.InlineLarge}">
-                        <Path Data="M10,70 L30,45 L55,55 L85,20"
-                              Stroke="White"
-                              StrokeThickness="4"
-                              StrokeEndLineCap="Round"
-                              StrokeStartLineCap="Round"/>
-                        <Ellipse Width="10" Height="10" Fill="{StaticResource Brush.Accent}" Canvas.Left="6" Canvas.Top="65"/>
-                        <Ellipse Width="10" Height="10" Fill="{StaticResource Brush.Accent}" Canvas.Left="26" Canvas.Top="40"/>
-                        <Ellipse Width="10" Height="10" Fill="{StaticResource Brush.Accent}" Canvas.Left="51" Canvas.Top="50"/>
-                        <Ellipse Width="12" Height="12" Fill="White" Canvas.Left="79" Canvas.Top="14"/>
-                    </Canvas>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="12"
+                                              ShadowDepth="0"
+                                              Opacity="0.35"/>
+                        </Border.Effect>
+                        <Image Source="pack://application:,,,/Pixstle.ico"
+                               Stretch="Uniform"
+                               Margin="10"/>
+                    </Border>
                     <StackPanel Grid.Column="1"
                                 Margin="{StaticResource Margin.StackLarge}">
                         <TextBlock Text="Economic Toolbox"
@@ -147,20 +154,21 @@
             <DataTemplate x:Key="HeroNarrowTemplate">
                 <StackPanel Margin="0"
                             HorizontalAlignment="Stretch">
-                    <Canvas Width="100"
+                    <Border Width="100"
                             Height="70"
                             HorizontalAlignment="Center"
+                            Background="#1F3C52"
+                            CornerRadius="12"
                             Margin="{StaticResource Margin.Stack}">
-                        <Path Data="M10,60 L25,35 L45,45 L70,15"
-                              Stroke="White"
-                              StrokeThickness="4"
-                              StrokeEndLineCap="Round"
-                              StrokeStartLineCap="Round"/>
-                        <Ellipse Width="10" Height="10" Fill="{StaticResource Brush.Accent}" Canvas.Left="6" Canvas.Top="55"/>
-                        <Ellipse Width="10" Height="10" Fill="{StaticResource Brush.Accent}" Canvas.Left="24" Canvas.Top="30"/>
-                        <Ellipse Width="10" Height="10" Fill="{StaticResource Brush.Accent}" Canvas.Left="44" Canvas.Top="40"/>
-                        <Ellipse Width="12" Height="12" Fill="White" Canvas.Left="68" Canvas.Top="10"/>
-                    </Canvas>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10"
+                                              ShadowDepth="0"
+                                              Opacity="0.35"/>
+                        </Border.Effect>
+                        <Image Source="pack://application:,,,/Pixstle.ico"
+                               Stretch="Uniform"
+                               Margin="8"/>
+                    </Border>
                     <StackPanel Margin="{StaticResource Margin.Stack}"
                                 HorizontalAlignment="Center">
                         <TextBlock Text="Economic Toolbox"
@@ -261,7 +269,7 @@
                                        Text="&#xE8EF;"
                                        Margin="0,0,8,0"
                                        FontSize="20"/>
-                            <TextBlock Text="Calculate"
+                            <TextBlock Text="{Binding PrimaryActionLabel}"
                                        FontSize="16"/>
                         </StackPanel>
                     </Button>
@@ -297,7 +305,7 @@
                                        Text="&#xE8EF;"
                                        Margin="0,0,8,0"
                                        FontSize="20"/>
-                            <TextBlock Text="Calculate"
+                            <TextBlock Text="{Binding PrimaryActionLabel}"
                                        FontSize="16"/>
                         </StackPanel>
                     </Button>

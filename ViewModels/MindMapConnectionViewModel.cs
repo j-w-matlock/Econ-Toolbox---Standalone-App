@@ -22,6 +22,8 @@ namespace EconToolbox.Desktop.ViewModels
         public MindMapNodeViewModel Target { get; }
 
         private PointCollection _connectorPoints = new();
+        private Point _firstBend;
+        private Point _secondBend;
 
         public double StartX => Source.X + Source.VisualWidth / 2;
         public double StartY => Source.Y + Source.VisualHeight / 2;
@@ -36,6 +38,32 @@ namespace EconToolbox.Desktop.ViewModels
                 if (!Equals(_connectorPoints, value))
                 {
                     _connectorPoints = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public Point FirstBend
+        {
+            get => _firstBend;
+            private set
+            {
+                if (_firstBend != value)
+                {
+                    _firstBend = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public Point SecondBend
+        {
+            get => _secondBend;
+            private set
+            {
+                if (_secondBend != value)
+                {
+                    _secondBend = value;
                     OnPropertyChanged();
                 }
             }
@@ -95,13 +123,20 @@ namespace EconToolbox.Desktop.ViewModels
                 midX = (start.X + end.X) / 2;
             }
 
-            return new PointCollection
+            var points = new PointCollection
             {
                 start,
                 new Point(midX, start.Y),
                 new Point(midX, end.Y),
                 end
             };
+            if (points.Count >= 4)
+            {
+                FirstBend = points[1];
+                SecondBend = points[2];
+            }
+
+            return points;
         }
     }
 }

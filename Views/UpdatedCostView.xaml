@@ -137,7 +137,10 @@
                     <TextBox Text="{Binding StorageRecommendation}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
                     <Button Command="{Binding ComputeStorageCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE8EF;"
+                                       FontSize="18"
+                                       Margin="0,0,6,0"/>
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
@@ -198,7 +201,10 @@
                     <TextBox Text="{Binding JointMaintenanceCost}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
                     <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE8EF;"
+                                       FontSize="18"
+                                       Margin="0,0,6,0"/>
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
@@ -264,7 +270,10 @@
                 </DataGrid>
                 <Button Margin="0,5,0,5" Command="{Binding ComputeUpdatedStorageCommand}">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets"
+                                   Text="&#xE8EF;"
+                                   FontSize="18"
+                                   Margin="0,0,6,0"/>
                         <TextBlock Text="Compute"/>
                     </StackPanel>
                 </Button>
@@ -378,7 +387,10 @@
                     </DataGrid>
                     <Button Grid.Row="5" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeRrrCommand}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE8EF;"
+                                       FontSize="18"
+                                       Margin="0,0,6,0"/>
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
@@ -460,7 +472,10 @@
                     <TextBox Text="{Binding AnalysisPeriod2}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
                     <Button Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeTotalCommand}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE8EF;"
+                                       FontSize="18"
+                                       Margin="0,0,6,0"/>
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>

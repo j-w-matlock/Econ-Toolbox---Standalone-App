@@ -29,7 +29,7 @@
                     <TextBlock Text="Unit Day Value Overview" FontWeight="Bold" Foreground="#C23E64"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                    Choose the recreation and activity classification, then supply point scores, user days, and visitation. Points must align with the table order to return the correct value tier.
+                    Choose the recreation and activity classification, then supply point scores, user days, and visitation. Points must align with the table order to return the correct value tier. Use the Calculate button at the bottom of the window whenever you change inputs so the unit day value stays synchronized.
                 </TextBlock>
             </StackPanel>
         </Border>
@@ -67,63 +67,120 @@
                 <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" MinWidth="200"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="{StaticResource Margin.Stack}">
-            <StackPanel.Style>
-                <Style TargetType="StackPanel">
-                    <Setter Property="Orientation" Value="Horizontal"/>
-                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                     Value="Narrow">
-                            <Setter Property="Orientation" Value="Vertical"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}">
+        <Grid Grid.Row="2"
+              Grid.RowSpan="2"
+              Margin="{StaticResource Margin.Stack}"
+              Grid.IsSharedSizeScope="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="UdvIcon"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="UdvLabel"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="UdvValue"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       FontFamily="Segoe MDL2 Assets"
+                       Text=""
+                       Foreground="{StaticResource Brush.Primary}"
+                       Margin="{StaticResource Margin.Inline}"
+                       VerticalAlignment="Center"/>
+            <StackPanel Grid.Row="0"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
                                 ToolTip="Enter the point score from the Unit Day Value table that reflects recreation quality."/>
                 <TextBlock Text="Points" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
-            <TextBox Text="{Binding Points}" Width="60" Margin="{StaticResource Margin.InlineMedium}"/>
-            <TextBlock Text="Unit Day Value" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}"/>
-            <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:F2}}" VerticalAlignment="Center" FontWeight="SemiBold"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="{StaticResource Margin.Stack}">
-            <StackPanel.Style>
-                <Style TargetType="StackPanel">
-                    <Setter Property="Orientation" Value="Horizontal"/>
-                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                     Value="Narrow">
-                            <Setter Property="Orientation" Value="Vertical"/>
-                            <Setter Property="HorizontalAlignment" Value="Left"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>
-            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}" VerticalAlignment="Center"/>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}">
+            <TextBox Grid.Row="0"
+                     Grid.Column="2"
+                     Text="{Binding Points}"
+                     Width="80"
+                     Margin="12,0,0,0"/>
+
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       FontFamily="Segoe MDL2 Assets"
+                       Text=""
+                       Foreground="{StaticResource Brush.Primary}"
+                       Margin="{StaticResource Margin.Inline}"
+                       VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="1"
+                       Grid.Column="1"
+                       Text="Unit Day Value"
+                       Margin="{StaticResource Margin.Inline}"
+                       VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="1"
+                       Grid.Column="3"
+                       Text="{Binding UnitDayValue, StringFormat={}{0:F2}}"
+                       Margin="12,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"/>
+
+            <TextBlock Grid.Row="2"
+                       Grid.Column="0"
+                       FontFamily="Segoe MDL2 Assets"
+                       Text=""
+                       Foreground="{StaticResource Brush.Primary}"
+                       Margin="{StaticResource Margin.Inline}"
+                       VerticalAlignment="Center"/>
+            <StackPanel Grid.Row="2"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
                                 ToolTip="Provide the total projected recreation user days per year for the study area."/>
                 <TextBlock Text="Annual User Days" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
-            <TextBox Text="{Binding UserDays}" Width="80" Margin="{StaticResource Margin.InlineMedium}"/>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.Inline}">
+            <TextBox Grid.Row="2"
+                     Grid.Column="2"
+                     Text="{Binding UserDays}"
+                     Width="120"
+                     Margin="12,0,0,0"/>
+            <TextBlock Grid.Row="2"
+                       Grid.Column="3"
+                       Text="days"
+                       Margin="12,0,0,0"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource Brush.TextSecondary}"/>
+
+            <TextBlock Grid.Row="3"
+                       Grid.Column="0"
+                       FontFamily="Segoe MDL2 Assets"
+                       Text=""
+                       Foreground="{StaticResource Brush.Primary}"
+                       Margin="{StaticResource Margin.Inline}"
+                       VerticalAlignment="Center"/>
+            <StackPanel Grid.Row="3"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
                                 ToolTip="Fraction of total user days attributable to the plan or alternative being valued."/>
-                <TextBlock Text="Visitation" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Visitation Share" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
-            <TextBox Text="{Binding Visitation}" Width="60" Margin="{StaticResource Margin.InlineMedium}"/>
-            <Button Command="{Binding ComputeCommand}">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                    <TextBlock Text="Compute"/>
-                </StackPanel>
-            </Button>
-        </StackPanel>
+            <TextBox Grid.Row="3"
+                     Grid.Column="2"
+                     Text="{Binding Visitation}"
+                     Width="80"
+                     Margin="12,0,0,0"/>
+            <TextBlock Grid.Row="3"
+                       Grid.Column="3"
+                       Text="%"
+                       Margin="12,0,0,0"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource Brush.TextSecondary}"/>
+        </Grid>
         <Border Grid.Row="4" Background="#FFF7F0" BorderBrush="#E9C28E" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}" Margin="{StaticResource Margin.Stack}">
             <StackPanel>
                 <TextBlock Text="{Binding Result}" FontWeight="Bold"/>

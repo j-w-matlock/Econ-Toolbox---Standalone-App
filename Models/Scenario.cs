@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
@@ -8,14 +9,96 @@ namespace EconToolbox.Desktop.Models
     /// </summary>
     public class Scenario : ObservableObject
     {
-        public string Name { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        private string _name = string.Empty;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name == value)
+                    return;
+                _name = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public int BaseYear { get; set; }
-        public double BasePopulation { get; set; }
-        public double BasePerCapitaDemand { get; set; }
-        public double PopulationGrowthRate { get; set; }
-        public double PerCapitaDemandChangeRate { get; set; }
+        private string _description = string.Empty;
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                if (_description == value)
+                    return;
+                _description = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int _baseYear;
+        public int BaseYear
+        {
+            get => _baseYear;
+            set
+            {
+                if (_baseYear == value)
+                    return;
+                _baseYear = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _basePopulation;
+        public double BasePopulation
+        {
+            get => _basePopulation;
+            set
+            {
+                if (Math.Abs(_basePopulation - value) < 0.0001)
+                    return;
+                _basePopulation = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _basePerCapitaDemand;
+        public double BasePerCapitaDemand
+        {
+            get => _basePerCapitaDemand;
+            set
+            {
+                if (Math.Abs(_basePerCapitaDemand - value) < 0.0001)
+                    return;
+                _basePerCapitaDemand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _populationGrowthRate;
+        public double PopulationGrowthRate
+        {
+            get => _populationGrowthRate;
+            set
+            {
+                if (Math.Abs(_populationGrowthRate - value) < 0.0001)
+                    return;
+                _populationGrowthRate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _perCapitaDemandChangeRate;
+        public double PerCapitaDemandChangeRate
+        {
+            get => _perCapitaDemandChangeRate;
+            set
+            {
+                if (Math.Abs(_perCapitaDemandChangeRate - value) < 0.0001)
+                    return;
+                _perCapitaDemandChangeRate = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Percentage shares for each demand sector. The last entry is treated
@@ -28,8 +111,31 @@ namespace EconToolbox.Desktop.Models
             new SectorShare { Name = "Commercial" },
             new SectorShare { Name = "Agricultural", IsResidual = true }
         };
-        public double SystemImprovementsPercent { get; set; }
-        public double SystemLossesPercent { get; set; }
+        private double _systemImprovementsPercent;
+        public double SystemImprovementsPercent
+        {
+            get => _systemImprovementsPercent;
+            set
+            {
+                if (Math.Abs(_systemImprovementsPercent - value) < 0.0001)
+                    return;
+                _systemImprovementsPercent = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _systemLossesPercent;
+        public double SystemLossesPercent
+        {
+            get => _systemLossesPercent;
+            set
+            {
+                if (Math.Abs(_systemLossesPercent - value) < 0.0001)
+                    return;
+                _systemLossesPercent = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ObservableCollection<DemandEntry> Results { get; } = new();
 
@@ -40,6 +146,17 @@ namespace EconToolbox.Desktop.Models
             set { _chartPoints = value; OnPropertyChanged(); }
         }
 
-        public Brush LineBrush { get; set; } = Brushes.Blue;
+        private Brush _lineBrush = Brushes.Blue;
+        public Brush LineBrush
+        {
+            get => _lineBrush;
+            set
+            {
+                if (_lineBrush == value)
+                    return;
+                _lineBrush = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

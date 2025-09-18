@@ -12,6 +12,8 @@ namespace EconToolbox.Desktop.ViewModels
         public UdvViewModel Udv { get; } = new();
         public WaterDemandViewModel WaterDemand { get; } = new();
         public MindMapViewModel MindMap { get; } = new();
+        public GanttViewModel Gantt { get; } = new();
+        public DrawingViewModel Drawing { get; } = new();
 
         public IReadOnlyList<ModuleDefinition> Modules { get; }
 
@@ -26,6 +28,7 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsCalculateVisible));
                 OnPropertyChanged(nameof(SelectedModule));
+                OnPropertyChanged(nameof(PrimaryActionLabel));
             }
         }
 
@@ -37,6 +40,13 @@ namespace EconToolbox.Desktop.ViewModels
             : null;
 
         public bool IsCalculateVisible => SelectedModule?.ComputeCommand?.CanExecute(null) == true;
+
+        public string PrimaryActionLabel => SelectedModule?.Title switch
+        {
+            "Water Demand Forecasting" => "Forecast",
+            "Standard Gantt Planner" => "Schedule",
+            _ => "Calculate"
+        };
 
         public MainViewModel()
         {
@@ -152,6 +162,42 @@ namespace EconToolbox.Desktop.ViewModels
                     },
                     "Example: Mapping insights from a coastal storm resilience workshop organizes nodes for risk drivers, mitigation concepts, funding leads, and assigned follow-up tasks.",
                     MindMap,
+                    null),
+                new ModuleDefinition(
+                    "Standard Gantt Planner",
+                    "Organize project activities, dependencies, and milestones in a timeline consistent with industry schedules.",
+                    new[]
+                    {
+                        "List each task with a start date, duration, and responsible workstream.",
+                        "Identify predecessors to respect finish-to-start dependencies across the plan.",
+                        "Adjust pen thickness and color in the sketch tab to annotate delivery risks or notes."
+                    },
+                    new[]
+                    {
+                        "Automatically sequences start and finish dates based on dependency logic.",
+                        "Generates a bar chart showing duration, percent complete, and milestones.",
+                        "Exports both the task register and timeline graphic alongside other modules."
+                    },
+                    "Example: A feasibility study includes kickoff, stakeholder workshops, baseline analysis, and a design milestone with finish-to-start dependencies.",
+                    Gantt,
+                    Gantt.ComputeCommand),
+                new ModuleDefinition(
+                    "Sketch Pad",
+                    "Capture freehand notes, diagrams, or signatures directly in the toolbox.",
+                    new[]
+                    {
+                        "Pick a pen color and thickness that complements your drawing style.",
+                        "Draw directly on the canvas using the mouse or stylus.",
+                        "Use undo or clear to refine the canvas before exporting."
+                    },
+                    new[]
+                    {
+                        "Maintains stroke data for export to Excel as an image.",
+                        "Supports multiple pen widths and color palettes for rapid sketching.",
+                        "Provides an always-available space to annotate workshop takeaways."
+                    },
+                    "Example: Sketching a reservoir layout with notes about control structures during a design charrette.",
+                    Drawing,
                     null)
             };
 
@@ -189,7 +235,7 @@ namespace EconToolbox.Desktop.ViewModels
             };
             if (dlg.ShowDialog() == true)
             {
-                ExcelExporter.ExportAll(Ead, UpdatedCost, Annualizer, WaterDemand, Udv, MindMap, dlg.FileName);
+                ExcelExporter.ExportAll(Ead, UpdatedCost, Annualizer, WaterDemand, Udv, MindMap, Gantt, Drawing, dlg.FileName);
             }
         }
     }

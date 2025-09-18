@@ -27,6 +27,119 @@ namespace EconToolbox.Desktop.ViewModels
         private string _explanation = string.Empty;
         public ObservableCollection<Scenario> Scenarios { get; } = new();
         private Scenario? _selectedScenario;
+        private Scenario? _baselineScenario;
+
+        private double _optimisticPopulationGrowthChangePercent;
+        public double OptimisticPopulationGrowthChangePercent
+        {
+            get => _optimisticPopulationGrowthChangePercent;
+            set
+            {
+                if (Math.Abs(_optimisticPopulationGrowthChangePercent - value) < 0.0001)
+                    return;
+                _optimisticPopulationGrowthChangePercent = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _pessimisticPopulationGrowthChangePercent;
+        public double PessimisticPopulationGrowthChangePercent
+        {
+            get => _pessimisticPopulationGrowthChangePercent;
+            set
+            {
+                if (Math.Abs(_pessimisticPopulationGrowthChangePercent - value) < 0.0001)
+                    return;
+                _pessimisticPopulationGrowthChangePercent = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _optimisticPerCapitaChangePercent;
+        public double OptimisticPerCapitaChangePercent
+        {
+            get => _optimisticPerCapitaChangePercent;
+            set
+            {
+                if (Math.Abs(_optimisticPerCapitaChangePercent - value) < 0.0001)
+                    return;
+                _optimisticPerCapitaChangePercent = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _pessimisticPerCapitaChangePercent;
+        public double PessimisticPerCapitaChangePercent
+        {
+            get => _pessimisticPerCapitaChangePercent;
+            set
+            {
+                if (Math.Abs(_pessimisticPerCapitaChangePercent - value) < 0.0001)
+                    return;
+                _pessimisticPerCapitaChangePercent = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _optimisticImprovementChangePercent;
+        public double OptimisticImprovementChangePercent
+        {
+            get => _optimisticImprovementChangePercent;
+            set
+            {
+                if (Math.Abs(_optimisticImprovementChangePercent - value) < 0.0001)
+                    return;
+                _optimisticImprovementChangePercent = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _pessimisticImprovementChangePercent;
+        public double PessimisticImprovementChangePercent
+        {
+            get => _pessimisticImprovementChangePercent;
+            set
+            {
+                if (Math.Abs(_pessimisticImprovementChangePercent - value) < 0.0001)
+                    return;
+                _pessimisticImprovementChangePercent = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _optimisticLossChangePercent;
+        public double OptimisticLossChangePercent
+        {
+            get => _optimisticLossChangePercent;
+            set
+            {
+                if (Math.Abs(_optimisticLossChangePercent - value) < 0.0001)
+                    return;
+                _optimisticLossChangePercent = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _pessimisticLossChangePercent;
+        public double PessimisticLossChangePercent
+        {
+            get => _pessimisticLossChangePercent;
+            set
+            {
+                if (Math.Abs(_pessimisticLossChangePercent - value) < 0.0001)
+                    return;
+                _pessimisticLossChangePercent = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -137,11 +250,18 @@ namespace EconToolbox.Desktop.ViewModels
             });
 
             foreach (var s in Scenarios)
+            {
                 InitializeScenario(s);
+                s.PropertyChanged += Scenario_PropertyChanged;
+            }
+
+            _baselineScenario = Scenarios.FirstOrDefault(s => string.Equals(s.Name, "Baseline", StringComparison.OrdinalIgnoreCase));
 
             HistoricalData.CollectionChanged += HistoricalData_CollectionChanged;
 
             SelectedScenario = Scenarios.FirstOrDefault();
+
+            ApplyScenarioAdjustments();
 
             ForecastCommand = new RelayCommand(Forecast);
             ExportCommand = new RelayCommand(Export);
@@ -182,6 +302,7 @@ namespace EconToolbox.Desktop.ViewModels
             OnPropertyChanged(nameof(BaseYear));
             OnPropertyChanged(nameof(BasePerCapitaDemand));
             OnPropertyChanged(nameof(PerCapitaDemandChangeRate));
+            ApplyScenarioAdjustments();
         }
 
         private void InitializeScenario(Scenario scenario)
@@ -191,12 +312,105 @@ namespace EconToolbox.Desktop.ViewModels
             UpdateResidualShares(scenario);
         }
 
+        private void Scenario_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender is not Scenario scenario)
+                return;
+
+            if (!ReferenceEquals(scenario, _baselineScenario))
+                return;
+
+            if (e.PropertyName == nameof(Scenario.PopulationGrowthRate) ||
+                e.PropertyName == nameof(Scenario.PerCapitaDemandChangeRate) ||
+                e.PropertyName == nameof(Scenario.SystemImprovementsPercent) ||
+                e.PropertyName == nameof(Scenario.SystemLossesPercent) ||
+                e.PropertyName == nameof(Scenario.BaseYear) ||
+                e.PropertyName == nameof(Scenario.BasePerCapitaDemand) ||
+                e.PropertyName == nameof(Scenario.BasePopulation))
+            {
+                ApplyScenarioAdjustments();
+            }
+        }
+
         private void UpdateResidualShares(Scenario scenario)
         {
             var residual = scenario.Sectors.FirstOrDefault(se => se.IsResidual);
             if (residual == null) return;
             residual.CurrentPercent = Math.Max(0, 100 - scenario.Sectors.Where(se => !se.IsResidual).Sum(se => se.CurrentPercent));
             residual.FuturePercent = Math.Max(0, 100 - scenario.Sectors.Where(se => !se.IsResidual).Sum(se => se.FuturePercent));
+        }
+
+        private void ApplyScenarioAdjustments()
+        {
+            if (_baselineScenario == null)
+                return;
+
+            foreach (var scenario in Scenarios)
+            {
+                if (ReferenceEquals(scenario, _baselineScenario))
+                    continue;
+
+                bool isOptimistic = IsOptimisticScenario(scenario);
+                bool isPessimistic = IsPessimisticScenario(scenario);
+
+                if (!isOptimistic && !isPessimistic)
+                    continue;
+
+                scenario.BaseYear = _baselineScenario.BaseYear;
+                scenario.BasePerCapitaDemand = _baselineScenario.BasePerCapitaDemand;
+                scenario.BasePopulation = _baselineScenario.BasePopulation;
+
+                double popGrowth = _baselineScenario.PopulationGrowthRate;
+                double perCapita = _baselineScenario.PerCapitaDemandChangeRate;
+                double improvements = _baselineScenario.SystemImprovementsPercent;
+                double losses = _baselineScenario.SystemLossesPercent;
+
+                if (isOptimistic)
+                {
+                    scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, OptimisticPopulationGrowthChangePercent);
+                    scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, OptimisticPerCapitaChangePercent);
+                    scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, OptimisticImprovementChangePercent));
+                    scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, OptimisticLossChangePercent));
+                }
+                else if (isPessimistic)
+                {
+                    scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, -PessimisticPopulationGrowthChangePercent);
+                    scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, -PessimisticPerCapitaChangePercent);
+                    scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, -PessimisticImprovementChangePercent));
+                    scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, -PessimisticLossChangePercent));
+                }
+            }
+
+            if (SelectedScenario != null)
+            {
+                OnPropertyChanged(nameof(SystemImprovementsPercent));
+                OnPropertyChanged(nameof(SystemLossesPercent));
+                OnPropertyChanged(nameof(PopulationGrowthRate));
+                OnPropertyChanged(nameof(PerCapitaDemandChangeRate));
+            }
+        }
+
+        private static bool IsOptimisticScenario(Scenario scenario) =>
+            scenario.Name.Contains("Optimistic", StringComparison.OrdinalIgnoreCase);
+
+        private static bool IsPessimisticScenario(Scenario scenario) =>
+            scenario.Name.Contains("Pessimistic", StringComparison.OrdinalIgnoreCase);
+
+        private static double AdjustByPercent(double value, double percent)
+        {
+            if (double.IsNaN(value) || double.IsInfinity(value))
+                return 0;
+
+            double result = value * (1 + percent / 100.0);
+            return Math.Round(result, 6);
+        }
+
+        private static double ClampNonNegative(double value)
+        {
+            if (double.IsNaN(value) || double.IsInfinity(value))
+                return 0;
+
+            return Math.Max(0, value);
         }
 
         private void LoadHistoricalFromWorkbook()

@@ -29,7 +29,7 @@
                     <StackPanel Grid.Column="1" Margin="12,0,0,0">
                         <TextBlock Text="Water Demand Forecast Instructions" FontSize="18" FontWeight="Bold" Foreground="#1F6AB0"/>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                            Enter historic data first, choose or add scenarios, then specify forecast horizon and demographic assumptions. Use the Forecast button within each scenario to update charts and tables, and Export when you are ready to archive the scenario.
+                            Enter historic data first, choose or add scenarios, then specify forecast horizon and demographic assumptions. Use the Calculate and Export buttons at the bottom of the window to refresh forecasts or download your workbook.
                         </TextBlock>
                     </StackPanel>
                 </Grid>
@@ -83,6 +83,7 @@
                                 </Border>
                                 <Grid Grid.Row="1" Margin="0,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
@@ -190,53 +191,97 @@
                                     </DataGrid>
 
                                     <Expander Grid.Row="7" Grid.ColumnSpan="3" Header="Advanced Adjustments" Margin="0,5,0,5">
-                                        <StackPanel Orientation="Vertical">
-                                            <StackPanel Orientation="Horizontal">
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,5,0">
-                                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Percent reduction in demand from planned system improvements."/>
-                                                    <TextBlock Text="Improvements %" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                                <TextBox Text="{Binding SystemImprovementsPercent}"/>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,5,0">
-                                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Percent of demand lost to system leakage or other losses."/>
-                                                    <TextBlock Text="Losses %" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                                <TextBox Text="{Binding SystemLossesPercent}"/>
-                                            </StackPanel>
-                                        </StackPanel>
+                                        <Grid Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="InfoIcon"/>
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="Label"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <ContentControl Grid.Row="0"
+                                                            Grid.Column="0"
+                                                            Style="{StaticResource Content.InfoIcon}"
+                                                            ToolTip="Percent reduction in demand from planned system improvements."/>
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="1"
+                                                       Text="Improvements %"
+                                                       Margin="4,0,0,0"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="0"
+                                                     Grid.Column="2"
+                                                     Margin="12,0,0,0"
+                                                     Text="{Binding SystemImprovementsPercent}"/>
+                                            <ContentControl Grid.Row="1"
+                                                            Grid.Column="0"
+                                                            Style="{StaticResource Content.InfoIcon}"
+                                                            ToolTip="Percent of demand lost to system leakage or other losses."/>
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="1"
+                                                       Text="Losses %"
+                                                       Margin="4,6,0,0"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="1"
+                                                     Grid.Column="2"
+                                                     Margin="12,6,0,0"
+                                                     Text="{Binding SystemLossesPercent}"/>
+                                        </Grid>
                                     </Expander>
 
-                                    <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Setter Property="Orientation" Value="Horizontal"/>
-                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                    <Border Grid.Row="8" Grid.ColumnSpan="3" Background="#F7FBFF" BorderBrush="#C6DBF4" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,8,0,0">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ContentPresenter}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                                                 Value="Narrow">
-                                                        <Setter Property="Orientation" Value="Vertical"/>
-                                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                                    <DataTrigger Binding="{Binding Name}" Value="Baseline">
+                                                        <Setter Property="Visibility" Value="Visible"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </StackPanel.Style>
-                                        <Button MinWidth="110" Command="{Binding DataContext.ForecastCommand, ElementName=Root}" Margin="0,0,5,0">
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
-                                                <TextBlock Text="Forecast"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button MinWidth="110" Command="{Binding DataContext.ExportCommand, ElementName=Root}">
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
-                                                <TextBlock Text="Export"/>
-                                            </StackPanel>
-                                        </Button>
-                                    </StackPanel>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="SemiBold" Foreground="#1F6AB0" Margin="0,0,0,8" Text="Scenario Variations (% change applied to baseline rates)"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="SemiBold" Foreground="#31556F" Text="Parameter"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Foreground="#31556F" Margin="24,0,24,0" Text="Optimistic"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="#31556F" Text="Pessimistic"/>
+
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Population growth"/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" Width="80" HorizontalAlignment="Center" Text="{Binding DataContext.OptimisticPopulationGrowthChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline population growth rate for the optimistic scenario."/>
+                                            <TextBox Grid.Row="2" Grid.Column="2" Width="80" HorizontalAlignment="Center" Text="{Binding DataContext.PessimisticPopulationGrowthChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline population growth rate for the pessimistic scenario."/>
+
+                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Per capita demand change"/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticPerCapitaChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline per capita demand growth rate for the optimistic scenario."/>
+                                            <TextBox Grid.Row="3" Grid.Column="2" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticPerCapitaChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline per capita demand growth rate for the pessimistic scenario."/>
+
+                                            <TextBlock Grid.Row="4" Grid.Column="0" Text="System improvements"/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticImprovementChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline system improvements for the optimistic scenario."/>
+                                            <TextBox Grid.Row="4" Grid.Column="2" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticImprovementChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline system improvements for the pessimistic scenario."/>
+
+                                            <TextBlock Grid.Row="5" Grid.Column="0" Text="System losses"/>
+                                            <TextBox Grid.Row="5" Grid.Column="1" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticLossChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline loss percentages for the optimistic scenario."/>
+                                            <TextBox Grid.Row="5" Grid.Column="2" Width="80" HorizontalAlignment="Center" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticLossChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline loss percentages for the pessimistic scenario."/>
+
+                                            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="#31556F" TextWrapping="Wrap">
+                                                Positive values increase the baseline rate, while negative values decrease it. Changes apply automatically to the Optimistic and Pessimistic tabs without altering the Baseline inputs.
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
                                 </Grid>
                                 <Border Grid.Row="2" Background="White" CornerRadius="4" Padding="5">
                                     <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">

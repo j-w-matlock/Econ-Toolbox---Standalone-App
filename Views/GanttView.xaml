@@ -1,0 +1,211 @@
+<UserControl x:Class="EconToolbox.Desktop.Views.GanttView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource Brush.SurfaceAlt}"
+             SnapsToDevicePixels="True"
+             UseLayoutRounding="True">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto"
+                  Padding="{StaticResource Padding.Card}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"
+                    Style="{StaticResource Border.Explainer}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets"
+                                   Text=""
+                                   FontSize="18"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Text="Standard Gantt Planner"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap"
+                               Margin="0,6,0,0">
+                        Document project tasks, durations, and dependencies. Use the Calculate button at the bottom of the window to refresh the schedule and bars. Export shares the task table and timeline with the rest of the workbook.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Grid Grid.Row="1"
+                  Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.2*"/>
+                    <ColumnDefinition Width="1.8*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0"
+                            Margin="0,0,16,0">
+                    <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="12">
+                        <StackPanel>
+                            <TextBlock Text="Work Breakdown"
+                                       FontWeight="SemiBold"
+                                       FontSize="15"
+                                       Margin="0,0,0,8"/>
+                            <DataGrid ItemsSource="{Binding Tasks}"
+                                      SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="True"
+                                      HeadersVisibility="Column"
+                                      Margin="0,0,0,8">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Task" Binding="{Binding Name, Mode=TwoWay}" Width="160"/>
+                                    <DataGridTextColumn Header="Workstream" Binding="{Binding Workstream, Mode=TwoWay}" Width="110"/>
+                                    <DataGridTemplateColumn Header="Start" Width="120">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <DatePicker SelectedDate="{Binding StartDate, Mode=TwoWay}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Duration (days)" Binding="{Binding DurationDays, Mode=TwoWay}" Width="100"/>
+                                    <DataGridTextColumn Header="Dependencies" Binding="{Binding Dependencies, Mode=TwoWay}" Width="140"/>
+                                    <DataGridCheckBoxColumn Header="Milestone" Binding="{Binding IsMilestone, Mode=TwoWay}" Width="80"/>
+                                    <DataGridTextColumn Header="% Complete" Binding="{Binding PercentComplete, Mode=TwoWay}" Width="90"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <Button Command="{Binding AddTaskCommand}" Width="120" Margin="0,0,8,0">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Add Task"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding RemoveTaskCommand}" Width="140" Margin="0,0,8,0">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Remove Selected"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding ClearTasksCommand}" Width="120">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Clear"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                <Border Grid.Column="1"
+                        Background="{StaticResource Brush.Surface}"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,12" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="16" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                            <StackPanel>
+                                <TextBlock Text="Schedule Timeline" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding ScheduleSummary}" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <Border Grid.Row="1" Background="#F5F8FE" BorderBrush="#D4E0F4" BorderThickness="1" CornerRadius="6" Padding="8">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                                <Canvas Height="{Binding Bars.Count, Converter={StaticResource RowToPixelConverter}}"
+                                        Width="{Binding TotalDurationDays, Converter={StaticResource DayToPixelConverter}}"
+                                        MinHeight="220"
+                                        MinWidth="560">
+                                    <ItemsControl ItemsSource="{Binding Bars}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <Canvas />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemContainerStyle>
+                                            <Style TargetType="ContentPresenter">
+                                                <Setter Property="Canvas.Left" Value="{Binding CanvasOffsetDays, Converter={StaticResource DayToPixelConverter}}"/>
+                                                <Setter Property="Canvas.Top" Value="{Binding RowIndex, Converter={StaticResource RowToPixelConverter}}"/>
+                                            </Style>
+                                        </ItemsControl.ItemContainerStyle>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Rectangle Height="28"
+                                                               Width="{Binding CanvasDurationDays, Converter={StaticResource DayToPixelConverter}}"
+                                                               RadiusX="4"
+                                                               RadiusY="4"
+                                                               Fill="#4F6EB8"
+                                                               Opacity="{Binding Task.PercentComplete, Converter={StaticResource PercentToOpacityConverter}}"
+                                                               Stroke="#233B70"
+                                                               StrokeThickness="1.2">
+                                                        <Rectangle.Style>
+                                                            <Style TargetType="Rectangle">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsMilestone}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Rectangle.Style>
+                                                    </Rectangle>
+                                                    <Polygon Points="0,14 12,0 24,14 12,28"
+                                                             Fill="#4F6EB8"
+                                                             Stroke="#233B70"
+                                                             StrokeThickness="1.2">
+                                                        <Polygon.Style>
+                                                            <Style TargetType="Polygon">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsMilestone}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Polygon.Style>
+                                                    </Polygon>
+                                                    <TextBlock Text="{Binding Task.Name}"
+                                                               Foreground="White"
+                                                               FontSize="11"
+                                                               Margin="6,0,4,0"
+                                                               VerticalAlignment="Center">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsMilestone}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Canvas>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+            <Border Grid.Row="2"
+                    Margin="0,16,0,0"
+                    Background="#F9FAFE"
+                    BorderBrush="#D8E4F8"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="12">
+                <StackPanel>
+                    <TextBlock Text="Milestone Notes"
+                               FontWeight="SemiBold"/>
+                    <TextBlock TextWrapping="Wrap" Margin="0,4,0,0" FontSize="12">
+                        Milestones use zero duration and the diamond marker in the timeline. Enter comma separated dependencies to chain tasks in the correct order.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
