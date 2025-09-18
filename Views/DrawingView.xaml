@@ -33,8 +33,8 @@
                 </StackPanel>
             </Border>
             <Border Grid.Row="1" Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,12,0,0">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="16">
-                    <StackPanel Width="240">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel Width="240" Margin="0,0,16,0">
                         <TextBlock Text="Pen Color" FontWeight="SemiBold"/>
                         <ListBox ItemsSource="{Binding Palette}"
                                  SelectedValuePath="Color"
@@ -74,7 +74,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </StackPanel>
-                    <StackPanel Width="180">
+                    <StackPanel Width="180" Margin="0,0,16,0">
                         <TextBlock Text="Pen Thickness" FontWeight="SemiBold"/>
                         <Slider Minimum="1"
                                 Maximum="24"
