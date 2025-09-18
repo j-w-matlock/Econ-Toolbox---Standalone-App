@@ -38,7 +38,7 @@
                             <LineBreak/>
                             <Run Text="Toggle Include Stage if you have stage data aligned with the same probabilities."/>
                             <LineBreak/>
-                            <Run Text="After editing the grid, click Calculate EAD so charts and statistics capture your latest entries."/>
+                            <Run Text="After editing the grid, use the Calculate button at the bottom of the window so charts and statistics capture your latest entries."/>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -83,18 +83,6 @@
                             <TextBlock Text="Include Stage" Margin="4,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </CheckBox>
-                    <Button Command="{Binding ComputeCommand}" Margin="{StaticResource Margin.Inline}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                            <TextBlock Text="Calculate EAD"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{Binding ExportCommand}" Margin="{StaticResource Margin.Inline}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                            <TextBlock Text="Export Summary"/>
-                        </StackPanel>
-                    </Button>
                 </WrapPanel>
 
                 <UniformGrid Grid.Row="2"

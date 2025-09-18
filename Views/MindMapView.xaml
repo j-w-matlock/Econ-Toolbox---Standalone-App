@@ -8,13 +8,14 @@
              UseLayoutRounding="True">
     <UserControl.Resources>
         <Style x:Key="ConnectionLineStyle" TargetType="Polyline">
-            <Setter Property="Stroke" Value="#92A8D4"/>
-            <Setter Property="StrokeThickness" Value="2.4"/>
-            <Setter Property="StrokeStartLineCap" Value="Round"/>
-            <Setter Property="StrokeEndLineCap" Value="Round"/>
-            <Setter Property="StrokeLineJoin" Value="Round"/>
-            <Setter Property="Opacity" Value="0.9"/>
+            <Setter Property="Stroke" Value="#3F5DAA"/>
+            <Setter Property="StrokeThickness" Value="3"/>
+            <Setter Property="StrokeStartLineCap" Value="Square"/>
+            <Setter Property="StrokeEndLineCap" Value="Square"/>
+            <Setter Property="StrokeLineJoin" Value="Bevel"/>
+            <Setter Property="Opacity" Value="0.95"/>
             <Setter Property="Fill" Value="Transparent"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
         </Style>
     </UserControl.Resources>
 
@@ -159,8 +160,42 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type vm:MindMapConnectionViewModel}">
-                                        <Polyline Style="{StaticResource ConnectionLineStyle}"
-                                                  Points="{Binding ConnectorPoints}"/>
+                                        <Canvas IsHitTestVisible="False">
+                                            <Polyline Style="{StaticResource ConnectionLineStyle}"
+                                                      Points="{Binding ConnectorPoints}"/>
+                                            <Rectangle Width="8"
+                                                       Height="8"
+                                                       RadiusX="1"
+                                                       RadiusY="1"
+                                                       Fill="#E4E9FB"
+                                                       Stroke="#27477F"
+                                                       StrokeThickness="1.2"
+                                                       Canvas.Left="{Binding FirstBend.X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
+                                                       Canvas.Top="{Binding FirstBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"/>
+                                            <Rectangle Width="8"
+                                                       Height="8"
+                                                       RadiusX="1"
+                                                       RadiusY="1"
+                                                       Fill="#E4E9FB"
+                                                       Stroke="#27477F"
+                                                       StrokeThickness="1.2"
+                                                       Canvas.Left="{Binding SecondBend.X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
+                                                       Canvas.Top="{Binding SecondBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"/>
+                                            <Ellipse Width="10"
+                                                     Height="10"
+                                                     Fill="White"
+                                                     Stroke="#1F3A7A"
+                                                     StrokeThickness="1.4"
+                                                     Canvas.Left="{Binding StartX, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"
+                                                     Canvas.Top="{Binding StartY, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"/>
+                                            <Ellipse Width="10"
+                                                     Height="10"
+                                                     Fill="#1F3A7A"
+                                                     Stroke="#F7F9FF"
+                                                     StrokeThickness="1"
+                                                     Canvas.Left="{Binding EndX, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"
+                                                     Canvas.Top="{Binding EndY, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"/>
+                                        </Canvas>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>

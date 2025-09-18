@@ -23,6 +23,11 @@
     <Color x:Key="Color.HighlightBorder">#AFCDE0</Color>
     <SolidColorBrush x:Key="Brush.HighlightBackground" Color="{StaticResource Color.HighlightBackground}"/>
     <SolidColorBrush x:Key="Brush.HighlightBorder" Color="{StaticResource Color.HighlightBorder}"/>
+    <converters:OffsetConverter x:Key="OffsetConverter"/>
+    <converters:DayToPixelConverter x:Key="DayToPixelConverter"/>
+    <converters:DayToPixelConverter x:Key="RowToPixelConverter" Scale="44"/>
+    <converters:PercentToOpacityConverter x:Key="PercentToOpacityConverter" MinimumOpacity="0.45"/>
+    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <!-- Spacing tokens -->
     <sys:Double x:Key="Space.XS">4</sys:Double>
@@ -159,6 +164,20 @@
         <Setter Property="TextElement.FontFamily" Value="Segoe UI"/>
         <Setter Property="TextElement.FontSize" Value="13"/>
         <Setter Property="TextElement.Foreground" Value="White"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <ContentPresenter RecognizesAccessKey="True" Content="{Binding}">
+                        <ContentPresenter.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                                <Setter Property="TextTrimming" Value="None"/>
+                            </Style>
+                        </ContentPresenter.Resources>
+                    </ContentPresenter>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToolTip">
