@@ -359,7 +359,7 @@ namespace EconToolbox.Desktop.Services
                 {"Visitation Input", udv.VisitationInput},
                 {"Visitation Cadence", udv.VisitationPeriod},
                 {"Total User Days", udv.TotalUserDays},
-                {"Result", udv.Result}
+                {"Annual Recreation Benefit", udv.AnnualRecreationBenefit}
             };
             rowIdx = 1;
             foreach (var kv in udvData)
@@ -600,7 +600,7 @@ namespace EconToolbox.Desktop.Services
                 ("Season Length (days)", udv.SeasonDays, "0.0", "Number of operating days considered in the season.", false),
                 ("Visitation Input", udv.VisitationInput, "#,##0.##", $"Value provided on a {udv.VisitationPeriod.ToLowerInvariant()} basis.", false),
                 ("Total User Days", udv.TotalUserDays, "#,##0.##", "Season days adjusted for visitation input.", false),
-                ("Season Recreation Benefit", recreationBenefit, "$#,##0.00", "Unit Day Value × Total User Days.", true)
+                ("Annual Recreation Benefit", recreationBenefit, "$#,##0.00", "Unit Day Value × Total User Days.", true)
             };
 
             var mindMapRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
