@@ -353,10 +353,12 @@ namespace EconToolbox.Desktop.Services
             {
                 {"Recreation Type", udv.RecreationType},
                 {"Activity Type", udv.ActivityType},
-                {"Points", udv.Points},
+                {"Point Value", udv.Points},
                 {"Unit Day Value", udv.UnitDayValue},
-                {"User Days", udv.UserDays},
-                {"Visitation", udv.Visitation},
+                {"Season Length (days)", udv.SeasonDays},
+                {"Visitation Input", udv.VisitationInput},
+                {"Visitation Cadence", udv.VisitationPeriod},
+                {"Total User Days", udv.TotalUserDays},
                 {"Result", udv.Result}
             };
             rowIdx = 1;
@@ -588,16 +590,17 @@ namespace EconToolbox.Desktop.Services
                 ? string.Join(" | ", mindMap.Nodes.Select(n => n.Title))
                 : "Add ideas to build the map";
 
-            double recreationBenefit = UdvModel.ComputeBenefit(udv.UnitDayValue, udv.UserDays, udv.Visitation);
+            double recreationBenefit = UdvModel.ComputeBenefit(udv.UnitDayValue, udv.TotalUserDays);
             var udvRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
                 ("Recreation Type", udv.RecreationType, null, null, false),
                 ("Activity Type", udv.ActivityType, null, null, false),
-                ("Point Score", udv.Points, "0.0", "Score applied against the recreation look-up table.", false),
+                ("Point Value", udv.Points, "0.0", "Value applied against the recreation look-up table.", false),
                 ("Unit Day Value", udv.UnitDayValue, "$#,##0.00", "Interpolated value from the recreation tables.", true),
-                ("User Days", udv.UserDays, "#,##0", "Projected annual participation.", false),
-                ("Visitation Multiplier", udv.Visitation, "0.00", "Adjustment applied to user days.", false),
-                ("Annual Recreation Benefit", recreationBenefit, "$#,##0.00", "Unit Day Value × User Days × Visitation.", true)
+                ("Season Length (days)", udv.SeasonDays, "0.0", "Number of operating days considered in the season.", false),
+                ("Visitation Input", udv.VisitationInput, "#,##0.##", $"Value provided on a {udv.VisitationPeriod.ToLowerInvariant()} basis.", false),
+                ("Total User Days", udv.TotalUserDays, "#,##0.##", "Season days adjusted for visitation input.", false),
+                ("Season Recreation Benefit", recreationBenefit, "$#,##0.00", "Unit Day Value × Total User Days.", true)
             };
 
             var mindMapRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
