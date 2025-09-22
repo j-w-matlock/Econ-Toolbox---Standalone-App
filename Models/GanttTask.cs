@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Media;
 
 namespace EconToolbox.Desktop.Models
 {
@@ -13,6 +14,9 @@ namespace EconToolbox.Desktop.Models
         private double _percentComplete;
         private bool _isMilestone;
         private double _laborCostPerDay;
+        private Color _color = Colors.Transparent;
+        private SolidColorBrush _colorBrush = CreateFrozenBrush(Colors.Transparent);
+        private SolidColorBrush _borderBrush = CreateFrozenBrush(Colors.Transparent);
 
         public string Name
         {
@@ -127,5 +131,42 @@ namespace EconToolbox.Desktop.Models
         }
 
         public double TotalCost => Math.Max(0, _durationDays) * _laborCostPerDay;
+
+        public Color Color
+        {
+            get => _color;
+            set
+            {
+                if (_color == value)
+                    return;
+                _color = value;
+                _colorBrush = CreateFrozenBrush(value);
+                _borderBrush = CreateFrozenBrush(DarkenColor(value, 0.25));
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ColorBrush));
+                OnPropertyChanged(nameof(BorderBrush));
+            }
+        }
+
+        public Brush ColorBrush => _colorBrush;
+
+        public Brush BorderBrush => _borderBrush;
+
+        private static SolidColorBrush CreateFrozenBrush(Color color)
+        {
+            var brush = new SolidColorBrush(color);
+            if (brush.CanFreeze)
+                brush.Freeze();
+            return brush;
+        }
+
+        private static Color DarkenColor(Color color, double amount)
+        {
+            amount = Math.Clamp(amount, 0, 1);
+            byte r = (byte)Math.Clamp(color.R * (1 - amount), 0, 255);
+            byte g = (byte)Math.Clamp(color.G * (1 - amount), 0, 255);
+            byte b = (byte)Math.Clamp(color.B * (1 - amount), 0, 255);
+            return Color.FromRgb(r, g, b);
+        }
     }
 }

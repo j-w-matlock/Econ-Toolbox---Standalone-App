@@ -55,6 +55,19 @@
                                       Margin="0,0,0,8">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Task" Binding="{Binding Name, Mode=TwoWay}" Width="160"/>
+                                    <DataGridTemplateColumn Header="Color" Width="70" IsReadOnly="True">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding ColorBrush}"
+                                                        BorderBrush="{Binding BorderBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="4"
+                                                        Height="18"
+                                                        Width="36"
+                                                        HorizontalAlignment="Center"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                     <DataGridTextColumn Header="Workstream" Binding="{Binding Workstream, Mode=TwoWay}" Width="110"/>
                                     <DataGridTemplateColumn Header="Start" Width="120">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -143,13 +156,25 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid>
+                                                    <Grid.ToolTip>
+                                                        <ToolTip Placement="Mouse" Padding="8">
+                                                            <StackPanel MaxWidth="260">
+                                                                <TextBlock Text="{Binding Task.Name}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                                                <TextBlock Text="{Binding Task.StartDate, StringFormat=Start: {0:d}}"
+                                                                           Margin="0,6,0,0"
+                                                                           FontSize="11"/>
+                                                                <TextBlock Text="{Binding Task.EndDate, StringFormat=Finish: {0:d}}"
+                                                                           FontSize="11"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Grid.ToolTip>
                                                     <Rectangle Height="28"
                                                                Width="{Binding CanvasDurationDays, Converter={StaticResource DayToPixelConverter}}"
                                                                RadiusX="4"
                                                                RadiusY="4"
-                                                               Fill="#4F6EB8"
+                                                               Fill="{Binding Task.ColorBrush}"
                                                                Opacity="{Binding Task.PercentComplete, Converter={StaticResource PercentToOpacityConverter}}"
-                                                               Stroke="#233B70"
+                                                               Stroke="{Binding Task.BorderBrush}"
                                                                StrokeThickness="1.2">
                                                         <Rectangle.Style>
                                                             <Style TargetType="Rectangle">
@@ -163,8 +188,8 @@
                                                         </Rectangle.Style>
                                                     </Rectangle>
                                                     <Polygon Points="0,14 12,0 24,14 12,28"
-                                                             Fill="#4F6EB8"
-                                                             Stroke="#233B70"
+                                                             Fill="{Binding Task.ColorBrush}"
+                                                             Stroke="{Binding Task.BorderBrush}"
                                                              StrokeThickness="1.2">
                                                         <Polygon.Style>
                                                             <Style TargetType="Polygon">
@@ -177,22 +202,6 @@
                                                             </Style>
                                                         </Polygon.Style>
                                                     </Polygon>
-                                                    <TextBlock Text="{Binding Task.Name}"
-                                                               Foreground="White"
-                                                               FontSize="11"
-                                                               Margin="6,0,4,0"
-                                                               VerticalAlignment="Center">
-                                                        <TextBlock.Style>
-                                                            <Style TargetType="TextBlock">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding IsMilestone}" Value="True">
-                                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </TextBlock.Style>
-                                                    </TextBlock>
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
