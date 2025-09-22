@@ -29,7 +29,7 @@
                     <TextBlock Text="Unit Day Value Overview" FontWeight="Bold" Foreground="#C23E64"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                    Choose the recreation and activity classification, then supply point scores, user days, and visitation. Points must align with the table order to return the correct value tier. Use the Calculate button at the bottom of the window whenever you change inputs so the unit day value stays synchronized.
+                    Choose the recreation and activity classification, then supply a point score, season length, and visitation cadence. Points must align with the table order to return the correct value tier. Use the Calculate button at the bottom of the window whenever you change inputs so the unit day value stays synchronized.
                 </TextBlock>
             </StackPanel>
         </Border>
@@ -82,6 +82,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0"
@@ -98,13 +99,14 @@
                         Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
                                 ToolTip="Enter the point score from the Unit Day Value table that reflects recreation quality."/>
-                <TextBlock Text="Points" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Point Value" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
             <TextBox Grid.Row="0"
                      Grid.Column="2"
-                     Text="{Binding Points}"
+                     Text="{Binding Points, UpdateSourceTrigger=PropertyChanged}"
                      MinWidth="80"
-                     Margin="12,0,0,0"/>
+                     Margin="12,0,0,0"
+                     TextAlignment="Right"/>
 
             <TextBlock Grid.Row="1"
                        Grid.Column="0"
@@ -119,7 +121,8 @@
                        Margin="{StaticResource Margin.Inline}"
                        VerticalAlignment="Center"/>
             <TextBlock Grid.Row="1"
-                       Grid.Column="3"
+                       Grid.Column="2"
+                       Grid.ColumnSpan="2"
                        Text="{Binding UnitDayValue, StringFormat={}{0:F2}}"
                        Margin="12,0,0,0"
                        VerticalAlignment="Center"
@@ -128,7 +131,7 @@
             <TextBlock Grid.Row="2"
                        Grid.Column="0"
                        FontFamily="Segoe MDL2 Assets"
-                       Text=""
+                       Text=""
                        Foreground="{StaticResource Brush.Primary}"
                        Margin="{StaticResource Margin.Inline}"
                        VerticalAlignment="Center"/>
@@ -138,14 +141,15 @@
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Provide the total projected recreation user days per year for the study area."/>
-                <TextBlock Text="Annual User Days" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                ToolTip="Provide the number of days in the recreation season that will host visitors."/>
+                <TextBlock Text="Season Length" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
             <TextBox Grid.Row="2"
                      Grid.Column="2"
-                     Text="{Binding UserDays}"
-                     MinWidth="120"
-                     Margin="12,0,0,0"/>
+                     Text="{Binding SeasonDays, UpdateSourceTrigger=PropertyChanged}"
+                     MinWidth="100"
+                     Margin="12,0,0,0"
+                     TextAlignment="Right"/>
             <TextBlock Grid.Row="2"
                        Grid.Column="3"
                        Text="days"
@@ -156,7 +160,7 @@
             <TextBlock Grid.Row="3"
                        Grid.Column="0"
                        FontFamily="Segoe MDL2 Assets"
-                       Text=""
+                       Text=""
                        Foreground="{StaticResource Brush.Primary}"
                        Margin="{StaticResource Margin.Inline}"
                        VerticalAlignment="Center"/>
@@ -166,17 +170,54 @@
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Fraction of total user days attributable to the plan or alternative being valued."/>
-                <TextBlock Text="Visitation Share" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                ToolTip="Enter visitation as daily, monthly, or total season figures. Adjust the selector to match your data cadence."/>
+                <TextBlock Text="Visitation Input" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
-            <TextBox Grid.Row="3"
-                     Grid.Column="2"
-                     Text="{Binding Visitation}"
-                     MinWidth="80"
-                     Margin="12,0,0,0"/>
+            <StackPanel Grid.Row="3"
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        Margin="12,0,0,0"
+                        VerticalAlignment="Center">
+                <TextBox Text="{Binding VisitationInput, UpdateSourceTrigger=PropertyChanged}"
+                         MinWidth="100"
+                         TextAlignment="Right"/>
+                <ComboBox ItemsSource="{Binding VisitationPeriods}"
+                          SelectedItem="{Binding VisitationPeriod}"
+                          Margin="8,0,0,0"
+                          MinWidth="120"/>
+            </StackPanel>
             <TextBlock Grid.Row="3"
                        Grid.Column="3"
-                       Text="%"
+                       Text="{Binding VisitationUnitLabel}"
+                       Margin="12,0,0,0"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource Brush.TextSecondary}"/>
+
+            <TextBlock Grid.Row="4"
+                       Grid.Column="0"
+                       FontFamily="Segoe MDL2 Assets"
+                       Text=""
+                       Foreground="{StaticResource Brush.Primary}"
+                       Margin="{StaticResource Margin.Inline}"
+                       VerticalAlignment="Center"/>
+            <StackPanel Grid.Row="4"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="{StaticResource Margin.Inline}">
+                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                ToolTip="Calculated total user days for the season based on visitation settings."/>
+                <TextBlock Text="Total User Days" Margin="4,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock Grid.Row="4"
+                       Grid.Column="2"
+                       Text="{Binding TotalUserDays, StringFormat={}{0:N0}}"
+                       Margin="12,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"/>
+            <TextBlock Grid.Row="4"
+                       Grid.Column="3"
+                       Text="days"
                        Margin="12,0,0,0"
                        VerticalAlignment="Center"
                        Foreground="{StaticResource Brush.TextSecondary}"/>
@@ -185,7 +226,7 @@
             <StackPanel>
                 <TextBlock Text="{Binding Result}" FontWeight="Bold"/>
                 <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopXSmall}">
-                    This total monetizes recreation by multiplying the unit day value with annual user days and visitation share. Raising the points score moves you to a higher value tier, while more user days proportionally increase the annual benefit.
+                    This total monetizes recreation by multiplying the unit day value with the total user days derived from your season length and visitation cadence. Raising the point score moves you to a higher value tier, while longer seasons or higher visitation proportionally increase the benefit.
                 </TextBlock>
             </StackPanel>
         </Border>

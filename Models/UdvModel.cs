@@ -112,9 +112,9 @@ namespace EconToolbox.Desktop.Models
             return y[y.Length - 1];
         }
 
-        public static double ComputeBenefit(double unitDayValue, double userDays, double visitation)
+        public static double ComputeBenefit(double unitDayValue, double totalUserDays)
         {
-            return unitDayValue * userDays * visitation;
+            return unitDayValue * totalUserDays;
         }
     }
 }

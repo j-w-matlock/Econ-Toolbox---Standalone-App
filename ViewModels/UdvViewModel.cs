@@ -1,4 +1,5 @@
 using EconToolbox.Desktop.Models;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -13,8 +14,10 @@ namespace EconToolbox.Desktop.ViewModels
         private string _activityType = "General Recreation";
         private double _points;
         private double _unitDayValue;
-        private double _userDays;
-        private double _visitation = 1.0;
+        private double _seasonDays = 120.0;
+        private double _visitationInput;
+        private string _visitationPeriod = "Daily";
+        private double _totalUserDays;
         private string _result = string.Empty;
         private PointCollection _chartPoints = new();
 
@@ -22,6 +25,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<string> RecreationTypes { get; } = new(new[] { "General", "Specialized" });
         public ObservableCollection<string> ActivityTypes { get; } = new();
+        public ObservableCollection<string> VisitationPeriods { get; } = new(new[] { "Daily", "Monthly", "Total Season" });
 
         public string RecreationType
         {
@@ -71,16 +75,68 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _unitDayValue = value; OnPropertyChanged(); }
         }
 
-        public double UserDays
+        public double SeasonDays
         {
-            get => _userDays;
-            set { _userDays = value; OnPropertyChanged(); }
+            get => _seasonDays;
+            set
+            {
+                if (_seasonDays != value)
+                {
+                    _seasonDays = value;
+                    OnPropertyChanged();
+                    RecalculateUserDays();
+                }
+            }
         }
 
-        public double Visitation
+        public double VisitationInput
         {
-            get => _visitation;
-            set { _visitation = value; OnPropertyChanged(); }
+            get => _visitationInput;
+            set
+            {
+                if (_visitationInput != value)
+                {
+                    _visitationInput = value;
+                    OnPropertyChanged();
+                    RecalculateUserDays();
+                }
+            }
+        }
+
+        public string VisitationPeriod
+        {
+            get => _visitationPeriod;
+            set
+            {
+                if (_visitationPeriod != value)
+                {
+                    _visitationPeriod = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(VisitationUnitLabel));
+                    RecalculateUserDays();
+                }
+            }
+        }
+
+        public string VisitationUnitLabel => VisitationPeriod switch
+        {
+            "Daily" => "per day",
+            "Monthly" => "per month",
+            "Total Season" => "total",
+            _ => "per day",
+        };
+
+        public double TotalUserDays
+        {
+            get => _totalUserDays;
+            private set
+            {
+                if (_totalUserDays != value)
+                {
+                    _totalUserDays = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string Result
@@ -103,6 +159,7 @@ namespace EconToolbox.Desktop.ViewModels
             UpdateActivityTypes();
             UpdateUnitDayValue();
             UpdateChart();
+            RecalculateUserDays();
             foreach (var row in Table)
             {
                 row.PropertyChanged += (_, __) =>
@@ -176,10 +233,24 @@ namespace EconToolbox.Desktop.ViewModels
             ChartPoints = pc;
         }
 
+        private void RecalculateUserDays()
+        {
+            const double averageDaysPerMonth = 30.4375;
+            double total = VisitationPeriod switch
+            {
+                "Daily" => SeasonDays * VisitationInput,
+                "Monthly" => (SeasonDays / averageDaysPerMonth) * VisitationInput,
+                "Total Season" => VisitationInput,
+                _ => SeasonDays * VisitationInput,
+            };
+            TotalUserDays = double.IsFinite(total) ? Math.Max(0.0, total) : 0.0;
+        }
+
         private void Compute()
         {
-            double benefit = UdvModel.ComputeBenefit(UnitDayValue, UserDays, Visitation);
-            Result = $"Annual Recreation Benefit: {benefit:F2}";
+            RecalculateUserDays();
+            double benefit = UdvModel.ComputeBenefit(UnitDayValue, TotalUserDays);
+            Result = $"Season Recreation Benefit: {benefit:F2}";
         }
     }
 }
