@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
+using System.Windows.Media;
 using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels
@@ -19,6 +20,7 @@ namespace EconToolbox.Desktop.ViewModels
         private DateTime _projectStart = DateTime.Today;
         private DateTime _projectFinish = DateTime.Today;
         private string _scheduleSummary = string.Empty;
+        private int _colorSequence;
 
         public ObservableCollection<GanttTask> Tasks { get; } = new();
         public ObservableCollection<GanttBar> Bars { get; } = new();
@@ -109,6 +111,7 @@ namespace EconToolbox.Desktop.ViewModels
                 LaborCostPerDay = 1200
             };
             kickoff.EndDate = kickoff.StartDate.AddDays(kickoff.DurationDays);
+            AssignColor(kickoff);
 
             var planning = new GanttTask
             {
@@ -121,6 +124,7 @@ namespace EconToolbox.Desktop.ViewModels
                 LaborCostPerDay = 950
             };
             planning.EndDate = planning.StartDate.AddDays(planning.DurationDays);
+            AssignColor(planning);
 
             var baseline = new GanttTask
             {
@@ -133,6 +137,7 @@ namespace EconToolbox.Desktop.ViewModels
                 LaborCostPerDay = 1100
             };
             baseline.EndDate = baseline.StartDate.AddDays(baseline.DurationDays);
+            AssignColor(baseline);
 
             Tasks.Add(kickoff);
             Tasks.Add(planning);
@@ -149,6 +154,7 @@ namespace EconToolbox.Desktop.ViewModels
                 DurationDays = 5
             };
             task.EndDate = task.StartDate.AddDays(task.DurationDays);
+            AssignColor(task);
             Tasks.Add(task);
             SelectedTask = task;
         }
@@ -176,6 +182,7 @@ namespace EconToolbox.Desktop.ViewModels
             ScheduleSummary = string.Empty;
             ProjectStart = DateTime.Today;
             ProjectFinish = DateTime.Today;
+            _colorSequence = 0;
             OnPropertyChanged(nameof(TotalDurationDays));
             OnPropertyChanged(nameof(TotalLaborCost));
         }
@@ -273,7 +280,10 @@ namespace EconToolbox.Desktop.ViewModels
             if (e.NewItems != null)
             {
                 foreach (GanttTask task in e.NewItems)
+                {
+                    AssignColor(task);
                     task.PropertyChanged += OnTaskPropertyChanged;
+                }
             }
 
             OnPropertyChanged(nameof(TotalLaborCost));
@@ -294,6 +304,58 @@ namespace EconToolbox.Desktop.ViewModels
             public string Workstream => Task.Workstream;
             public double CanvasOffsetDays => IsMilestone ? Math.Max(0, OffsetDays - 0.6) : OffsetDays;
             public double CanvasDurationDays => IsMilestone ? 1.2 : DurationDays;
+        }
+
+        private void AssignColor(GanttTask task)
+        {
+            if (task.Color.A != 0)
+                return;
+            task.Color = GenerateColor(_colorSequence++);
+        }
+
+        private static Color GenerateColor(int index)
+        {
+            const double goldenRatioConjugate = 0.618033988749895;
+            double hue = (index * goldenRatioConjugate) % 1.0;
+            return FromHsl(hue, 0.62, 0.58);
+        }
+
+        private static Color FromHsl(double h, double s, double l)
+        {
+            double r, g, b;
+
+            if (Math.Abs(s) < 0.0001)
+            {
+                r = g = b = l;
+            }
+            else
+            {
+                double q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                double p = 2 * l - q;
+                r = HueToRgb(p, q, h + 1.0 / 3.0);
+                g = HueToRgb(p, q, h);
+                b = HueToRgb(p, q, h - 1.0 / 3.0);
+            }
+
+            return Color.FromRgb(
+                (byte)Math.Round(Math.Clamp(r, 0, 1) * 255),
+                (byte)Math.Round(Math.Clamp(g, 0, 1) * 255),
+                (byte)Math.Round(Math.Clamp(b, 0, 1) * 255));
+        }
+
+        private static double HueToRgb(double p, double q, double t)
+        {
+            if (t < 0)
+                t += 1;
+            if (t > 1)
+                t -= 1;
+            if (t < 1.0 / 6.0)
+                return p + (q - p) * 6 * t;
+            if (t < 1.0 / 2.0)
+                return q;
+            if (t < 2.0 / 3.0)
+                return p + (q - p) * (2.0 / 3.0 - t) * 6;
+            return p;
         }
     }
 }
