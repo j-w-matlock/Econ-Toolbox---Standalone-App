@@ -50,7 +50,16 @@ namespace EconToolbox.Desktop.ViewModels
         public int BaseYear
         {
             get => _baseYear;
-            set { _baseYear = value; OnPropertyChanged(); }
+            set
+            {
+                if (_baseYear != value)
+                {
+                    _baseYear = value;
+                    OnPropertyChanged();
+                    UpdatePvFactors();
+                    Compute();
+                }
+            }
         }
 
         public int ConstructionMonths
@@ -160,29 +169,33 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        private static double GetTimingOffset(string? timing)
+        {
+            if (string.IsNullOrWhiteSpace(timing))
+                return 1.0;
+
+            return timing.Trim().ToLowerInvariant() switch
+            {
+                "beginning" => 0.0,
+                "midpoint" => 0.5,
+                "middle" => 0.5,
+                _ => 1.0
+            };
+        }
+
         private void UpdatePvFactors()
         {
             double r = Rate / 100.0;
             foreach (var entry in FutureCosts)
             {
-                double offset = entry.Timing switch
-                {
-                    "beginning" => 0.0,
-                    "midpoint" => 0.5,
-                    _ => 1.0
-                };
-                entry.PvFactor = Math.Pow(1.0 + r, -(entry.Year + offset));
+                double offset = GetTimingOffset(entry.Timing);
+                double yearOffset = entry.Year - BaseYear;
+                entry.PvFactor = Math.Pow(1.0 + r, -(yearOffset + offset));
             }
 
             foreach (var entry in IdcEntries)
             {
-                double offsetMonths = entry.Timing switch
-                {
-                    "beginning" => 0.0,
-                    "midpoint" => 0.5,
-                    "middle" => 0.5,
-                    _ => 1.0
-                };
+                double offsetMonths = GetTimingOffset(entry.Timing);
                 int monthIndex = entry.Year <= 0 ? 0 : entry.Year - 1;
                 double eventMonth = monthIndex + offsetMonths;
                 entry.PvFactor = Math.Pow(1.0 + r, -(eventMonth / 12.0));
@@ -193,8 +206,8 @@ namespace EconToolbox.Desktop.ViewModels
         {
             try
             {
-                List<(double cost, int year)> future = FutureCosts
-                    .Select(f => (f.Cost, f.Year))
+                List<(double cost, double yearOffset, double timingOffset)> future = FutureCosts
+                    .Select(f => (f.Cost, f.Year - BaseYear, GetTimingOffset(f.Timing)))
                     .ToList();
 
                 double[]? costArr = null;
@@ -225,7 +238,7 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future,
-                    AnalysisPeriod, ConstructionMonths, costArr, timingArr, monthArr);
+                    AnalysisPeriod, BaseYear, ConstructionMonths, costArr, timingArr, monthArr);
                 Idc = result.Idc;
                 TotalInvestment = result.TotalInvestment;
                 Crf = result.Crf;

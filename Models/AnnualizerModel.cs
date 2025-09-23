@@ -12,8 +12,9 @@ namespace EconToolbox.Desktop.Models
             double rate,
             double annualOm,
             double annualBenefits,
-            IEnumerable<(double cost, int year)>? futureCosts = null,
+            IEnumerable<(double cost, double yearOffset, double timingOffset)>? futureCosts = null,
             int analysisPeriod = 1,
+            int baseYear = 0,
             int constructionMonths = 12,
             double[]? idcCosts = null,
             string[]? idcTimings = null,
@@ -24,9 +25,10 @@ namespace EconToolbox.Desktop.Models
             double pvFuture = 0.0;
             if (futureCosts != null)
             {
-                foreach (var (cost, year) in futureCosts)
+                foreach (var (cost, yearOffset, timingOffset) in futureCosts)
                 {
-                    double pvFactor = 1.0 / Math.Pow(1.0 + rate, year);
+                    double exponent = yearOffset + timingOffset;
+                    double pvFactor = Math.Pow(1.0 + rate, -exponent);
                     pvFuture += cost * pvFactor;
                 }
             }
