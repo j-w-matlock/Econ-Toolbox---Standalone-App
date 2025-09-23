@@ -14,6 +14,7 @@ namespace EconToolbox.Desktop.ViewModels
         public MindMapViewModel MindMap { get; } = new();
         public GanttViewModel Gantt { get; } = new();
         public DrawingViewModel Drawing { get; } = new();
+        public AgriculturalDamageViewModel AgriculturalDamage { get; } = new();
 
         public IReadOnlyList<ModuleDefinition> Modules { get; }
 
@@ -73,6 +74,24 @@ namespace EconToolbox.Desktop.ViewModels
                     "Example: The Cedar River levee district pairs 0.5, 0.1, and 0.01 annual exceedance probabilities with $250K, $1.2M, and $6.8M structure damage estimates captured in its 2019 flood study.",
                     Ead,
                     Ead.ComputeCommand),
+                new ModuleDefinition(
+                    "Agricultural Depth-Duration Damage",
+                    "Develop crop-specific damage curves aligned with USACE agricultural policy guidance.",
+                    new[]
+                    {
+                        "Select the hydrologic region that governs flood timing so planting windows adjust appropriately.",
+                        "Choose the NASS crop occupancy to load base value, growth stages, and tolerance defaults.",
+                        "Confirm acreage and Monte Carlo years before generating the depth-duration table for FDA 2.0."
+                    },
+                    new[]
+                    {
+                        "Simulates thousands of seasons to estimate the probability that floods intersect vulnerable stages.",
+                        "Outputs a formatted depth-duration-damage table with dollars per acre for direct FDA 2.0 use.",
+                        "Summarizes the most sensitive growth period and weighted flood tolerance to support documentation."
+                    },
+                    "Example: A 1-acre soybean field in the Lower Mississippi region experiences a 14% annual chance flood overlap, with pod set identified as the most vulnerable stage for FDA occupancy inputs.",
+                    AgriculturalDamage,
+                    AgriculturalDamage.ComputeCommand),
                 new ModuleDefinition(
                     "Updated Cost of Storage",
                     "Update historical costs and allocate joint expenses based on storage recommendations.",
@@ -235,7 +254,7 @@ namespace EconToolbox.Desktop.ViewModels
             };
             if (dlg.ShowDialog() == true)
             {
-                ExcelExporter.ExportAll(Ead, UpdatedCost, Annualizer, WaterDemand, Udv, MindMap, Gantt, Drawing, dlg.FileName);
+                ExcelExporter.ExportAll(Ead, UpdatedCost, Annualizer, WaterDemand, Udv, AgriculturalDamage, MindMap, Gantt, Drawing, dlg.FileName);
             }
         }
     }
