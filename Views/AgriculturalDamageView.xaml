@@ -80,14 +80,274 @@
                                        Margin="0,4,0,8"
                                        Foreground="#4B5563"
                                        Text="Choose a NASS standard crop. The selection controls base value per acre, vulnerability weighting, and FDA occupancy labeling."/>
-                            <ComboBox ItemsSource="{Binding Crops}"
-                                      SelectedItem="{Binding SelectedCrop}"
-                                      DisplayMemberPath="CropName"
+                            <ComboBox ItemsSource="{Binding CropOptions}"
+                                      SelectedItem="{Binding SelectedCropOption}"
+                                      DisplayMemberPath="DisplayName"
                                       HorizontalAlignment="Stretch"
-                                      Margin="0,0,0,8"/>
+                                      Margin="0,0,0,8"
+                                      ToolTip="Choose a predefined crop or select the custom option to build your own profile."/>
                             <TextBlock Text="{Binding CropDescription}"
                                        TextWrapping="Wrap"
-                                       Foreground="#1F5134"/>
+                                       Foreground="#1F5134"
+                                       ToolTip="Narrative description of the selected crop."/>
+                            <StackPanel Margin="0,12,0,0"
+                                        Visibility="{Binding IsCustomSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Border Background="#F9FAFB"
+                                        CornerRadius="8"
+                                        Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="Custom crop inputs"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="14"/>
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Margin="0,4,0,0"
+                                                   Foreground="#4B5563"
+                                                   Text="Define crop value, calendar windows, growth stages, and depth-damage points to create a custom profile for FDA."/>
+                                        <TextBlock Text="{Binding CustomProfileStatus}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,8,0,0"
+                                                   Foreground="#1F5134"
+                                                   ToolTip="Current validation status for the custom crop setup."/>
+                                        <Grid Margin="0,12,0,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="0"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0"
+                                                       Text="Crop name"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="0"
+                                                     Grid.Column="1"
+                                                     Margin="0,0,16,4"
+                                                     Text="{Binding CustomCropName, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Name displayed in the crop selector and exported tables."/>
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="2"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0"
+                                                       Text="Occupancy type"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="0"
+                                                     Grid.Column="3"
+                                                     Margin="0,0,0,4"
+                                                     Text="{Binding CustomOccupancyType, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="FDA occupancy label used when exporting the damage table."/>
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="0"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Value per acre ($)"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="1"
+                                                     Grid.Column="1"
+                                                     Margin="0,4,16,4"
+                                                     Text="{Binding CustomValuePerAcre, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Monetary value per planted acre for the custom crop."/>
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="2"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Description"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="1"
+                                                     Grid.Column="3"
+                                                     Margin="0,4,0,4"
+                                                     MinHeight="60"
+                                                     TextWrapping="Wrap"
+                                                     AcceptsReturn="True"
+                                                     Text="{Binding CustomDescription, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Narrative summary displayed in the sidebar and exported documentation."/>
+                                            <TextBlock Grid.Row="2"
+                                                       Grid.Column="0"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Planting start (day)"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="2"
+                                                     Grid.Column="1"
+                                                     Margin="0,4,16,4"
+                                                     Text="{Binding CustomPlantingStartDay, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Calendar day of year (1-365) when planting typically begins."/>
+                                            <TextBlock Grid.Row="2"
+                                                       Grid.Column="2"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Planting end (day)"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="2"
+                                                     Grid.Column="3"
+                                                     Margin="0,4,0,4"
+                                                     Text="{Binding CustomPlantingEndDay, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Calendar day of year (1-365) when planting is complete."/>
+                                            <TextBlock Grid.Row="3"
+                                                       Grid.Column="0"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Harvest end (day)"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="3"
+                                                     Grid.Column="1"
+                                                     Margin="0,4,16,0"
+                                                     Text="{Binding CustomHarvestEndDay, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Calendar day of year (1-365) when harvest wraps up."/>
+                                        </Grid>
+                                        <TextBlock Text="Growth stages"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,16,0,4"/>
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Foreground="#4B5563"
+                                                   Margin="0,0,0,8"
+                                                   Text="List crop stages with offsets from planting to capture seasonal vulnerability."/>
+                                        <ItemsControl ItemsSource="{Binding CustomStages}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="White"
+                                                            BorderBrush="#D1D5DB"
+                                                            BorderThickness="1"
+                                                            CornerRadius="6"
+                                                            Padding="10"
+                                                            Margin="0,0,0,8">
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="Auto"/>
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel>
+                                                                <TextBlock Text="Stage name"
+                                                                           FontWeight="SemiBold"/>
+                                                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                                                         Margin="0,4,0,0"
+                                                                         ToolTip="Name of the growth stage shown in the season summary."/>
+                                                            </StackPanel>
+                                                            <Button Grid.Column="1"
+                                                                    Content="Remove"
+                                                                    Margin="12,0,0,0"
+                                                                    Command="{Binding DataContext.RemoveCustomStageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    ToolTip="Remove this growth stage from the profile."/>
+                                                            <Grid Grid.Row="1"
+                                                                  Grid.ColumnSpan="2"
+                                                                  Margin="0,10,0,0">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <StackPanel>
+                                                                    <TextBlock Text="Start offset (days)"
+                                                                               FontWeight="SemiBold"/>
+                                                                    <TextBox Text="{Binding StartOffsetDays, UpdateSourceTrigger=PropertyChanged}"
+                                                                             Margin="0,4,0,0"
+                                                                             ToolTip="Days after planting when this stage begins."/>
+                                                                </StackPanel>
+                                                                <StackPanel Grid.Column="1"
+                                                                            Margin="8,0,0,0">
+                                                                    <TextBlock Text="End offset (days)"
+                                                                               FontWeight="SemiBold"/>
+                                                                    <TextBox Text="{Binding EndOffsetDays, UpdateSourceTrigger=PropertyChanged}"
+                                                                             Margin="0,4,0,0"
+                                                                             ToolTip="Days after planting when this stage ends."/>
+                                                                </StackPanel>
+                                                                <StackPanel Grid.Column="2"
+                                                                            Margin="8,0,0,0">
+                                                                    <TextBlock Text="Vulnerability weight"
+                                                                               FontWeight="SemiBold"/>
+                                                                    <TextBox Text="{Binding Vulnerability, UpdateSourceTrigger=PropertyChanged}"
+                                                                             Margin="0,4,0,0"
+                                                                             ToolTip="Relative exposure weight (0 = no impact, 1 = fully vulnerable)."/>
+                                                                </StackPanel>
+                                                                <StackPanel Grid.Column="3"
+                                                                            Margin="8,0,0,0">
+                                                                    <TextBlock Text="Flood tolerance (days)"
+                                                                               FontWeight="SemiBold"/>
+                                                                    <TextBox Text="{Binding FloodToleranceDays, UpdateSourceTrigger=PropertyChanged}"
+                                                                             Margin="0,4,0,0"
+                                                                             ToolTip="Average flood duration the crop can withstand during this stage."/>
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Button Command="{Binding AddCustomStageCommand}"
+                                                Content="Add growth stage"
+                                                HorizontalAlignment="Left"
+                                                Padding="12,6"
+                                                Margin="0,0,0,16"
+                                                ToolTip="Insert another growth stage to capture changes through the season."/>
+                                        <TextBlock Text="Depth-damage curve"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,0,4"/>
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Foreground="#4B5563"
+                                                   Margin="0,0,0,8"
+                                                   Text="Enter depth points and corresponding damage percentages to define the curve."/>
+                                        <ItemsControl ItemsSource="{Binding CustomDamageCurve}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="White"
+                                                            BorderBrush="#D1D5DB"
+                                                            BorderThickness="1"
+                                                            CornerRadius="6"
+                                                            Padding="10"
+                                                            Margin="0,0,0,8">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel>
+                                                                <TextBlock Text="Depth (ft)"
+                                                                           FontWeight="SemiBold"/>
+                                                                <TextBox Text="{Binding DepthFeet, UpdateSourceTrigger=PropertyChanged}"
+                                                                         Margin="0,4,0,0"
+                                                                         ToolTip="Flood depth in feet for this damage point."/>
+                                                            </StackPanel>
+                                                            <StackPanel Grid.Column="1"
+                                                                        Margin="8,0,0,0">
+                                                                <TextBlock Text="Damage (%)"
+                                                                           FontWeight="SemiBold"/>
+                                                                <TextBox Text="{Binding DamagePercent, UpdateSourceTrigger=PropertyChanged}"
+                                                                         Margin="0,4,0,0"
+                                                                         ToolTip="Percent loss expected at this depth."/>
+                                                            </StackPanel>
+                                                            <Button Grid.Column="2"
+                                                                    Content="Remove"
+                                                                    Margin="12,0,0,0"
+                                                                    Command="{Binding DataContext.RemoveCustomDamagePointCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    ToolTip="Remove this depth point from the curve."/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Button Command="{Binding AddCustomDamagePointCommand}"
+                                                Content="Add depth point"
+                                                HorizontalAlignment="Left"
+                                                Padding="12,6"
+                                                ToolTip="Append another depth-damage point to refine the curve."/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 

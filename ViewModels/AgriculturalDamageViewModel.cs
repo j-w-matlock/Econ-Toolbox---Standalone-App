@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
@@ -12,7 +14,9 @@ namespace EconToolbox.Desktop.ViewModels
     {
         private readonly RelayCommand _computeCommand;
         private FloodRegionProfile? _selectedRegion;
+        private CropOption? _selectedCropOption;
         private CropDamageProfile? _selectedCrop;
+        private CropDamageProfile? _customCropProfile;
         private double _fieldAcreage = 1.0;
         private int _simulationYears = 5000;
         private double _probabilityOfImpact;
@@ -22,22 +26,55 @@ namespace EconToolbox.Desktop.ViewModels
         private string _monteCarloNarrative = string.Empty;
         private string _summaryText = string.Empty;
         private string _mostVulnerableStage = string.Empty;
+        private string _customCropName = "Custom crop";
+        private string _customOccupancyType = "Agricultural Field - Custom";
+        private string _customDescription = "Define crop value, stages, and flood sensitivity.";
+        private double _customValuePerAcre = 800;
+        private int _customPlantingStartDay = 110;
+        private int _customPlantingEndDay = 140;
+        private int _customHarvestEndDay = 280;
+        private string _customProfileStatus = "Enter crop details to build a custom profile.";
 
         public AgriculturalDamageViewModel()
         {
             Regions = new ObservableCollection<FloodRegionProfile>(AgriculturalDamageLibrary.Regions);
-            Crops = new ObservableCollection<CropDamageProfile>(AgriculturalDamageLibrary.Crops);
+            CropOptions = new ObservableCollection<CropOption>(
+                AgriculturalDamageLibrary.Crops.Select(c => new CropOption(c.CropName, c)));
+            CropOptions.Add(new CropOption("Custom crop (configure below)", null, true));
             DamageTable = new ObservableCollection<DamageTableRow>();
+            CustomStages = new ObservableCollection<CustomStageInput>();
+            CustomDamageCurve = new ObservableCollection<CustomDamagePointInput>();
+
+            CustomStages.CollectionChanged += CustomStagesCollectionChanged;
+            CustomDamageCurve.CollectionChanged += CustomDamageCurveCollectionChanged;
+
+            AddCustomStageCommand = new RelayCommand(_ => AddCustomStage());
+            RemoveCustomStageCommand = new RelayCommand(
+                parameter => RemoveCustomStage(parameter as CustomStageInput),
+                parameter => parameter is CustomStageInput);
+            AddCustomDamagePointCommand = new RelayCommand(_ => AddCustomDamagePoint());
+            RemoveCustomDamagePointCommand = new RelayCommand(
+                parameter => RemoveCustomDamagePoint(parameter as CustomDamagePointInput),
+                parameter => parameter is CustomDamagePointInput);
+
+            InitializeCustomDefaults();
+
             _computeCommand = new RelayCommand(Compute, CanCompute);
             SelectedRegion = Regions.FirstOrDefault();
-            SelectedCrop = Crops.FirstOrDefault();
+            SelectedCropOption = CropOptions.FirstOrDefault();
         }
 
         public ObservableCollection<FloodRegionProfile> Regions { get; }
-        public ObservableCollection<CropDamageProfile> Crops { get; }
+        public ObservableCollection<CropOption> CropOptions { get; }
         public ObservableCollection<DamageTableRow> DamageTable { get; }
+        public ObservableCollection<CustomStageInput> CustomStages { get; }
+        public ObservableCollection<CustomDamagePointInput> CustomDamageCurve { get; }
 
         public ICommand ComputeCommand => _computeCommand;
+        public ICommand AddCustomStageCommand { get; }
+        public ICommand RemoveCustomStageCommand { get; }
+        public ICommand AddCustomDamagePointCommand { get; }
+        public ICommand RemoveCustomDamagePointCommand { get; }
 
         public FloodRegionProfile? SelectedRegion
         {
@@ -61,7 +98,7 @@ namespace EconToolbox.Desktop.ViewModels
         public CropDamageProfile? SelectedCrop
         {
             get => _selectedCrop;
-            set
+            private set
             {
                 if (_selectedCrop == value)
                 {
@@ -78,11 +115,519 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public string OccupancyType => SelectedCrop?.OccupancyType ?? "Agricultural Field";
+        public CropOption? SelectedCropOption
+        {
+            get => _selectedCropOption;
+            set
+            {
+                if (_selectedCropOption == value)
+                {
+                    return;
+                }
+
+                _selectedCropOption = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsCustomSelected));
+
+                if (IsCustomSelected)
+                {
+                    UpdateCustomCropProfile();
+                }
+                else
+                {
+                    SelectedCrop = value?.Profile;
+                }
+
+                OnPropertyChanged(nameof(CropDescription));
+                OnPropertyChanged(nameof(OccupancyType));
+            }
+        }
+
+        public bool IsCustomSelected => SelectedCropOption?.IsCustom == true;
+
+        public string CustomCropName
+        {
+            get => _customCropName;
+            set
+            {
+                if (_customCropName == value)
+                {
+                    return;
+                }
+
+                _customCropName = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(OccupancyType));
+                UpdateCustomCropProfile();
+            }
+        }
+
+        public string CustomOccupancyType
+        {
+            get => _customOccupancyType;
+            set
+            {
+                if (_customOccupancyType == value)
+                {
+                    return;
+                }
+
+                _customOccupancyType = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(OccupancyType));
+                UpdateCustomCropProfile();
+            }
+        }
+
+        public string CustomDescription
+        {
+            get => _customDescription;
+            set
+            {
+                if (_customDescription == value)
+                {
+                    return;
+                }
+
+                _customDescription = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CropDescription));
+                UpdateCustomCropProfile();
+            }
+        }
+
+        public double CustomValuePerAcre
+        {
+            get => _customValuePerAcre;
+            set
+            {
+                if (Math.Abs(_customValuePerAcre - value) < 0.0001)
+                {
+                    return;
+                }
+
+                _customValuePerAcre = value;
+                OnPropertyChanged();
+                UpdateCustomCropProfile();
+            }
+        }
+
+        public int CustomPlantingStartDay
+        {
+            get => _customPlantingStartDay;
+            set
+            {
+                if (_customPlantingStartDay == value)
+                {
+                    return;
+                }
+
+                _customPlantingStartDay = value;
+                OnPropertyChanged();
+                UpdateCustomCropProfile();
+            }
+        }
+
+        public int CustomPlantingEndDay
+        {
+            get => _customPlantingEndDay;
+            set
+            {
+                if (_customPlantingEndDay == value)
+                {
+                    return;
+                }
+
+                _customPlantingEndDay = value;
+                OnPropertyChanged();
+                UpdateCustomCropProfile();
+            }
+        }
+
+        public int CustomHarvestEndDay
+        {
+            get => _customHarvestEndDay;
+            set
+            {
+                if (_customHarvestEndDay == value)
+                {
+                    return;
+                }
+
+                _customHarvestEndDay = value;
+                OnPropertyChanged();
+                UpdateCustomCropProfile();
+            }
+        }
+
+        public string CustomProfileStatus
+        {
+            get => _customProfileStatus;
+            private set
+            {
+                if (_customProfileStatus == value)
+                {
+                    return;
+                }
+
+                _customProfileStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private void InitializeCustomDefaults()
+        {
+            if (CustomStages.Count == 0)
+            {
+                CustomStages.Add(new CustomStageInput
+                {
+                    Name = "Stand establishment",
+                    StartOffsetDays = 0,
+                    EndOffsetDays = 25,
+                    Vulnerability = 0.35,
+                    FloodToleranceDays = 2.5
+                });
+                CustomStages.Add(new CustomStageInput
+                {
+                    Name = "Vegetative growth",
+                    StartOffsetDays = 25,
+                    EndOffsetDays = 70,
+                    Vulnerability = 0.6,
+                    FloodToleranceDays = 3.0
+                });
+                CustomStages.Add(new CustomStageInput
+                {
+                    Name = "Reproductive",
+                    StartOffsetDays = 70,
+                    EndOffsetDays = 110,
+                    Vulnerability = 0.9,
+                    FloodToleranceDays = 1.5
+                });
+                CustomStages.Add(new CustomStageInput
+                {
+                    Name = "Maturity",
+                    StartOffsetDays = 110,
+                    EndOffsetDays = 150,
+                    Vulnerability = 0.45,
+                    FloodToleranceDays = 2.0
+                });
+            }
+
+            if (CustomDamageCurve.Count == 0)
+            {
+                CustomDamageCurve.Add(new CustomDamagePointInput { DepthFeet = 0.5, DamagePercent = 5 });
+                CustomDamageCurve.Add(new CustomDamagePointInput { DepthFeet = 1, DamagePercent = 15 });
+                CustomDamageCurve.Add(new CustomDamagePointInput { DepthFeet = 2, DamagePercent = 35 });
+                CustomDamageCurve.Add(new CustomDamagePointInput { DepthFeet = 3, DamagePercent = 55 });
+                CustomDamageCurve.Add(new CustomDamagePointInput { DepthFeet = 4, DamagePercent = 75 });
+            }
+        }
+
+        private void CustomStagesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (CustomStageInput stage in e.NewItems)
+                {
+                    stage.PropertyChanged += CustomStagePropertyChanged;
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (CustomStageInput stage in e.OldItems)
+                {
+                    stage.PropertyChanged -= CustomStagePropertyChanged;
+                }
+            }
+
+            if (IsCustomSelected)
+            {
+                UpdateCustomCropProfile();
+            }
+        }
+
+        private void CustomDamageCurveCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (CustomDamagePointInput point in e.NewItems)
+                {
+                    point.PropertyChanged += CustomDamagePointPropertyChanged;
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (CustomDamagePointInput point in e.OldItems)
+                {
+                    point.PropertyChanged -= CustomDamagePointPropertyChanged;
+                }
+            }
+
+            if (IsCustomSelected)
+            {
+                UpdateCustomCropProfile();
+            }
+        }
+
+        private void CustomStagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (IsCustomSelected)
+            {
+                UpdateCustomCropProfile();
+            }
+        }
+
+        private void CustomDamagePointPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (IsCustomSelected)
+            {
+                UpdateCustomCropProfile();
+            }
+        }
+
+        private void AddCustomStage()
+        {
+            int start = CustomStages.Count > 0 ? CustomStages.Last().EndOffsetDays : 0;
+            var stage = new CustomStageInput
+            {
+                Name = $"Stage {CustomStages.Count + 1}",
+                StartOffsetDays = start,
+                EndOffsetDays = start + 30,
+                Vulnerability = 0.5,
+                FloodToleranceDays = 2.0
+            };
+
+            CustomStages.Add(stage);
+        }
+
+        private void RemoveCustomStage(CustomStageInput? stage)
+        {
+            if (stage == null)
+            {
+                return;
+            }
+
+            CustomStages.Remove(stage);
+        }
+
+        private void AddCustomDamagePoint()
+        {
+            double nextDepth = CustomDamageCurve.Count > 0
+                ? Math.Round(CustomDamageCurve.Last().DepthFeet + 1, 1)
+                : 0.5;
+            double nextDamage = CustomDamageCurve.Count > 0
+                ? Math.Min(100, CustomDamageCurve.Last().DamagePercent + 15)
+                : 10;
+
+            var point = new CustomDamagePointInput
+            {
+                DepthFeet = nextDepth,
+                DamagePercent = nextDamage
+            };
+
+            CustomDamageCurve.Add(point);
+        }
+
+        private void RemoveCustomDamagePoint(CustomDamagePointInput? point)
+        {
+            if (point == null)
+            {
+                return;
+            }
+
+            CustomDamageCurve.Remove(point);
+        }
+
+        private void UpdateCustomCropProfile()
+        {
+            if (!IsCustomSelected)
+            {
+                return;
+            }
+
+            if (TryBuildCustomProfile(out var profile, out string statusMessage))
+            {
+                _customCropProfile = profile;
+                CustomProfileStatus = statusMessage;
+                SelectedCrop = _customCropProfile;
+            }
+            else
+            {
+                _customCropProfile = null;
+                CustomProfileStatus = statusMessage;
+                SelectedCrop = null;
+            }
+
+            OnPropertyChanged(nameof(CropDescription));
+            OnPropertyChanged(nameof(OccupancyType));
+        }
+
+        private bool TryBuildCustomProfile(out CropDamageProfile? profile, out string statusMessage)
+        {
+            profile = null;
+
+            if (string.IsNullOrWhiteSpace(CustomCropName))
+            {
+                statusMessage = "Enter a crop name to label the profile.";
+                return false;
+            }
+
+            if (CustomValuePerAcre <= 0)
+            {
+                statusMessage = "Value per acre must be greater than zero.";
+                return false;
+            }
+
+            if (!IsValidDay(CustomPlantingStartDay) || !IsValidDay(CustomPlantingEndDay) || !IsValidDay(CustomHarvestEndDay))
+            {
+                statusMessage = "Calendar days must be between 1 and 365.";
+                return false;
+            }
+
+            if (CustomPlantingEndDay < CustomPlantingStartDay)
+            {
+                statusMessage = "Planting end day must be on or after the start day.";
+                return false;
+            }
+
+            if (CustomHarvestEndDay < CustomPlantingEndDay)
+            {
+                statusMessage = "Harvest end day must occur after planting is complete.";
+                return false;
+            }
+
+            if (CustomStages.Count == 0)
+            {
+                statusMessage = "Add at least one growth stage describing the season.";
+                return false;
+            }
+
+            if (CustomDamageCurve.Count < 2)
+            {
+                statusMessage = "Add two or more depth points to define the damage curve.";
+                return false;
+            }
+
+            foreach (var stage in CustomStages)
+            {
+                if (string.IsNullOrWhiteSpace(stage.Name))
+                {
+                    statusMessage = "Provide a name for each growth stage.";
+                    return false;
+                }
+
+                if (stage.StartOffsetDays < 0)
+                {
+                    statusMessage = "Stage offsets cannot be negative.";
+                    return false;
+                }
+
+                if (stage.EndOffsetDays < stage.StartOffsetDays)
+                {
+                    statusMessage = "Stage end offset must be after the start offset.";
+                    return false;
+                }
+
+                if (stage.Vulnerability < 0)
+                {
+                    statusMessage = "Vulnerability weights must be zero or greater.";
+                    return false;
+                }
+
+                if (stage.FloodToleranceDays <= 0)
+                {
+                    statusMessage = "Flood tolerance days must be greater than zero.";
+                    return false;
+                }
+            }
+
+            foreach (var point in CustomDamageCurve)
+            {
+                if (point.DepthFeet < 0)
+                {
+                    statusMessage = "Depth values must be zero or greater.";
+                    return false;
+                }
+
+                if (point.DamagePercent < 0)
+                {
+                    statusMessage = "Damage percentages cannot be negative.";
+                    return false;
+                }
+            }
+
+            var stages = CustomStages
+                .OrderBy(stage => stage.StartOffsetDays)
+                .Select(stage => new CropGrowthStage(
+                    stage.Name,
+                    stage.StartOffsetDays,
+                    stage.EndOffsetDays,
+                    stage.Vulnerability,
+                    stage.FloodToleranceDays))
+                .ToList();
+
+            var curve = CustomDamageCurve
+                .OrderBy(point => point.DepthFeet)
+                .Select(point => new DamageCurvePoint(point.DepthFeet, Math.Clamp(point.DamagePercent, 0, 100)))
+                .ToList();
+
+            string occupancy = string.IsNullOrWhiteSpace(CustomOccupancyType)
+                ? CustomCropName
+                : CustomOccupancyType;
+            string description = string.IsNullOrWhiteSpace(CustomDescription)
+                ? "User defined crop profile configured in the tool."
+                : CustomDescription;
+
+            profile = new CropDamageProfile(
+                CustomCropName,
+                occupancy,
+                description,
+                CustomValuePerAcre,
+                CustomPlantingStartDay,
+                CustomPlantingEndDay,
+                CustomHarvestEndDay,
+                stages,
+                curve);
+
+            statusMessage = string.Format(
+                CultureInfo.InvariantCulture,
+                "Custom crop ready: {0} stages and {1} depth points.",
+                stages.Count,
+                curve.Count);
+            return true;
+        }
+
+        private static bool IsValidDay(int day) => day is >= 1 and <= 365;
+
+        public string OccupancyType
+        {
+            get
+            {
+                if (IsCustomSelected)
+                {
+                    return string.IsNullOrWhiteSpace(CustomOccupancyType) ? CustomCropName : CustomOccupancyType;
+                }
+
+                return SelectedCrop?.OccupancyType ?? "Agricultural Field";
+            }
+        }
 
         public string RegionDescription => SelectedRegion?.Description ?? string.Empty;
 
-        public string CropDescription => SelectedCrop?.Description ?? string.Empty;
+        public string CropDescription
+        {
+            get
+            {
+                if (IsCustomSelected)
+                {
+                    return CustomDescription;
+                }
+
+                return SelectedCrop?.Description ?? string.Empty;
+            }
+        }
 
         public string GrowthWindowSummary
         {
@@ -439,6 +984,142 @@ namespace EconToolbox.Desktop.ViewModels
             double FloodOccurrenceRate,
             int ImpactYears,
             string MostImpactedStage);
+    }
+
+    public class CustomStageInput : BaseViewModel
+    {
+        private string _name = string.Empty;
+        private int _startOffsetDays;
+        private int _endOffsetDays;
+        private double _vulnerability = 0.5;
+        private double _floodToleranceDays = 2.0;
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name == value)
+                {
+                    return;
+                }
+
+                _name = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int StartOffsetDays
+        {
+            get => _startOffsetDays;
+            set
+            {
+                if (_startOffsetDays == value)
+                {
+                    return;
+                }
+
+                _startOffsetDays = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int EndOffsetDays
+        {
+            get => _endOffsetDays;
+            set
+            {
+                if (_endOffsetDays == value)
+                {
+                    return;
+                }
+
+                _endOffsetDays = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double Vulnerability
+        {
+            get => _vulnerability;
+            set
+            {
+                if (Math.Abs(_vulnerability - value) < 0.0001)
+                {
+                    return;
+                }
+
+                _vulnerability = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double FloodToleranceDays
+        {
+            get => _floodToleranceDays;
+            set
+            {
+                if (Math.Abs(_floodToleranceDays - value) < 0.0001)
+                {
+                    return;
+                }
+
+                _floodToleranceDays = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public class CustomDamagePointInput : BaseViewModel
+    {
+        private double _depthFeet;
+        private double _damagePercent;
+
+        public double DepthFeet
+        {
+            get => _depthFeet;
+            set
+            {
+                if (Math.Abs(_depthFeet - value) < 0.0001)
+                {
+                    return;
+                }
+
+                _depthFeet = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double DamagePercent
+        {
+            get => _damagePercent;
+            set
+            {
+                if (Math.Abs(_damagePercent - value) < 0.0001)
+                {
+                    return;
+                }
+
+                _damagePercent = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public class CropOption
+    {
+        public CropOption(string displayName, CropDamageProfile? profile, bool isCustom = false)
+        {
+            DisplayName = displayName;
+            Profile = profile;
+            IsCustom = isCustom;
+        }
+
+        public string DisplayName { get; }
+        public CropDamageProfile? Profile { get; }
+        public bool IsCustom { get; }
+
+        public override string ToString() => DisplayName;
     }
 
     public class DamageTableRow
