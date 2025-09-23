@@ -27,6 +27,9 @@
             <DataTemplate DataType="{x:Type vm:EadViewModel}">
                 <views:EadView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:AgriculturalDamageViewModel}">
+                <views:AgriculturalDamageView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:UpdatedCostViewModel}">
                 <views:UpdatedCostView/>
             </DataTemplate>

@@ -166,7 +166,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public static void ExportAll(EadViewModel ead, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, string filePath)
+        public static void ExportAll(EadViewModel ead, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, AgriculturalDamageViewModel agricultural, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, string filePath)
         {
             using var wb = new XLWorkbook();
             var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -194,6 +194,70 @@ namespace EconToolbox.Desktop.Services
             eadSheet.Cell(rowIdx + 1, 1).Value = "Result";
             eadSheet.Cell(rowIdx + 1, 2).Value = string.Join(" | ", ead.Results);
             AddEadChart(eadSheet, ead.StageDamagePoints, ead.FrequencyDamagePoints, rowIdx + 3, 1);
+
+            // Agricultural Damage Sheet
+            var agSheet = wb.Worksheets.Add("AgDamage");
+            int agRow = 1;
+            agSheet.Cell(agRow, 1).Value = "Occupancy Type";
+            agSheet.Cell(agRow++, 2).Value = agricultural.OccupancyType;
+            agSheet.Cell(agRow, 1).Value = "Region";
+            agSheet.Cell(agRow++, 2).Value = agricultural.SelectedRegion?.Name ?? string.Empty;
+            agSheet.Cell(agRow, 1).Value = "Crop";
+            agSheet.Cell(agRow++, 2).Value = agricultural.SelectedCrop?.CropName ?? string.Empty;
+            agSheet.Cell(agRow, 1).Value = "Acreage";
+            var acreageCell = agSheet.Cell(agRow++, 2);
+            acreageCell.Value = agricultural.FieldAcreage;
+            acreageCell.Style.NumberFormat.Format = "0.00";
+            agSheet.Cell(agRow, 1).Value = "Annual Impact Probability";
+            var probCell = agSheet.Cell(agRow++, 2);
+            probCell.Value = agricultural.ProbabilityOfImpact;
+            probCell.Style.NumberFormat.Format = "0.00%";
+            agSheet.Cell(agRow, 1).Value = "Average Flood Tolerance (days)";
+            var tolCell = agSheet.Cell(agRow++, 2);
+            tolCell.Value = agricultural.AverageToleranceDays;
+            tolCell.Style.NumberFormat.Format = "0.0";
+            agSheet.Cell(agRow, 1).Value = "Most Vulnerable Stage";
+            agSheet.Cell(agRow++, 2).Value = agricultural.MostVulnerableStage;
+            agSheet.Cell(agRow, 1).Value = "Narrative";
+            var narrativeCell = agSheet.Cell(agRow++, 2);
+            narrativeCell.Value = agricultural.MonteCarloNarrative;
+            narrativeCell.Style.Alignment.WrapText = true;
+            agRow++;
+
+            int tableStartRow = agRow;
+            agSheet.Cell(tableStartRow, 1).Value = "Depth (ft)";
+            agSheet.Cell(tableStartRow, 2).Value = "Duration (days)";
+            agSheet.Cell(tableStartRow, 3).Value = "Damage (%)";
+            agSheet.Cell(tableStartRow, 4).Value = "Expected Damage ($)";
+            int agDataRow = tableStartRow + 1;
+            foreach (var damageRow in agricultural.DamageTable)
+            {
+                agSheet.Cell(agDataRow, 1).Value = damageRow.DepthFeet;
+                agSheet.Cell(agDataRow, 2).Value = damageRow.DurationDays;
+                var percentCell = agSheet.Cell(agDataRow, 3);
+                percentCell.Value = damageRow.DamagePercent;
+                percentCell.Style.NumberFormat.Format = "0.0";
+                var valueCell = agSheet.Cell(agDataRow, 4);
+                valueCell.Value = damageRow.ExpectedDamageDollars;
+                valueCell.Style.NumberFormat.Format = "$#,##0";
+                agDataRow++;
+            }
+
+            int stageStart = agDataRow + 2;
+            agSheet.Cell(stageStart, 1).Value = "Growth Stage";
+            agSheet.Cell(stageStart, 2).Value = "Calendar Window";
+            agSheet.Cell(stageStart, 3).Value = "Exposure";
+            agSheet.Cell(stageStart, 4).Value = "Tolerance";
+            int stageRow = stageStart + 1;
+            foreach (var stage in agricultural.GrowthStageSummaries)
+            {
+                agSheet.Cell(stageRow, 1).Value = stage.Name;
+                agSheet.Cell(stageRow, 2).Value = stage.CalendarWindow;
+                agSheet.Cell(stageRow, 3).Value = stage.VulnerabilityText;
+                agSheet.Cell(stageRow, 4).Value = stage.ToleranceText;
+                stageRow++;
+            }
+            agSheet.Columns().AdjustToContents();
 
             // Annualizer Sheets
             var annSummary = wb.Worksheets.Add("Annualizer");
