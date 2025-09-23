@@ -114,13 +114,27 @@ value from the column.
 
 ### Updated Cost of Storage
 
-Updated cost for reallocated storage is computed as:
+The workflow updates each cost line item with the current CWCCI factor and then
+scales the total by the share of storage to be reallocated:
 
 \[
-\text{Cost} = (C_T - C_S) \times \frac{S_R}{S_T}
+\text{Updated Cost}_i = \text{Actual Cost}_i \times \text{Update Factor}_i
 \]
 
-with total cost \(C_T\), storage price \(C_S\), reallocated storage \(S_R\), and total usable storage \(S_T\).
+\[
+\text{Total Updated Cost} = \sum_i \text{Updated Cost}_i
+\]
+
+\[
+\text{Percent} = \frac{\text{Storage Recommendation}}{\text{Total Storage}}
+\]
+
+\[
+\text{Cost of Storage Recommendation} = \text{Total Updated Cost} \times \text{Percent}
+\]
+
+The same percentage is applied to O&M and RRR annualized costs so that all
+outputs (capital, O&M, and totals) reflect the selected reallocation share.
 
 ### Interest During Construction (IDC)
 
