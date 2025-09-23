@@ -428,7 +428,7 @@ namespace EconToolbox.Desktop.ViewModels
         private static string FormatDay(int dayOfYear)
         {
             dayOfYear = Math.Clamp(dayOfYear, 1, 365);
-            var date = DateOnly.FromDayOfYear(dayOfYear, 2021);
+            var date = DateOnly.FromDateTime(new DateTime(2021, 1, 1).AddDays(dayOfYear - 1));
             return date.ToString("MMM d", CultureInfo.InvariantCulture);
         }
 
