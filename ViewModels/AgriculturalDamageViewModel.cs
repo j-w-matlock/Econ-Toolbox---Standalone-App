@@ -13,10 +13,12 @@ namespace EconToolbox.Desktop.ViewModels
     public class AgriculturalDamageViewModel : BaseViewModel
     {
         private readonly RelayCommand _computeCommand;
+        private RegionOption? _selectedRegionOption;
         private FloodRegionProfile? _selectedRegion;
         private CropOption? _selectedCropOption;
         private CropDamageProfile? _selectedCrop;
         private CropDamageProfile? _customCropProfile;
+        private FloodRegionProfile? _customRegionProfile;
         private double _fieldAcreage = 1.0;
         private int _simulationYears = 5000;
         private double _probabilityOfImpact;
@@ -34,16 +36,28 @@ namespace EconToolbox.Desktop.ViewModels
         private int _customPlantingEndDay = 140;
         private int _customHarvestEndDay = 280;
         private string _customProfileStatus = "Enter crop details to build a custom profile.";
+        private string _customRegionName = "Custom region";
+        private string _customRegionDescription = "Define flood timing, season shift, and annual probability.";
+        private int _customFloodSeasonStartDay = 60;
+        private int _customFloodSeasonPeakDay = 110;
+        private int _customFloodSeasonEndDay = 200;
+        private int _customGrowingSeasonShiftDays;
+        private double _customAnnualFloodProbability = 0.25;
+        private string _customRegionStatus = "Enter region details to build a custom profile.";
+        private readonly Dictionary<string, CustomStageInput> _stageCustomMap = new();
 
         public AgriculturalDamageViewModel()
         {
-            Regions = new ObservableCollection<FloodRegionProfile>(AgriculturalDamageLibrary.Regions);
+            RegionOptions = new ObservableCollection<RegionOption>(
+                AgriculturalDamageLibrary.Regions.Select(r => new RegionOption(r.Name, r)));
+            RegionOptions.Add(new RegionOption("Custom region (configure below)", null, true));
             CropOptions = new ObservableCollection<CropOption>(
                 AgriculturalDamageLibrary.Crops.Select(c => new CropOption(c.CropName, c)));
             CropOptions.Add(new CropOption("Custom crop (configure below)", null, true));
             DamageTable = new ObservableCollection<DamageTableRow>();
             CustomStages = new ObservableCollection<CustomStageInput>();
             CustomDamageCurve = new ObservableCollection<CustomDamagePointInput>();
+            StageAdjustments = new ObservableCollection<StageAdjustment>();
 
             CustomStages.CollectionChanged += CustomStagesCollectionChanged;
             CustomDamageCurve.CollectionChanged += CustomDamageCurveCollectionChanged;
@@ -58,23 +72,52 @@ namespace EconToolbox.Desktop.ViewModels
                 parameter => parameter is CustomDamagePointInput);
 
             InitializeCustomDefaults();
+            InitializeCustomRegionDefaults();
 
             _computeCommand = new RelayCommand(Compute, CanCompute);
-            SelectedRegion = Regions.FirstOrDefault();
+            SelectedRegionOption = RegionOptions.FirstOrDefault();
             SelectedCropOption = CropOptions.FirstOrDefault();
         }
 
-        public ObservableCollection<FloodRegionProfile> Regions { get; }
+        public ObservableCollection<RegionOption> RegionOptions { get; }
         public ObservableCollection<CropOption> CropOptions { get; }
         public ObservableCollection<DamageTableRow> DamageTable { get; }
         public ObservableCollection<CustomStageInput> CustomStages { get; }
         public ObservableCollection<CustomDamagePointInput> CustomDamageCurve { get; }
+        public ObservableCollection<StageAdjustment> StageAdjustments { get; }
 
         public ICommand ComputeCommand => _computeCommand;
         public ICommand AddCustomStageCommand { get; }
         public ICommand RemoveCustomStageCommand { get; }
         public ICommand AddCustomDamagePointCommand { get; }
         public ICommand RemoveCustomDamagePointCommand { get; }
+
+        public RegionOption? SelectedRegionOption
+        {
+            get => _selectedRegionOption;
+            set
+            {
+                if (_selectedRegionOption == value)
+                {
+                    return;
+                }
+
+                _selectedRegionOption = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsCustomRegionSelected));
+
+                if (IsCustomRegionSelected)
+                {
+                    UpdateCustomRegionProfile();
+                }
+                else
+                {
+                    SelectedRegion = value?.Profile;
+                }
+            }
+        }
+
+        public bool IsCustomRegionSelected => SelectedRegionOption?.IsCustom == true;
 
         public FloodRegionProfile? SelectedRegion
         {
@@ -91,6 +134,7 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(RegionDescription));
                 OnPropertyChanged(nameof(GrowthWindowSummary));
                 OnPropertyChanged(nameof(GrowthStageSummaries));
+                RefreshStageAdjustments();
                 _computeCommand.RaiseCanExecuteChanged();
             }
         }
@@ -111,6 +155,7 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(CropDescription));
                 OnPropertyChanged(nameof(GrowthWindowSummary));
                 OnPropertyChanged(nameof(GrowthStageSummaries));
+                RefreshStageAdjustments();
                 _computeCommand.RaiseCanExecuteChanged();
             }
         }
@@ -275,6 +320,154 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        public string CustomRegionName
+        {
+            get => _customRegionName;
+            set
+            {
+                if (_customRegionName == value)
+                {
+                    return;
+                }
+
+                _customRegionName = value;
+                OnPropertyChanged();
+                if (IsCustomRegionSelected)
+                {
+                    UpdateCustomRegionProfile();
+                }
+            }
+        }
+
+        public string CustomRegionDescription
+        {
+            get => _customRegionDescription;
+            set
+            {
+                if (_customRegionDescription == value)
+                {
+                    return;
+                }
+
+                _customRegionDescription = value;
+                OnPropertyChanged();
+                if (IsCustomRegionSelected)
+                {
+                    UpdateCustomRegionProfile();
+                }
+            }
+        }
+
+        public int CustomFloodSeasonStartDay
+        {
+            get => _customFloodSeasonStartDay;
+            set
+            {
+                if (_customFloodSeasonStartDay == value)
+                {
+                    return;
+                }
+
+                _customFloodSeasonStartDay = value;
+                OnPropertyChanged();
+                if (IsCustomRegionSelected)
+                {
+                    UpdateCustomRegionProfile();
+                }
+            }
+        }
+
+        public int CustomFloodSeasonPeakDay
+        {
+            get => _customFloodSeasonPeakDay;
+            set
+            {
+                if (_customFloodSeasonPeakDay == value)
+                {
+                    return;
+                }
+
+                _customFloodSeasonPeakDay = value;
+                OnPropertyChanged();
+                if (IsCustomRegionSelected)
+                {
+                    UpdateCustomRegionProfile();
+                }
+            }
+        }
+
+        public int CustomFloodSeasonEndDay
+        {
+            get => _customFloodSeasonEndDay;
+            set
+            {
+                if (_customFloodSeasonEndDay == value)
+                {
+                    return;
+                }
+
+                _customFloodSeasonEndDay = value;
+                OnPropertyChanged();
+                if (IsCustomRegionSelected)
+                {
+                    UpdateCustomRegionProfile();
+                }
+            }
+        }
+
+        public int CustomGrowingSeasonShiftDays
+        {
+            get => _customGrowingSeasonShiftDays;
+            set
+            {
+                if (_customGrowingSeasonShiftDays == value)
+                {
+                    return;
+                }
+
+                _customGrowingSeasonShiftDays = value;
+                OnPropertyChanged();
+                if (IsCustomRegionSelected)
+                {
+                    UpdateCustomRegionProfile();
+                }
+            }
+        }
+
+        public double CustomAnnualFloodProbability
+        {
+            get => _customAnnualFloodProbability;
+            set
+            {
+                if (Math.Abs(_customAnnualFloodProbability - value) < 0.0001)
+                {
+                    return;
+                }
+
+                _customAnnualFloodProbability = value;
+                OnPropertyChanged();
+                if (IsCustomRegionSelected)
+                {
+                    UpdateCustomRegionProfile();
+                }
+            }
+        }
+
+        public string CustomRegionStatus
+        {
+            get => _customRegionStatus;
+            private set
+            {
+                if (_customRegionStatus == value)
+                {
+                    return;
+                }
+
+                _customRegionStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
         private void InitializeCustomDefaults()
         {
             if (CustomStages.Count == 0)
@@ -321,6 +514,176 @@ namespace EconToolbox.Desktop.ViewModels
                 CustomDamageCurve.Add(new CustomDamagePointInput { DepthFeet = 3, DamagePercent = 55 });
                 CustomDamageCurve.Add(new CustomDamagePointInput { DepthFeet = 4, DamagePercent = 75 });
             }
+        }
+
+        private void InitializeCustomRegionDefaults()
+        {
+            CustomRegionName = "Custom region";
+            CustomRegionDescription = "Define flood timing, season shift, and annual probability.";
+            CustomFloodSeasonStartDay = 60;
+            CustomFloodSeasonPeakDay = 110;
+            CustomFloodSeasonEndDay = 200;
+            CustomGrowingSeasonShiftDays = 0;
+            CustomAnnualFloodProbability = 0.25;
+            CustomRegionStatus = "Enter region details to build a custom profile.";
+        }
+
+        private void UpdateCustomRegionProfile()
+        {
+            if (!IsCustomRegionSelected)
+            {
+                return;
+            }
+
+            if (TryBuildCustomRegion(out var profile, out string statusMessage))
+            {
+                _customRegionProfile = profile;
+                CustomRegionStatus = statusMessage;
+                SelectedRegion = _customRegionProfile;
+            }
+            else
+            {
+                _customRegionProfile = null;
+                CustomRegionStatus = statusMessage;
+                SelectedRegion = null;
+            }
+        }
+
+        private bool TryBuildCustomRegion(out FloodRegionProfile? profile, out string statusMessage)
+        {
+            profile = null;
+
+            if (string.IsNullOrWhiteSpace(CustomRegionName))
+            {
+                statusMessage = "Enter a region name to label the profile.";
+                return false;
+            }
+
+            if (!IsValidDay(CustomFloodSeasonStartDay)
+                || !IsValidDay(CustomFloodSeasonPeakDay)
+                || !IsValidDay(CustomFloodSeasonEndDay))
+            {
+                statusMessage = "Flood season days must be between 1 and 365.";
+                return false;
+            }
+
+            if (CustomFloodSeasonStartDay > CustomFloodSeasonPeakDay)
+            {
+                statusMessage = "Flood season peak day must occur on or after the start day.";
+                return false;
+            }
+
+            if (CustomFloodSeasonPeakDay > CustomFloodSeasonEndDay)
+            {
+                statusMessage = "Flood season end day must be on or after the peak day.";
+                return false;
+            }
+
+            if (CustomGrowingSeasonShiftDays < -120 || CustomGrowingSeasonShiftDays > 120)
+            {
+                statusMessage = "Growing season shift should fall between -120 and 120 days.";
+                return false;
+            }
+
+            if (CustomAnnualFloodProbability < 0 || CustomAnnualFloodProbability > 1)
+            {
+                statusMessage = "Annual flood probability must be between 0 and 1.";
+                return false;
+            }
+
+            string description = string.IsNullOrWhiteSpace(CustomRegionDescription)
+                ? "User defined region profile configured in the tool."
+                : CustomRegionDescription;
+
+            profile = new FloodRegionProfile(
+                CustomRegionName,
+                description,
+                CustomFloodSeasonStartDay,
+                CustomFloodSeasonPeakDay,
+                CustomFloodSeasonEndDay,
+                CustomGrowingSeasonShiftDays,
+                Math.Clamp(CustomAnnualFloodProbability, 0, 1));
+
+            statusMessage = "Custom region ready for simulation.";
+            return true;
+        }
+
+        private void RefreshStageAdjustments()
+        {
+            var previousAdjustments = StageAdjustments.ToList();
+            foreach (var adjustment in previousAdjustments)
+            {
+                adjustment.ToleranceChanged -= StageAdjustmentToleranceChanged;
+            }
+
+            var overrideMap = previousAdjustments.ToDictionary(adj => adj.StageKey, adj => adj.FloodToleranceDays);
+            StageAdjustments.Clear();
+            _stageCustomMap.Clear();
+
+            if (SelectedCrop == null)
+            {
+                OnPropertyChanged(nameof(StageAdjustments));
+                OnPropertyChanged(nameof(GrowthStageSummaries));
+                return;
+            }
+
+            int shift = SelectedRegion?.GrowingSeasonShiftDays ?? 0;
+            var resolved = SelectedCrop.ResolveForRegion(shift);
+            var customStages = IsCustomSelected
+                ? CustomStages.OrderBy(stage => stage.StartOffsetDays).ToList()
+                : null;
+
+            for (int i = 0; i < resolved.Stages.Count; i++)
+            {
+                var stage = resolved.Stages[i];
+                string key = StageAdjustment.BuildKey(stage.Name, i);
+                double tolerance = stage.FloodToleranceDays;
+                if (overrideMap.TryGetValue(key, out double overrideTolerance))
+                {
+                    tolerance = overrideTolerance;
+                }
+
+                var adjustment = new StageAdjustment(
+                    key,
+                    stage.Name,
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "{0} to {1}",
+                        FormatDay(stage.StartDay),
+                        FormatDay(stage.EndDay)),
+                    stage.Vulnerability,
+                    stage.FloodToleranceDays,
+                    tolerance);
+
+                adjustment.ToleranceChanged += StageAdjustmentToleranceChanged;
+                StageAdjustments.Add(adjustment);
+
+                if (customStages != null && i < customStages.Count)
+                {
+                    _stageCustomMap[key] = customStages[i];
+                }
+            }
+
+            OnPropertyChanged(nameof(StageAdjustments));
+            OnPropertyChanged(nameof(GrowthStageSummaries));
+        }
+
+        private void StageAdjustmentToleranceChanged(object? sender, EventArgs e)
+        {
+            if (sender is not StageAdjustment adjustment)
+            {
+                return;
+            }
+
+            if (IsCustomSelected && _stageCustomMap.TryGetValue(adjustment.StageKey, out var customStage))
+            {
+                if (Math.Abs(customStage.FloodToleranceDays - adjustment.FloodToleranceDays) > 0.0001)
+                {
+                    customStage.FloodToleranceDays = adjustment.FloodToleranceDays;
+                }
+            }
+
+            OnPropertyChanged(nameof(GrowthStageSummaries));
         }
 
         private void CustomStagesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -662,27 +1025,20 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get
             {
-                var resolved = ResolveProfile();
-                if (resolved == null)
+                if (StageAdjustments.Count == 0)
                 {
                     return Enumerable.Empty<GrowthStageSummary>();
                 }
 
-                return resolved.Stages.Select(stage => new GrowthStageSummary
+                return StageAdjustments.Select(stage => new GrowthStageSummary
                 {
                     Name = stage.Name,
-                    CalendarWindow = string.Format(
-                        CultureInfo.InvariantCulture,
-                        "{0} to {1}",
-                        FormatDay(stage.StartDay),
-                        FormatDay(stage.EndDay)),
-                    VulnerabilityText = string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Exposure weight: {0:P0}",
-                        stage.Vulnerability),
+                    CalendarWindow = stage.CalendarWindow,
+                    VulnerabilityText = stage.ExposureText,
                     ToleranceText = string.Format(
                         CultureInfo.InvariantCulture,
-                        "Tolerance: {0:F1} days", stage.FloodToleranceDays)
+                        "Tolerance: {0:F1} days",
+                        stage.FloodToleranceDays)
                 });
             }
         }
@@ -967,7 +1323,41 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             int shift = SelectedRegion?.GrowingSeasonShiftDays ?? 0;
-            return SelectedCrop.ResolveForRegion(shift);
+            var resolved = SelectedCrop.ResolveForRegion(shift);
+            if (StageAdjustments.Count == 0)
+            {
+                return resolved;
+            }
+
+            var overrides = StageAdjustments
+                .Select(adj => new { adj.StageKey, adj.FloodToleranceDays })
+                .ToDictionary(adj => adj.StageKey, adj => adj.FloodToleranceDays);
+
+            var adjustedStages = resolved.Stages
+                .Select((stage, index) =>
+                {
+                    string key = StageAdjustment.BuildKey(stage.Name, index);
+                    double tolerance = stage.FloodToleranceDays;
+                    if (overrides.TryGetValue(key, out double overrideTolerance))
+                    {
+                        tolerance = overrideTolerance;
+                    }
+
+                    return new ResolvedGrowthStage(
+                        stage.Name,
+                        stage.StartDay,
+                        stage.EndDay,
+                        stage.Vulnerability,
+                        tolerance);
+                })
+                .ToList();
+
+            return new ResolvedCropProfile(
+                resolved.Profile,
+                resolved.PlantingStartDay,
+                resolved.PlantingEndDay,
+                resolved.HarvestEndDay,
+                adjustedStages);
         }
 
         private static string FormatDay(int dayOfYear)
@@ -1104,6 +1494,84 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged();
             }
         }
+    }
+
+    public class StageAdjustment : BaseViewModel
+    {
+        private readonly RelayCommand _resetCommand;
+        private double _floodToleranceDays;
+
+        public StageAdjustment(
+            string stageKey,
+            string name,
+            string calendarWindow,
+            double vulnerability,
+            double defaultFloodToleranceDays,
+            double floodToleranceDays)
+        {
+            StageKey = stageKey;
+            Name = name;
+            CalendarWindow = calendarWindow;
+            Vulnerability = vulnerability;
+            DefaultFloodToleranceDays = defaultFloodToleranceDays;
+            _floodToleranceDays = floodToleranceDays;
+            _resetCommand = new RelayCommand(_ => ResetToDefault(), _ => HasCustomTolerance);
+        }
+
+        public event EventHandler? ToleranceChanged;
+
+        public string StageKey { get; }
+        public string Name { get; }
+        public string CalendarWindow { get; }
+        public double Vulnerability { get; }
+        public double DefaultFloodToleranceDays { get; }
+        public string ExposureText => string.Format(CultureInfo.InvariantCulture, "Exposure weight: {0:P0}", Vulnerability);
+        public string DefaultToleranceText => string.Format(CultureInfo.InvariantCulture, "Default tolerance: {0:F1} days", DefaultFloodToleranceDays);
+
+        public double FloodToleranceDays
+        {
+            get => _floodToleranceDays;
+            set
+            {
+                if (Math.Abs(_floodToleranceDays - value) < 0.0001)
+                {
+                    return;
+                }
+
+                _floodToleranceDays = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasCustomTolerance));
+                _resetCommand.RaiseCanExecuteChanged();
+                ToleranceChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public bool HasCustomTolerance => Math.Abs(_floodToleranceDays - DefaultFloodToleranceDays) > 0.0001;
+
+        public ICommand ResetToleranceCommand => _resetCommand;
+
+        public static string BuildKey(string name, int index) => string.Format(CultureInfo.InvariantCulture, "{0}|{1}", name, index);
+
+        private void ResetToDefault()
+        {
+            FloodToleranceDays = DefaultFloodToleranceDays;
+        }
+    }
+
+    public class RegionOption
+    {
+        public RegionOption(string displayName, FloodRegionProfile? profile, bool isCustom = false)
+        {
+            DisplayName = displayName;
+            Profile = profile;
+            IsCustom = isCustom;
+        }
+
+        public string DisplayName { get; }
+        public FloodRegionProfile? Profile { get; }
+        public bool IsCustom { get; }
+
+        public override string ToString() => DisplayName;
     }
 
     public class CropOption

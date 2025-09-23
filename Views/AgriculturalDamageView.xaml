@@ -57,14 +57,131 @@
                                        Margin="0,4,0,8"
                                        Foreground="#4B5563"
                                        Text="Pick the USACE hydrologic region that best matches watershed timing. The selection shifts planting windows and flood season sampling."/>
-                            <ComboBox ItemsSource="{Binding Regions}"
-                                      SelectedItem="{Binding SelectedRegion}"
-                                      DisplayMemberPath="Name"
+                            <ComboBox ItemsSource="{Binding RegionOptions}"
+                                      SelectedItem="{Binding SelectedRegionOption}"
+                                      DisplayMemberPath="DisplayName"
                                       HorizontalAlignment="Stretch"
-                                      Margin="0,0,0,8"/>
+                                      Margin="0,0,0,8"
+                                      ToolTip="Choose a predefined flood region or select the custom builder to define your own timing."/>
                             <TextBlock TextWrapping="Wrap"
                                        Foreground="#1F5134"
                                        Text="{Binding RegionDescription}"/>
+                            <StackPanel Margin="0,12,0,0"
+                                        Visibility="{Binding IsCustomRegionSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Border Background="#F9FAFB"
+                                        CornerRadius="8"
+                                        Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="Custom region inputs"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="14"/>
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Margin="0,4,0,0"
+                                                   Foreground="#4B5563"
+                                                   Text="Adjust flood season timing, growing season shift, and annual probability to reflect local watershed conditions."/>
+                                        <TextBlock Text="{Binding CustomRegionStatus}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,8,0,0"
+                                                   Foreground="#1F5134"
+                                                   ToolTip="Current validation status for the custom region setup."/>
+                                        <Grid Margin="0,12,0,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="0"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0"
+                                                       Text="Region name"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="0"
+                                                     Grid.Column="1"
+                                                     Margin="0,0,16,4"
+                                                     Text="{Binding CustomRegionName, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Name displayed in the region selector and exported tables."/>
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="2"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0"
+                                                       Text="Annual flood probability"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="0"
+                                                     Grid.Column="3"
+                                                     Margin="0,0,0,4"
+                                                     Text="{Binding CustomAnnualFloodProbability, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Chance that any year produces a flood reaching the field (0 to 1)."/>
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="0"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Flood season start (day)"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="1"
+                                                     Grid.Column="1"
+                                                     Margin="0,4,16,4"
+                                                     Text="{Binding CustomFloodSeasonStartDay, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Calendar day (1-365) when flood season risk begins."/>
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="2"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Flood season peak (day)"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="1"
+                                                     Grid.Column="3"
+                                                     Margin="0,4,0,4"
+                                                     Text="{Binding CustomFloodSeasonPeakDay, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Calendar day (1-365) representing the most likely flood timing."/>
+                                            <TextBlock Grid.Row="2"
+                                                       Grid.Column="0"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Flood season end (day)"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="2"
+                                                     Grid.Column="1"
+                                                     Margin="0,4,16,4"
+                                                     Text="{Binding CustomFloodSeasonEndDay, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Calendar day (1-365) when flood season typically wanes."/>
+                                            <TextBlock Grid.Row="2"
+                                                       Grid.Column="2"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,4,8,0"
+                                                       Text="Season shift (days)"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="2"
+                                                     Grid.Column="3"
+                                                     Margin="0,4,0,4"
+                                                     Text="{Binding CustomGrowingSeasonShiftDays, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Adjust planting calendar relative to national defaults (negative = earlier)."/>
+                                            <TextBlock Grid.Row="3"
+                                                       Grid.Column="0"
+                                                       VerticalAlignment="Top"
+                                                       Margin="0,4,8,0"
+                                                       Text="Description"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBox Grid.Row="3"
+                                                     Grid.Column="1"
+                                                     Grid.ColumnSpan="3"
+                                                     Margin="0,4,0,0"
+                                                     MinHeight="60"
+                                                     TextWrapping="Wrap"
+                                                     AcceptsReturn="True"
+                                                     Text="{Binding CustomRegionDescription, UpdateSourceTrigger=PropertyChanged}"
+                                                     ToolTip="Narrative summary describing the watershed and flood drivers."/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 
@@ -362,33 +479,63 @@
                             <TextBlock TextWrapping="Wrap"
                                        Margin="0,4,0,10"
                                        Foreground="#4B5563"
-                                       Text="Stage tolerances come from USACE policy defaults. Review the timeline below to confirm the growing period matches your planning assumptions."/>
-                            <ItemsControl ItemsSource="{Binding GrowthStageSummaries}">
+                                       Text="Stage tolerances load from USACE policy defaults. Adjust the values below to reflect local management before rerunning the simulation."/>
+                            <ItemsControl ItemsSource="{Binding StageAdjustments}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border Background="#F9FAFB"
                                                 CornerRadius="6"
                                                 Padding="8"
                                                 Margin="0,0,0,6">
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding Name}"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="#1F2937"/>
-                                                <TextBlock Text="{Binding CalendarWindow}"
-                                                           Foreground="#4B5563"/>
-                                                <StackPanel Orientation="Horizontal"
-                                                            Margin="0,4,0,0">
-                                                    <TextBlock Text="{Binding VulnerabilityText}"
-                                                               Foreground="#1F5134"/>
-                                                    <TextBlock Text="{Binding ToleranceText}"
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.ColumnSpan="2">
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#1F2937"/>
+                                                    <TextBlock Text="{Binding CalendarWindow}"
+                                                               Foreground="#4B5563"/>
+                                                    <TextBlock Text="{Binding ExposureText}"
                                                                Foreground="#1F5134"
-                                                               Margin="12,0,0,0"/>
+                                                               Margin="0,4,0,0"/>
                                                 </StackPanel>
-                                            </StackPanel>
+                                                <StackPanel Grid.Row="1">
+                                                    <TextBlock Text="Flood tolerance (days)"
+                                                               FontWeight="SemiBold"/>
+                                                    <TextBox Text="{Binding FloodToleranceDays, UpdateSourceTrigger=PropertyChanged}"
+                                                             Margin="0,4,0,0"
+                                                             Width="120"
+                                                             ToolTip="Average number of days this stage can withstand inundation."/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Row="1"
+                                                            Grid.Column="1"
+                                                            Margin="12,0,0,0"
+                                                            VerticalAlignment="Bottom">
+                                                    <TextBlock Text="{Binding DefaultToleranceText}"
+                                                               Foreground="#4B5563"/>
+                                                    <Button Content="Reset"
+                                                            Command="{Binding ResetToleranceCommand}"
+                                                            Margin="0,6,0,0"
+                                                            Padding="10,4"
+                                                            HorizontalAlignment="Left"
+                                                            ToolTip="Restore the policy default tolerance for this stage."/>
+                                                </StackPanel>
+                                            </Grid>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+                            <TextBlock TextWrapping="Wrap"
+                                       Margin="0,6,0,0"
+                                       Foreground="#4B5563"
+                                       Text="Use the Calculate button after editing tolerances to refresh the Monte Carlo results."/>
                         </StackPanel>
                     </Border>
 
