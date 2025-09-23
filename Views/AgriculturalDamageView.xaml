@@ -19,7 +19,12 @@
                         <Ellipse Width="56" Height="56" Fill="#7BC4A3"/>
                         <Path Data="M28,14 C20,14 14,20 14,28 C14,36 20,42 28,42 C36,42 42,36 42,28 C42,20 36,14 28,14 Z"
                               Fill="White" Opacity="0.7"/>
-                        <Path Data="M22,28 L26,32 L36,22" Stroke="#2E7D4D" StrokeThickness="3" StrokeLineCap="Round" StrokeLineJoin="Round"/>
+                        <Path Data="M22,28 L26,32 L36,22"
+                              Stroke="#2E7D4D"
+                              StrokeThickness="3"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round"
+                              StrokeLineJoin="Round"/>
                     </Canvas>
                     <StackPanel Margin="12,0,0,0">
                         <TextBlock Text="Agricultural Depth-Duration Damage Guidance"
