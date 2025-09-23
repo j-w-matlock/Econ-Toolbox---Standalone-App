@@ -117,12 +117,12 @@
                                                 <TextBlock Text="{Binding CalendarWindow}"
                                                            Foreground="#4B5563"/>
                                                 <StackPanel Orientation="Horizontal"
-                                                            Margin="0,4,0,0"
-                                                            Spacing="12">
+                                                            Margin="0,4,0,0">
                                                     <TextBlock Text="{Binding VulnerabilityText}"
                                                                Foreground="#1F5134"/>
                                                     <TextBlock Text="{Binding ToleranceText}"
-                                                               Foreground="#1F5134"/>
+                                                               Foreground="#1F5134"
+                                                               Margin="12,0,0,0"/>
                                                 </StackPanel>
                                             </StackPanel>
                                         </Border>
