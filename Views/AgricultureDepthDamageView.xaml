@@ -48,7 +48,7 @@
                         BorderThickness="1"
                         CornerRadius="6"
                         Padding="{StaticResource Padding.Content}"
-                        Margin="0,0,{StaticResource Space.MD},0">
+                        Margin="{StaticResource Margin.InlineMedium}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.Stack}">
                             <TextBlock Text="Custom Region Depth-Damage Inputs"
@@ -191,7 +191,7 @@
                         BorderThickness="1"
                         CornerRadius="6"
                         Padding="{StaticResource Padding.Content}"
-                        Margin="0,{StaticResource Space.MD},0,0">
+                        Margin="{StaticResource Margin.TopLarge}">
                     <StackPanel>
                         <TextBlock Text="Depth-Damage Function"
                                    FontWeight="SemiBold"
