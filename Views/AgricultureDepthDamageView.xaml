@@ -63,6 +63,77 @@
                                    TextWrapping="Wrap"
                                    Margin="{StaticResource Margin.Stack}"/>
 
+                        <Border Visibility="{Binding SelectedRegion.IsCustom, Converter={StaticResource BoolToVisibilityConverter}}"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1"
+                                Background="{StaticResource Brush.SurfaceAlt}"
+                                CornerRadius="4"
+                                Padding="{StaticResource Padding.Content}"
+                                Margin="{StaticResource Margin.Stack}">
+                            <StackPanel>
+                                <TextBlock Text="Custom region parameters"
+                                           FontWeight="SemiBold"
+                                           FontSize="14"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBlock Text="Update the name, description, impact modifier, and depth-duration anchor points to tailor the curve for a local project area."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBox Text="{Binding SelectedRegion.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Margin="{StaticResource Margin.StackSmall}"
+                                         ToolTip="Name shown in the selection list"/>
+                                <TextBox Text="{Binding SelectedRegion.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Margin="{StaticResource Margin.StackSmall}"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         MinHeight="60"/>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="{StaticResource Margin.StackSmall}">
+                                    <StackPanel Width="140"
+                                                Margin="{StaticResource Margin.Inline}">
+                                        <TextBlock Text="Impact modifier"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.ImpactModifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
+                                                 HorizontalContentAlignment="Right"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <DataGrid ItemsSource="{Binding SelectedRegion.DepthDuration}"
+                                          SelectedItem="{Binding SelectedCustomRegionPoint}"
+                                          AutoGenerateColumns="False"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          HeadersVisibility="Column"
+                                          Margin="{StaticResource Margin.StackSmall}"
+                                          IsEnabled="{Binding SelectedRegion.IsCustom}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Depth (ft)"
+                                                            Binding="{Binding DepthFeet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
+                                                            Width="*"/>
+                                        <DataGridTextColumn Header="Duration (days)"
+                                                            Binding="{Binding DurationDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
+                                                            Width="*"/>
+                                        <DataGridTextColumn Header="Base damage (fraction)"
+                                                            Binding="{Binding BaseDamage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
+                                                            Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            Margin="{StaticResource Margin.StackSmall}">
+                                    <Button Content="Add point"
+                                            Command="{Binding AddDepthDurationPointCommand}"
+                                            Margin="{StaticResource Margin.Inline}"/>
+                                    <Button Content="Remove selected"
+                                            Command="{Binding RemoveDepthDurationPointCommand}"
+                                            Margin="{StaticResource Margin.Inline}"/>
+                                </StackPanel>
+                                <TextBlock Text="Base damage represents the fraction of acreage lost at the specified depth and duration (0 = no loss, 1 = total loss)."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                            </StackPanel>
+                        </Border>
+
                         <Separator Margin="{StaticResource Margin.Stack}"/>
 
                         <TextBlock Text="What crop is planted on the acre?"
@@ -78,6 +149,54 @@
                                    Style="{StaticResource Text.Body}"
                                    TextWrapping="Wrap"
                                    Margin="{StaticResource Margin.Stack}"/>
+
+                        <Border Visibility="{Binding SelectedCrop.IsCustom, Converter={StaticResource BoolToVisibilityConverter}}"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1"
+                                Background="{StaticResource Brush.SurfaceAlt}"
+                                CornerRadius="4"
+                                Padding="{StaticResource Padding.Content}"
+                                Margin="{StaticResource Margin.Stack}">
+                            <StackPanel>
+                                <TextBlock Text="Custom crop parameters"
+                                           FontWeight="SemiBold"
+                                           FontSize="14"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBlock Text="Describe the crop and adjust the damage and impact multipliers to capture localized resilience."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBox Text="{Binding SelectedCrop.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Margin="{StaticResource Margin.StackSmall}"
+                                         ToolTip="Name shown in the selection list"/>
+                                <TextBox Text="{Binding SelectedCrop.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Margin="{StaticResource Margin.StackSmall}"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         MinHeight="60"/>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="{StaticResource Margin.StackSmall}">
+                                    <StackPanel Width="140"
+                                                Margin="{StaticResource Margin.Inline}">
+                                        <TextBlock Text="Damage factor"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedCrop.DamageFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
+                                                 HorizontalContentAlignment="Right"/>
+                                    </StackPanel>
+                                    <StackPanel Width="140"
+                                                Margin="{StaticResource Margin.Inline}">
+                                        <TextBlock Text="Impact modifier"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedCrop.ImpactModifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
+                                                 HorizontalContentAlignment="Right"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="Damage factor scales depth-duration damages, while the impact modifier influences the modeled probability of a damaging event."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                            </StackPanel>
+                        </Border>
 
                         <Separator Margin="{StaticResource Margin.Stack}"/>
 

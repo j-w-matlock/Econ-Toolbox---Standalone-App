@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -21,6 +22,9 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<StageExposure> StageExposures { get; }
         public ObservableCollection<DepthDurationDamageRow> DepthDurationRows { get; } = new();
 
+        private readonly RelayCommand _addDepthDurationPointCommand;
+        private readonly RelayCommand _removeDepthDurationPointCommand;
+
         private RegionDefinition? _selectedRegion;
         public RegionDefinition? SelectedRegion
         {
@@ -32,10 +36,15 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
+                DetachRegionHandlers(_selectedRegion);
                 _selectedRegion = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SelectedRegionDescription));
+                SelectedCustomRegionPoint = null;
+                AttachRegionHandlers(_selectedRegion);
                 _computeCommand.RaiseCanExecuteChanged();
+                _addDepthDurationPointCommand.RaiseCanExecuteChanged();
+                _removeDepthDurationPointCommand.RaiseCanExecuteChanged();
                 if (!_isInitializing)
                 {
                     ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
@@ -44,6 +53,23 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public string? SelectedRegionDescription => SelectedRegion?.Description;
+
+        private DepthDurationPoint? _selectedCustomRegionPoint;
+        public DepthDurationPoint? SelectedCustomRegionPoint
+        {
+            get => _selectedCustomRegionPoint;
+            set
+            {
+                if (_selectedCustomRegionPoint == value)
+                {
+                    return;
+                }
+
+                _selectedCustomRegionPoint = value;
+                OnPropertyChanged();
+                _removeDepthDurationPointCommand.RaiseCanExecuteChanged();
+            }
+        }
 
         private CropDefinition? _selectedCrop;
         public CropDefinition? SelectedCrop
@@ -56,9 +82,11 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
+                DetachCropHandlers(_selectedCrop);
                 _selectedCrop = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SelectedCropDescription));
+                AttachCropHandlers(_selectedCrop);
                 _computeCommand.RaiseCanExecuteChanged();
                 if (!_isInitializing)
                 {
@@ -177,6 +205,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ICommand ComputeCommand => _computeCommand;
         public ICommand ExportCommand => _exportCommand;
+        public ICommand AddDepthDurationPointCommand => _addDepthDurationPointCommand;
+        public ICommand RemoveDepthDurationPointCommand => _removeDepthDurationPointCommand;
 
         public AgricultureDepthDamageViewModel()
         {
@@ -191,6 +221,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             _computeCommand = new RelayCommand(Compute, CanCompute);
             _exportCommand = new RelayCommand(Export, () => DepthDurationRows.Count > 0);
+            _addDepthDurationPointCommand = new RelayCommand(AddDepthDurationPoint, () => SelectedRegion?.IsCustom == true);
+            _removeDepthDurationPointCommand = new RelayCommand(RemoveDepthDurationPoint, () => SelectedRegion?.IsCustom == true && SelectedCustomRegionPoint != null);
 
             if (Regions.Count > 0)
             {
@@ -206,6 +238,124 @@ namespace EconToolbox.Desktop.ViewModels
             Compute();
         }
 
+        private void AttachRegionHandlers(RegionDefinition? region)
+        {
+            if (region == null)
+            {
+                return;
+            }
+
+            region.PropertyChanged += Region_PropertyChanged;
+            region.DepthDuration.CollectionChanged += RegionDepthDuration_CollectionChanged;
+            foreach (var point in region.DepthDuration)
+            {
+                point.PropertyChanged += DepthDurationPoint_PropertyChanged;
+            }
+        }
+
+        private void DetachRegionHandlers(RegionDefinition? region)
+        {
+            if (region == null)
+            {
+                return;
+            }
+
+            region.PropertyChanged -= Region_PropertyChanged;
+            region.DepthDuration.CollectionChanged -= RegionDepthDuration_CollectionChanged;
+            foreach (var point in region.DepthDuration)
+            {
+                point.PropertyChanged -= DepthDurationPoint_PropertyChanged;
+            }
+        }
+
+        private void Region_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (_isInitializing)
+            {
+                return;
+            }
+
+            if (e.PropertyName == nameof(RegionDefinition.Description) || e.PropertyName == nameof(RegionDefinition.Name))
+            {
+                OnPropertyChanged(nameof(SelectedRegionDescription));
+            }
+
+            ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+        }
+
+        private void RegionDepthDuration_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (DepthDurationPoint point in e.OldItems)
+                {
+                    point.PropertyChanged -= DepthDurationPoint_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (DepthDurationPoint point in e.NewItems)
+                {
+                    point.PropertyChanged += DepthDurationPoint_PropertyChanged;
+                }
+            }
+
+            _removeDepthDurationPointCommand.RaiseCanExecuteChanged();
+
+            if (_isInitializing)
+            {
+                return;
+            }
+
+            ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+        }
+
+        private void DepthDurationPoint_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (_isInitializing)
+            {
+                return;
+            }
+
+            ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+        }
+
+        private void AttachCropHandlers(CropDefinition? crop)
+        {
+            if (crop == null)
+            {
+                return;
+            }
+
+            crop.PropertyChanged += Crop_PropertyChanged;
+        }
+
+        private void DetachCropHandlers(CropDefinition? crop)
+        {
+            if (crop == null)
+            {
+                return;
+            }
+
+            crop.PropertyChanged -= Crop_PropertyChanged;
+        }
+
+        private void Crop_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (_isInitializing)
+            {
+                return;
+            }
+
+            if (e.PropertyName == nameof(CropDefinition.Description) || e.PropertyName == nameof(CropDefinition.Name))
+            {
+                OnPropertyChanged(nameof(SelectedCropDescription));
+            }
+
+            ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+        }
+
         private void Stage_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (_isInitializing)
@@ -217,6 +367,32 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         private bool CanCompute() => SelectedRegion != null && SelectedCrop != null;
+
+        private void AddDepthDurationPoint()
+        {
+            if (SelectedRegion?.IsCustom != true)
+            {
+                return;
+            }
+
+            var last = SelectedRegion.DepthDuration.LastOrDefault();
+            double nextDepth = last?.DepthFeet + 0.5 ?? 1.0;
+            double nextDuration = last?.DurationDays + 1.0 ?? 3.0;
+            double nextDamage = last?.BaseDamage ?? 0.25;
+
+            SelectedRegion.DepthDuration.Add(new DepthDurationPoint(nextDepth, nextDuration, nextDamage));
+            ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+        }
+
+        private void RemoveDepthDurationPoint()
+        {
+            if (SelectedRegion?.IsCustom == true && SelectedCustomRegionPoint != null)
+            {
+                SelectedRegion.DepthDuration.Remove(SelectedCustomRegionPoint);
+                SelectedCustomRegionPoint = null;
+                ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+            }
+        }
 
         private void Compute()
         {
@@ -298,103 +474,381 @@ namespace EconToolbox.Desktop.ViewModels
             File.WriteAllLines(dialog.FileName, lines);
         }
 
-        public class RegionDefinition
+        public class RegionDefinition : BaseViewModel
         {
-            public RegionDefinition(string name, string description, double impactModifier, IReadOnlyList<DepthDurationPoint> depthDuration)
+            private string _name;
+            private string _description;
+            private double _impactModifier;
+
+            public RegionDefinition(string name, string description, double impactModifier, IEnumerable<DepthDurationPoint> depthDuration, bool isCustom = false)
             {
-                Name = name;
-                Description = description;
-                ImpactModifier = impactModifier;
-                DepthDuration = depthDuration;
-                MaxDuration = depthDuration.Count == 0 ? 1.0 : depthDuration.Max(p => p.DurationDays);
+                _name = name;
+                _description = description;
+                _impactModifier = impactModifier;
+                IsCustom = isCustom;
+                DepthDuration = new ObservableCollection<DepthDurationPoint>(depthDuration.Select(p => p.Clone()));
+                DepthDuration.CollectionChanged += DepthDuration_CollectionChanged;
+                foreach (var point in DepthDuration)
+                {
+                    point.PropertyChanged += DepthDurationPoint_PropertyChanged;
+                }
             }
 
-            public string Name { get; }
-            public string Description { get; }
-            public double ImpactModifier { get; }
-            public IReadOnlyList<DepthDurationPoint> DepthDuration { get; }
-            public double MaxDuration { get; }
+            public string Name
+            {
+                get => _name;
+                set
+                {
+                    if (!IsCustom)
+                    {
+                        return;
+                    }
+
+                    string adjusted = value?.Trim() ?? string.Empty;
+                    if (_name == adjusted)
+                    {
+                        return;
+                    }
+
+                    _name = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public string Description
+            {
+                get => _description;
+                set
+                {
+                    if (!IsCustom)
+                    {
+                        return;
+                    }
+
+                    string adjusted = value ?? string.Empty;
+                    if (_description == adjusted)
+                    {
+                        return;
+                    }
+
+                    _description = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public double ImpactModifier
+            {
+                get => _impactModifier;
+                set
+                {
+                    if (!IsCustom)
+                    {
+                        return;
+                    }
+
+                    double adjusted = double.IsFinite(value) ? Math.Clamp(value, 0.1, 5.0) : 1.0;
+                    if (Math.Abs(_impactModifier - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _impactModifier = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public ObservableCollection<DepthDurationPoint> DepthDuration { get; }
+
+            public bool IsCustom { get; }
+
+            public double MaxDuration => DepthDuration.Count == 0 ? 1.0 : DepthDuration.Max(p => p.DurationDays);
+
+            private void DepthDuration_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+            {
+                if (e.OldItems != null)
+                {
+                    foreach (DepthDurationPoint point in e.OldItems)
+                    {
+                        point.PropertyChanged -= DepthDurationPoint_PropertyChanged;
+                    }
+                }
+
+                if (e.NewItems != null)
+                {
+                    foreach (DepthDurationPoint point in e.NewItems)
+                    {
+                        point.PropertyChanged += DepthDurationPoint_PropertyChanged;
+                    }
+                }
+
+                OnPropertyChanged(nameof(MaxDuration));
+            }
+
+            private void DepthDurationPoint_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == nameof(DepthDurationPoint.DurationDays))
+                {
+                    OnPropertyChanged(nameof(MaxDuration));
+                }
+            }
 
             public static IEnumerable<RegionDefinition> CreateDefaults()
             {
-                return new[]
+                var regions = new List<RegionDefinition>
                 {
                     new RegionDefinition(
-                        "Midwest",
-                        "Represents cropland in the Ohio and lower Mississippi River basins with moderate levee protection.",
-                        0.85,
+                        "North Atlantic Division",
+                        "Coastal and riverine floodplains from Virginia to Maine with extensive drainage infrastructure and shorter ponding durations.",
+                        0.82,
                         new[]
                         {
-                            new DepthDurationPoint(1.2, 3, 0.18),
-                            new DepthDurationPoint(2.1, 5, 0.32),
-                            new DepthDurationPoint(3.0, 7, 0.5),
-                            new DepthDurationPoint(4.2, 10, 0.68),
-                            new DepthDurationPoint(5.1, 14, 0.82)
+                            new DepthDurationPoint(1.0, 2, 0.16),
+                            new DepthDurationPoint(1.8, 4, 0.29),
+                            new DepthDurationPoint(2.6, 6, 0.47),
+                            new DepthDurationPoint(3.4, 9, 0.63),
+                            new DepthDurationPoint(4.2, 12, 0.78)
                         }),
                     new RegionDefinition(
-                        "Great Plains",
-                        "Captures broad, relatively flat floodplains along interior prairie rivers.",
-                        0.75,
+                        "South Atlantic Division",
+                        "Southeastern alluvial plains where tropical rainfall and longer drainage times elevate losses.",
+                        0.96,
+                        new[]
+                        {
+                            new DepthDurationPoint(1.2, 3, 0.2),
+                            new DepthDurationPoint(2.1, 5, 0.36),
+                            new DepthDurationPoint(3.0, 7, 0.55),
+                            new DepthDurationPoint(4.0, 10, 0.72),
+                            new DepthDurationPoint(5.0, 14, 0.86)
+                        }),
+                    new RegionDefinition(
+                        "Great Lakes & Ohio River Division",
+                        "Interior basin cropland subject to protracted spring floods along the Ohio and Tennessee systems.",
+                        0.88,
+                        new[]
+                        {
+                            new DepthDurationPoint(1.0, 3, 0.18),
+                            new DepthDurationPoint(1.8, 5, 0.32),
+                            new DepthDurationPoint(2.6, 7, 0.5),
+                            new DepthDurationPoint(3.5, 10, 0.68),
+                            new DepthDurationPoint(4.3, 13, 0.8)
+                        }),
+                    new RegionDefinition(
+                        "Mississippi Valley Division",
+                        "Lower Mississippi and tributary bottoms with high exposure to deep, slow-draining floods.",
+                        1.1,
+                        new[]
+                        {
+                            new DepthDurationPoint(1.5, 4, 0.26),
+                            new DepthDurationPoint(2.6, 6, 0.45),
+                            new DepthDurationPoint(3.5, 9, 0.67),
+                            new DepthDurationPoint(4.6, 12, 0.82),
+                            new DepthDurationPoint(5.8, 16, 0.92)
+                        }),
+                    new RegionDefinition(
+                        "Lower Mississippi Alluvial Valley",
+                        "Backwater rice and row-crop systems with the longest flood residence times in the system.",
+                        1.08,
+                        new[]
+                        {
+                            new DepthDurationPoint(1.6, 4, 0.3),
+                            new DepthDurationPoint(2.8, 6, 0.5),
+                            new DepthDurationPoint(3.8, 9, 0.7),
+                            new DepthDurationPoint(4.9, 12, 0.85),
+                            new DepthDurationPoint(6.0, 16, 0.95)
+                        }),
+                    new RegionDefinition(
+                        "Northwestern Division",
+                        "High-gradient basins and irrigated valleys in the northern plains with faster drawdown.",
+                        0.72,
                         new[]
                         {
                             new DepthDurationPoint(0.8, 2, 0.12),
                             new DepthDurationPoint(1.5, 4, 0.22),
-                            new DepthDurationPoint(2.4, 6, 0.36),
-                            new DepthDurationPoint(3.6, 9, 0.58),
-                            new DepthDurationPoint(4.2, 12, 0.74)
+                            new DepthDurationPoint(2.3, 6, 0.36),
+                            new DepthDurationPoint(3.2, 9, 0.52),
+                            new DepthDurationPoint(4.0, 12, 0.68)
                         }),
                     new RegionDefinition(
-                        "Mississippi Delta",
-                        "Low-lying backwater areas with prolonged inundation potential and shallow topographic relief.",
-                        1.05,
+                        "Southwestern Division",
+                        "Wide alluvial fans and interior plains from the Red River through Texas with intermittent flooding.",
+                        0.78,
                         new[]
                         {
-                            new DepthDurationPoint(1.5, 4, 0.24),
-                            new DepthDurationPoint(2.8, 6, 0.42),
-                            new DepthDurationPoint(3.5, 9, 0.63),
-                            new DepthDurationPoint(4.8, 12, 0.78),
-                            new DepthDurationPoint(5.6, 16, 0.9)
+                            new DepthDurationPoint(0.9, 2, 0.14),
+                            new DepthDurationPoint(1.6, 4, 0.25),
+                            new DepthDurationPoint(2.4, 6, 0.4),
+                            new DepthDurationPoint(3.3, 9, 0.58),
+                            new DepthDurationPoint(4.1, 12, 0.74)
                         }),
                     new RegionDefinition(
-                        "Mountain West",
-                        "Irrigated valleys with flashy runoff and faster drainage.",
-                        0.65,
+                        "South Pacific Division",
+                        "Irrigated valleys along California and Arizona rivers where managed systems reduce depth exposure.",
+                        0.7,
                         new[]
                         {
-                            new DepthDurationPoint(0.6, 1, 0.1),
-                            new DepthDurationPoint(1.4, 3, 0.18),
-                            new DepthDurationPoint(2.1, 5, 0.3),
-                            new DepthDurationPoint(3.2, 7, 0.45),
-                            new DepthDurationPoint(3.8, 10, 0.6)
-                        })
+                            new DepthDurationPoint(0.7, 2, 0.1),
+                            new DepthDurationPoint(1.4, 4, 0.2),
+                            new DepthDurationPoint(2.2, 6, 0.32),
+                            new DepthDurationPoint(3.0, 8, 0.48),
+                            new DepthDurationPoint(3.8, 11, 0.62)
+                        }),
+                    new RegionDefinition(
+                        "Pacific Ocean Division",
+                        "Tropical systems and volcanic island valleys with rapid runoff and shorter flood durations.",
+                        0.76,
+                        new[]
+                        {
+                            new DepthDurationPoint(0.6, 1.5, 0.09),
+                            new DepthDurationPoint(1.2, 3, 0.18),
+                            new DepthDurationPoint(2.0, 5, 0.32),
+                            new DepthDurationPoint(2.8, 7, 0.5),
+                            new DepthDurationPoint(3.6, 10, 0.66)
+                        }),
+                    new RegionDefinition(
+                        "Texas Gulf Coast",
+                        "Coastal prairie systems where tropical rainfall and surge can inundate cropland for extended periods.",
+                        0.92,
+                        new[]
+                        {
+                            new DepthDurationPoint(1.2, 3, 0.22),
+                            new DepthDurationPoint(2.1, 5, 0.38),
+                            new DepthDurationPoint(3.0, 8, 0.56),
+                            new DepthDurationPoint(4.0, 11, 0.72),
+                            new DepthDurationPoint(5.0, 14, 0.84)
+                        }),
+                    new RegionDefinition(
+                        "Custom region",
+                        "Define the location-specific depth-duration relationship and impact modifier for your project area.",
+                        1.0,
+                        new[]
+                        {
+                            new DepthDurationPoint(1.0, 3, 0.2),
+                            new DepthDurationPoint(2.5, 6, 0.45),
+                            new DepthDurationPoint(4.0, 10, 0.7)
+                        },
+                        isCustom: true)
                 };
+
+                return regions;
             }
         }
 
-        public class CropDefinition
+        public class CropDefinition : BaseViewModel
         {
-            public CropDefinition(string name, string description, double damageFactor, double impactModifier)
+            private string _name;
+            private string _description;
+            private double _damageFactor;
+            private double _impactModifier;
+
+            public CropDefinition(string name, string description, double damageFactor, double impactModifier, bool isCustom = false)
             {
-                Name = name;
-                Description = description;
-                DamageFactor = damageFactor;
-                ImpactModifier = impactModifier;
+                _name = name;
+                _description = description;
+                _damageFactor = damageFactor;
+                _impactModifier = impactModifier;
+                IsCustom = isCustom;
             }
 
-            public string Name { get; }
-            public string Description { get; }
-            public double DamageFactor { get; }
-            public double ImpactModifier { get; }
+            public string Name
+            {
+                get => _name;
+                set
+                {
+                    if (!IsCustom)
+                    {
+                        return;
+                    }
+
+                    string adjusted = value?.Trim() ?? string.Empty;
+                    if (_name == adjusted)
+                    {
+                        return;
+                    }
+
+                    _name = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public string Description
+            {
+                get => _description;
+                set
+                {
+                    if (!IsCustom)
+                    {
+                        return;
+                    }
+
+                    string adjusted = value ?? string.Empty;
+                    if (_description == adjusted)
+                    {
+                        return;
+                    }
+
+                    _description = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public double DamageFactor
+            {
+                get => _damageFactor;
+                set
+                {
+                    double adjusted = double.IsFinite(value) ? Math.Clamp(value, 0.1, 5.0) : 1.0;
+                    if (!IsCustom)
+                    {
+                        adjusted = _damageFactor;
+                    }
+
+                    if (Math.Abs(_damageFactor - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _damageFactor = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public double ImpactModifier
+            {
+                get => _impactModifier;
+                set
+                {
+                    double adjusted = double.IsFinite(value) ? Math.Clamp(value, 0.1, 5.0) : 1.0;
+                    if (!IsCustom)
+                    {
+                        adjusted = _impactModifier;
+                    }
+
+                    if (Math.Abs(_impactModifier - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _impactModifier = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public bool IsCustom { get; }
 
             public static IEnumerable<CropDefinition> CreateDefaults()
             {
-                return new[]
+                var crops = new List<CropDefinition>
                 {
                     new CropDefinition(
                         "Corn (grain)",
                         "Warm-season row crop with high yield potential but sensitivity during tasseling.",
                         0.95,
                         1.1),
+                    new CropDefinition(
+                        "Corn (silage)",
+                        "Harvested at higher moisture with slightly more resilience during late season cutting.",
+                        0.9,
+                        1.05),
                     new CropDefinition(
                         "Soybeans",
                         "Legume crop with moderate flood resilience until pod fill.",
@@ -414,8 +868,66 @@ namespace EconToolbox.Desktop.ViewModels
                         "Rice",
                         "Flood-tolerant crop typically grown in managed paddies, dampening incremental damage from riverine flooding.",
                         0.6,
-                        0.65)
+                        0.65),
+                    new CropDefinition(
+                        "Sorghum",
+                        "Drought-tolerant grain that can endure modest inundation but is vulnerable during heading.",
+                        0.8,
+                        0.9),
+                    new CropDefinition(
+                        "Peanuts",
+                        "Low-growing legume with underground pods susceptible to prolonged saturation.",
+                        0.88,
+                        1.0),
+                    new CropDefinition(
+                        "Sugarcane",
+                        "Perennial grass with high biomass and extended harvest season concentrated along the Gulf Coast.",
+                        0.92,
+                        1.15),
+                    new CropDefinition(
+                        "Alfalfa / hay",
+                        "Forage systems with moderate tolerance to standing water but rapid quality losses if ponded.",
+                        0.65,
+                        0.75),
+                    new CropDefinition(
+                        "Pasture / rangeland",
+                        "Grazing lands with low investment per acre and faster recovery following shallow inundation.",
+                        0.5,
+                        0.6),
+                    new CropDefinition(
+                        "Vegetables (fresh market)",
+                        "High-value specialty crops with acute sensitivity to even short flood events.",
+                        0.98,
+                        1.2),
+                    new CropDefinition(
+                        "Vegetables (processing)",
+                        "Contract vegetable acreage with slightly lower value and staggered harvest windows.",
+                        0.9,
+                        1.0),
+                    new CropDefinition(
+                        "Fruit & nut orchards",
+                        "Permanent tree crops where prolonged ponding can cause stand mortality and multi-year losses.",
+                        0.96,
+                        1.25),
+                    new CropDefinition(
+                        "Berries & vineyards",
+                        "Perennial specialty fruit with trellised systems and elevated damage during bloom.",
+                        0.94,
+                        1.18),
+                    new CropDefinition(
+                        "Tobacco",
+                        "Labor-intensive specialty crop common in the Southeast with low tolerance to saturated soils.",
+                        0.93,
+                        1.12),
+                    new CropDefinition(
+                        "Custom crop",
+                        "Define crop-specific sensitivity, damage factors, and narrative for localized analyses.",
+                        1.0,
+                        1.0,
+                        isCustom: true)
                 };
+
+                return crops;
             }
         }
 
@@ -553,7 +1065,69 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public record DepthDurationPoint(double DepthFeet, double DurationDays, double BaseDamage);
+        public class DepthDurationPoint : BaseViewModel
+        {
+            private double _depthFeet;
+            private double _durationDays;
+            private double _baseDamage;
+
+            public DepthDurationPoint(double depthFeet, double durationDays, double baseDamage)
+            {
+                _depthFeet = double.IsFinite(depthFeet) ? Math.Max(0.0, depthFeet) : 0.0;
+                _durationDays = double.IsFinite(durationDays) ? Math.Max(0.1, durationDays) : 0.1;
+                _baseDamage = double.IsFinite(baseDamage) ? Math.Clamp(baseDamage, 0.0, 1.0) : 0.0;
+            }
+
+            public double DepthFeet
+            {
+                get => _depthFeet;
+                set
+                {
+                    double adjusted = double.IsFinite(value) ? Math.Max(0.0, value) : _depthFeet;
+                    if (Math.Abs(_depthFeet - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _depthFeet = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public double DurationDays
+            {
+                get => _durationDays;
+                set
+                {
+                    double adjusted = double.IsFinite(value) ? Math.Max(0.1, value) : _durationDays;
+                    if (Math.Abs(_durationDays - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _durationDays = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public double BaseDamage
+            {
+                get => _baseDamage;
+                set
+                {
+                    double adjusted = double.IsFinite(value) ? Math.Clamp(value, 0.0, 1.0) : _baseDamage;
+                    if (Math.Abs(_baseDamage - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _baseDamage = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public DepthDurationPoint Clone() => new DepthDurationPoint(DepthFeet, DurationDays, BaseDamage);
+        }
 
         public record DepthDurationDamageRow(double DepthFeet, double DurationDays, double DamagePercent);
     }
