@@ -181,6 +181,33 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                        <Separator Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Text="Return period checkpoints"
+                                   FontWeight="SemiBold"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <ItemsControl ItemsSource="{Binding ReturnPeriodInsights}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="{StaticResource Margin.StackSmall}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Label}"
+                                                   Style="{StaticResource Text.Body}"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding DamageDisplay}"
+                                                   Margin="12,0,0,0"
+                                                   Style="{StaticResource Text.Body}"/>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding DepthDisplay}"
+                                                   Margin="12,0,0,0"
+                                                   Style="{StaticResource Text.Body}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </Border>
 
