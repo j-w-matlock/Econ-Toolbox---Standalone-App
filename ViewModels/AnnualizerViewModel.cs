@@ -207,7 +207,7 @@ namespace EconToolbox.Desktop.ViewModels
             try
             {
                 List<(double cost, double yearOffset, double timingOffset)> future = FutureCosts
-                    .Select(f => (f.Cost, (double)(f.Year - BaseYear), GetTimingOffset(f.Timing)))
+                    .Select(f => (f.Cost, f.Year - BaseYear, GetTimingOffset(f.Timing)))
                     .ToList();
 
                 double[]? costArr = null;
