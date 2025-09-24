@@ -7,6 +7,7 @@ namespace EconToolbox.Desktop.ViewModels
     public class MainViewModel : BaseViewModel
     {
         public EadViewModel Ead { get; } = new();
+        public AgricultureDepthDamageViewModel AgricultureDepthDamage { get; } = new();
         public UpdatedCostViewModel UpdatedCost { get; } = new();
         public AnnualizerViewModel Annualizer { get; } = new();
         public UdvViewModel Udv { get; } = new();
@@ -73,6 +74,24 @@ namespace EconToolbox.Desktop.ViewModels
                     "Example: The Cedar River levee district pairs 0.5, 0.1, and 0.01 annual exceedance probabilities with $250K, $1.2M, and $6.8M structure damage estimates captured in its 2019 flood study.",
                     Ead,
                     Ead.ComputeCommand),
+                new ModuleDefinition(
+                    "Agriculture Depth-Damage",
+                    "Calibrate crop and structure damages for agricultural assets using custom depth-damage relationships.",
+                    new[]
+                    {
+                        "Enter annual exceedance probabilities as decimal values between 0 and 1 for each point on the curve.",
+                        "Pair each probability with the representative flood depth and percent damage for your custom region.",
+                        "Use Add/Remove Row to adjust the table before running the Monte Carlo simulation."
+                    },
+                    new[]
+                    {
+                        "Runs a Monte Carlo simulation that interpolates across your exceedance probabilities.",
+                        "Summarizes mean, median, and 90th percentile damages alongside inundation depths.",
+                        "Plots the resulting depth-damage function so you can visually confirm curve behavior."
+                    },
+                    "Example: A delta farm pairs 0.5, 0.1, and 0.02 annual exceedance probabilities with 0 ft, 1.5 ft, and 3.5 ft flood depths causing 0%, 25%, and 75% damages respectively.",
+                    AgricultureDepthDamage,
+                    AgricultureDepthDamage.ComputeCommand),
                 new ModuleDefinition(
                     "Updated Cost of Storage",
                     "Update historical costs and allocate joint expenses based on storage recommendations.",

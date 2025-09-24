@@ -22,14 +22,17 @@
     </Window.DataContext>
 
     <Window.Resources>
-        <ResourceDictionary>
-            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <DataTemplate DataType="{x:Type vm:EadViewModel}">
-                <views:EadView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:UpdatedCostViewModel}">
-                <views:UpdatedCostView/>
-            </DataTemplate>
+            <ResourceDictionary>
+                <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+                <DataTemplate DataType="{x:Type vm:EadViewModel}">
+                    <views:EadView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:AgricultureDepthDamageViewModel}">
+                    <views:AgricultureDepthDamageView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:UpdatedCostViewModel}">
+                    <views:UpdatedCostView/>
+                </DataTemplate>
             <DataTemplate DataType="{x:Type vm:AnnualizerViewModel}">
                 <views:AnnualizerView/>
             </DataTemplate>
