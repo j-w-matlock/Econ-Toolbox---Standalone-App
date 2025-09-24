@@ -19,6 +19,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<string> MonteCarloInsights { get; } = new();
 
+        public ObservableCollection<ReturnPeriodInsight> ReturnPeriodInsights { get; } = new();
+
         private string _monteCarloSummary = "Add at least two probability-depth rows and press Calculate to generate insights.";
         public string MonteCarloSummary
         {
@@ -101,11 +103,28 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void AddRow()
         {
+            if (CustomRegionRows.Count == 0)
+            {
+                CustomRegionRows.Add(new CustomRegionRow
+                {
+                    AnnualExceedanceProbability = 0.5,
+                    FloodDepthFeet = 0,
+                    DamagePercent = 0
+                });
+                return;
+            }
+
+            var lastRow = CustomRegionRows[^1];
+
+            double nextProbability = Math.Max(Math.Round(lastRow.AnnualExceedanceProbability / 2, 3), 0.001);
+            double nextDepth = Math.Round(lastRow.FloodDepthFeet + 1.0, 2);
+            double nextDamage = Math.Min(100.0, Math.Round(lastRow.DamagePercent + 15.0, 2));
+
             CustomRegionRows.Add(new CustomRegionRow
             {
-                AnnualExceedanceProbability = 0.01,
-                FloodDepthFeet = 4.0,
-                DamagePercent = 90.0
+                AnnualExceedanceProbability = nextProbability,
+                FloodDepthFeet = nextDepth,
+                DamagePercent = nextDamage
             });
         }
 
@@ -131,6 +150,7 @@ namespace EconToolbox.Desktop.ViewModels
                     && double.IsFinite(r.FloodDepthFeet)
                     && double.IsFinite(r.DamagePercent))
                 .Where(r => r.AnnualExceedanceProbability >= 0 && r.AnnualExceedanceProbability <= 1)
+                .Where(r => r.FloodDepthFeet >= 0 && r.DamagePercent >= 0)
                 .OrderByDescending(r => r.AnnualExceedanceProbability)
                 .ToList();
 
@@ -144,11 +164,17 @@ namespace EconToolbox.Desktop.ViewModels
                 MonteCarloSummary = "Enter at least two rows with valid annual exceedance probabilities to run the simulation.";
                 MonteCarloInsights.Clear();
                 DepthDamagePoints = new PointCollection();
+                ReturnPeriodInsights.Clear();
                 return;
             }
 
             UpdateDepthDamagePoints(rows);
-            RunMonteCarlo(rows);
+
+            var damageCurve = BuildProbabilityCurve(rows, r => r.DamagePercent, anchorValue: 0.0, anchorMaxValue: rows.Max(r => r.DamagePercent));
+            var depthCurve = BuildProbabilityCurve(rows, r => r.FloodDepthFeet, anchorValue: 0.0, anchorMaxValue: rows.Max(r => r.FloodDepthFeet));
+
+            RunMonteCarlo(damageCurve, depthCurve, rows.Count);
+            UpdateReturnPeriodInsights(damageCurve, depthCurve);
         }
 
         private void UpdateDepthDamagePoints(IReadOnlyCollection<CustomRegionRow> rows)
@@ -179,7 +205,10 @@ namespace EconToolbox.Desktop.ViewModels
             double maxDepth = ordered.Max(r => r.FloodDepthFeet);
             double maxDamage = ordered.Max(r => r.DamagePercent);
 
-            PointCollection points = CreatePointCollection(ordered.Select(r => (r.FloodDepthFeet, r.DamagePercent)).ToList(), maxDepth, maxDamage);
+            PointCollection points = CreatePointCollection(
+                ordered.Select(r => (r.FloodDepthFeet, r.DamagePercent)).ToList(),
+                maxDepth,
+                maxDamage);
             DepthDamagePoints = points;
         }
 
@@ -214,11 +243,11 @@ namespace EconToolbox.Desktop.ViewModels
             return points;
         }
 
-        private void RunMonteCarlo(IReadOnlyList<CustomRegionRow> rows)
+        private void RunMonteCarlo(
+            List<(double Probability, double Value)> damageCurve,
+            List<(double Probability, double Value)> depthCurve,
+            int rowCount)
         {
-            var probabilityCurve = BuildProbabilityCurve(rows, r => r.DamagePercent, anchorValue: 0.0, anchorMaxValue: rows.Max(r => r.DamagePercent));
-            var depthCurve = BuildProbabilityCurve(rows, r => r.FloodDepthFeet, anchorValue: 0.0, anchorMaxValue: rows.Max(r => r.FloodDepthFeet));
-
             int iterations = 5000;
             List<double> damageSamples = new(iterations);
             List<double> depthSamples = new(iterations);
@@ -227,7 +256,7 @@ namespace EconToolbox.Desktop.ViewModels
             for (int i = 0; i < iterations; i++)
             {
                 double exceedance = random.NextDouble();
-                double damage = Interpolate(exceedance, probabilityCurve);
+                double damage = Interpolate(exceedance, damageCurve);
                 double depth = Interpolate(exceedance, depthCurve);
                 damageSamples.Add(damage);
                 depthSamples.Add(depth);
@@ -242,13 +271,34 @@ namespace EconToolbox.Desktop.ViewModels
             double meanDepth = depthSamples.Average();
             double p90Depth = GetPercentile(depthSamples, 0.9);
 
-            MonteCarloSummary = $"Simulated {iterations:N0} annual events using linear interpolation across the supplied AEP curve.";
+            MonteCarloSummary =
+                $"Simulated {iterations:N0} annual events using {rowCount} calibration points and linear interpolation across the supplied AEP curve.";
             MonteCarloInsights.Clear();
             MonteCarloInsights.Add($"Mean damage: {meanDamage:0.##}%");
             MonteCarloInsights.Add($"Median damage: {medianDamage:0.##}%");
             MonteCarloInsights.Add($"90th percentile damage: {p90Damage:0.##}%");
             MonteCarloInsights.Add($"Average inundation depth: {meanDepth:0.##} ft");
             MonteCarloInsights.Add($"90th percentile depth: {p90Depth:0.##} ft");
+        }
+
+        private void UpdateReturnPeriodInsights(
+            List<(double Probability, double Value)> damageCurve,
+            List<(double Probability, double Value)> depthCurve)
+        {
+            ReturnPeriodInsights.Clear();
+
+            if (damageCurve.Count == 0 || depthCurve.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var (probability, label) in ReturnPeriodInsight.DefaultCheckpoints)
+            {
+                double damage = Interpolate(probability, damageCurve);
+                double depth = Interpolate(probability, depthCurve);
+
+                ReturnPeriodInsights.Add(new ReturnPeriodInsight(probability, damage, depth, label));
+            }
         }
 
         private static List<(double Probability, double Value)> BuildProbabilityCurve(
@@ -378,6 +428,41 @@ namespace EconToolbox.Desktop.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public class ReturnPeriodInsight
+        {
+            public static readonly (double Probability, string Label)[] DefaultCheckpoints = new[]
+            {
+                (0.5, "2-year"),
+                (0.2, "5-year"),
+                (0.1, "10-year"),
+                (0.04, "25-year"),
+                (0.02, "50-year"),
+                (0.01, "100-year")
+            };
+
+            public ReturnPeriodInsight(double probability, double damagePercent, double floodDepthFeet, string label)
+            {
+                Probability = ClampProbability(probability);
+                DamagePercent = Math.Max(0, damagePercent);
+                FloodDepthFeet = Math.Max(0, floodDepthFeet);
+                Label = label;
+            }
+
+            public double Probability { get; }
+
+            public double DamagePercent { get; }
+
+            public double FloodDepthFeet { get; }
+
+            public string Label { get; }
+
+            public string ProbabilityDisplay => Probability.ToString("P0");
+
+            public string DamageDisplay => $"{DamagePercent:0.##}%";
+
+            public string DepthDisplay => $"{FloodDepthFeet:0.##} ft";
         }
     }
 }
