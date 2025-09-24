@@ -23,6 +23,9 @@
 
     <Window.Resources>
             <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="Themes/Design.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
                 <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
                 <DataTemplate DataType="{x:Type vm:EadViewModel}">
                     <views:EadView/>
