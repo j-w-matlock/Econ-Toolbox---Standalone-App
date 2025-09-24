@@ -1,468 +1,560 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Media;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace EconToolbox.Desktop.ViewModels
 {
     public class AgricultureDepthDamageViewModel : BaseViewModel
     {
-        private readonly RelayCommand _removeRowCommand;
         private readonly RelayCommand _computeCommand;
+        private readonly RelayCommand _exportCommand;
+        private bool _isInitializing = true;
 
-        public ObservableCollection<CustomRegionRow> CustomRegionRows { get; } = new();
+        public ObservableCollection<RegionDefinition> Regions { get; }
+        public ObservableCollection<CropDefinition> Crops { get; }
+        public ObservableCollection<StageExposure> StageExposures { get; }
+        public ObservableCollection<DepthDurationDamageRow> DepthDurationRows { get; } = new();
 
-        public ObservableCollection<string> MonteCarloInsights { get; } = new();
-
-        public ObservableCollection<ReturnPeriodInsight> ReturnPeriodInsights { get; } = new();
-
-        private string _monteCarloSummary = "Add at least two probability-depth rows and press Calculate to generate insights.";
-        public string MonteCarloSummary
+        private RegionDefinition? _selectedRegion;
+        public RegionDefinition? SelectedRegion
         {
-            get => _monteCarloSummary;
-            private set { _monteCarloSummary = value; OnPropertyChanged(); }
+            get => _selectedRegion;
+            set
+            {
+                if (_selectedRegion == value)
+                {
+                    return;
+                }
+
+                _selectedRegion = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedRegionDescription));
+                _computeCommand.RaiseCanExecuteChanged();
+                if (!_isInitializing)
+                {
+                    ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+                }
+            }
         }
 
-        private PointCollection _depthDamagePoints = new();
-        public PointCollection DepthDamagePoints
+        public string? SelectedRegionDescription => SelectedRegion?.Description;
+
+        private CropDefinition? _selectedCrop;
+        public CropDefinition? SelectedCrop
         {
-            get => _depthDamagePoints;
-            private set { _depthDamagePoints = value; OnPropertyChanged(); }
+            get => _selectedCrop;
+            set
+            {
+                if (_selectedCrop == value)
+                {
+                    return;
+                }
+
+                _selectedCrop = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedCropDescription));
+                _computeCommand.RaiseCanExecuteChanged();
+                if (!_isInitializing)
+                {
+                    ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+                }
+            }
         }
 
-        public ICommand AddRowCommand { get; }
+        public string? SelectedCropDescription => SelectedCrop?.Description;
 
-        public ICommand RemoveRowCommand => _removeRowCommand;
+        private double _averageResponse = 1.0;
+        public double AverageResponse
+        {
+            get => _averageResponse;
+            set
+            {
+                double adjusted = double.IsFinite(value) ? Math.Max(0.1, value) : 1.0;
+                if (Math.Abs(_averageResponse - adjusted) < 1e-6)
+                {
+                    return;
+                }
+
+                _averageResponse = adjusted;
+                OnPropertyChanged();
+                ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+            }
+        }
+
+        private int _simulationYears = 5000;
+        public int SimulationYears
+        {
+            get => _simulationYears;
+            set
+            {
+                int adjusted = value < 1 ? 1 : value;
+                if (_simulationYears == adjusted)
+                {
+                    return;
+                }
+
+                _simulationYears = adjusted;
+                OnPropertyChanged();
+                ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+            }
+        }
+
+        private double _modeledImpactProbability;
+        public double ModeledImpactProbability
+        {
+            get => _modeledImpactProbability;
+            private set
+            {
+                if (Math.Abs(_modeledImpactProbability - value) < 1e-6)
+                {
+                    return;
+                }
+
+                _modeledImpactProbability = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ModeledImpactProbabilityDisplay));
+            }
+        }
+
+        public string ModeledImpactProbabilityDisplay => $"{ModeledImpactProbability * 100:0.##}%";
+
+        private double _meanDamagePercent;
+        public double MeanDamagePercent
+        {
+            get => _meanDamagePercent;
+            private set
+            {
+                if (Math.Abs(_meanDamagePercent - value) < 1e-6)
+                {
+                    return;
+                }
+
+                _meanDamagePercent = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(MeanDamageDisplay));
+            }
+        }
+
+        public string MeanDamageDisplay => $"{MeanDamagePercent:0.##}%";
+
+        private string _impactSummary = "Select a region, crop, and seasonal resilience values to calculate flood impacts.";
+        public string ImpactSummary
+        {
+            get => _impactSummary;
+            private set
+            {
+                if (_impactSummary == value)
+                {
+                    return;
+                }
+
+                _impactSummary = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _cropInsight = "Adjust the exposure and tolerance values to understand how resilience affects expected damages.";
+        public string CropInsight
+        {
+            get => _cropInsight;
+            private set
+            {
+                if (_cropInsight == value)
+                {
+                    return;
+                }
+
+                _cropInsight = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ICommand ComputeCommand => _computeCommand;
+        public ICommand ExportCommand => _exportCommand;
 
         public AgricultureDepthDamageViewModel()
         {
-            AddRowCommand = new RelayCommand(AddRow);
-            _removeRowCommand = new RelayCommand(RemoveRow, () => CustomRegionRows.Count > 1);
+            Regions = new ObservableCollection<RegionDefinition>(RegionDefinition.CreateDefaults());
+            Crops = new ObservableCollection<CropDefinition>(CropDefinition.CreateDefaults());
+            StageExposures = new ObservableCollection<StageExposure>(StageExposure.CreateDefaults());
+
+            foreach (var stage in StageExposures)
+            {
+                stage.PropertyChanged += Stage_PropertyChanged;
+            }
+
             _computeCommand = new RelayCommand(Compute, CanCompute);
+            _exportCommand = new RelayCommand(Export, () => DepthDurationRows.Count > 0);
 
-            CustomRegionRows.CollectionChanged += CustomRegionRows_CollectionChanged;
+            if (Regions.Count > 0)
+            {
+                SelectedRegion = Regions[0];
+            }
 
-            // Seed with typical agricultural depth-damage points
-            CustomRegionRows.Add(new CustomRegionRow
+            if (Crops.Count > 0)
             {
-                AnnualExceedanceProbability = 0.5,
-                FloodDepthFeet = 0.0,
-                DamagePercent = 0.0
-            });
-            CustomRegionRows.Add(new CustomRegionRow
-            {
-                AnnualExceedanceProbability = 0.1,
-                FloodDepthFeet = 1.5,
-                DamagePercent = 25.0
-            });
-            CustomRegionRows.Add(new CustomRegionRow
-            {
-                AnnualExceedanceProbability = 0.02,
-                FloodDepthFeet = 3.5,
-                DamagePercent = 75.0
-            });
+                SelectedCrop = Crops[0];
+            }
 
+            _isInitializing = false;
             Compute();
         }
 
-        private void CustomRegionRows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void Stage_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.OldItems != null)
-            {
-                foreach (CustomRegionRow row in e.OldItems)
-                {
-                    row.PropertyChanged -= Row_PropertyChanged;
-                }
-            }
-
-            if (e.NewItems != null)
-            {
-                foreach (CustomRegionRow row in e.NewItems)
-                {
-                    row.PropertyChanged += Row_PropertyChanged;
-                }
-            }
-
-            _removeRowCommand.RaiseCanExecuteChanged();
-            _computeCommand.RaiseCanExecuteChanged();
-            MonteCarloSummary = "Inputs updated. Press Calculate to refresh the Monte Carlo results.";
-        }
-
-        private void Row_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            _computeCommand.RaiseCanExecuteChanged();
-            MonteCarloSummary = "Inputs updated. Press Calculate to refresh the Monte Carlo results.";
-        }
-
-        private void AddRow()
-        {
-            if (CustomRegionRows.Count == 0)
-            {
-                CustomRegionRows.Add(new CustomRegionRow
-                {
-                    AnnualExceedanceProbability = 0.5,
-                    FloodDepthFeet = 0,
-                    DamagePercent = 0
-                });
-                return;
-            }
-
-            var lastRow = CustomRegionRows[^1];
-
-            double nextProbability = Math.Max(Math.Round(lastRow.AnnualExceedanceProbability / 2, 3), 0.001);
-            double nextDepth = Math.Round(lastRow.FloodDepthFeet + 1.0, 2);
-            double nextDamage = Math.Min(100.0, Math.Round(lastRow.DamagePercent + 15.0, 2));
-
-            CustomRegionRows.Add(new CustomRegionRow
-            {
-                AnnualExceedanceProbability = nextProbability,
-                FloodDepthFeet = nextDepth,
-                DamagePercent = nextDamage
-            });
-        }
-
-        private void RemoveRow()
-        {
-            if (CustomRegionRows.Count <= 1)
+            if (_isInitializing)
             {
                 return;
             }
 
-            CustomRegionRows.RemoveAt(CustomRegionRows.Count - 1);
+            ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
         }
 
-        private bool CanCompute()
-        {
-            return TryGetValidRows(out var _);
-        }
-
-        private bool TryGetValidRows(out List<CustomRegionRow> rows)
-        {
-            rows = CustomRegionRows
-                .Where(r => double.IsFinite(r.AnnualExceedanceProbability)
-                    && double.IsFinite(r.FloodDepthFeet)
-                    && double.IsFinite(r.DamagePercent))
-                .Where(r => r.AnnualExceedanceProbability >= 0 && r.AnnualExceedanceProbability <= 1)
-                .Where(r => r.FloodDepthFeet >= 0 && r.DamagePercent >= 0)
-                .OrderByDescending(r => r.AnnualExceedanceProbability)
-                .ToList();
-
-            return rows.Count >= 2;
-        }
+        private bool CanCompute() => SelectedRegion != null && SelectedCrop != null;
 
         private void Compute()
         {
-            if (!TryGetValidRows(out var rows))
+            if (!CanCompute())
             {
-                MonteCarloSummary = "Enter at least two rows with valid annual exceedance probabilities to run the simulation.";
-                MonteCarloInsights.Clear();
-                DepthDamagePoints = new PointCollection();
-                ReturnPeriodInsights.Clear();
+                ModeledImpactProbability = 0;
+                MeanDamagePercent = 0;
+                DepthDurationRows.Clear();
+                ImpactSummary = "Select a region and crop to calculate flood impacts.";
+                CropInsight = "";
+                _exportCommand.RaiseCanExecuteChanged();
                 return;
             }
 
-            UpdateDepthDamagePoints(rows);
+            double totalWeight = StageExposures.Sum(s => s.Stage.Weight);
+            double weightedStress = StageExposures.Sum(s => s.Stage.Weight * s.GetStressRatio());
+            double normalizedStress = totalWeight > 0 ? weightedStress / totalWeight : 0;
+            normalizedStress = Math.Clamp(normalizedStress, 0.0, 2.0);
 
-            var damageCurve = BuildProbabilityCurve(rows, r => r.DamagePercent, anchorValue: 0.0, anchorMaxValue: rows.Max(r => r.DamagePercent));
-            var depthCurve = BuildProbabilityCurve(rows, r => r.FloodDepthFeet, anchorValue: 0.0, anchorMaxValue: rows.Max(r => r.FloodDepthFeet));
+            double responseScaling = Math.Clamp(AverageResponse, 0.1, 5.0);
+            double probabilityDriver = normalizedStress * SelectedRegion!.ImpactModifier * SelectedCrop!.ImpactModifier * responseScaling;
+            double probability = 1.0 - Math.Exp(-probabilityDriver);
+            ModeledImpactProbability = Math.Clamp(probability, 0.0, 1.0);
 
-            RunMonteCarlo(damageCurve, depthCurve, rows.Count);
-            UpdateReturnPeriodInsights(damageCurve, depthCurve);
+            DepthDurationRows.Clear();
+            foreach (var point in SelectedRegion.DepthDuration)
+            {
+                double baseline = Math.Clamp(point.BaseDamage, 0.0, 1.0);
+                double stressMultiplier = 0.6 + 0.4 * normalizedStress;
+                double cropModifier = SelectedCrop.DamageFactor;
+                double durationAdjustment = 1 + (point.DurationDays / SelectedRegion.MaxDuration) * 0.25;
+                double damage = baseline * stressMultiplier * cropModifier * durationAdjustment * Math.Max(1.0, responseScaling * 0.5);
+                damage = Math.Clamp(damage, 0.0, 1.0);
+
+                DepthDurationRows.Add(new DepthDurationDamageRow(point.DepthFeet, point.DurationDays, damage * 100.0));
+            }
+
+            MeanDamagePercent = DepthDurationRows.Count > 0
+                ? DepthDurationRows.Average(r => r.DamagePercent)
+                : 0.0;
+
+            ImpactSummary =
+                $"Simulated {SimulationYears:N0} seasons with {StageExposures.Count} growth stages. Estimated flood impact probability: {ModeledImpactProbabilityDisplay}.";
+
+            CropInsight =
+                $"Average expected damage across representative depth-duration events is {MeanDamageDisplay}. Adjust exposure days or tolerance to explore resilience.";
+
+            _exportCommand.RaiseCanExecuteChanged();
         }
 
-        private void UpdateDepthDamagePoints(IReadOnlyCollection<CustomRegionRow> rows)
+        private void Export()
         {
-            var ordered = rows
-                .Where(r => r.FloodDepthFeet >= 0 && r.DamagePercent >= 0)
-                .OrderBy(r => r.FloodDepthFeet)
-                .ToList();
-
-            if (ordered.Count == 0)
-            {
-                DepthDamagePoints = new PointCollection();
-                return;
-            }
-
-            // Ensure the curve starts at zero depth / zero damage
-            if (ordered[0].FloodDepthFeet > 0)
-            {
-                ordered.Insert(0, new CustomRegionRow
-                {
-                    FloodDepthFeet = 0,
-                    DamagePercent = 0,
-                    AnnualExceedanceProbability = ordered[0].AnnualExceedanceProbability
-                });
-            }
-
-            // Ensure the curve extends to the maximum depth provided
-            double maxDepth = ordered.Max(r => r.FloodDepthFeet);
-            double maxDamage = ordered.Max(r => r.DamagePercent);
-
-            PointCollection points = CreatePointCollection(
-                ordered.Select(r => (r.FloodDepthFeet, r.DamagePercent)).ToList(),
-                maxDepth,
-                maxDamage);
-            DepthDamagePoints = points;
-        }
-
-        private static PointCollection CreatePointCollection(List<(double X, double Y)> data, double maxDepth, double maxDamage)
-        {
-            PointCollection points = new();
-            if (data.Count == 0)
-            {
-                return points;
-            }
-
-            double width = 360;
-            double height = 200;
-
-            double minX = data.Min(p => p.X);
-            double maxX = Math.Max(data.Max(p => p.X), Math.Max(minX + 1e-6, maxDepth));
-            double minY = data.Min(p => p.Y);
-            double maxY = Math.Max(data.Max(p => p.Y), Math.Max(minY + 1e-6, maxDamage));
-
-            double xRange = maxX - minX;
-            if (xRange <= 0) xRange = 1;
-            double yRange = maxY - minY;
-            if (yRange <= 0) yRange = 1;
-
-            foreach (var (xValue, yValue) in data)
-            {
-                double x = (xValue - minX) / xRange * width;
-                double y = height - (yValue - minY) / yRange * height;
-                points.Add(new Point(x, y));
-            }
-
-            return points;
-        }
-
-        private void RunMonteCarlo(
-            List<(double Probability, double Value)> damageCurve,
-            List<(double Probability, double Value)> depthCurve,
-            int rowCount)
-        {
-            int iterations = 5000;
-            List<double> damageSamples = new(iterations);
-            List<double> depthSamples = new(iterations);
-
-            Random random = new();
-            for (int i = 0; i < iterations; i++)
-            {
-                double exceedance = random.NextDouble();
-                double damage = Interpolate(exceedance, damageCurve);
-                double depth = Interpolate(exceedance, depthCurve);
-                damageSamples.Add(damage);
-                depthSamples.Add(depth);
-            }
-
-            damageSamples.Sort();
-            depthSamples.Sort();
-
-            double meanDamage = damageSamples.Average();
-            double medianDamage = GetPercentile(damageSamples, 0.5);
-            double p90Damage = GetPercentile(damageSamples, 0.9);
-            double meanDepth = depthSamples.Average();
-            double p90Depth = GetPercentile(depthSamples, 0.9);
-
-            MonteCarloSummary =
-                $"Simulated {iterations:N0} annual events using {rowCount} calibration points and linear interpolation across the supplied AEP curve.";
-            MonteCarloInsights.Clear();
-            MonteCarloInsights.Add($"Mean damage: {meanDamage:0.##}%");
-            MonteCarloInsights.Add($"Median damage: {medianDamage:0.##}%");
-            MonteCarloInsights.Add($"90th percentile damage: {p90Damage:0.##}%");
-            MonteCarloInsights.Add($"Average inundation depth: {meanDepth:0.##} ft");
-            MonteCarloInsights.Add($"90th percentile depth: {p90Depth:0.##} ft");
-        }
-
-        private void UpdateReturnPeriodInsights(
-            List<(double Probability, double Value)> damageCurve,
-            List<(double Probability, double Value)> depthCurve)
-        {
-            ReturnPeriodInsights.Clear();
-
-            if (damageCurve.Count == 0 || depthCurve.Count == 0)
+            if (DepthDurationRows.Count == 0)
             {
                 return;
             }
 
-            foreach (var (probability, label) in ReturnPeriodInsight.DefaultCheckpoints)
+            var dialog = new SaveFileDialog
             {
-                double damage = Interpolate(probability, damageCurve);
-                double depth = Interpolate(probability, depthCurve);
-
-                ReturnPeriodInsights.Add(new ReturnPeriodInsight(probability, damage, depth, label));
-            }
-        }
-
-        private static List<(double Probability, double Value)> BuildProbabilityCurve(
-            IEnumerable<CustomRegionRow> rows,
-            Func<CustomRegionRow, double> selector,
-            double anchorValue,
-            double anchorMaxValue)
-        {
-            List<(double Probability, double Value)> curve = rows
-                .Select(r => (Probability: ClampProbability(r.AnnualExceedanceProbability), Value: selector(r)))
-                .OrderByDescending(p => p.Probability)
-                .ToList();
-
-            if (curve.Count == 0)
-            {
-                return curve;
-            }
-
-            if (curve[0].Probability < 1.0)
-            {
-                curve.Insert(0, (1.0, anchorValue));
-            }
-
-            var last = curve[^1];
-            if (last.Probability > 0)
-            {
-                curve.Add((0.0, Math.Max(last.Value, anchorMaxValue)));
-            }
-
-            return curve;
-        }
-
-        private static double Interpolate(double probability, List<(double Probability, double Value)> curve)
-        {
-            if (curve.Count == 0)
-            {
-                return 0.0;
-            }
-
-            probability = ClampProbability(probability);
-
-            for (int i = 0; i < curve.Count - 1; i++)
-            {
-                var (p1, v1) = curve[i];
-                var (p2, v2) = curve[i + 1];
-                if (Math.Abs(p1 - p2) < 1e-9)
-                {
-                    continue;
-                }
-
-                if (probability <= p1 && probability >= p2)
-                {
-                    double t = (probability - p2) / (p1 - p2);
-                    return v2 + t * (v1 - v2);
-                }
-            }
-
-            return curve[^1].Value;
-        }
-
-        private static double GetPercentile(IReadOnlyList<double> sortedValues, double percentile)
-        {
-            if (sortedValues.Count == 0)
-            {
-                return 0.0;
-            }
-
-            percentile = Math.Clamp(percentile, 0, 1);
-            double index = (sortedValues.Count - 1) * percentile;
-            int lowerIndex = (int)Math.Floor(index);
-            int upperIndex = (int)Math.Ceiling(index);
-            if (lowerIndex == upperIndex)
-            {
-                return sortedValues[lowerIndex];
-            }
-
-            double fraction = index - lowerIndex;
-            return sortedValues[lowerIndex] + (sortedValues[upperIndex] - sortedValues[lowerIndex]) * fraction;
-        }
-
-        private static double ClampProbability(double value)
-        {
-            if (double.IsNaN(value))
-            {
-                return 0.0;
-            }
-
-            if (value < 0) return 0;
-            if (value > 1) return 1;
-            return value;
-        }
-
-        public class CustomRegionRow : BaseViewModel
-        {
-            private double _annualExceedanceProbability;
-            public double AnnualExceedanceProbability
-            {
-                get => _annualExceedanceProbability;
-                set
-                {
-                    if (Math.Abs(_annualExceedanceProbability - value) < 1e-9) return;
-                    _annualExceedanceProbability = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private double _floodDepthFeet;
-            public double FloodDepthFeet
-            {
-                get => _floodDepthFeet;
-                set
-                {
-                    if (Math.Abs(_floodDepthFeet - value) < 1e-9) return;
-                    _floodDepthFeet = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            private double _damagePercent;
-            public double DamagePercent
-            {
-                get => _damagePercent;
-                set
-                {
-                    if (Math.Abs(_damagePercent - value) < 1e-9) return;
-                    _damagePercent = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public class ReturnPeriodInsight
-        {
-            public static readonly (double Probability, string Label)[] DefaultCheckpoints = new[]
-            {
-                (0.5, "2-year"),
-                (0.2, "5-year"),
-                (0.1, "10-year"),
-                (0.04, "25-year"),
-                (0.02, "50-year"),
-                (0.01, "100-year")
+                FileName = "agriculture-depth-damage.csv",
+                Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*"
             };
 
-            public ReturnPeriodInsight(double probability, double damagePercent, double floodDepthFeet, string label)
+            if (dialog.ShowDialog() != true)
             {
-                Probability = ClampProbability(probability);
-                DamagePercent = Math.Max(0, damagePercent);
-                FloodDepthFeet = Math.Max(0, floodDepthFeet);
-                Label = label;
+                return;
             }
 
-            public double Probability { get; }
+            var lines = new List<string>
+            {
+                "Depth (ft),Duration (days),Damage (%)"
+            };
 
-            public double DamagePercent { get; }
+            lines.AddRange(DepthDurationRows.Select(r => string.Join(',',
+                r.DepthFeet.ToString("0.##", CultureInfo.InvariantCulture),
+                r.DurationDays.ToString("0.##", CultureInfo.InvariantCulture),
+                r.DamagePercent.ToString("0.##", CultureInfo.InvariantCulture))));
 
-            public double FloodDepthFeet { get; }
-
-            public string Label { get; }
-
-            public string ProbabilityDisplay => Probability.ToString("P0");
-
-            public string DamageDisplay => $"{DamagePercent:0.##}%";
-
-            public string DepthDisplay => $"{FloodDepthFeet:0.##} ft";
+            File.WriteAllLines(dialog.FileName, lines);
         }
+
+        public class RegionDefinition
+        {
+            public RegionDefinition(string name, string description, double impactModifier, IReadOnlyList<DepthDurationPoint> depthDuration)
+            {
+                Name = name;
+                Description = description;
+                ImpactModifier = impactModifier;
+                DepthDuration = depthDuration;
+                MaxDuration = depthDuration.Count == 0 ? 1.0 : depthDuration.Max(p => p.DurationDays);
+            }
+
+            public string Name { get; }
+            public string Description { get; }
+            public double ImpactModifier { get; }
+            public IReadOnlyList<DepthDurationPoint> DepthDuration { get; }
+            public double MaxDuration { get; }
+
+            public static IEnumerable<RegionDefinition> CreateDefaults()
+            {
+                return new[]
+                {
+                    new RegionDefinition(
+                        "Midwest",
+                        "Represents cropland in the Ohio and lower Mississippi River basins with moderate levee protection.",
+                        0.85,
+                        new[]
+                        {
+                            new DepthDurationPoint(1.2, 3, 0.18),
+                            new DepthDurationPoint(2.1, 5, 0.32),
+                            new DepthDurationPoint(3.0, 7, 0.5),
+                            new DepthDurationPoint(4.2, 10, 0.68),
+                            new DepthDurationPoint(5.1, 14, 0.82)
+                        }),
+                    new RegionDefinition(
+                        "Great Plains",
+                        "Captures broad, relatively flat floodplains along interior prairie rivers.",
+                        0.75,
+                        new[]
+                        {
+                            new DepthDurationPoint(0.8, 2, 0.12),
+                            new DepthDurationPoint(1.5, 4, 0.22),
+                            new DepthDurationPoint(2.4, 6, 0.36),
+                            new DepthDurationPoint(3.6, 9, 0.58),
+                            new DepthDurationPoint(4.2, 12, 0.74)
+                        }),
+                    new RegionDefinition(
+                        "Mississippi Delta",
+                        "Low-lying backwater areas with prolonged inundation potential and shallow topographic relief.",
+                        1.05,
+                        new[]
+                        {
+                            new DepthDurationPoint(1.5, 4, 0.24),
+                            new DepthDurationPoint(2.8, 6, 0.42),
+                            new DepthDurationPoint(3.5, 9, 0.63),
+                            new DepthDurationPoint(4.8, 12, 0.78),
+                            new DepthDurationPoint(5.6, 16, 0.9)
+                        }),
+                    new RegionDefinition(
+                        "Mountain West",
+                        "Irrigated valleys with flashy runoff and faster drainage.",
+                        0.65,
+                        new[]
+                        {
+                            new DepthDurationPoint(0.6, 1, 0.1),
+                            new DepthDurationPoint(1.4, 3, 0.18),
+                            new DepthDurationPoint(2.1, 5, 0.3),
+                            new DepthDurationPoint(3.2, 7, 0.45),
+                            new DepthDurationPoint(3.8, 10, 0.6)
+                        })
+                };
+            }
+        }
+
+        public class CropDefinition
+        {
+            public CropDefinition(string name, string description, double damageFactor, double impactModifier)
+            {
+                Name = name;
+                Description = description;
+                DamageFactor = damageFactor;
+                ImpactModifier = impactModifier;
+            }
+
+            public string Name { get; }
+            public string Description { get; }
+            public double DamageFactor { get; }
+            public double ImpactModifier { get; }
+
+            public static IEnumerable<CropDefinition> CreateDefaults()
+            {
+                return new[]
+                {
+                    new CropDefinition(
+                        "Corn (grain)",
+                        "Warm-season row crop with high yield potential but sensitivity during tasseling.",
+                        0.95,
+                        1.1),
+                    new CropDefinition(
+                        "Soybeans",
+                        "Legume crop with moderate flood resilience until pod fill.",
+                        0.85,
+                        0.95),
+                    new CropDefinition(
+                        "Wheat",
+                        "Cool-season grain often harvested before peak flood season, offering lower damage exposure.",
+                        0.7,
+                        0.7),
+                    new CropDefinition(
+                        "Cotton",
+                        "Perennial-like annual with longer season and high sensitivity to prolonged ponding.",
+                        0.9,
+                        1.05),
+                    new CropDefinition(
+                        "Rice",
+                        "Flood-tolerant crop typically grown in managed paddies, dampening incremental damage from riverine flooding.",
+                        0.6,
+                        0.65)
+                };
+            }
+        }
+
+        public class StageDefinition
+        {
+            public StageDefinition(string name, string dateRange, string description, double defaultExposureDays, double defaultFloodToleranceDays, double weight)
+            {
+                Name = name;
+                DateRange = dateRange;
+                Description = description;
+                DefaultExposureDays = defaultExposureDays;
+                DefaultFloodToleranceDays = defaultFloodToleranceDays;
+                Weight = weight;
+            }
+
+            public string Name { get; }
+            public string DateRange { get; }
+            public string Description { get; }
+            public double DefaultExposureDays { get; }
+            public double DefaultFloodToleranceDays { get; }
+            public double Weight { get; }
+        }
+
+        public class StageExposure : BaseViewModel
+        {
+            private double _exposureDays;
+            private double _floodToleranceDays;
+
+            public StageExposure(StageDefinition stage)
+            {
+                Stage = stage;
+                _exposureDays = stage.DefaultExposureDays;
+                _floodToleranceDays = stage.DefaultFloodToleranceDays;
+                ResetCommand = new RelayCommand(Reset);
+            }
+
+            public StageDefinition Stage { get; }
+
+            public double ExposureDays
+            {
+                get => _exposureDays;
+                set
+                {
+                    double adjusted = double.IsFinite(value) ? Math.Max(0.0, value) : Stage.DefaultExposureDays;
+                    if (Math.Abs(_exposureDays - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _exposureDays = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public double FloodToleranceDays
+            {
+                get => _floodToleranceDays;
+                set
+                {
+                    double adjusted = double.IsFinite(value) ? Math.Max(0.1, value) : Stage.DefaultFloodToleranceDays;
+                    if (Math.Abs(_floodToleranceDays - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _floodToleranceDays = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public string StageName => Stage.Name;
+            public string StageWindow => Stage.DateRange;
+            public string StageGuidance => Stage.Description;
+            public string DefaultToleranceDisplay => $"Default tolerance: {Stage.DefaultFloodToleranceDays:0.#} days";
+
+            public ICommand ResetCommand { get; }
+
+            public void Reset()
+            {
+                ExposureDays = Stage.DefaultExposureDays;
+                FloodToleranceDays = Stage.DefaultFloodToleranceDays;
+            }
+
+            public double GetStressRatio()
+            {
+                if (FloodToleranceDays <= 0)
+                {
+                    return 1.0;
+                }
+
+                double ratio = ExposureDays / FloodToleranceDays;
+                if (!double.IsFinite(ratio))
+                {
+                    return 0.0;
+                }
+
+                return Math.Clamp(ratio, 0.0, 2.0);
+            }
+
+            public static IEnumerable<StageExposure> CreateDefaults()
+            {
+                var stages = new[]
+                {
+                    new StageDefinition(
+                        "Stand establishment",
+                        "Apr 1 – May 15",
+                        "Represents early stand establishment and germination when seedlings are most vulnerable to saturated soils.",
+                        12,
+                        15,
+                        0.2),
+                    new StageDefinition(
+                        "Vegetative growth",
+                        "May 15 – Jul 5",
+                        "Canopy development and rapid biomass accumulation.",
+                        6,
+                        12.5,
+                        0.3),
+                    new StageDefinition(
+                        "Silking / tassel",
+                        "Jul 5 – Aug 5",
+                        "Critical reproductive window where even short ponding can cause losses.",
+                        2,
+                        5,
+                        0.3),
+                    new StageDefinition(
+                        "Maturity & dry down",
+                        "Aug 5 – Oct 15",
+                        "Late season ripening and harvest preparation.",
+                        3,
+                        12,
+                        0.2)
+                };
+
+                return stages.Select(stage => new StageExposure(stage));
+            }
+        }
+
+        public record DepthDurationPoint(double DepthFeet, double DurationDays, double BaseDamage);
+
+        public record DepthDurationDamageRow(double DepthFeet, double DurationDays, double DamagePercent);
     }
 }
