@@ -485,6 +485,9 @@ namespace EconToolbox.Desktop.ViewModels
             private double _impactModifier;
             private int _floodWindowStartDay;
             private int _floodWindowEndDay;
+            private double _annualExceedanceProbability;
+            private int _floodSeasonPeakDay;
+            private int _seasonShiftDays;
 
             public RegionDefinition(
                 string name,
@@ -492,6 +495,9 @@ namespace EconToolbox.Desktop.ViewModels
                 double impactModifier,
                 int floodWindowStartDay,
                 int floodWindowEndDay,
+                double annualExceedanceProbability,
+                int floodSeasonPeakDay,
+                int seasonShiftDays,
                 IEnumerable<DepthDurationPoint> depthDuration,
                 bool isCustom = false)
             {
@@ -500,6 +506,9 @@ namespace EconToolbox.Desktop.ViewModels
                 _impactModifier = impactModifier;
                 _floodWindowStartDay = Math.Clamp(floodWindowStartDay, 1, 366);
                 _floodWindowEndDay = Math.Clamp(floodWindowEndDay, _floodWindowStartDay, 366);
+                _annualExceedanceProbability = Math.Clamp(annualExceedanceProbability, 0.0, 1.0);
+                _floodSeasonPeakDay = Math.Clamp(floodSeasonPeakDay, _floodWindowStartDay, _floodWindowEndDay);
+                _seasonShiftDays = Math.Clamp(seasonShiftDays, -180, 180);
                 IsCustom = isCustom;
                 DepthDuration = new ObservableCollection<DepthDurationPoint>(depthDuration.Select(p => p.Clone()));
                 DepthDuration.CollectionChanged += DepthDuration_CollectionChanged;
@@ -557,6 +566,22 @@ namespace EconToolbox.Desktop.ViewModels
                 }
             }
 
+            public double AnnualExceedanceProbability
+            {
+                get => _annualExceedanceProbability;
+                set
+                {
+                    double adjusted = double.IsFinite(value) ? Math.Clamp(value, 0.0, 1.0) : _annualExceedanceProbability;
+                    if (Math.Abs(_annualExceedanceProbability - adjusted) < 1e-6)
+                    {
+                        return;
+                    }
+
+                    _annualExceedanceProbability = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
             public ObservableCollection<DepthDurationPoint> DepthDuration { get; }
 
             public bool IsCustom { get; }
@@ -581,6 +606,12 @@ namespace EconToolbox.Desktop.ViewModels
                         OnPropertyChanged(nameof(FloodWindowEndDay));
                     }
 
+                    if (_floodSeasonPeakDay < _floodWindowStartDay)
+                    {
+                        _floodSeasonPeakDay = _floodWindowStartDay;
+                        OnPropertyChanged(nameof(FloodSeasonPeakDay));
+                    }
+
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(FloodWindowRangeDisplay));
                 }
@@ -603,12 +634,50 @@ namespace EconToolbox.Desktop.ViewModels
                     }
 
                     _floodWindowEndDay = adjusted;
+                    if (_floodSeasonPeakDay > _floodWindowEndDay)
+                    {
+                        _floodSeasonPeakDay = _floodWindowEndDay;
+                        OnPropertyChanged(nameof(FloodSeasonPeakDay));
+                    }
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(FloodWindowRangeDisplay));
                 }
             }
 
-            public string FloodWindowRangeDisplay => $"Typical flood season: days {FloodWindowStartDay} – {FloodWindowEndDay}";
+            public int FloodSeasonPeakDay
+            {
+                get => _floodSeasonPeakDay;
+                set
+                {
+                    int adjusted = Math.Clamp(value, _floodWindowStartDay, _floodWindowEndDay);
+                    if (_floodSeasonPeakDay == adjusted)
+                    {
+                        return;
+                    }
+
+                    _floodSeasonPeakDay = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public int SeasonShiftDays
+            {
+                get => _seasonShiftDays;
+                set
+                {
+                    int adjusted = Math.Clamp(value, -180, 180);
+                    if (_seasonShiftDays == adjusted)
+                    {
+                        return;
+                    }
+
+                    _seasonShiftDays = adjusted;
+                    OnPropertyChanged();
+                }
+            }
+
+            public string FloodWindowRangeDisplay =>
+                $"Flood season: days {FloodWindowStartDay} – {FloodWindowEndDay} (peak ≈ day {FloodSeasonPeakDay}, shift {SeasonShiftDays:+#;-#;0} days).";
 
             private void DepthDuration_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
             {
@@ -649,6 +718,9 @@ namespace EconToolbox.Desktop.ViewModels
                         0.82,
                         75,
                         190,
+                        0.14,
+                        132,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(1.0, 2, 0.16),
@@ -663,6 +735,9 @@ namespace EconToolbox.Desktop.ViewModels
                         0.96,
                         90,
                         260,
+                        0.18,
+                        175,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(1.2, 3, 0.2),
@@ -677,6 +752,9 @@ namespace EconToolbox.Desktop.ViewModels
                         0.88,
                         60,
                         200,
+                        0.12,
+                        130,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(1.0, 3, 0.18),
@@ -691,6 +769,9 @@ namespace EconToolbox.Desktop.ViewModels
                         1.1,
                         70,
                         230,
+                        0.2,
+                        150,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(1.5, 4, 0.26),
@@ -705,6 +786,9 @@ namespace EconToolbox.Desktop.ViewModels
                         1.08,
                         80,
                         250,
+                        0.22,
+                        165,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(1.6, 4, 0.3),
@@ -719,6 +803,9 @@ namespace EconToolbox.Desktop.ViewModels
                         0.72,
                         65,
                         185,
+                        0.13,
+                        125,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(0.8, 2, 0.12),
@@ -733,6 +820,9 @@ namespace EconToolbox.Desktop.ViewModels
                         0.78,
                         85,
                         220,
+                        0.17,
+                        152,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(0.9, 2, 0.14),
@@ -747,6 +837,9 @@ namespace EconToolbox.Desktop.ViewModels
                         0.7,
                         50,
                         170,
+                        0.1,
+                        110,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(0.7, 2, 0.1),
@@ -761,6 +854,9 @@ namespace EconToolbox.Desktop.ViewModels
                         0.76,
                         120,
                         275,
+                        0.09,
+                        198,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(0.6, 1.5, 0.09),
@@ -775,6 +871,9 @@ namespace EconToolbox.Desktop.ViewModels
                         0.92,
                         110,
                         270,
+                        0.22,
+                        190,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(1.2, 3, 0.22),
@@ -789,6 +888,9 @@ namespace EconToolbox.Desktop.ViewModels
                         1.0,
                         90,
                         210,
+                        0.25,
+                        150,
+                        0,
                         new[]
                         {
                             new DepthDurationPoint(1.0, 3, 0.2),
