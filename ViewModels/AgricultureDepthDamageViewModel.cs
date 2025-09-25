@@ -14,6 +14,8 @@ namespace EconToolbox.Desktop.ViewModels
 {
     public class AgricultureDepthDamageViewModel : BaseViewModel
     {
+        private const int DaysInYear = 365;
+
         private readonly RelayCommand _computeCommand;
         private readonly RelayCommand _exportCommand;
         private bool _isInitializing = true;
@@ -279,6 +281,17 @@ namespace EconToolbox.Desktop.ViewModels
             if (e.PropertyName == nameof(RegionDefinition.Description) || e.PropertyName == nameof(RegionDefinition.Name))
             {
                 OnPropertyChanged(nameof(SelectedRegionDescription));
+                ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+                return;
+            }
+
+            if (e.PropertyName == nameof(RegionDefinition.FloodWindowStartDay)
+                || e.PropertyName == nameof(RegionDefinition.FloodWindowEndDay)
+                || e.PropertyName == nameof(RegionDefinition.FloodSeasonPeakDay)
+                || e.PropertyName == nameof(RegionDefinition.SeasonShiftDays))
+            {
+                Compute();
+                return;
             }
 
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
@@ -364,6 +377,18 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            if (e.PropertyName == nameof(StageExposure.TimingModifier)
+                || e.PropertyName == nameof(StageExposure.OverlapFraction)
+                || e.PropertyName == nameof(StageExposure.ShiftedStartDayOfYear)
+                || e.PropertyName == nameof(StageExposure.ShiftedEndDayOfYear)
+                || e.PropertyName == nameof(StageExposure.TimingWindowDisplay)
+                || e.PropertyName == nameof(StageExposure.TimingModifierDisplay)
+                || e.PropertyName == nameof(StageExposure.StageGuidance)
+                || e.PropertyName == nameof(StageExposure.AppliedSeasonShiftDays))
+            {
+                return;
+            }
+
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
         }
 
@@ -413,7 +438,23 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             double totalWeight = StageExposures.Sum(s => s.Stage.Weight);
-            double weightedStress = StageExposures.Sum(s => s.Stage.Weight * s.GetStressRatio());
+            double weightedStress = 0.0;
+
+            foreach (var stageExposure in StageExposures)
+            {
+                var timing = EvaluateStageTiming(stageExposure.Stage, SelectedRegion!);
+                stageExposure.ApplyTiming(
+                    timing.shiftedStartDay,
+                    timing.shiftedEndDay,
+                    timing.wrapsYear,
+                    timing.overlapFraction,
+                    timing.timingModifier,
+                    SelectedRegion!.SeasonShiftDays);
+
+                double stageStress = stageExposure.GetStressRatio() * timing.timingModifier;
+                weightedStress += stageExposure.Stage.Weight * stageStress;
+            }
+
             double normalizedStress = totalWeight > 0 ? weightedStress / totalWeight : 0;
             normalizedStress = Math.Clamp(normalizedStress, 0.0, 2.0);
 
@@ -449,11 +490,23 @@ namespace EconToolbox.Desktop.ViewModels
                 ? DepthDurationRows.Average(r => r.DamagePercent)
                 : 0.0;
 
+            double averageTimingModifier = StageExposures.Count > 0
+                ? StageExposures.Average(s => s.TimingModifier)
+                : 0.0;
+
             ImpactSummary =
-                $"Simulated {SimulationYears:N0} seasons with {StageExposures.Count} growth stages. The baseline annual exceedance probability of {baselineAep:P2} scaled by current stress and resilience inputs yields a modeled impact probability of {ModeledImpactProbabilityDisplay}.";
+                $"Simulated {SimulationYears:N0} seasons with {StageExposures.Count} growth stages. The baseline annual exceedance probability of {baselineAep:P2} scaled by stress, resilience, and seasonal timing yields a modeled impact probability of {ModeledImpactProbabilityDisplay}. Average timing modifier: ×{averageTimingModifier:0.##}.";
+
+            var highestTimingStage = StageExposures
+                .OrderByDescending(s => s.TimingModifier)
+                .FirstOrDefault();
+
+            string alignmentInsight = highestTimingStage == null
+                ? string.Empty
+                : $" The {highestTimingStage.StageName} stage currently overlaps about {highestTimingStage.OverlapFraction * 100:0.#}% of the {SelectedRegion!.Name} flood window (peak ≈ day {SelectedRegion.FloodSeasonPeakDay}), so its stress is weighted ×{highestTimingStage.TimingModifier:0.##}.";
 
             CropInsight =
-                $"Average expected damage across representative depth-duration events is {MeanDamageDisplay}. Adjust exposure days or tolerance to explore resilience.";
+                $"Average expected damage across representative depth-duration events is {MeanDamageDisplay}. Seasonal alignment considers the flood window (days {SelectedRegion!.FloodWindowStartDay}–{SelectedRegion.FloodWindowEndDay}) and any {SelectedRegion.SeasonShiftDays:+#;-#;0}-day shift.{alignmentInsight} Adjust exposure days or tolerance to explore resilience.";
 
             _exportCommand.RaiseCanExecuteChanged();
         }
@@ -487,6 +540,125 @@ namespace EconToolbox.Desktop.ViewModels
                 r.DamagePercent.ToString("0.##", CultureInfo.InvariantCulture))));
 
             File.WriteAllLines(dialog.FileName, lines);
+        }
+
+        private (int shiftedStartDay, int shiftedEndDay, bool wrapsYear, double overlapFraction, double timingModifier) EvaluateStageTiming(StageDefinition stage, RegionDefinition region)
+        {
+            int duration = Math.Max(1, stage.DurationDays);
+            int rawStageStart = stage.StartDayOfYear + region.SeasonShiftDays;
+            int rawStageEnd = rawStageStart + duration - 1;
+
+            var stageSegments = BuildWindowSegments(rawStageStart, duration);
+            var floodSegments = BuildWindowSegments(region.FloodWindowStartDay, CalculateInclusiveDuration(region.FloodWindowStartDay, region.FloodWindowEndDay));
+
+            double overlapDays = 0;
+            foreach (var stageSegment in stageSegments)
+            {
+                foreach (var floodSegment in floodSegments)
+                {
+                    overlapDays += CalculateSegmentOverlap(stageSegment, floodSegment);
+                }
+            }
+
+            double overlapFraction = Math.Clamp(overlapDays / duration, 0.0, 1.0);
+
+            int distanceToPeak = CalculateDistanceToSegments(region.FloodSeasonPeakDay, stageSegments);
+            double peakWeight = Math.Clamp(1.0 - distanceToPeak / 120.0, 0.0, 1.0);
+            double timingModifier = Math.Clamp(overlapFraction * (0.6 + 0.4 * peakWeight), 0.0, 1.0);
+
+            return (
+                NormalizeDayOfYear(rawStageStart),
+                NormalizeDayOfYear(rawStageEnd),
+                stageSegments.Count > 1,
+                overlapFraction,
+                timingModifier);
+        }
+
+        private static List<(int Start, int End)> BuildWindowSegments(int rawStartDay, int durationDays)
+        {
+            var segments = new List<(int Start, int End)>();
+            int remaining = Math.Max(1, durationDays);
+            int current = rawStartDay;
+
+            while (remaining > 0)
+            {
+                int normalizedStart = NormalizeDayOfYear(current);
+                int span = Math.Min(remaining, DaysUntilYearEnd(current));
+                int normalizedEnd = NormalizeDayOfYear(current + span - 1);
+                segments.Add((normalizedStart, normalizedEnd));
+                remaining -= span;
+                current += span;
+            }
+
+            return segments;
+        }
+
+        private static int CalculateSegmentOverlap((int Start, int End) a, (int Start, int End) b)
+        {
+            int start = Math.Max(a.Start, b.Start);
+            int end = Math.Min(a.End, b.End);
+            if (end < start)
+            {
+                return 0;
+            }
+
+            return end - start + 1;
+        }
+
+        private static int CalculateDistanceToSegments(int day, IReadOnlyList<(int Start, int End)> segments)
+        {
+            int normalizedDay = NormalizeDayOfYear(day);
+            int minDistance = DaysInYear;
+
+            foreach (var segment in segments)
+            {
+                if (normalizedDay >= segment.Start && normalizedDay <= segment.End)
+                {
+                    return 0;
+                }
+
+                int distanceToStart = CircularDayDistance(normalizedDay, segment.Start);
+                int distanceToEnd = CircularDayDistance(normalizedDay, segment.End);
+                minDistance = Math.Min(minDistance, Math.Min(distanceToStart, distanceToEnd));
+            }
+
+            return minDistance;
+        }
+
+        private static int CircularDayDistance(int dayA, int dayB)
+        {
+            int diff = Math.Abs(dayA - dayB);
+            return Math.Min(diff, DaysInYear - diff);
+        }
+
+        private static int NormalizeDayOfYear(int day)
+        {
+            int normalized = day % DaysInYear;
+            if (normalized <= 0)
+            {
+                normalized += DaysInYear;
+            }
+
+            return normalized;
+        }
+
+        private static int CalculateInclusiveDuration(int startDay, int endDay)
+        {
+            int normalizedStart = NormalizeDayOfYear(startDay);
+            int normalizedEnd = NormalizeDayOfYear(endDay);
+
+            if (normalizedStart <= normalizedEnd)
+            {
+                return (normalizedEnd - normalizedStart) + 1;
+            }
+
+            return (DaysInYear - normalizedStart + 1) + normalizedEnd;
+        }
+
+        private static int DaysUntilYearEnd(int rawDay)
+        {
+            int normalized = NormalizeDayOfYear(rawDay);
+            return DaysInYear - normalized + 1;
         }
 
         public class RegionDefinition : BaseViewModel
@@ -1165,6 +1337,9 @@ namespace EconToolbox.Desktop.ViewModels
                 DefaultExposureDays = defaultExposureDays;
                 DefaultFloodToleranceDays = defaultFloodToleranceDays;
                 Weight = weight;
+
+                (StartDayOfYear, EndDayOfYear) = ParseDateRange(dateRange);
+                DurationDays = CalculateInclusiveDuration(StartDayOfYear, EndDayOfYear);
             }
 
             public string Name { get; }
@@ -1173,12 +1348,67 @@ namespace EconToolbox.Desktop.ViewModels
             public double DefaultExposureDays { get; }
             public double DefaultFloodToleranceDays { get; }
             public double Weight { get; }
+            public int StartDayOfYear { get; }
+            public int EndDayOfYear { get; }
+            public int DurationDays { get; }
+
+            private static readonly string[] DateFormats =
+            {
+                "MMM d",
+                "MMM dd",
+                "MMMM d",
+                "MMMM dd"
+            };
+
+            private static (int start, int end) ParseDateRange(string dateRange)
+            {
+                if (string.IsNullOrWhiteSpace(dateRange))
+                {
+                    return (1, DaysInYear);
+                }
+
+                string normalized = dateRange
+                    .Replace('—', '-')
+                    .Replace('–', '-');
+
+                var parts = normalized.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                if (parts.Length >= 2)
+                {
+                    int start = ParseDate(parts[0]);
+                    int end = ParseDate(parts[1]);
+                    return (start, end);
+                }
+
+                int fallback = ParseDate(normalized);
+                return (fallback, fallback);
+            }
+
+            private static int ParseDate(string text)
+            {
+                if (DateTime.TryParseExact(
+                        text,
+                        DateFormats,
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.AllowWhiteSpaces,
+                        out DateTime date))
+                {
+                    return NormalizeDayOfYear(date.DayOfYear);
+                }
+
+                return 1;
+            }
         }
 
         public class StageExposure : BaseViewModel
         {
             private double _exposureDays;
             private double _floodToleranceDays;
+            private double _timingModifier = 1.0;
+            private double _overlapFraction = 1.0;
+            private int _shiftedStartDayOfYear;
+            private int _shiftedEndDayOfYear;
+            private bool _wrapsYear;
+            private int _appliedSeasonShiftDays;
 
             public StageExposure(StageDefinition stage)
             {
@@ -1186,6 +1416,8 @@ namespace EconToolbox.Desktop.ViewModels
                 _exposureDays = stage.DefaultExposureDays;
                 _floodToleranceDays = stage.DefaultFloodToleranceDays;
                 ResetCommand = new RelayCommand(Reset);
+                _shiftedStartDayOfYear = stage.StartDayOfYear;
+                _shiftedEndDayOfYear = stage.EndDayOfYear;
             }
 
             public StageDefinition Stage { get; }
@@ -1223,8 +1455,44 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             public string StageName => Stage.Name;
-            public string StageWindow => Stage.DateRange;
-            public string StageGuidance => Stage.Description;
+
+            public string StageWindow
+            {
+                get
+                {
+                    string wrapText = Stage.StartDayOfYear <= Stage.EndDayOfYear
+                        ? string.Empty
+                        : " (wraps year end)";
+                    return $"{Stage.DateRange} • Days {Stage.StartDayOfYear} – {Stage.EndDayOfYear}{wrapText}";
+                }
+            }
+
+            public string StageGuidance
+            {
+                get
+                {
+                    string shiftPhrase = AppliedSeasonShiftDays == 0
+                        ? "with no seasonal shift applied"
+                        : $"after a {Math.Abs(AppliedSeasonShiftDays)} day {(AppliedSeasonShiftDays > 0 ? "later" : "earlier")} shift";
+                    return $"{Stage.Description} Approximately {(OverlapFraction * 100):0.#}% of this growth window overlaps the regional flood season {shiftPhrase}, scaling the stress ratio by ×{TimingModifier:0.##}.";
+                }
+            }
+
+            public string TimingWindowDisplay
+            {
+                get
+                {
+                    string shiftPhrase = AppliedSeasonShiftDays == 0
+                        ? "no seasonal shift"
+                        : $"{Math.Abs(AppliedSeasonShiftDays)} day {(AppliedSeasonShiftDays > 0 ? "later" : "earlier")} shift";
+                    string wrapNote = WrapsYear ? " (wraps year end)" : string.Empty;
+                    return $"Shifted window ({shiftPhrase}): days {ShiftedStartDayOfYear} – {ShiftedEndDayOfYear}{wrapNote}";
+                }
+            }
+
+            public string TimingModifierDisplay =>
+                $"Flood-season overlap: {(OverlapFraction * 100):0.#}% • Timing modifier ×{TimingModifier:0.##}";
+
             public string DefaultToleranceDisplay => $"Default tolerance: {Stage.DefaultFloodToleranceDays:0.#} days";
 
             public ICommand ResetCommand { get; }
@@ -1249,6 +1517,33 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 return Math.Clamp(ratio, 0.0, 2.0);
+            }
+
+            public double TimingModifier => _timingModifier;
+            public double OverlapFraction => _overlapFraction;
+            public int ShiftedStartDayOfYear => _shiftedStartDayOfYear;
+            public int ShiftedEndDayOfYear => _shiftedEndDayOfYear;
+            public bool WrapsYear => _wrapsYear;
+            public int AppliedSeasonShiftDays => _appliedSeasonShiftDays;
+
+            public void ApplyTiming(int shiftedStartDay, int shiftedEndDay, bool wrapsYear, double overlapFraction, double timingModifier, int seasonShiftDays)
+            {
+                _shiftedStartDayOfYear = shiftedStartDay;
+                _shiftedEndDayOfYear = shiftedEndDay;
+                _wrapsYear = wrapsYear;
+                _overlapFraction = overlapFraction;
+                _timingModifier = timingModifier;
+                _appliedSeasonShiftDays = seasonShiftDays;
+
+                OnPropertyChanged(nameof(ShiftedStartDayOfYear));
+                OnPropertyChanged(nameof(ShiftedEndDayOfYear));
+                OnPropertyChanged(nameof(WrapsYear));
+                OnPropertyChanged(nameof(OverlapFraction));
+                OnPropertyChanged(nameof(TimingModifier));
+                OnPropertyChanged(nameof(AppliedSeasonShiftDays));
+                OnPropertyChanged(nameof(TimingWindowDisplay));
+                OnPropertyChanged(nameof(TimingModifierDisplay));
+                OnPropertyChanged(nameof(StageGuidance));
             }
 
             public static IEnumerable<StageExposure> CreateDefaults()
