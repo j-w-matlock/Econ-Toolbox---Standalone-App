@@ -579,6 +579,33 @@ namespace EconToolbox.Desktop.ViewModels
 
                     _annualExceedanceProbability = adjusted;
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(AnnualExceedanceProbabilityDisplay));
+                }
+            }
+
+            public string AnnualExceedanceProbabilityDisplay
+            {
+                get => _annualExceedanceProbability.ToString("0.###", CultureInfo.CurrentCulture);
+                set
+                {
+                    string trimmed = value?.Trim() ?? string.Empty;
+                    if (trimmed.Length == 0)
+                    {
+                        return;
+                    }
+
+                    var numberFormat = CultureInfo.CurrentCulture.NumberFormat;
+                    if (trimmed.EndsWith(numberFormat.NumberDecimalSeparator, StringComparison.Ordinal) ||
+                        trimmed == numberFormat.NegativeSign ||
+                        trimmed == numberFormat.PositiveSign)
+                    {
+                        return;
+                    }
+
+                    if (double.TryParse(trimmed, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out double parsed))
+                    {
+                        AnnualExceedanceProbability = parsed;
+                    }
                 }
             }
 

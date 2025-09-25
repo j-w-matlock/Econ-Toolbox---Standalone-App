@@ -109,7 +109,7 @@
                                                 Margin="{StaticResource Margin.StackSmall}">
                                         <TextBlock Text="Annual Exceedance Probability"
                                                    Style="{StaticResource Text.Caption}"/>
-                                        <TextBox Text="{Binding SelectedRegion.AnnualExceedanceProbability, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
+                                        <TextBox Text="{Binding SelectedRegion.AnnualExceedanceProbabilityDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  HorizontalContentAlignment="Right"
                                                  ToolTip="Probability that a damaging flood occurs in an average year (0–1)."/>
                                     </StackPanel>
