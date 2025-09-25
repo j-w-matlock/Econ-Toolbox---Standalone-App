@@ -78,7 +78,35 @@ namespace EconToolbox.Desktop.ViewModels
             ExportCommand = new RelayCommand(Export);
             DamageColumns.CollectionChanged += DamageColumns_CollectionChanged;
             AddDamageColumn(); // start with one damage column
+            InitializeDefaultRows();
             UpdateColumnDefinitions();
+            Compute();
+        }
+
+        private void InitializeDefaultRows()
+        {
+            if (Rows.Count > 0)
+            {
+                return;
+            }
+
+            double[] defaultProbabilities = new[] { 0.002, 0.005, 0.01, 0.02, 0.04, 0.1, 0.2, 0.5 };
+            double[] defaultDamages = new[] { 1_000_000d, 500_000d, 250_000d, 100_000d, 50_000d, 10_000d, 5_000d, 0d };
+
+            for (int i = 0; i < defaultProbabilities.Length; i++)
+            {
+                var row = new EadRow
+                {
+                    Probability = defaultProbabilities[i]
+                };
+
+                if (DamageColumns.Count > 0)
+                {
+                    row.Damages.Add(defaultDamages[i]);
+                }
+
+                Rows.Add(row);
+            }
         }
 
         private void DamageColumns_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
