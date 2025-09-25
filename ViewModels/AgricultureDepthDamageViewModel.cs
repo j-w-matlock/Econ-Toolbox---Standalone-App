@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -417,9 +418,19 @@ namespace EconToolbox.Desktop.ViewModels
             normalizedStress = Math.Clamp(normalizedStress, 0.0, 2.0);
 
             double responseScaling = Math.Clamp(AverageResponse, 0.1, 5.0);
-            double probabilityDriver = normalizedStress * SelectedRegion!.ImpactModifier * SelectedCrop!.ImpactModifier * responseScaling;
-            double probability = 1.0 - Math.Exp(-probabilityDriver);
+            double baselineAep = Math.Clamp(SelectedRegion!.AnnualExceedanceProbability, 0.0, 1.0);
+            double probabilityMultiplier = normalizedStress * SelectedRegion.ImpactModifier * SelectedCrop!.ImpactModifier * responseScaling;
+            double probability = baselineAep * probabilityMultiplier;
             ModeledImpactProbability = Math.Clamp(probability, 0.0, 1.0);
+
+#if DEBUG
+            if (baselineAep > 0.0 && probabilityMultiplier > 0.0 && ModeledImpactProbability < 1.0)
+            {
+                double increasedAep = Math.Clamp(baselineAep * 1.1, 0.0, 1.0);
+                double increasedProbability = Math.Clamp(increasedAep * probabilityMultiplier, 0.0, 1.0);
+                Debug.Assert(increasedProbability > ModeledImpactProbability, "Increasing the baseline AEP should increase the modeled impact probability when not clamped at 1.");
+            }
+#endif
 
             DepthDurationRows.Clear();
             foreach (var point in SelectedRegion.DepthDuration)
@@ -439,7 +450,7 @@ namespace EconToolbox.Desktop.ViewModels
                 : 0.0;
 
             ImpactSummary =
-                $"Simulated {SimulationYears:N0} seasons with {StageExposures.Count} growth stages. Estimated flood impact probability: {ModeledImpactProbabilityDisplay}.";
+                $"Simulated {SimulationYears:N0} seasons with {StageExposures.Count} growth stages. The baseline annual exceedance probability of {baselineAep:P2} scaled by current stress and resilience inputs yields a modeled impact probability of {ModeledImpactProbabilityDisplay}.";
 
             CropInsight =
                 $"Average expected damage across representative depth-duration events is {MeanDamageDisplay}. Adjust exposure days or tolerance to explore resilience.";
