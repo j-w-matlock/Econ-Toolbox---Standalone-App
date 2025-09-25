@@ -483,12 +483,23 @@ namespace EconToolbox.Desktop.ViewModels
             private string _name;
             private string _description;
             private double _impactModifier;
+            private int _floodWindowStartDay;
+            private int _floodWindowEndDay;
 
-            public RegionDefinition(string name, string description, double impactModifier, IEnumerable<DepthDurationPoint> depthDuration, bool isCustom = false)
+            public RegionDefinition(
+                string name,
+                string description,
+                double impactModifier,
+                int floodWindowStartDay,
+                int floodWindowEndDay,
+                IEnumerable<DepthDurationPoint> depthDuration,
+                bool isCustom = false)
             {
                 _name = name;
                 _description = description;
                 _impactModifier = impactModifier;
+                _floodWindowStartDay = Math.Clamp(floodWindowStartDay, 1, 366);
+                _floodWindowEndDay = Math.Clamp(floodWindowEndDay, _floodWindowStartDay, 366);
                 IsCustom = isCustom;
                 DepthDuration = new ObservableCollection<DepthDurationPoint>(depthDuration.Select(p => p.Clone()));
                 DepthDuration.CollectionChanged += DepthDuration_CollectionChanged;
@@ -552,6 +563,53 @@ namespace EconToolbox.Desktop.ViewModels
 
             public double MaxDuration => DepthDuration.Count == 0 ? 1.0 : DepthDuration.Max(p => p.DurationDays);
 
+            public int FloodWindowStartDay
+            {
+                get => _floodWindowStartDay;
+                set
+                {
+                    int adjusted = Math.Clamp(value, 1, 366);
+                    if (_floodWindowStartDay == adjusted)
+                    {
+                        return;
+                    }
+
+                    _floodWindowStartDay = adjusted;
+                    if (_floodWindowEndDay < _floodWindowStartDay)
+                    {
+                        _floodWindowEndDay = _floodWindowStartDay;
+                        OnPropertyChanged(nameof(FloodWindowEndDay));
+                    }
+
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(FloodWindowRangeDisplay));
+                }
+            }
+
+            public int FloodWindowEndDay
+            {
+                get => _floodWindowEndDay;
+                set
+                {
+                    int adjusted = Math.Clamp(value, 1, 366);
+                    if (adjusted < _floodWindowStartDay)
+                    {
+                        adjusted = _floodWindowStartDay;
+                    }
+
+                    if (_floodWindowEndDay == adjusted)
+                    {
+                        return;
+                    }
+
+                    _floodWindowEndDay = adjusted;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(FloodWindowRangeDisplay));
+                }
+            }
+
+            public string FloodWindowRangeDisplay => $"Typical flood season: days {FloodWindowStartDay} – {FloodWindowEndDay}";
+
             private void DepthDuration_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
             {
                 if (e.OldItems != null)
@@ -589,6 +647,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "North Atlantic Division",
                         "Coastal and riverine floodplains from Virginia to Maine with extensive drainage infrastructure and shorter ponding durations.",
                         0.82,
+                        75,
+                        190,
                         new[]
                         {
                             new DepthDurationPoint(1.0, 2, 0.16),
@@ -601,6 +661,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "South Atlantic Division",
                         "Southeastern alluvial plains where tropical rainfall and longer drainage times elevate losses.",
                         0.96,
+                        90,
+                        260,
                         new[]
                         {
                             new DepthDurationPoint(1.2, 3, 0.2),
@@ -613,6 +675,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Great Lakes & Ohio River Division",
                         "Interior basin cropland subject to protracted spring floods along the Ohio and Tennessee systems.",
                         0.88,
+                        60,
+                        200,
                         new[]
                         {
                             new DepthDurationPoint(1.0, 3, 0.18),
@@ -625,6 +689,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Mississippi Valley Division",
                         "Lower Mississippi and tributary bottoms with high exposure to deep, slow-draining floods.",
                         1.1,
+                        70,
+                        230,
                         new[]
                         {
                             new DepthDurationPoint(1.5, 4, 0.26),
@@ -637,6 +703,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Lower Mississippi Alluvial Valley",
                         "Backwater rice and row-crop systems with the longest flood residence times in the system.",
                         1.08,
+                        80,
+                        250,
                         new[]
                         {
                             new DepthDurationPoint(1.6, 4, 0.3),
@@ -649,6 +717,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Northwestern Division",
                         "High-gradient basins and irrigated valleys in the northern plains with faster drawdown.",
                         0.72,
+                        65,
+                        185,
                         new[]
                         {
                             new DepthDurationPoint(0.8, 2, 0.12),
@@ -661,6 +731,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Southwestern Division",
                         "Wide alluvial fans and interior plains from the Red River through Texas with intermittent flooding.",
                         0.78,
+                        85,
+                        220,
                         new[]
                         {
                             new DepthDurationPoint(0.9, 2, 0.14),
@@ -673,6 +745,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "South Pacific Division",
                         "Irrigated valleys along California and Arizona rivers where managed systems reduce depth exposure.",
                         0.7,
+                        50,
+                        170,
                         new[]
                         {
                             new DepthDurationPoint(0.7, 2, 0.1),
@@ -685,6 +759,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Pacific Ocean Division",
                         "Tropical systems and volcanic island valleys with rapid runoff and shorter flood durations.",
                         0.76,
+                        120,
+                        275,
                         new[]
                         {
                             new DepthDurationPoint(0.6, 1.5, 0.09),
@@ -697,6 +773,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Texas Gulf Coast",
                         "Coastal prairie systems where tropical rainfall and surge can inundate cropland for extended periods.",
                         0.92,
+                        110,
+                        270,
                         new[]
                         {
                             new DepthDurationPoint(1.2, 3, 0.22),
@@ -709,6 +787,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Custom region",
                         "Define the location-specific depth-duration relationship and impact modifier for your project area.",
                         1.0,
+                        90,
+                        210,
                         new[]
                         {
                             new DepthDurationPoint(1.0, 3, 0.2),
@@ -743,11 +823,6 @@ namespace EconToolbox.Desktop.ViewModels
                 get => _name;
                 set
                 {
-                    if (!IsCustom)
-                    {
-                        return;
-                    }
-
                     string adjusted = value?.Trim() ?? string.Empty;
                     if (_name == adjusted)
                     {
@@ -764,11 +839,6 @@ namespace EconToolbox.Desktop.ViewModels
                 get => _description;
                 set
                 {
-                    if (!IsCustom)
-                    {
-                        return;
-                    }
-
                     string adjusted = value ?? string.Empty;
                     if (_description == adjusted)
                     {
@@ -786,11 +856,6 @@ namespace EconToolbox.Desktop.ViewModels
                 set
                 {
                     double adjusted = double.IsFinite(value) ? Math.Clamp(value, 0.1, 5.0) : 1.0;
-                    if (!IsCustom)
-                    {
-                        adjusted = _damageFactor;
-                    }
-
                     if (Math.Abs(_damageFactor - adjusted) < 1e-6)
                     {
                         return;
@@ -807,11 +872,6 @@ namespace EconToolbox.Desktop.ViewModels
                 set
                 {
                     double adjusted = double.IsFinite(value) ? Math.Clamp(value, 0.1, 5.0) : 1.0;
-                    if (!IsCustom)
-                    {
-                        adjusted = _impactModifier;
-                    }
-
                     if (Math.Abs(_impactModifier - adjusted) < 1e-6)
                     {
                         return;

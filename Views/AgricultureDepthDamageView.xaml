@@ -98,7 +98,26 @@
                                                  HorizontalContentAlignment="Right"
                                                  ToolTip="Multiplier that scales the modeled impact probability for this region."/>
                                     </StackPanel>
+                                    <StackPanel Width="140"
+                                                Margin="{StaticResource Margin.Inline}">
+                                        <TextBlock Text="Flood window start (day)"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.FloodWindowStartDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="First day of year when flooding typically begins for the selected region."/>
+                                    </StackPanel>
+                                    <StackPanel Width="140"
+                                                Margin="{StaticResource Margin.Inline}">
+                                        <TextBlock Text="Flood window end (day)"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.FloodWindowEndDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Last day of year when flooding commonly occurs for the selected region."/>
+                                    </StackPanel>
                                 </StackPanel>
+                                <TextBlock Text="{Binding SelectedRegion.FloodWindowRangeDisplay}"
+                                           Style="{StaticResource Text.Caption}"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
                                 <DataGrid ItemsSource="{Binding SelectedRegion.DepthDuration}"
                                           SelectedItem="{Binding SelectedRegionPoint}"
                                           AutoGenerateColumns="False"
@@ -188,15 +207,14 @@
                                    TextWrapping="Wrap"
                                    Margin="{StaticResource Margin.Stack}"/>
 
-                        <Border Visibility="{Binding SelectedCrop.IsCustom, Converter={StaticResource BoolToVisibilityConverter}}"
-                                BorderBrush="{StaticResource Brush.Border}"
+                        <Border BorderBrush="{StaticResource Brush.Border}"
                                 BorderThickness="1"
                                 Background="{StaticResource Brush.SurfaceAlt}"
                                 CornerRadius="4"
                                 Padding="{StaticResource Padding.Content}"
                                 Margin="{StaticResource Margin.Stack}">
                             <StackPanel>
-                                <TextBlock Text="Custom crop parameters"
+                                <TextBlock Text="Crop parameters"
                                            FontWeight="SemiBold"
                                            FontSize="14"
                                            Margin="{StaticResource Margin.StackSmall}"/>
@@ -206,13 +224,13 @@
                                            Margin="{StaticResource Margin.StackSmall}"/>
                                 <TextBox Text="{Binding SelectedCrop.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Margin="{StaticResource Margin.StackSmall}"
-                                         ToolTip="Enter the display label for your custom crop."/>
+                                         ToolTip="Enter the display label for the selected crop."/>
                                 <TextBox Text="{Binding SelectedCrop.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Margin="{StaticResource Margin.StackSmall}"
                                          AcceptsReturn="True"
                                          TextWrapping="Wrap"
                                          MinHeight="60"
-                                         ToolTip="Provide a description that explains the crop assumptions."/>
+                                         ToolTip="Provide a description that explains the crop assumptions for this selection."/>
                                 <StackPanel Orientation="Horizontal"
                                             Margin="{StaticResource Margin.StackSmall}">
                                     <StackPanel Width="140"
