@@ -331,6 +331,9 @@
                                                                FontSize="14"/>
                                                     <TextBlock Text="{Binding StageWindow}"
                                                                Style="{StaticResource Text.Caption}"/>
+                                                    <TextBlock Text="{Binding TimingWindowDisplay}"
+                                                               Style="{StaticResource Text.Caption}"
+                                                               TextWrapping="Wrap"/>
                                                 </StackPanel>
                                                 <StackPanel Orientation="Horizontal"
                                                             HorizontalAlignment="Right"
@@ -361,6 +364,9 @@
                                             <TextBlock Text="{Binding StageGuidance}"
                                                        Style="{StaticResource Text.Body}"
                                                        TextWrapping="Wrap"
+                                                       Margin="{StaticResource Margin.StackSmall}"/>
+                                            <TextBlock Text="{Binding TimingModifierDisplay}"
+                                                       Style="{StaticResource Text.Caption}"
                                                        Margin="{StaticResource Margin.StackSmall}"/>
                                             <TextBlock Text="{Binding DefaultToleranceDisplay}"
                                                        Style="{StaticResource Text.Caption}"/>
