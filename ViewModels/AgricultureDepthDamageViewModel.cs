@@ -40,7 +40,7 @@ namespace EconToolbox.Desktop.ViewModels
                 _selectedRegion = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SelectedRegionDescription));
-                SelectedCustomRegionPoint = null;
+                SelectedRegionPoint = null;
                 AttachRegionHandlers(_selectedRegion);
                 _computeCommand.RaiseCanExecuteChanged();
                 _addDepthDurationPointCommand.RaiseCanExecuteChanged();
@@ -54,18 +54,18 @@ namespace EconToolbox.Desktop.ViewModels
 
         public string? SelectedRegionDescription => SelectedRegion?.Description;
 
-        private DepthDurationPoint? _selectedCustomRegionPoint;
-        public DepthDurationPoint? SelectedCustomRegionPoint
+        private DepthDurationPoint? _selectedRegionPoint;
+        public DepthDurationPoint? SelectedRegionPoint
         {
-            get => _selectedCustomRegionPoint;
+            get => _selectedRegionPoint;
             set
             {
-                if (_selectedCustomRegionPoint == value)
+                if (_selectedRegionPoint == value)
                 {
                     return;
                 }
 
-                _selectedCustomRegionPoint = value;
+                _selectedRegionPoint = value;
                 OnPropertyChanged();
                 _removeDepthDurationPointCommand.RaiseCanExecuteChanged();
             }
@@ -221,8 +221,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             _computeCommand = new RelayCommand(Compute, CanCompute);
             _exportCommand = new RelayCommand(Export, () => DepthDurationRows.Count > 0);
-            _addDepthDurationPointCommand = new RelayCommand(AddDepthDurationPoint, () => SelectedRegion?.IsCustom == true);
-            _removeDepthDurationPointCommand = new RelayCommand(RemoveDepthDurationPoint, () => SelectedRegion?.IsCustom == true && SelectedCustomRegionPoint != null);
+            _addDepthDurationPointCommand = new RelayCommand(AddDepthDurationPoint, () => SelectedRegion != null);
+            _removeDepthDurationPointCommand = new RelayCommand(RemoveDepthDurationPoint, () => SelectedRegionPoint != null);
 
             if (Regions.Count > 0)
             {
@@ -370,7 +370,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void AddDepthDurationPoint()
         {
-            if (SelectedRegion?.IsCustom != true)
+            if (SelectedRegion == null)
             {
                 return;
             }
@@ -380,18 +380,22 @@ namespace EconToolbox.Desktop.ViewModels
             double nextDuration = last?.DurationDays + 1.0 ?? 3.0;
             double nextDamage = last?.BaseDamage ?? 0.25;
 
-            SelectedRegion.DepthDuration.Add(new DepthDurationPoint(nextDepth, nextDuration, nextDamage));
+            var newPoint = new DepthDurationPoint(nextDepth, nextDuration, nextDamage);
+            SelectedRegion.DepthDuration.Add(newPoint);
+            SelectedRegionPoint = newPoint;
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
         }
 
         private void RemoveDepthDurationPoint()
         {
-            if (SelectedRegion?.IsCustom == true && SelectedCustomRegionPoint != null)
+            if (SelectedRegion == null || SelectedRegionPoint == null)
             {
-                SelectedRegion.DepthDuration.Remove(SelectedCustomRegionPoint);
-                SelectedCustomRegionPoint = null;
-                ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+                return;
             }
+
+            SelectedRegion.DepthDuration.Remove(SelectedRegionPoint);
+            SelectedRegionPoint = null;
+            ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
         }
 
         private void Compute()
@@ -499,11 +503,6 @@ namespace EconToolbox.Desktop.ViewModels
                 get => _name;
                 set
                 {
-                    if (!IsCustom)
-                    {
-                        return;
-                    }
-
                     string adjusted = value?.Trim() ?? string.Empty;
                     if (_name == adjusted)
                     {
@@ -520,11 +519,6 @@ namespace EconToolbox.Desktop.ViewModels
                 get => _description;
                 set
                 {
-                    if (!IsCustom)
-                    {
-                        return;
-                    }
-
                     string adjusted = value ?? string.Empty;
                     if (_description == adjusted)
                     {
@@ -541,11 +535,6 @@ namespace EconToolbox.Desktop.ViewModels
                 get => _impactModifier;
                 set
                 {
-                    if (!IsCustom)
-                    {
-                        return;
-                    }
-
                     double adjusted = double.IsFinite(value) ? Math.Clamp(value, 0.1, 5.0) : 1.0;
                     if (Math.Abs(_impactModifier - adjusted) < 1e-6)
                     {
@@ -919,6 +908,41 @@ namespace EconToolbox.Desktop.ViewModels
                         "Labor-intensive specialty crop common in the Southeast with low tolerance to saturated soils.",
                         0.93,
                         1.12),
+                    new CropDefinition(
+                        "Barley",
+                        "Cool-season grain concentrated in the Northern Plains; NASS yield data indicate moderate resilience but quality losses after ponding.",
+                        0.78,
+                        0.82),
+                    new CropDefinition(
+                        "Oats",
+                        "Spring cereal with relatively shallow roots and quick maturity reported by NASS across northern states.",
+                        0.72,
+                        0.78),
+                    new CropDefinition(
+                        "Canola",
+                        "Oilseed crop tracked by NASS in the Dakotas and Pacific Northwest that suffers from saturation during flowering.",
+                        0.84,
+                        0.9),
+                    new CropDefinition(
+                        "Sunflowers",
+                        "High-value oil and confection acreage documented by NASS; tall stalks tolerate shallow floods but seed heads are sensitive.",
+                        0.88,
+                        0.98),
+                    new CropDefinition(
+                        "Potatoes",
+                        "Tubers grown in irrigated systems with extensive NASS reporting; sustained ponding quickly reduces marketable yield.",
+                        0.97,
+                        1.18),
+                    new CropDefinition(
+                        "Sugarbeets",
+                        "Root crop with substantial NASS acreage in the Upper Midwest and West requiring well-drained soils.",
+                        0.9,
+                        1.05),
+                    new CropDefinition(
+                        "Dry edible beans",
+                        "Pulse crop tracked by NASS that is vulnerable to waterlogging during pod fill and harvest.",
+                        0.86,
+                        0.96),
                     new CropDefinition(
                         "Custom crop",
                         "Define crop-specific sensitivity, damage factors, and narrative for localized analyses.",
