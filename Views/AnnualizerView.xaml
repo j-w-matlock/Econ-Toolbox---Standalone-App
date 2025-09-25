@@ -160,19 +160,8 @@
                       </TextBlock>
                       <TextBox Grid.Row="0"
                                Text="{Binding FirstCost}"
-                               Tag="1">
-                          <TextBox.Style>
-                              <Style TargetType="TextBox" BasedOn="{StaticResource AnnualizerFieldInputStyle}">
-                                  <Setter Property="Margin" Value="0,0,0,16"/>
-                                  <Style.Triggers>
-                                      <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                                   Value="Narrow">
-                                          <Setter Property="Margin" Value="0,4,0,16"/>
-                                      </DataTrigger>
-                                  </Style.Triggers>
-                              </Style>
-                          </TextBox.Style>
-                      </TextBox>
+                               Tag="1"
+                               Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
                       <TextBlock Grid.Row="2" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">

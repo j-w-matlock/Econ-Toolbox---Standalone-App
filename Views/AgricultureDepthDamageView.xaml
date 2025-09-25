@@ -57,36 +57,37 @@
                                   SelectedItem="{Binding SelectedRegion}"
                                   DisplayMemberPath="Name"
                                   Margin="{StaticResource Margin.Stack}"
-                                  MinWidth="220"/>
+                                  MinWidth="220"
+                                  ToolTip="Choose the regional depth-duration template to review or customize."/>
                         <TextBlock Text="{Binding SelectedRegionDescription}"
                                    Style="{StaticResource Text.Body}"
                                    TextWrapping="Wrap"
                                    Margin="{StaticResource Margin.Stack}"/>
 
-                        <Border Visibility="{Binding SelectedRegion.IsCustom, Converter={StaticResource BoolToVisibilityConverter}}"
-                                BorderBrush="{StaticResource Brush.Border}"
+                        <Border BorderBrush="{StaticResource Brush.Border}"
                                 BorderThickness="1"
                                 Background="{StaticResource Brush.SurfaceAlt}"
                                 CornerRadius="4"
                                 Padding="{StaticResource Padding.Content}"
                                 Margin="{StaticResource Margin.Stack}">
                             <StackPanel>
-                                <TextBlock Text="Custom region parameters"
+                                <TextBlock Text="Region parameters"
                                            FontWeight="SemiBold"
                                            FontSize="14"
                                            Margin="{StaticResource Margin.StackSmall}"/>
-                                <TextBlock Text="Update the name, description, impact modifier, and depth-duration anchor points to tailor the curve for a local project area."
+                                <TextBlock Text="Review or adjust the name, description, impact modifier, and depth-duration anchor points for the selected region."
                                            Style="{StaticResource Text.Caption}"
                                            TextWrapping="Wrap"
                                            Margin="{StaticResource Margin.StackSmall}"/>
                                 <TextBox Text="{Binding SelectedRegion.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Margin="{StaticResource Margin.StackSmall}"
-                                         ToolTip="Name shown in the selection list"/>
+                                         ToolTip="Display name for the selected region shown in the drop-down list."/>
                                 <TextBox Text="{Binding SelectedRegion.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Margin="{StaticResource Margin.StackSmall}"
                                          AcceptsReturn="True"
                                          TextWrapping="Wrap"
-                                         MinHeight="60"/>
+                                         MinHeight="60"
+                                         ToolTip="Narrative description that will appear beneath the region selector."/>
                                 <StackPanel Orientation="Horizontal"
                                             Margin="{StaticResource Margin.StackSmall}">
                                     <StackPanel Width="140"
@@ -94,27 +95,63 @@
                                         <TextBlock Text="Impact modifier"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.ImpactModifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
-                                                 HorizontalContentAlignment="Right"/>
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Multiplier that scales the modeled impact probability for this region."/>
                                     </StackPanel>
                                 </StackPanel>
                                 <DataGrid ItemsSource="{Binding SelectedRegion.DepthDuration}"
-                                          SelectedItem="{Binding SelectedCustomRegionPoint}"
+                                          SelectedItem="{Binding SelectedRegionPoint}"
                                           AutoGenerateColumns="False"
                                           CanUserAddRows="False"
                                           CanUserDeleteRows="False"
                                           HeadersVisibility="Column"
-                                          Margin="{StaticResource Margin.StackSmall}"
-                                          IsEnabled="{Binding SelectedRegion.IsCustom}">
+                                          Margin="{StaticResource Margin.StackSmall}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Depth (ft)"
                                                             Binding="{Binding DepthFeet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
-                                                            Width="*"/>
+                                                            Width="*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet)."/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                            <DataGridTextColumn.EditingElementStyle>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                    <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet)."/>
+                                                </Style>
+                                            </DataGridTextColumn.EditingElementStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Duration (days)"
                                                             Binding="{Binding DurationDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
-                                                            Width="*"/>
+                                                            Width="*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="ToolTip" Value="Length of inundation represented by the row (days)."/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                            <DataGridTextColumn.EditingElementStyle>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                    <Setter Property="ToolTip" Value="Length of inundation represented by the row (days)."/>
+                                                </Style>
+                                            </DataGridTextColumn.EditingElementStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Base damage (fraction)"
                                                             Binding="{Binding BaseDamage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
-                                                            Width="*"/>
+                                                            Width="*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1)."/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                            <DataGridTextColumn.EditingElementStyle>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                    <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1)."/>
+                                                </Style>
+                                            </DataGridTextColumn.EditingElementStyle>
+                                        </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
                                 <StackPanel Orientation="Horizontal"
@@ -144,7 +181,8 @@
                                   SelectedItem="{Binding SelectedCrop}"
                                   DisplayMemberPath="Name"
                                   Margin="{StaticResource Margin.Stack}"
-                                  MinWidth="220"/>
+                                  MinWidth="220"
+                                  ToolTip="Select the crop profile sourced from USDA NASS categories."/>
                         <TextBlock Text="{Binding SelectedCropDescription}"
                                    Style="{StaticResource Text.Body}"
                                    TextWrapping="Wrap"
@@ -168,12 +206,13 @@
                                            Margin="{StaticResource Margin.StackSmall}"/>
                                 <TextBox Text="{Binding SelectedCrop.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Margin="{StaticResource Margin.StackSmall}"
-                                         ToolTip="Name shown in the selection list"/>
+                                         ToolTip="Enter the display label for your custom crop."/>
                                 <TextBox Text="{Binding SelectedCrop.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Margin="{StaticResource Margin.StackSmall}"
                                          AcceptsReturn="True"
                                          TextWrapping="Wrap"
-                                         MinHeight="60"/>
+                                         MinHeight="60"
+                                         ToolTip="Provide a description that explains the crop assumptions."/>
                                 <StackPanel Orientation="Horizontal"
                                             Margin="{StaticResource Margin.StackSmall}">
                                     <StackPanel Width="140"
@@ -181,14 +220,16 @@
                                         <TextBlock Text="Damage factor"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedCrop.DamageFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
-                                                 HorizontalContentAlignment="Right"/>
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Scaling factor that adjusts depth-duration damages for the crop."/>
                                     </StackPanel>
                                     <StackPanel Width="140"
                                                 Margin="{StaticResource Margin.Inline}">
                                         <TextBlock Text="Impact modifier"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedCrop.ImpactModifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
-                                                 HorizontalContentAlignment="Right"/>
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Multiplier that affects the modeled probability of experiencing a damaging flood."/>
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="Damage factor scales depth-duration damages, while the impact modifier influences the modeled probability of a damaging event."
@@ -233,14 +274,16 @@
                                                                    Style="{StaticResource Text.Caption}"/>
                                                         <TextBox Text="{Binding ExposureDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
                                                                  HorizontalContentAlignment="Right"
-                                                                 MinWidth="80"/>
+                                                                 MinWidth="80"
+                                                                 ToolTip="Estimated number of days this growth stage experiences inundation in a typical event."/>
                                                     </StackPanel>
                                                     <StackPanel Margin="{StaticResource Margin.Inline}">
                                                         <TextBlock Text="Flood tolerance (days)"
                                                                    Style="{StaticResource Text.Caption}"/>
                                                         <TextBox Text="{Binding FloodToleranceDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
                                                                  HorizontalContentAlignment="Right"
-                                                                 MinWidth="80"/>
+                                                                 MinWidth="80"
+                                                                 ToolTip="Number of days this stage can withstand inundation before significant damage occurs."/>
                                                     </StackPanel>
                                                     <StackPanel Margin="{StaticResource Margin.Inline}">
                                                         <Button Content="Reset"
@@ -273,7 +316,8 @@
                                            Style="{StaticResource Text.Caption}"/>
                                 <TextBox Text="{Binding AverageResponse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
                                          HorizontalContentAlignment="Right"
-                                         MinWidth="120"/>
+                                         MinWidth="120"
+                                         ToolTip="Adjusts how strongly seasonal stress amplifies modeled damages (1 = default response)."/>
                                 <TextBlock Text="Scales the seasonal exposure severity."
                                            Style="{StaticResource Text.Caption}"
                                            TextWrapping="Wrap"
@@ -285,7 +329,8 @@
                                            Style="{StaticResource Text.Caption}"/>
                                 <TextBox Text="{Binding SimulationYears, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          HorizontalContentAlignment="Right"
-                                         MinWidth="120"/>
+                                         MinWidth="120"
+                                         ToolTip="Number of simulated seasons summarized in the narrative output."/>
                                 <TextBlock Text="Used in the narrative to describe modeled seasons."
                                            Style="{StaticResource Text.Caption}"
                                            TextWrapping="Wrap"
