@@ -207,7 +207,6 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Margin" Value="{StaticResource Margin.StackLarge}"/>
         <Setter Property="SelectionUnit" Value="CellOrRowHeader"/>
-        <Setter Property="ClipboardPasteMode" Value="Cell"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="EnableRowVirtualization" Value="True"/>
         <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
