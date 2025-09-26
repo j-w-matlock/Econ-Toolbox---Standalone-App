@@ -1,6 +1,8 @@
 using EconToolbox.Desktop.Models;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -20,6 +22,10 @@ namespace EconToolbox.Desktop.ViewModels
         private double _totalUserDays;
         private double _annualRecreationBenefit;
         private PointCollection _chartPoints = new();
+        private string _historicalVisitationEntries = string.Empty;
+        private double? _historicalMedianVisitation;
+        private int _historicalObservationCount;
+        private string _historicalDataError = string.Empty;
 
         public ObservableCollection<PointValueRow> Table { get; } = UdvModel.CreateDefaultTable();
 
@@ -149,11 +155,72 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _chartPoints = value; OnPropertyChanged(); }
         }
 
+        public string HistoricalVisitationEntries
+        {
+            get => _historicalVisitationEntries;
+            set
+            {
+                if (_historicalVisitationEntries != value)
+                {
+                    _historicalVisitationEntries = value;
+                    OnPropertyChanged();
+                    HistoricalDataError = string.Empty;
+                }
+            }
+        }
+
+        public double? HistoricalMedianVisitation
+        {
+            get => _historicalMedianVisitation;
+            private set
+            {
+                if (_historicalMedianVisitation != value)
+                {
+                    _historicalMedianVisitation = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(HasHistoricalMedian));
+                }
+            }
+        }
+
+        public bool HasHistoricalMedian => HistoricalMedianVisitation.HasValue;
+
+        public int HistoricalObservationCount
+        {
+            get => _historicalObservationCount;
+            private set
+            {
+                if (_historicalObservationCount != value)
+                {
+                    _historicalObservationCount = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string HistoricalDataError
+        {
+            get => _historicalDataError;
+            private set
+            {
+                if (_historicalDataError != value)
+                {
+                    _historicalDataError = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(HasHistoricalDataError));
+                }
+            }
+        }
+
+        public bool HasHistoricalDataError => !string.IsNullOrWhiteSpace(HistoricalDataError);
+
         public ICommand ComputeCommand { get; }
+        public ICommand ComputeMedianCommand { get; }
 
         public UdvViewModel()
         {
             ComputeCommand = new RelayCommand(Compute);
+            ComputeMedianCommand = new RelayCommand(ComputeMedianFromHistoricalData);
             UpdateActivityTypes();
             UpdateUnitDayValue();
             UpdateChart();
@@ -250,6 +317,71 @@ namespace EconToolbox.Desktop.ViewModels
             RecalculateUserDays();
             double benefit = UdvModel.ComputeBenefit(UnitDayValue, TotalUserDays);
             AnnualRecreationBenefit = double.IsFinite(benefit) ? benefit : 0.0;
+        }
+
+        private void ComputeMedianFromHistoricalData()
+        {
+            HistoricalDataError = string.Empty;
+            var (values, invalidCount) = ParseHistoricalEntries(HistoricalVisitationEntries);
+
+            if (values.Count == 0)
+            {
+                HistoricalMedianVisitation = null;
+                HistoricalObservationCount = 0;
+                HistoricalDataError = "Enter at least one numeric visitation value.";
+                return;
+            }
+
+            values.Sort();
+            double median = values.Count % 2 == 0
+                ? (values[values.Count / 2 - 1] + values[values.Count / 2]) / 2.0
+                : values[values.Count / 2];
+
+            HistoricalMedianVisitation = median;
+            HistoricalObservationCount = values.Count;
+
+            if (invalidCount > 0)
+            {
+                HistoricalDataError = invalidCount == 1
+                    ? "One entry could not be parsed and was ignored."
+                    : $"{invalidCount} entries could not be parsed and were ignored.";
+            }
+
+            VisitationInput = median;
+        }
+
+        private static (List<double> values, int invalidCount) ParseHistoricalEntries(string input)
+        {
+            var values = new List<double>();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return (values, 0);
+            }
+
+            int invalidCount = 0;
+            var separators = new[] { ',', ';', '\n', '\r', '\t' };
+            var tokens = input
+                .Split(separators, StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim())
+                .Where(t => !string.IsNullOrWhiteSpace(t));
+
+            foreach (var token in tokens)
+            {
+                if (double.TryParse(token, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out double value) ||
+                    double.TryParse(token, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out value))
+                {
+                    if (double.IsFinite(value))
+                    {
+                        values.Add(value);
+                    }
+                }
+                else
+                {
+                    invalidCount++;
+                }
+            }
+
+            return (values, invalidCount);
         }
     }
 }
