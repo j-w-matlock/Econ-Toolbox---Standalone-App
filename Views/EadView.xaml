@@ -34,11 +34,11 @@
                                        Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
                         <TextBlock Style="{StaticResource Text.Body}">
-                            <Run Text="List probability-damage pairs for each category. The tool auto-completes the curve by inserting 0% and 100% points using the trapezoidal method."/>
+                            <Run Text="• List probability and damage values for each category. The curve automatically includes 0% and 100% anchors using trapezoidal interpolation."/>
                             <LineBreak/>
-                            <Run Text="Toggle Include Stage if you have stage data aligned with the same probabilities."/>
+                            <Run Text="• Toggle Include Stage to capture paired stage values that align with the same probabilities."/>
                             <LineBreak/>
-                            <Run Text="After editing the grid, use the Calculate button at the bottom of the window so charts and statistics capture your latest entries."/>
+                            <Run Text="• Select Calculate after making edits so the charts, summary results, and exports refresh with your latest data."/>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -100,7 +100,7 @@
                     </UniformGrid.Style>
 
                     <Border Background="{StaticResource Brush.Surface}"
-                            CornerRadius="6"
+                            CornerRadius="10"
                             Padding="{StaticResource Padding.Content}"
                             BorderBrush="{StaticResource Brush.Border}"
                             BorderThickness="1">
@@ -115,16 +115,22 @@
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
-                        <DataGrid ItemsSource="{Binding Rows}"
-                                  AutoGenerateColumns="False"
-                                  CanUserAddRows="True"
-                                  CanUserDeleteRows="True"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                  behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
+                        <StackPanel>
+                            <TextBlock Text="Probability and Damage Inputs"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,12"/>
+                            <DataGrid ItemsSource="{Binding Rows}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="True"
+                                      CanUserDeleteRows="True"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                      Margin="0"
+                                      behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
+                        </StackPanel>
                     </Border>
 
                     <Border Background="{StaticResource Brush.Surface}"
-                            CornerRadius="6"
+                            CornerRadius="10"
                             Padding="{StaticResource Padding.Content}"
                             BorderBrush="{StaticResource Brush.Border}"
                             BorderThickness="1">
@@ -143,16 +149,37 @@
                             <TextBlock Text="Visualize Your Curve"
                                        FontWeight="SemiBold"
                                        Margin="{StaticResource Margin.Stack}"/>
-                            <Canvas Height="160" Margin="{StaticResource Margin.Stack}">
-                                <Polyline Points="{Binding FrequencyDamagePoints}"
-                                          Stroke="{StaticResource Brush.Accent}"
-                                          StrokeThickness="2"/>
-                                <Polyline Points="{Binding StageDamagePoints}"
-                                          Stroke="{StaticResource Brush.Primary}"
-                                          StrokeThickness="2"/>
-                            </Canvas>
+                            <Border Background="{StaticResource Brush.ChartFill}"
+                                    BorderBrush="{StaticResource Brush.Border}"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="16"
+                                    Margin="{StaticResource Margin.Stack}">
+                                <Grid ClipToBounds="True">
+                                    <Canvas x:Name="CurveCanvas" Width="300" Height="150" SnapsToDevicePixels="True">
+                                        <Rectangle Width="300"
+                                                   Height="150"
+                                                   Fill="Transparent"
+                                                   StrokeThickness="0"/>
+                                        <Line X1="0" Y1="150" X2="300" Y2="150" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                        <Line X1="0" Y1="0" X2="0" Y2="150" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                        <Line X1="0" Y1="100" X2="300" Y2="100" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                        <Line X1="0" Y1="50" X2="300" Y2="50" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                        <Polyline Points="{Binding FrequencyDamagePoints}"
+                                                  Stroke="{StaticResource Brush.Accent}"
+                                                  StrokeThickness="3"
+                                                  StrokeEndLineCap="Round"
+                                                  StrokeStartLineCap="Round"/>
+                                        <Polyline Points="{Binding StageDamagePoints}"
+                                                  Stroke="{StaticResource Brush.Primary}"
+                                                  StrokeThickness="3"
+                                                  StrokeEndLineCap="Round"
+                                                  StrokeStartLineCap="Round"/>
+                                    </Canvas>
+                                </Grid>
+                            </Border>
                             <TextBlock Style="{StaticResource Text.Caption}" TextWrapping="Wrap">
-                                The teal line plots damages against exceedance probability, while the navy line (when stage is supplied) shows the paired stage-damage curve. Smoother, monotonic inputs yield clearer charts.
+                                The aqua line plots damages against exceedance probability. When stage values are provided, the navy line displays the paired stage-damage curve so you can verify consistency between datasets.
                             </TextBlock>
                         </StackPanel>
                     </Border>
