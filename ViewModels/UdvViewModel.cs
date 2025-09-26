@@ -2,6 +2,8 @@ using EconToolbox.Desktop.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -22,12 +24,12 @@ namespace EconToolbox.Desktop.ViewModels
         private double _totalUserDays;
         private double _annualRecreationBenefit;
         private PointCollection _chartPoints = new();
-        private string _historicalVisitationEntries = string.Empty;
         private double? _historicalMedianVisitation;
         private int _historicalObservationCount;
         private string _historicalDataError = string.Empty;
 
         public ObservableCollection<PointValueRow> Table { get; } = UdvModel.CreateDefaultTable();
+        public ObservableCollection<HistoricalVisitationRow> HistoricalVisitationRows { get; } = new();
 
         public ObservableCollection<string> RecreationTypes { get; } = new(new[] { "General", "Specialized" });
         public ObservableCollection<string> ActivityTypes { get; } = new();
@@ -155,20 +157,6 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _chartPoints = value; OnPropertyChanged(); }
         }
 
-        public string HistoricalVisitationEntries
-        {
-            get => _historicalVisitationEntries;
-            set
-            {
-                if (_historicalVisitationEntries != value)
-                {
-                    _historicalVisitationEntries = value;
-                    OnPropertyChanged();
-                    HistoricalDataError = string.Empty;
-                }
-            }
-        }
-
         public double? HistoricalMedianVisitation
         {
             get => _historicalMedianVisitation;
@@ -225,6 +213,12 @@ namespace EconToolbox.Desktop.ViewModels
             UpdateUnitDayValue();
             UpdateChart();
             RecalculateUserDays();
+            InitializeHistoricalRows();
+            HistoricalVisitationRows.CollectionChanged += HistoricalVisitationRows_CollectionChanged;
+            foreach (var row in HistoricalVisitationRows)
+            {
+                row.PropertyChanged += HistoricalRow_PropertyChanged;
+            }
             foreach (var row in Table)
             {
                 row.PropertyChanged += (_, __) =>
@@ -233,6 +227,38 @@ namespace EconToolbox.Desktop.ViewModels
                     UpdateChart();
                 };
             }
+        }
+
+        private void InitializeHistoricalRows()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                HistoricalVisitationRows.Add(new HistoricalVisitationRow());
+            }
+        }
+
+        private void HistoricalVisitationRows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (HistoricalVisitationRow row in e.NewItems)
+                {
+                    row.PropertyChanged += HistoricalRow_PropertyChanged;
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (HistoricalVisitationRow row in e.OldItems)
+                {
+                    row.PropertyChanged -= HistoricalRow_PropertyChanged;
+                }
+            }
+        }
+
+        private void HistoricalRow_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            HistoricalDataError = string.Empty;
         }
 
         private void UpdateActivityTypes()
@@ -322,7 +348,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void ComputeMedianFromHistoricalData()
         {
             HistoricalDataError = string.Empty;
-            var (values, invalidCount) = ParseHistoricalEntries(HistoricalVisitationEntries);
+            var (values, invalidCount) = ParseHistoricalEntries(HistoricalVisitationRows);
 
             if (values.Count == 0)
             {
@@ -350,25 +376,20 @@ namespace EconToolbox.Desktop.ViewModels
             VisitationInput = median;
         }
 
-        private static (List<double> values, int invalidCount) ParseHistoricalEntries(string input)
+        private static (List<double> values, int invalidCount) ParseHistoricalEntries(IEnumerable<HistoricalVisitationRow> rows)
         {
             var values = new List<double>();
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return (values, 0);
-            }
-
             int invalidCount = 0;
-            var separators = new[] { ',', ';', '\n', '\r', '\t' };
-            var tokens = input
-                .Split(separators, StringSplitOptions.RemoveEmptyEntries)
-                .Select(t => t.Trim())
-                .Where(t => !string.IsNullOrWhiteSpace(t));
-
-            foreach (var token in tokens)
+            foreach (var row in rows)
             {
-                if (double.TryParse(token, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out double value) ||
-                    double.TryParse(token, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out value))
+                string entry = row.VisitationText;
+                if (string.IsNullOrWhiteSpace(entry))
+                {
+                    continue;
+                }
+
+                if (double.TryParse(entry, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out double value) ||
+                    double.TryParse(entry, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out value))
                 {
                     if (double.IsFinite(value))
                     {

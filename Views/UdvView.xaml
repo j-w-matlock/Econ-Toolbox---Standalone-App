@@ -156,14 +156,36 @@
             <StackPanel>
                 <TextBlock Text="Historical Visitation Data" FontWeight="Bold"/>
                 <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopXSmall}">
-                    Provide historic visitation observations separated by commas or line breaks. The median of these values will replace the visitation input above.
+                    Provide historic visitation observations in the table. You can type directly or paste multiple rows from a spreadsheet. The median of these values will replace the visitation input above.
                 </TextBlock>
-                <TextBox Text="{Binding HistoricalVisitationEntries, UpdateSourceTrigger=PropertyChanged}" 
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         MinHeight="80"
-                         HorizontalAlignment="Stretch"/>
+                <DataGrid ItemsSource="{Binding HistoricalVisitationRows}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="True"
+                          CanUserDeleteRows="True"
+                          ClipboardPasteMode="Cell"
+                          HeadersVisibility="Column"
+                          Margin="0,8,0,8"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Label, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="2*">
+                            <DataGridTextColumn.Header>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Label (optional)"/>
+                                </StackPanel>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding VisitationText, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="*">
+                            <DataGridTextColumn.Header>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Visitation"/>
+                                </StackPanel>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Content="Calculate Median" Command="{Binding ComputeMedianCommand}" Width="180"/>
                     <TextBlock Margin="12,0,0,0"
