@@ -83,21 +83,39 @@
                                          FontSize="16"
                                          Foreground="{StaticResource Brush.Primary}"/>
                           </StackPanel>
-                          <TextBlock TextWrapping="Wrap">
-                              1. Document upfront investments, financing assumptions, and the analysis period.
-                              2. Capture the construction cash flow in the IDC schedule and list all future costs in the year they occur.
-                              3. Provide annual O&amp;M and annual benefits so the tool can translate capital outlays into comparable annual metrics.
-                              Use the Calculate button at the bottom of the window whenever you update inputs.
+                          <TextBlock Style="{StaticResource Text.Body}">
+                              <Run Text="• Document upfront investments, financing assumptions, and the analysis period."/>
+                              <LineBreak/>
+                              <Run Text="• Capture construction cash flow in the IDC schedule and list future costs in the year they occur."/>
+                              <LineBreak/>
+                              <Run Text="• Provide annual O&amp;M and annual benefits so the tool can translate capital outlays into comparable annual metrics."/>
+                              <LineBreak/>
+                              <Run Text="• Select Calculate after any edits so the tables, charts, and exports remain synchronized."/>
                           </TextBlock>
                       </StackPanel>
                   </Border>
 
-                  <Grid Grid.Row="1"
-                        Grid.RowSpan="14"
-                        Grid.ColumnSpan="2"
-                        Margin="0,16,0,0"
-                        Grid.IsSharedSizeScope="True">
-                      <Grid.Resources>
+                  <Border Grid.Row="1"
+                          Grid.RowSpan="14"
+                          Grid.ColumnSpan="2"
+                          Background="{StaticResource Brush.Surface}"
+                          CornerRadius="10"
+                          Padding="{StaticResource Padding.Card}"
+                          BorderBrush="{StaticResource Brush.Border}"
+                          BorderThickness="1"
+                          Margin="0,16,0,0">
+                      <Grid>
+                          <Grid.RowDefinitions>
+                              <RowDefinition Height="Auto"/>
+                              <RowDefinition Height="*"/>
+                          </Grid.RowDefinitions>
+                          <TextBlock Grid.Row="0"
+                                     Text="Financial Inputs"
+                                     FontSize="15"
+                                     FontWeight="SemiBold"
+                                     Margin="0,0,0,12"/>
+                          <Grid Grid.Row="1" Grid.IsSharedSizeScope="True">
+                       <Grid.Resources>
                           <Style x:Key="AnnualizerFieldLabelStyle" TargetType="TextBlock">
                               <Setter Property="Grid.Column" Value="0"/>
                               <Setter Property="Grid.ColumnSpan" Value="1"/>
@@ -216,7 +234,9 @@
                           <Run Text="Construction Months"/>
                       </TextBlock>
                       <TextBox Grid.Row="12" Text="{Binding ConstructionMonths}" Tag="13" Style="{StaticResource AnnualizerFieldInputStyle}"/>
-                  </Grid>
+                          </Grid>
+                      </Grid>
+                  </Border>
 
                   <TextBlock Grid.Row="15">
                       <TextBlock.Style>
@@ -251,7 +271,7 @@
                           <RowDefinition Height="Auto"/>
                           <RowDefinition Height="Auto"/>
                       </Grid.RowDefinitions>
-                      <Border Background="White" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
+                      <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
                           <DataGrid ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All">
                               <DataGrid.Columns>
                                   <DataGridTextColumn Binding="{Binding Cost}">
@@ -335,7 +355,7 @@
                           <RowDefinition Height="Auto"/>
                           <RowDefinition Height="Auto"/>
                       </Grid.RowDefinitions>
-                      <Border Background="White" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
+                      <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
                           <DataGrid ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0">
                               <DataGrid.Columns>
                                   <DataGridTextColumn Binding="{Binding Cost}">

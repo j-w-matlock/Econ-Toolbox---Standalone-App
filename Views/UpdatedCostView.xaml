@@ -57,8 +57,14 @@
                         </Style>
                     </StackPanel.Style>
                     <TextBlock Text="Updated Cost Workflow" FontSize="18" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
-                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                        Work through each sub-tab from left to right. Start with storage capacity, capture annual joint costs, update historical line items, then evaluate RR&amp;R/mitigation and total annual cost scenarios. Press Compute within each section before leaving the tab so downstream values stay synchronized.
+                    <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
+                        <Run Text="• Work through each sub-tab from left to right so dependent calculations stay aligned."/>
+                        <LineBreak/>
+                        <Run Text="• Start with storage capacity, capture annual joint costs, then update historical line items."/>
+                        <LineBreak/>
+                        <Run Text="• Evaluate RR&amp;R, mitigation, and total annual cost scenarios once upstream inputs are finalized."/>
+                        <LineBreak/>
+                        <Run Text="• Press Compute within each section before leaving the tab to keep downstream values synchronized."/>
                     </TextBlock>
                 </StackPanel>
                 <Canvas Width="80" Height="60">
@@ -103,8 +109,10 @@
                                        FontWeight="Bold"
                                        Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                            Record the full system storage and the recommended storage allocation for your study. The compute action scales other sections by this proportion, so double-check the recommendation before proceeding.
+                        <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
+                            <Run Text="• Record the full system storage and the recommended allocation for your study."/>
+                            <LineBreak/>
+                            <Run Text="• Use Compute to scale the remaining sections by this proportion before moving forward."/>
                         </TextBlock>
                     </StackPanel>
                 </Border>
@@ -167,8 +175,10 @@
                                        FontWeight="Bold"
                                        Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                            Enter the system-wide joint operating and maintenance costs on an annual basis. The compute step keeps a running total that is later scaled by the storage percentage.
+                        <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
+                            <Run Text="• Enter system-wide joint operating and maintenance costs on an annual basis."/>
+                            <LineBreak/>
+                            <Run Text="• Use Compute to capture the running total that will later be scaled by the storage percentage."/>
                         </TextBlock>
                     </StackPanel>
                 </Border>

@@ -16,23 +16,29 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Background="#E6F5FF" BorderBrush="#7DC2E8" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,10">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Canvas Width="60" Height="60">
-                        <Path Data="M30,5 C16,20 8,32 8,41 C8,52 17,60 30,60 C43,60 52,52 52,41 C52,32 44,20 30,5 Z" Fill="#7DC2E8"/>
-                        <Path Data="M30,12 C21,23 16,32 16,41 C16,48 22,53 30,53 C38,53 44,48 44,41 C44,32 39,23 30,12 Z" Fill="White" Opacity="0.6"/>
-                    </Canvas>
-                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                        <TextBlock Text="Water Demand Forecast Instructions" FontSize="18" FontWeight="Bold" Foreground="#1F6AB0"/>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                            Enter historic data first, choose or add scenarios, then specify forecast horizon and demographic assumptions. Use the Calculate and Export buttons at the bottom of the window to refresh forecasts or download your workbook.
-                        </TextBlock>
+            <Border Grid.Row="0"
+                    Style="{StaticResource Border.Explainer}"
+                    Margin="0,0,0,12">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}">
+                        <TextBlock FontFamily="Segoe MDL2 Assets"
+                                   Text=""
+                                   FontSize="22"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   Margin="{StaticResource Margin.Inline}"/>
+                        <TextBlock Text="Water Demand Forecast Workflow"
+                                   FontWeight="Bold"
+                                   FontSize="16"
+                                   Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
-                </Grid>
+                    <TextBlock Style="{StaticResource Text.Body}">
+                        <Run Text="• Enter historic demand records first to calibrate the baseline."/>
+                        <LineBreak/>
+                        <Run Text="• Choose or add scenarios, then set the forecast horizon and demographic assumptions."/>
+                        <LineBreak/>
+                        <Run Text="• Use Calculate and Export after edits so scenario charts, tables, and workbooks stay current."/>
+                    </TextBlock>
+                </StackPanel>
             </Border>
             <TabControl Grid.Row="1" ItemsSource="{Binding Scenarios}" SelectedItem="{Binding SelectedScenario}" HorizontalContentAlignment="Stretch">
                 <TabControl.ItemTemplate>
@@ -57,9 +63,25 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Border Grid.Row="0" Background="White" CornerRadius="4" Padding="5" Margin="0,0,0,5">
-                                    <DataGrid ItemsSource="{Binding DataContext.HistoricalData, ElementName=Root}" AutoGenerateColumns="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                                        <DataGrid.Columns>
+                                <Border Grid.Row="0"
+                                        Background="{StaticResource Brush.Surface}"
+                                        BorderBrush="{StaticResource Brush.Border}"
+                                        BorderThickness="1"
+                                        CornerRadius="10"
+                                        Padding="12"
+                                        Margin="0,0,0,8">
+                                    <StackPanel>
+                                        <TextBlock Text="Historical Demand"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,0,12"/>
+                                        <DataGrid ItemsSource="{Binding DataContext.HistoricalData, ElementName=Root}"
+                                                  AutoGenerateColumns="False"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Stretch"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                                  Margin="0">
+                                            <DataGrid.Columns>
                                             <DataGridTextColumn Binding="{Binding Year}">
                                                 <DataGridTextColumn.Header>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -79,7 +101,8 @@
                                                 </DataGridTextColumn.Header>
                                             </DataGridTextColumn>
                                         </DataGrid.Columns>
-                                    </DataGrid>
+                                        </DataGrid>
+                                    </StackPanel>
                                 </Border>
                                 <Grid Grid.Row="1" Margin="0,0,0,5" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
@@ -230,7 +253,7 @@
                                         </Grid>
                                     </Expander>
 
-                                    <Border Grid.Row="8" Grid.ColumnSpan="3" Background="#F7FBFF" BorderBrush="#C6DBF4" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,8,0,0">
+                                    <Border Grid.Row="8" Grid.ColumnSpan="3" Background="{StaticResource Brush.ChartFill}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,8,0,0">
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -256,10 +279,10 @@
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="ScenarioValue"/>
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="ScenarioValue"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="SemiBold" Foreground="#1F6AB0" Margin="0,0,0,8" Text="Scenario Variations (% change applied to baseline rates)"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="SemiBold" Foreground="#31556F" Text="Parameter"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Foreground="#31556F" Margin="16,0,16,0" Text="Optimistic" HorizontalAlignment="Left"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="#31556F" Text="Pessimistic" HorizontalAlignment="Left"/>
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="SemiBold" Foreground="{StaticResource Brush.Primary}" Margin="0,0,0,8" Text="Scenario Variations (% change applied to baseline rates)"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}" Text="Parameter"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}" Margin="16,0,16,0" Text="Optimistic" HorizontalAlignment="Left"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}" Text="Pessimistic" HorizontalAlignment="Left"/>
 
                                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Population growth"/>
                                             <TextBox Grid.Row="2" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Text="{Binding DataContext.OptimisticPopulationGrowthChangePercent, ElementName=Root}" ToolTip="Percent change applied to the baseline population growth rate for the optimistic scenario."/>
@@ -277,14 +300,14 @@
                                             <TextBox Grid.Row="5" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" Text="{Binding DataContext.OptimisticLossChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline loss percentages for the optimistic scenario."/>
                                             <TextBox Grid.Row="5" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" Text="{Binding DataContext.PessimisticLossChangePercent, ElementName=Root}" ToolTip="Percent change applied to baseline loss percentages for the pessimistic scenario."/>
 
-                                            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="#31556F" TextWrapping="Wrap">
+                                            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}" TextWrapping="Wrap">
                                                 Positive values increase the baseline rate, while negative values decrease it. Changes apply automatically to the Optimistic and Pessimistic tabs without altering the Baseline inputs.
                                             </TextBlock>
                                         </Grid>
                                     </Border>
                                 </Grid>
-                                <Border Grid.Row="2" Background="White" CornerRadius="4" Padding="5">
-                                    <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="10" Padding="12" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+                                    <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
                                             <DataGridTextColumn Header="Growth Rate" Binding="{Binding GrowthRate, Mode=TwoWay, StringFormat={}{0:N2}}">
@@ -347,7 +370,7 @@
                                     </DataGrid>
                                 </Border>
                             </Grid>
-                            <Border Background="White" CornerRadius="4" Padding="12">
+                            <Border Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="16" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Grid.Column" Value="1"/>
@@ -369,19 +392,19 @@
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
                                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#1F6AB0" Margin="0,0,8,0"/>
-                                        <TextBlock Text="Forecast Demand Trend" FontWeight="SemiBold" Foreground="#1F6AB0"/>
+                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Forecast Demand Trend" FontWeight="SemiBold" Foreground="{StaticResource Brush.Primary}"/>
                                     </StackPanel>
                                     <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Stretch" MinHeight="220">
                                         <Grid Width="360" Height="220">
-                                            <Border Background="#F7FBFF" BorderBrush="#CCE0F5" BorderThickness="1.5" CornerRadius="10"/>
+                                            <Border Background="{StaticResource Brush.ChartFill}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="12"/>
                                             <Canvas Width="360" Height="220" IsHitTestVisible="False">
-                                                <Line X1="36" Y1="20" X2="36" Y2="200" Stroke="#B6CCE5" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
-                                                <Line X1="36" Y1="200" X2="340" Y2="200" Stroke="#B6CCE5" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
-                                                <Line X1="36" Y1="140" X2="340" Y2="140" Stroke="#E0EBF5" StrokeThickness="1" StrokeDashArray="2 4"/>
-                                                <Line X1="36" Y1="80" X2="340" Y2="80" Stroke="#E0EBF5" StrokeThickness="1" StrokeDashArray="2 4"/>
-                                                <Line X1="130" Y1="20" X2="130" Y2="200" Stroke="#E0EBF5" StrokeThickness="1" StrokeDashArray="2 4"/>
-                                                <Line X1="220" Y1="20" X2="220" Y2="200" Stroke="#E0EBF5" StrokeThickness="1" StrokeDashArray="2 4"/>
+                                                <Line X1="36" Y1="20" X2="36" Y2="200" Stroke="{StaticResource Brush.Border}" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
+                                                <Line X1="36" Y1="200" X2="340" Y2="200" Stroke="{StaticResource Brush.Border}" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
+                                                <Line X1="36" Y1="140" X2="340" Y2="140" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="2 4"/>
+                                                <Line X1="36" Y1="80" X2="340" Y2="80" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="2 4"/>
+                                                <Line X1="130" Y1="20" X2="130" Y2="200" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="2 4"/>
+                                                <Line X1="220" Y1="20" X2="220" Y2="200" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="2 4"/>
                                             </Canvas>
                                             <ItemsControl Margin="36,20,20,32"
                                                           ItemsSource="{Binding DataContext.Scenarios, ElementName=Root}"
@@ -405,13 +428,13 @@
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
                                             <TextBlock Text="Year"
-                                                       Foreground="#31556F"
+                                                       Foreground="{StaticResource Brush.TextSecondary}"
                                                        FontSize="12"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Bottom"
                                                        Margin="0,0,0,6"/>
                                             <TextBlock Text="Adjusted Demand (gallons/day)"
-                                                       Foreground="#31556F"
+                                                       Foreground="{StaticResource Brush.TextSecondary}"
                                                        FontSize="12"
                                                        RenderTransformOrigin="0.5,0.5"
                                                        HorizontalAlignment="Left"
@@ -429,29 +452,29 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
-            <Border Grid.Row="2" Background="#F0F7FE" BorderBrush="#A6C4EB" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,0">
+            <Border Grid.Row="2" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#1F6AB0" Margin="0,0,8,0"/>
-                        <TextBlock Text="Scenario Summary" FontWeight="Bold" Foreground="#1F6AB0"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Scenario Summary" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock Text="{Binding SelectedScenario.Description}" TextWrapping="Wrap" Margin="0,6,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="3" Background="#FDF5E6" BorderBrush="#E8C97D" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,0">
+            <Border Grid.Row="3" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#B58900" Margin="0,0,8,0"/>
-                        <TextBlock Text="Forecast Logic" FontWeight="Bold" Foreground="#B58900"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Forecast Logic" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Margin="0,6,0,0"/>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="4" Background="#F6FFED" BorderBrush="#9CD06F" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,10,0,0">
+            <Border Grid.Row="4" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="#417505" Margin="0,0,8,0"/>
-                        <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="#417505"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                         • Growth Rate reflects the year-over-year percent change driven by your population and per-capita assumptions. Higher growth inputs raise this column.
