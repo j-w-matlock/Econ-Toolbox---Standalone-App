@@ -68,7 +68,6 @@
             </StackPanel>
         </StackPanel>
         <Grid Grid.Row="2"
-              Grid.RowSpan="2"
               Margin="{StaticResource Margin.Stack}"
               Grid.IsSharedSizeScope="True">
             <Grid.ColumnDefinitions>
@@ -153,6 +152,34 @@
                        VerticalAlignment="Center"
                        FontWeight="SemiBold"/>
         </Grid>
+        <Border Grid.Row="3" Style="{StaticResource Border.ResultInfo}">
+            <StackPanel>
+                <TextBlock Text="Historical Visitation Data" FontWeight="Bold"/>
+                <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopXSmall}">
+                    Provide historic visitation observations separated by commas or line breaks. The median of these values will replace the visitation input above.
+                </TextBlock>
+                <TextBox Text="{Binding HistoricalVisitationEntries, UpdateSourceTrigger=PropertyChanged}" 
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         MinHeight="80"
+                         HorizontalAlignment="Stretch"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Calculate Median" Command="{Binding ComputeMedianCommand}" Width="180"/>
+                    <TextBlock Margin="12,0,0,0"
+                               Visibility="{Binding HasHistoricalMedian, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Run Text="Median: "/>
+                        <Run Text="{Binding HistoricalMedianVisitation, StringFormat={}{0:N0}}"/>
+                        <Run Text=" visitors"/>
+                        <Run Text="{Binding HistoricalObservationCount, StringFormat=  ({0} values)}"/>
+                    </TextBlock>
+                </StackPanel>
+                <TextBlock Margin="0,4,0,0"
+                           Foreground="#B71C1C"
+                           Visibility="{Binding HasHistoricalDataError, Converter={StaticResource BoolToVisibilityConverter}}"
+                           Text="{Binding HistoricalDataError}"/>
+            </StackPanel>
+        </Border>
         <Border Grid.Row="4" Background="#FFF7F0" BorderBrush="#E9C28E" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}" Margin="{StaticResource Margin.Stack}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
