@@ -671,6 +671,7 @@ namespace EconToolbox.Desktop.ViewModels
             private double _annualExceedanceProbability;
             private int _floodSeasonPeakDay;
             private int _seasonShiftDays;
+            private string _annualExceedanceProbabilityDisplayText;
 
             public RegionDefinition(
                 string name,
@@ -699,6 +700,7 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     point.PropertyChanged += DepthDurationPoint_PropertyChanged;
                 }
+                _annualExceedanceProbabilityDisplayText = _annualExceedanceProbability.ToString("0.###", CultureInfo.CurrentCulture);
             }
 
             public string Name
@@ -761,6 +763,7 @@ namespace EconToolbox.Desktop.ViewModels
                     }
 
                     _annualExceedanceProbability = adjusted;
+                    _annualExceedanceProbabilityDisplayText = _annualExceedanceProbability.ToString("0.###", CultureInfo.CurrentCulture);
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(AnnualExceedanceProbabilityDisplay));
                 }
@@ -768,10 +771,19 @@ namespace EconToolbox.Desktop.ViewModels
 
             public string AnnualExceedanceProbabilityDisplay
             {
-                get => _annualExceedanceProbability.ToString("0.###", CultureInfo.CurrentCulture);
+                get => _annualExceedanceProbabilityDisplayText;
                 set
                 {
-                    string trimmed = value?.Trim() ?? string.Empty;
+                    string newText = value ?? string.Empty;
+                    if (_annualExceedanceProbabilityDisplayText == newText)
+                    {
+                        return;
+                    }
+
+                    _annualExceedanceProbabilityDisplayText = newText;
+                    OnPropertyChanged();
+
+                    string trimmed = newText.Trim();
                     if (trimmed.Length == 0)
                     {
                         return;
