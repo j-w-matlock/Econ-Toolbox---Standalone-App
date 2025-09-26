@@ -162,7 +162,7 @@
                           AutoGenerateColumns="False"
                           CanUserAddRows="True"
                           CanUserDeleteRows="True"
-                          ClipboardPasteMode="Cell"
+                          PreviewKeyDown="HistoricalVisitationGrid_PreviewKeyDown"
                           HeadersVisibility="Column"
                           Margin="0,8,0,8"
                           ScrollViewer.VerticalScrollBarVisibility="Auto"
