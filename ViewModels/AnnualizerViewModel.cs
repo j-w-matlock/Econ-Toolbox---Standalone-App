@@ -22,6 +22,7 @@ namespace EconToolbox.Desktop.ViewModels
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
         private ObservableCollection<FutureCostEntry> _idcEntries = new();
         private ObservableCollection<string> _results = new();
+        private string _idcTimingBasis = "Middle";
 
         private double _idc;
         private double _totalInvestment;
@@ -90,6 +91,22 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get => _idcEntries;
             set { _idcEntries = value; OnPropertyChanged(); }
+        }
+
+        public IReadOnlyList<string> IdcTimingOptions { get; } = new[] { "Beginning", "Middle", "End" };
+
+        public string IdcTimingBasis
+        {
+            get => _idcTimingBasis;
+            set
+            {
+                if (_idcTimingBasis != value)
+                {
+                    _idcTimingBasis = value;
+                    OnPropertyChanged();
+                    Compute();
+                }
+            }
         }
 
         public double Idc
@@ -238,7 +255,8 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future,
-                    AnalysisPeriod, BaseYear, ConstructionMonths, costArr, timingArr, monthArr);
+                    AnalysisPeriod, BaseYear, ConstructionMonths, costArr, timingArr, monthArr,
+                    NormalizeTimingChoice(IdcTimingBasis));
                 Idc = result.Idc;
                 TotalInvestment = result.TotalInvestment;
                 Crf = result.Crf;
@@ -291,6 +309,21 @@ namespace EconToolbox.Desktop.ViewModels
             foreach (var entry in FutureCosts.ToList())
                 entry.PropertyChanged -= EntryOnPropertyChanged;
             FutureCosts.Clear();
+        }
+
+        private static string NormalizeTimingChoice(string? choice)
+        {
+            if (string.IsNullOrWhiteSpace(choice))
+                return "midpoint";
+
+            return choice.Trim().ToLowerInvariant() switch
+            {
+                "beginning" => "beginning",
+                "middle" => "midpoint",
+                "midpoint" => "midpoint",
+                "end" => "end",
+                _ => "midpoint"
+            };
         }
     }
 }

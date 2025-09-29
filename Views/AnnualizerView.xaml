@@ -115,7 +115,7 @@
                                      FontWeight="SemiBold"
                                      Margin="0,0,0,12"/>
                           <Grid Grid.Row="1" Grid.IsSharedSizeScope="True">
-                       <Grid.Resources>
+                      <Grid.Resources>
                           <Style x:Key="AnnualizerFieldLabelStyle" TargetType="TextBlock">
                               <Setter Property="Grid.Column" Value="0"/>
                               <Setter Property="Grid.ColumnSpan" Value="1"/>
@@ -144,6 +144,20 @@
                                   </DataTrigger>
                               </Style.Triggers>
                           </Style>
+                          <Style x:Key="AnnualizerFieldComboStyle" TargetType="ComboBox">
+                              <Setter Property="Grid.Column" Value="2"/>
+                              <Setter Property="Grid.ColumnSpan" Value="1"/>
+                              <Setter Property="Margin" Value="0,0,0,16"/>
+                              <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                              <Style.Triggers>
+                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                               Value="Narrow">
+                                      <Setter Property="Grid.Column" Value="0"/>
+                                      <Setter Property="Grid.ColumnSpan" Value="3"/>
+                                      <Setter Property="Margin" Value="0,4,0,16"/>
+                                  </DataTrigger>
+                              </Style.Triggers>
+                          </Style>
                       </Grid.Resources>
                       <Grid.ColumnDefinitions>
                           <ColumnDefinition Width="Auto" SharedSizeGroup="AnnualizerLabel"/>
@@ -151,6 +165,7 @@
                           <ColumnDefinition Width="*" SharedSizeGroup="AnnualizerInput"/>
                       </Grid.ColumnDefinitions>
                       <Grid.RowDefinitions>
+                          <RowDefinition Height="Auto"/>
                           <RowDefinition Height="Auto"/>
                           <RowDefinition Height="Auto"/>
                           <RowDefinition Height="Auto"/>
@@ -234,6 +249,18 @@
                           <Run Text="Construction Months"/>
                       </TextBlock>
                       <TextBox Grid.Row="12" Text="{Binding ConstructionMonths}" Tag="13" Style="{StaticResource AnnualizerFieldInputStyle}"/>
+
+                      <TextBlock Grid.Row="14" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Select whether IDC accrues from the beginning, middle, or end of each construction month when no detailed schedule is provided."/>
+                          </InlineUIContainer>
+                          <Run Text="IDC Timing Assumption"/>
+                      </TextBlock>
+                      <ComboBox Grid.Row="14"
+                                Style="{StaticResource AnnualizerFieldComboStyle}"
+                                ItemsSource="{Binding IdcTimingOptions}"
+                                SelectedItem="{Binding IdcTimingBasis}"/>
                           </Grid>
                       </Grid>
                   </Border>

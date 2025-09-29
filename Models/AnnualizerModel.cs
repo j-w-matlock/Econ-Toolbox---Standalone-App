@@ -18,9 +18,10 @@ namespace EconToolbox.Desktop.Models
             int constructionMonths = 12,
             double[]? idcCosts = null,
             string[]? idcTimings = null,
-            int[]? idcMonths = null)
+            int[]? idcMonths = null,
+            string? defaultIdcTiming = null)
         {
-            double idc = ComputeIdc(firstCost, rate, constructionMonths, idcCosts, idcTimings, idcMonths);
+            double idc = ComputeIdc(firstCost, rate, constructionMonths, idcCosts, idcTimings, idcMonths, defaultIdcTiming);
 
             double pvFuture = 0.0;
             if (futureCosts != null)
@@ -49,7 +50,8 @@ namespace EconToolbox.Desktop.Models
             int months,
             double[]? costs,
             string[]? timings,
-            int[]? monthIndices)
+            int[]? monthIndices,
+            string? defaultTiming)
         {
             if (months <= 0)
                 return 0.0;
@@ -59,6 +61,8 @@ namespace EconToolbox.Desktop.Models
             double[] scheduleCosts;
             string[] scheduleTimings;
             int[] scheduleMonths;
+
+            string normalizedDefaultTiming = NormalizeTiming(defaultTiming);
 
             if (costs == null || costs.Length == 0)
             {
@@ -71,7 +75,7 @@ namespace EconToolbox.Desktop.Models
                 {
                     scheduleCosts[i] = monthlyCost;
                     scheduleMonths[i] = i;
-                    scheduleTimings[i] = i == 0 ? "beginning" : "midpoint";
+                    scheduleTimings[i] = normalizedDefaultTiming;
                 }
             }
             else
@@ -84,7 +88,7 @@ namespace EconToolbox.Desktop.Models
             double idc = 0.0;
             for (int i = 0; i < scheduleCosts.Length; i++)
             {
-                double timingOffset = scheduleTimings[i].ToLowerInvariant() switch
+                double timingOffset = NormalizeTiming(scheduleTimings[i]) switch
                 {
                     "beginning" => 0.0,
                     "end" => 1.0,
@@ -105,6 +109,22 @@ namespace EconToolbox.Desktop.Models
             }
 
             return idc;
+        }
+
+        private static string NormalizeTiming(string? timing)
+        {
+            if (string.IsNullOrWhiteSpace(timing))
+                return "midpoint";
+
+            string normalized = timing.Trim().ToLowerInvariant();
+            return normalized switch
+            {
+                "middle" => "midpoint",
+                "beginning" => "beginning",
+                "end" => "end",
+                "midpoint" => "midpoint",
+                _ => "midpoint"
+            };
         }
 
         private static string[] NormalizeTimings(string[]? timings, int length)
