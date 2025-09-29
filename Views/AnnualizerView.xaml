@@ -176,6 +176,19 @@
                                   </DataTrigger>
                               </Style.Triggers>
                           </Style>
+                          <Style x:Key="AnnualizerFieldConnectorStyle" TargetType="Rectangle">
+                              <Setter Property="Grid.Column" Value="0"/>
+                              <Setter Property="Grid.ColumnSpan" Value="3"/>
+                              <Setter Property="Grid.RowSpan" Value="2"/>
+                              <Setter Property="Height" Value="1"/>
+                              <Setter Property="VerticalAlignment" Value="Bottom"/>
+                              <Setter Property="IsHitTestVisible" Value="False"/>
+                              <Setter Property="Stroke" Value="{StaticResource Brush.Border}"/>
+                              <Setter Property="StrokeThickness" Value="1"/>
+                              <Setter Property="StrokeDashArray" Value="2 4"/>
+                              <Setter Property="Opacity" Value="0.4"/>
+                              <Setter Property="Margin" Value="0,0,0,12"/>
+                          </Style>
                       </Grid.Resources>
                       <Grid.ColumnDefinitions>
                           <ColumnDefinition Width="Auto" SharedSizeGroup="AnnualizerLabel"/>
@@ -203,6 +216,7 @@
                           <RowDefinition Height="Auto"/>
                       </Grid.RowDefinitions>
 
+                      <Rectangle Grid.Row="0" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="0"
                                  Style="{StaticResource AnnualizerFieldLabelStyle}"
                                  Margin="0,0,12,4">
@@ -217,6 +231,7 @@
                                Tag="1"
                                Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
+                      <Rectangle Grid.Row="2" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="2" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -226,6 +241,7 @@
                       </TextBlock>
                       <TextBox Grid.Row="2" Text="{Binding Rate}" Tag="3" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
+                      <Rectangle Grid.Row="4" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="4" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -235,6 +251,7 @@
                       </TextBlock>
                       <TextBox Grid.Row="4" Text="{Binding BaseYear}" Tag="5" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
+                      <Rectangle Grid.Row="6" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="6" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -244,6 +261,7 @@
                       </TextBlock>
                       <TextBox Grid.Row="6" Text="{Binding AnalysisPeriod}" Tag="7" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
+                      <Rectangle Grid.Row="8" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="8" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -253,6 +271,7 @@
                       </TextBlock>
                       <TextBox Grid.Row="8" Text="{Binding AnnualOm}" Tag="9" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
+                      <Rectangle Grid.Row="10" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="10" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -262,6 +281,7 @@
                       </TextBlock>
                       <TextBox Grid.Row="10" Text="{Binding AnnualBenefits}" Tag="11" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
+                      <Rectangle Grid.Row="12" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="12" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -271,6 +291,7 @@
                       </TextBlock>
                       <TextBox Grid.Row="12" Text="{Binding ConstructionMonths}" Tag="13" Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
+                      <Rectangle Grid.Row="14" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="14" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -293,6 +314,7 @@
                           </ComboBox.Style>
                       </ComboBox>
 
+                      <Rectangle Grid.Row="15" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="15" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -305,6 +327,7 @@
                                 IsChecked="{Binding CalculateInterestAtPeriod}"
                                 Style="{StaticResource AnnualizerFieldToggleStyle}"/>
 
+                      <Rectangle Grid.Row="16" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="16" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -327,6 +350,7 @@
                           </ComboBox.Style>
                       </ComboBox>
 
+                      <Rectangle Grid.Row="17" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="17" Style="{StaticResource AnnualizerFieldLabelStyle}">
                           <InlineUIContainer BaselineAlignment="Center">
                               <ContentControl Style="{StaticResource Content.InfoIcon}"
