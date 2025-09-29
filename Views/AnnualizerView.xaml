@@ -134,6 +134,8 @@
                               <Setter Property="Grid.ColumnSpan" Value="1"/>
                               <Setter Property="Margin" Value="0,0,0,16"/>
                               <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                              <Setter Property="VerticalAlignment" Value="Center"/>
+                              <Setter Property="VerticalContentAlignment" Value="Center"/>
                               <Style.Triggers>
                                   <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
                                                Value="Narrow">
@@ -149,6 +151,7 @@
                               <Setter Property="Grid.ColumnSpan" Value="1"/>
                               <Setter Property="Margin" Value="0,0,0,16"/>
                               <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                              <Setter Property="VerticalAlignment" Value="Center"/>
                               <Style.Triggers>
                                   <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
                                                Value="Narrow">
@@ -163,6 +166,7 @@
                               <Setter Property="Grid.ColumnSpan" Value="1"/>
                               <Setter Property="Margin" Value="0,0,0,16"/>
                               <Setter Property="HorizontalAlignment" Value="Left"/>
+                              <Setter Property="VerticalAlignment" Value="Center"/>
                               <Style.Triggers>
                                   <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
                                                Value="Narrow">
