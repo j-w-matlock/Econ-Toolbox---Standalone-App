@@ -158,6 +158,20 @@
                                   </DataTrigger>
                               </Style.Triggers>
                           </Style>
+                          <Style x:Key="AnnualizerFieldToggleStyle" TargetType="CheckBox">
+                              <Setter Property="Grid.Column" Value="2"/>
+                              <Setter Property="Grid.ColumnSpan" Value="1"/>
+                              <Setter Property="Margin" Value="0,0,0,16"/>
+                              <Setter Property="HorizontalAlignment" Value="Left"/>
+                              <Style.Triggers>
+                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                               Value="Narrow">
+                                      <Setter Property="Grid.Column" Value="0"/>
+                                      <Setter Property="Grid.ColumnSpan" Value="3"/>
+                                      <Setter Property="Margin" Value="0,4,0,16"/>
+                                  </DataTrigger>
+                              </Style.Triggers>
+                          </Style>
                       </Grid.Resources>
                       <Grid.ColumnDefinitions>
                           <ColumnDefinition Width="Auto" SharedSizeGroup="AnnualizerLabel"/>
@@ -165,6 +179,9 @@
                           <ColumnDefinition Width="*" SharedSizeGroup="AnnualizerInput"/>
                       </Grid.ColumnDefinitions>
                       <Grid.RowDefinitions>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
+                          <RowDefinition Height="Auto"/>
                           <RowDefinition Height="Auto"/>
                           <RowDefinition Height="Auto"/>
                           <RowDefinition Height="Auto"/>
@@ -258,9 +275,75 @@
                           <Run Text="IDC Timing Assumption"/>
                       </TextBlock>
                       <ComboBox Grid.Row="14"
-                                Style="{StaticResource AnnualizerFieldComboStyle}"
                                 ItemsSource="{Binding IdcTimingOptions}"
-                                SelectedItem="{Binding IdcTimingBasis}"/>
+                                SelectedItem="{Binding IdcTimingBasis}">
+                          <ComboBox.Style>
+                              <Style TargetType="ComboBox" BasedOn="{StaticResource AnnualizerFieldComboStyle}">
+                                  <Setter Property="IsEnabled" Value="True"/>
+                                  <Style.Triggers>
+                                      <DataTrigger Binding="{Binding CalculateInterestAtPeriod}" Value="True">
+                                          <Setter Property="IsEnabled" Value="False"/>
+                                      </DataTrigger>
+                                  </Style.Triggers>
+                              </Style>
+                          </ComboBox.Style>
+                      </ComboBox>
+
+                      <TextBlock Grid.Row="15" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Toggle to calculate IDC using period-based first and last payment assumptions."/>
+                          </InlineUIContainer>
+                          <Run Text="Calculate Interest at Period"/>
+                      </TextBlock>
+                      <CheckBox Grid.Row="15"
+                                Content="Enable"
+                                IsChecked="{Binding CalculateInterestAtPeriod}"
+                                Style="{StaticResource AnnualizerFieldToggleStyle}"/>
+
+                      <TextBlock Grid.Row="16" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Choose when the first payment occurs within the construction period for period-based IDC."/>
+                          </InlineUIContainer>
+                          <Run Text="First Payment Timing"/>
+                      </TextBlock>
+                      <ComboBox Grid.Row="16"
+                                ItemsSource="{Binding IdcFirstPaymentOptions}"
+                                SelectedItem="{Binding IdcFirstPaymentTiming}">
+                          <ComboBox.Style>
+                              <Style TargetType="ComboBox" BasedOn="{StaticResource AnnualizerFieldComboStyle}">
+                                  <Setter Property="IsEnabled" Value="False"/>
+                                  <Style.Triggers>
+                                      <DataTrigger Binding="{Binding CalculateInterestAtPeriod}" Value="True">
+                                          <Setter Property="IsEnabled" Value="True"/>
+                                      </DataTrigger>
+                                  </Style.Triggers>
+                              </Style>
+                          </ComboBox.Style>
+                      </ComboBox>
+
+                      <TextBlock Grid.Row="17" Style="{StaticResource AnnualizerFieldLabelStyle}">
+                          <InlineUIContainer BaselineAlignment="Center">
+                              <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                              ToolTip="Define the timing of the final payment when using period-based IDC."/>
+                          </InlineUIContainer>
+                          <Run Text="Last Payment Timing"/>
+                      </TextBlock>
+                      <ComboBox Grid.Row="17"
+                                ItemsSource="{Binding IdcLastPaymentOptions}"
+                                SelectedItem="{Binding IdcLastPaymentTiming}">
+                          <ComboBox.Style>
+                              <Style TargetType="ComboBox" BasedOn="{StaticResource AnnualizerFieldComboStyle}">
+                                  <Setter Property="IsEnabled" Value="False"/>
+                                  <Style.Triggers>
+                                      <DataTrigger Binding="{Binding CalculateInterestAtPeriod}" Value="True">
+                                          <Setter Property="IsEnabled" Value="True"/>
+                                      </DataTrigger>
+                                  </Style.Triggers>
+                              </Style>
+                          </ComboBox.Style>
+                      </ComboBox>
                           </Grid>
                       </Grid>
                   </Border>

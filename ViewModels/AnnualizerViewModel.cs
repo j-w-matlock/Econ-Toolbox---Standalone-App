@@ -23,6 +23,9 @@ namespace EconToolbox.Desktop.ViewModels
         private ObservableCollection<FutureCostEntry> _idcEntries = new();
         private ObservableCollection<string> _results = new();
         private string _idcTimingBasis = "Middle";
+        private bool _calculateInterestAtPeriod;
+        private string _idcFirstPaymentTiming = "Beginning";
+        private string _idcLastPaymentTiming = "Middle";
 
         private double _idc;
         private double _totalInvestment;
@@ -94,6 +97,8 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public IReadOnlyList<string> IdcTimingOptions { get; } = new[] { "Beginning", "Middle", "End" };
+        public IReadOnlyList<string> IdcFirstPaymentOptions { get; } = new[] { "Beginning", "End" };
+        public IReadOnlyList<string> IdcLastPaymentOptions { get; } = new[] { "Beginning", "Middle", "End" };
 
         public string IdcTimingBasis
         {
@@ -103,6 +108,48 @@ namespace EconToolbox.Desktop.ViewModels
                 if (_idcTimingBasis != value)
                 {
                     _idcTimingBasis = value;
+                    OnPropertyChanged();
+                    Compute();
+                }
+            }
+        }
+
+        public bool CalculateInterestAtPeriod
+        {
+            get => _calculateInterestAtPeriod;
+            set
+            {
+                if (_calculateInterestAtPeriod != value)
+                {
+                    _calculateInterestAtPeriod = value;
+                    OnPropertyChanged();
+                    Compute();
+                }
+            }
+        }
+
+        public string IdcFirstPaymentTiming
+        {
+            get => _idcFirstPaymentTiming;
+            set
+            {
+                if (_idcFirstPaymentTiming != value)
+                {
+                    _idcFirstPaymentTiming = value;
+                    OnPropertyChanged();
+                    Compute();
+                }
+            }
+        }
+
+        public string IdcLastPaymentTiming
+        {
+            get => _idcLastPaymentTiming;
+            set
+            {
+                if (_idcLastPaymentTiming != value)
+                {
+                    _idcLastPaymentTiming = value;
                     OnPropertyChanged();
                     Compute();
                 }
@@ -256,7 +303,8 @@ namespace EconToolbox.Desktop.ViewModels
 
                 var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future,
                     AnalysisPeriod, BaseYear, ConstructionMonths, costArr, timingArr, monthArr,
-                    NormalizeTimingChoice(IdcTimingBasis));
+                    NormalizeTimingChoice(IdcTimingBasis), CalculateInterestAtPeriod,
+                    NormalizeFirstPaymentChoice(IdcFirstPaymentTiming), NormalizeLastPaymentChoice(IdcLastPaymentTiming));
                 Idc = result.Idc;
                 TotalInvestment = result.TotalInvestment;
                 Crf = result.Crf;
@@ -312,6 +360,34 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         private static string NormalizeTimingChoice(string? choice)
+        {
+            if (string.IsNullOrWhiteSpace(choice))
+                return "midpoint";
+
+            return choice.Trim().ToLowerInvariant() switch
+            {
+                "beginning" => "beginning",
+                "middle" => "midpoint",
+                "midpoint" => "midpoint",
+                "end" => "end",
+                _ => "midpoint"
+            };
+        }
+
+        private static string NormalizeFirstPaymentChoice(string? choice)
+        {
+            if (string.IsNullOrWhiteSpace(choice))
+                return "beginning";
+
+            return choice.Trim().ToLowerInvariant() switch
+            {
+                "beginning" => "beginning",
+                "end" => "end",
+                _ => "beginning"
+            };
+        }
+
+        private static string NormalizeLastPaymentChoice(string? choice)
         {
             if (string.IsNullOrWhiteSpace(choice))
                 return "midpoint";
