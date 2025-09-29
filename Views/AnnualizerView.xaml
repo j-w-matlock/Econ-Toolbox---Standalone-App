@@ -123,6 +123,10 @@
                               <Setter Property="VerticalAlignment" Value="Center"/>
                               <Style.Triggers>
                                   <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                               Value="Wide">
+                                      <Setter Property="Margin" Value="0,0,12,4"/>
+                                  </DataTrigger>
+                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
                                                Value="Narrow">
                                       <Setter Property="Grid.ColumnSpan" Value="3"/>
                                       <Setter Property="Margin" Value="0,16,0,4"/>
