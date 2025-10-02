@@ -29,117 +29,13 @@ namespace EconToolbox.Desktop.ViewModels
         private Scenario? _selectedScenario;
         private Scenario? _baselineScenario;
 
-        private double _optimisticPopulationGrowthChangePercent;
-        public double OptimisticPopulationGrowthChangePercent
-        {
-            get => _optimisticPopulationGrowthChangePercent;
-            set
-            {
-                if (Math.Abs(_optimisticPopulationGrowthChangePercent - value) < 0.0001)
-                    return;
-                _optimisticPopulationGrowthChangePercent = value;
-                OnPropertyChanged();
-                ApplyScenarioAdjustments();
-            }
-        }
+        private const double ScenarioVariationPercentValue = 20.0;
 
-        private double _pessimisticPopulationGrowthChangePercent;
-        public double PessimisticPopulationGrowthChangePercent
-        {
-            get => _pessimisticPopulationGrowthChangePercent;
-            set
-            {
-                if (Math.Abs(_pessimisticPopulationGrowthChangePercent - value) < 0.0001)
-                    return;
-                _pessimisticPopulationGrowthChangePercent = value;
-                OnPropertyChanged();
-                ApplyScenarioAdjustments();
-            }
-        }
+        public double ScenarioVariationPercent => ScenarioVariationPercentValue;
 
-        private double _optimisticPerCapitaChangePercent;
-        public double OptimisticPerCapitaChangePercent
-        {
-            get => _optimisticPerCapitaChangePercent;
-            set
-            {
-                if (Math.Abs(_optimisticPerCapitaChangePercent - value) < 0.0001)
-                    return;
-                _optimisticPerCapitaChangePercent = value;
-                OnPropertyChanged();
-                ApplyScenarioAdjustments();
-            }
-        }
+        public string PositiveVariationDescription => $"+{ScenarioVariationPercentValue:0.#}% (automatic)";
 
-        private double _pessimisticPerCapitaChangePercent;
-        public double PessimisticPerCapitaChangePercent
-        {
-            get => _pessimisticPerCapitaChangePercent;
-            set
-            {
-                if (Math.Abs(_pessimisticPerCapitaChangePercent - value) < 0.0001)
-                    return;
-                _pessimisticPerCapitaChangePercent = value;
-                OnPropertyChanged();
-                ApplyScenarioAdjustments();
-            }
-        }
-
-        private double _optimisticImprovementChangePercent;
-        public double OptimisticImprovementChangePercent
-        {
-            get => _optimisticImprovementChangePercent;
-            set
-            {
-                if (Math.Abs(_optimisticImprovementChangePercent - value) < 0.0001)
-                    return;
-                _optimisticImprovementChangePercent = value;
-                OnPropertyChanged();
-                ApplyScenarioAdjustments();
-            }
-        }
-
-        private double _pessimisticImprovementChangePercent;
-        public double PessimisticImprovementChangePercent
-        {
-            get => _pessimisticImprovementChangePercent;
-            set
-            {
-                if (Math.Abs(_pessimisticImprovementChangePercent - value) < 0.0001)
-                    return;
-                _pessimisticImprovementChangePercent = value;
-                OnPropertyChanged();
-                ApplyScenarioAdjustments();
-            }
-        }
-
-        private double _optimisticLossChangePercent;
-        public double OptimisticLossChangePercent
-        {
-            get => _optimisticLossChangePercent;
-            set
-            {
-                if (Math.Abs(_optimisticLossChangePercent - value) < 0.0001)
-                    return;
-                _optimisticLossChangePercent = value;
-                OnPropertyChanged();
-                ApplyScenarioAdjustments();
-            }
-        }
-
-        private double _pessimisticLossChangePercent;
-        public double PessimisticLossChangePercent
-        {
-            get => _pessimisticLossChangePercent;
-            set
-            {
-                if (Math.Abs(_pessimisticLossChangePercent - value) < 0.0001)
-                    return;
-                _pessimisticLossChangePercent = value;
-                OnPropertyChanged();
-                ApplyScenarioAdjustments();
-            }
-        }
+        public string NegativeVariationDescription => $"-{ScenarioVariationPercentValue:0.#}% (automatic)";
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -365,19 +261,21 @@ namespace EconToolbox.Desktop.ViewModels
                 double improvements = _baselineScenario.SystemImprovementsPercent;
                 double losses = _baselineScenario.SystemLossesPercent;
 
+                double variationPercent = ScenarioVariationPercent;
+
                 if (isOptimistic)
                 {
-                    scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, OptimisticPopulationGrowthChangePercent);
-                    scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, OptimisticPerCapitaChangePercent);
-                    scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, OptimisticImprovementChangePercent));
-                    scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, OptimisticLossChangePercent));
+                    scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, variationPercent);
+                    scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, variationPercent);
+                    scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, -variationPercent));
+                    scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, variationPercent));
                 }
                 else if (isPessimistic)
                 {
-                    scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, -PessimisticPopulationGrowthChangePercent);
-                    scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, -PessimisticPerCapitaChangePercent);
-                    scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, -PessimisticImprovementChangePercent));
-                    scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, -PessimisticLossChangePercent));
+                    scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, -variationPercent);
+                    scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, -variationPercent);
+                    scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, variationPercent));
+                    scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, -variationPercent));
                 }
             }
 
