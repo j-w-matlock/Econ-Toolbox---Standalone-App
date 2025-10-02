@@ -278,6 +278,12 @@
                         <DataGridTextColumn Header="Updated Cost" Binding="{Binding UpdatedCost}" IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
+                <Button Margin="0,4,0,4" Command="{Binding ResetUpdatedCostItemsCommand}" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
+                        <TextBlock Text="Reset Table"/>
+                    </StackPanel>
+                </Button>
                 <Button Margin="0,5,0,5" Command="{Binding ComputeUpdatedStorageCommand}">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
@@ -324,6 +330,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -395,7 +402,13 @@
                             <DataGridTextColumn Header="Present Value" Binding="{Binding PresentValue}" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Grid.Row="5" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeRrrCommand}">
+                    <Button Grid.Row="5" Grid.ColumnSpan="2" Margin="0,4,0,4" Command="{Binding ResetRrrItemsCommand}" HorizontalAlignment="Right">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
+                            <TextBlock Text="Reset Table"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Row="6" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeRrrCommand}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -404,7 +417,7 @@
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
-                    <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
+                    <StackPanel Grid.Row="7" Grid.ColumnSpan="2">
                         <TextBlock Text="{Binding RrrUpdatedCost, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value × CWCCI" FontWeight="Bold" Margin="0,0,0,4"/>
                         <TextBlock Text="{Binding RrrAnnualized, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF" FontWeight="Bold"/>
                     </StackPanel>

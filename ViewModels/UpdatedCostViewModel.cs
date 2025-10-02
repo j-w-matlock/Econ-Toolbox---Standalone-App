@@ -207,6 +207,8 @@ namespace EconToolbox.Desktop.ViewModels
         public ICommand ComputeUpdatedStorageCommand { get; }
         public ICommand ComputeRrrCommand { get; }
         public ICommand ComputeTotalCommand { get; }
+        public ICommand ResetUpdatedCostItemsCommand { get; }
+        public ICommand ResetRrrItemsCommand { get; }
         public ICommand ComputeCommand { get; }
 
         public UpdatedCostViewModel()
@@ -216,6 +218,8 @@ namespace EconToolbox.Desktop.ViewModels
             ComputeUpdatedStorageCommand = new RelayCommand(ComputeUpdatedStorage);
             ComputeRrrCommand = new RelayCommand(ComputeRrr);
             ComputeTotalCommand = new RelayCommand(ComputeTotal);
+            ResetUpdatedCostItemsCommand = new RelayCommand(ResetUpdatedCostItems);
+            ResetRrrItemsCommand = new RelayCommand(ResetRrrCostItems);
             ComputeCommand = new RelayCommand(() =>
             {
                 ComputeStorage();
@@ -274,6 +278,28 @@ namespace EconToolbox.Desktop.ViewModels
             double crf2 = CapitalRecoveryModel.Calculate(DiscountRate2 / 100.0, AnalysisPeriod2);
             Capital2 = TotalUpdatedCost * Percent * crf2;
             Total2 = Capital2 + OmScaled;
+        }
+
+        private void ResetUpdatedCostItems()
+        {
+            foreach (var item in UpdatedCostItems)
+            {
+                item.ActualCost = 0;
+                item.UpdateFactor = 0;
+                item.UpdatedCost = 0;
+            }
+
+            TotalUpdatedCost = 0;
+            ComputeTotal();
+        }
+
+        private void ResetRrrCostItems()
+        {
+            RrrCostItems.Clear();
+            RrrTotalPv = 0;
+            RrrUpdatedCost = 0;
+            RrrAnnualized = 0;
+            ComputeTotal();
         }
     }
 }

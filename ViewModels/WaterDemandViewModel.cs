@@ -29,6 +29,14 @@ namespace EconToolbox.Desktop.ViewModels
         private Scenario? _selectedScenario;
         private Scenario? _baselineScenario;
 
+        private static readonly IReadOnlyDictionary<string, (double Current, double Future)> DefaultSectorPercents
+            = new Dictionary<string, (double Current, double Future)>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Industrial"] = (10.0, 5.0),
+                ["Residential"] = (80.0, 80.0),
+                ["Commercial"] = (10.0, 15.0)
+            };
+
         private const double ScenarioVariationPercentValue = 20.0;
 
         public double ScenarioVariationPercent => ScenarioVariationPercentValue;
@@ -203,6 +211,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void InitializeScenario(Scenario scenario)
         {
+            ApplyDefaultSectorPercents(scenario);
             foreach (var sector in scenario.Sectors.Where(se => !se.IsResidual))
                 sector.PropertyChanged += (_, __) => UpdateResidualShares(scenario);
             UpdateResidualShares(scenario);
@@ -236,6 +245,50 @@ namespace EconToolbox.Desktop.ViewModels
             residual.FuturePercent = Math.Max(0, 100 - scenario.Sectors.Where(se => !se.IsResidual).Sum(se => se.FuturePercent));
         }
 
+        private void ApplyDefaultSectorPercents(Scenario scenario)
+        {
+            if (scenario == null)
+                return;
+
+            bool hasValues = scenario.Sectors
+                .Where(se => !se.IsResidual)
+                .Any(se => !IsApproximatelyZero(se.CurrentPercent) || !IsApproximatelyZero(se.FuturePercent));
+
+            if (hasValues)
+                return;
+
+            foreach (var sector in scenario.Sectors.Where(se => !se.IsResidual))
+            {
+                if (DefaultSectorPercents.TryGetValue(sector.Name, out var defaults))
+                {
+                    sector.CurrentPercent = defaults.Current;
+                    sector.FuturePercent = defaults.Future;
+                }
+            }
+        }
+
+        private void FillMissingSectorPercentsFromBaseline(Scenario scenario)
+        {
+            if (_baselineScenario == null || scenario == null || ReferenceEquals(scenario, _baselineScenario))
+                return;
+
+            foreach (var sector in scenario.Sectors.Where(se => !se.IsResidual))
+            {
+                var baselineSector = _baselineScenario.Sectors
+                    .FirstOrDefault(se => se.Name.Equals(sector.Name, StringComparison.OrdinalIgnoreCase));
+                if (baselineSector == null)
+                    continue;
+
+                if (IsApproximatelyZero(sector.CurrentPercent) && !IsApproximatelyZero(baselineSector.CurrentPercent))
+                    sector.CurrentPercent = baselineSector.CurrentPercent;
+
+                if (IsApproximatelyZero(sector.FuturePercent) && !IsApproximatelyZero(baselineSector.FuturePercent))
+                    sector.FuturePercent = baselineSector.FuturePercent;
+            }
+
+            UpdateResidualShares(scenario);
+        }
+
         private void ApplyScenarioAdjustments()
         {
             if (_baselineScenario == null)
@@ -250,7 +303,10 @@ namespace EconToolbox.Desktop.ViewModels
                 bool isPessimistic = IsPessimisticScenario(scenario);
 
                 if (!isOptimistic && !isPessimistic)
+                {
+                    FillMissingSectorPercentsFromBaseline(scenario);
                     continue;
+                }
 
                 scenario.BaseYear = _baselineScenario.BaseYear;
                 scenario.BasePerCapitaDemand = _baselineScenario.BasePerCapitaDemand;
@@ -277,6 +333,8 @@ namespace EconToolbox.Desktop.ViewModels
                     scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, variationPercent));
                     scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, -variationPercent));
                 }
+
+                FillMissingSectorPercentsFromBaseline(scenario);
             }
 
             if (SelectedScenario != null)
@@ -581,6 +639,9 @@ namespace EconToolbox.Desktop.ViewModels
             double scale = Math.Max(1.0, Math.Max(Math.Abs(value1), Math.Abs(value2)));
             return Math.Abs(value1 - value2) <= tolerance * scale;
         }
+
+        private static bool IsApproximatelyZero(double value, double tolerance = 1e-6)
+            => Math.Abs(value) <= tolerance;
         private static double CalculateAdjustedDemand(double demand, double improvementsPercent, double lossesPercent)
         {
             if (!double.IsFinite(demand))
