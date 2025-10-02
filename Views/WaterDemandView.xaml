@@ -310,49 +310,49 @@
                                     <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
-                                            <DataGridTextColumn Header="Growth Rate" Binding="{Binding GrowthRate, Mode=TwoWay, StringFormat={}{0:N2}}">
+                                            <DataGridTextColumn Header="Growth Rate (%)" Binding="{Binding GrowthRate, Mode=TwoWay, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="ToolTip" Value="Growth Rate = (Current Demand - Previous Demand) / Previous Demand"/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="Demand" Binding="{Binding Demand, StringFormat={}{0:N2}}">
+                                            <DataGridTextColumn Header="Demand (gallons/day)" Binding="{Binding Demand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="ToolTip" Value="Demand = Prior Demand × (1 + Growth Rate)"/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="Residential" Binding="{Binding ResidentialDemand, StringFormat={}{0:N2}}">
+                                            <DataGridTextColumn Header="Residential (gallons/day)" Binding="{Binding ResidentialDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="ToolTip" Value="Residential = Demand × Residential %"/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="Commercial" Binding="{Binding CommercialDemand, StringFormat={}{0:N2}}">
+                                            <DataGridTextColumn Header="Commercial (gallons/day)" Binding="{Binding CommercialDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="ToolTip" Value="Commercial = Demand × Commercial %"/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="Industrial" Binding="{Binding IndustrialDemand, StringFormat={}{0:N2}}">
+                                            <DataGridTextColumn Header="Industrial (gallons/day)" Binding="{Binding IndustrialDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="ToolTip" Value="Industrial = Demand × Industrial %"/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="Agricultural" Binding="{Binding AgriculturalDemand, StringFormat={}{0:N2}}">
+                                            <DataGridTextColumn Header="Agricultural (gallons/day)" Binding="{Binding AgriculturalDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="ToolTip" Value="Agricultural = Demand × Agricultural %"/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Header="Adjusted" Binding="{Binding AdjustedDemand, StringFormat={}{0:N2}}">
+                                            <DataGridTextColumn Header="Adjusted (gallons/day)" Binding="{Binding AdjustedDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
                                                         <Setter Property="ToolTip" Value="Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)"/>
