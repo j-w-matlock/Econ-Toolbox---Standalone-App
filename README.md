@@ -2,8 +2,14 @@
 
 ## Overview
 
-This repository contains a Windows Presentation Foundation (WPF) desktop application that provides simple economic analysis tools.
-The project is written in C# using the Model-View-ViewModel (MVVM) pattern and targets **.NET 8**.
+This repository contains a Windows Presentation Foundation (WPF) desktop application that delivers a suite of economic analysis tools.
+The project targets **.NET 8**, embraces the Model-View-ViewModel (MVVM) pattern via [CommunityToolkit.Mvvm](https://learn.microsoft.com/windows/communitytoolkit/mvvm/introduction), and boots with a host-based dependency injection container powered by `Microsoft.Extensions.Hosting`.
+
+Key architectural highlights:
+
+- **Strongly typed MVVM infrastructure** – `ObservableObject`, source-generated commands, and validation helpers are available through the toolkit.
+- **Dependency injection (DI)** – View models, services, and the main window are composed through a shared DI container.
+- **Async-first commands** – Export workflows dispatch work to background threads, keeping the UI responsive during long-running operations.
 
 The application exposes several calculators:
 
@@ -16,14 +22,15 @@ The application exposes several calculators:
 ## Repository Layout
 
 ```
-├── App.xaml / App.xaml.cs               # Application entry point
-├── MainWindow.xaml / MainWindow.xaml.cs # Main window with tabs for each tool
+├── App.xaml / App.xaml.cs               # Application entry point and host bootstrapping
+├── GlobalUsings.cs                      # Shared MVVM command aliases and toolkit imports
+├── MainWindow.xaml / MainWindow.xaml.cs # Shell view composed through DI
 ├── Models/                              # Pure calculation logic
+├── Services/                            # Excel export implementation and abstractions
 ├── ViewModels/                          # UI-facing logic and commands
 ├── EconToolbox.Desktop.csproj           # .NET project file
 ├── EconToolbox.Desktop.sln              # Solution file for IDEs
-├── bin/ and obj/                        # Build outputs (generated)
-└── Econ-Toolbox-cSharp-and-mvvm.zip     # Archived copy of the project
+└── bin/ and obj/                        # Build outputs (generated)
 ```
 
 ### Models
@@ -39,8 +46,7 @@ Each file in `Models/` contains a static class focused solely on computation:
 
 The `ViewModels/` directory holds the MVVM glue between the user interface and the models:
 
-- `BaseViewModel.cs` – Provides property change notification support.
-- `RelayCommand.cs` – Lightweight `ICommand` implementation for button bindings.
+- `BaseViewModel.cs` – Inherits from `ObservableObject` to expose MVVM-friendly change notification.
 - `EadViewModel.cs` – Parses comma‑separated probabilities and damages and returns the expected annual damage.
 - `UpdatedCostViewModel.cs` – Guides users through storage cost updates, O&M, mitigation, and total annual cost.
 - `AnnualizerViewModel.cs` – Manages the cost annualizer workflow, including interest-during-construction schedule entries and annual metrics.
@@ -51,7 +57,14 @@ The `ViewModels/` directory holds the MVVM glue between the user interface and t
 ### Views
 
 - `MainWindow.xaml` defines the tabbed interface and data bindings for each calculator.
-- `App.xaml` wires up `MainWindow` as the startup view.
+- `App.xaml` merges application resources, while `App.xaml.cs` bootstraps the host and resolves `MainWindow` from DI.
+
+## Architecture & Styling Guidelines
+
+- **Composition through DI** – Resolve view models and services via the container configured in `App.xaml.cs`. Avoid `new`ing view models inside views so that shared services (e.g., Excel export, validation) remain testable.
+- **Async command patterns** – Heavy operations such as exports should surface as `AsyncRelayCommand` instances that offload work via `Task.Run`, preserving UI responsiveness.
+- **Theming resources** – Define colors, fonts, and spacing tokens inside `Themes/Design.xaml`. Views should reference these semantic resources instead of hard-coded values to keep the UI consistent and accessible.
+- **Validation-first inputs** – Extend `BaseViewModel` or leverage `ObservableValidator` from the toolkit when adding new modules so that input validation errors can surface inline.
 
 ## Building and Running
 

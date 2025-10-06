@@ -110,8 +110,8 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
 
             OnPropertyChanged(nameof(HasStrokes));
-            _clearCommand.RaiseCanExecuteChanged();
-            _undoCommand.RaiseCanExecuteChanged();
+            _clearCommand.NotifyCanExecuteChanged();
+            _undoCommand.NotifyCanExecuteChanged();
         }
 
         public IEnumerable<IReadOnlyList<Point>> ExportStrokes()

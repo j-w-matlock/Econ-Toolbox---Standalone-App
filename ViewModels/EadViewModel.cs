@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using EconToolbox.Desktop.Behaviors;
 using EconToolbox.Desktop.Models;
@@ -62,20 +62,22 @@ namespace EconToolbox.Desktop.ViewModels
             set { _frequencyDamagePoints = value; OnPropertyChanged(); }
         }
 
-        public ICommand AddDamageColumnCommand { get; }
-        public ICommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
-        public ICommand ComputeCommand { get; }
-        public ICommand ExportCommand { get; }
+        public IRelayCommand AddDamageColumnCommand { get; }
+        public IRelayCommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
+        public IRelayCommand ComputeCommand { get; }
+        public IAsyncRelayCommand ExportCommand { get; }
 
         private readonly RelayCommand _removeDamageColumnCommand;
+        private readonly IExcelExportService _excelExportService;
 
-        public EadViewModel()
+        public EadViewModel(IExcelExportService excelExportService)
         {
+            _excelExportService = excelExportService;
             Rows.CollectionChanged += Rows_CollectionChanged;
             AddDamageColumnCommand = new RelayCommand(AddDamageColumn);
             _removeDamageColumnCommand = new RelayCommand(RemoveDamageColumn, () => DamageColumns.Count > 1);
             ComputeCommand = new RelayCommand(Compute);
-            ExportCommand = new RelayCommand(Export);
+            ExportCommand = new AsyncRelayCommand(ExportAsync);
             DamageColumns.CollectionChanged += DamageColumns_CollectionChanged;
             AddDamageColumn(); // start with one damage column
             InitializeDefaultRows();
@@ -149,7 +151,7 @@ namespace EconToolbox.Desktop.ViewModels
                 }
             }
 
-            _removeDamageColumnCommand.RaiseCanExecuteChanged();
+            _removeDamageColumnCommand.NotifyCanExecuteChanged();
             UpdateColumnDefinitions();
             Compute();
         }
@@ -169,14 +171,14 @@ namespace EconToolbox.Desktop.ViewModels
         private void AddDamageColumn()
         {
             DamageColumns.Add(new DamageColumn { Name = $"Damage {DamageColumns.Count + 1}" });
-            _removeDamageColumnCommand.RaiseCanExecuteChanged();
+            _removeDamageColumnCommand.NotifyCanExecuteChanged();
         }
 
         private void RemoveDamageColumn()
         {
             if (DamageColumns.Count == 0) return;
             DamageColumns.RemoveAt(DamageColumns.Count - 1);
-            _removeDamageColumnCommand.RaiseCanExecuteChanged();
+            _removeDamageColumnCommand.NotifyCanExecuteChanged();
         }
 
         private void Compute()
@@ -270,17 +272,25 @@ namespace EconToolbox.Desktop.ViewModels
             return points;
         }
 
-        private void Export()
+        private async Task ExportAsync()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
                 Filter = "Excel Workbook (*.xlsx)|*.xlsx",
                 FileName = "ead.xlsx"
             };
+
             if (dlg.ShowDialog() == true)
             {
                 string combined = string.Join(" | ", Results);
-                Services.ExcelExporter.ExportEad(Rows, DamageColumns.Select(c => c.Name), UseStage, combined, StageDamagePoints, FrequencyDamagePoints, dlg.FileName);
+                await Task.Run(() => _excelExportService.ExportEad(
+                    Rows,
+                    DamageColumns.Select(c => c.Name),
+                    UseStage,
+                    combined,
+                    StageDamagePoints,
+                    FrequencyDamagePoints,
+                    dlg.FileName));
             }
         }
 

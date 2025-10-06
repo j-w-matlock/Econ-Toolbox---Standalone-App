@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Input;
+using System.Threading.Tasks;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 
@@ -192,15 +192,19 @@ namespace EconToolbox.Desktop.ViewModels
             set { _results = value; OnPropertyChanged(); }
         }
 
-        public ICommand ComputeCommand { get; }
-        public ICommand ExportCommand { get; }
-        public ICommand ResetIdcCommand { get; }
-        public ICommand ResetFutureCostsCommand { get; }
+        public IRelayCommand ComputeCommand { get; }
+        public IAsyncRelayCommand ExportCommand { get; }
+        public IRelayCommand ResetIdcCommand { get; }
+        public IRelayCommand ResetFutureCostsCommand { get; }
 
-        public AnnualizerViewModel()
+        private readonly IExcelExportService _excelExportService;
+
+        public AnnualizerViewModel(IExcelExportService excelExportService)
         {
+            _excelExportService = excelExportService;
+
             ComputeCommand = new RelayCommand(Compute);
-            ExportCommand = new RelayCommand(Export);
+            ExportCommand = new AsyncRelayCommand(ExportAsync);
             ResetIdcCommand = new RelayCommand(ResetIdcEntries);
             ResetFutureCostsCommand = new RelayCommand(ResetFutureCostEntries);
 
@@ -327,17 +331,29 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private void Export()
+        private async Task ExportAsync()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
                 Filter = "Excel Workbook (*.xlsx)|*.xlsx",
                 FileName = "annualizer.xlsx"
             };
+
             if (dlg.ShowDialog() == true)
             {
-                Services.ExcelExporter.ExportAnnualizer(FirstCost, Rate, AnnualOm, AnnualBenefits,
-                    FutureCosts, Idc, TotalInvestment, Crf, AnnualCost, Bcr, dlg.FileName);
+                await Task.Run(() =>
+                    _excelExportService.ExportAnnualizer(
+                        FirstCost,
+                        Rate,
+                        AnnualOm,
+                        AnnualBenefits,
+                        FutureCosts,
+                        Idc,
+                        TotalInvestment,
+                        Crf,
+                        AnnualCost,
+                        Bcr,
+                        dlg.FileName));
             }
         }
 
