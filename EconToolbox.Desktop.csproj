@@ -14,7 +14,7 @@
     <PackageReference Include="ClosedXML" Version="0.104.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Markdig.Wpf" Version="0.2.1" />
+    <PackageReference Include="MdXaml" Version="1.27.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
