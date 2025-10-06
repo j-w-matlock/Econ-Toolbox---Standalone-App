@@ -7,6 +7,7 @@ namespace EconToolbox.Desktop.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
+        public ReadMeViewModel ReadMe { get; }
         public EadViewModel Ead { get; }
         public AgricultureDepthDamageViewModel AgricultureDepthDamage { get; }
         public UpdatedCostViewModel UpdatedCost { get; }
@@ -53,6 +54,7 @@ namespace EconToolbox.Desktop.ViewModels
         private readonly IExcelExportService _excelExportService;
 
         public MainViewModel(
+            ReadMeViewModel readMe,
             EadViewModel ead,
             AgricultureDepthDamageViewModel agricultureDepthDamage,
             UpdatedCostViewModel updatedCost,
@@ -64,6 +66,7 @@ namespace EconToolbox.Desktop.ViewModels
             DrawingViewModel drawing,
             IExcelExportService excelExportService)
         {
+            ReadMe = readMe;
             Ead = ead;
             AgricultureDepthDamage = agricultureDepthDamage;
             UpdatedCost = updatedCost;
@@ -80,6 +83,24 @@ namespace EconToolbox.Desktop.ViewModels
 
             Modules = new List<ModuleDefinition>
             {
+                new ModuleDefinition(
+                    "Project README",
+                    "Review onboarding tips, module descriptions, and build instructions without leaving the toolbox.",
+                    new[]
+                    {
+                        "Browse the introduction to understand the toolkit's purpose and architecture.",
+                        "Follow the build and publish instructions before sharing the desktop app with teammates.",
+                        "Reference the calculator summaries to confirm which module fits your analysis need."
+                    },
+                    new[]
+                    {
+                        "Shows the repository's README rendered with headings, lists, and syntax highlighting.",
+                        "Keeps the latest project documentation available offline inside the application shell.",
+                        "Supports opening external links in your default browser for deeper references."
+                    },
+                    "Example: Quickly scan the packaging checklist before exporting deliverables for a stakeholder workshop.",
+                    ReadMe,
+                    null),
                 new ModuleDefinition(
                     "Expected Annual Damage (EAD)",
                     "Quantify how frequently damages occur by pairing exceedance probabilities with damage estimates.",

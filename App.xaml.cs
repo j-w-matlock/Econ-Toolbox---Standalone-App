@@ -18,6 +18,7 @@ namespace EconToolbox.Desktop
                 {
                     services.AddSingleton<IExcelExportService, ExcelExportService>();
 
+                    services.AddSingleton<ReadMeViewModel>();
                     services.AddSingleton<EadViewModel>();
                     services.AddSingleton<AgricultureDepthDamageViewModel>();
                     services.AddSingleton<UpdatedCostViewModel>();

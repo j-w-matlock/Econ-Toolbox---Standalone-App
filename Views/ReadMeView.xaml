@@ -1,0 +1,21 @@
+<UserControl x:Class="EconToolbox.Desktop.Views.ReadMeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf">
+    <Grid Background="Transparent">
+        <Border Background="{StaticResource Brush.Surface}"
+                BorderBrush="{StaticResource Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="{StaticResource Padding.Section}">
+            <md:MarkdownScrollViewer x:Name="MarkdownViewer"
+                                     Markdown="{Binding MarkdownContent}"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Disabled"
+                                     Background="Transparent"
+                                     Foreground="{StaticResource Brush.TextPrimary}"
+                                     FontSize="14"
+                                     LinkClicked="MarkdownViewer_OnLinkClicked"/>
+        </Border>
+    </Grid>
+</UserControl>

@@ -5,6 +5,8 @@
 This repository contains a Windows Presentation Foundation (WPF) desktop application that delivers a suite of economic analysis tools.
 The project targets **.NET 8**, embraces the Model-View-ViewModel (MVVM) pattern via [CommunityToolkit.Mvvm](https://learn.microsoft.com/windows/communitytoolkit/mvvm/introduction), and boots with a host-based dependency injection container powered by `Microsoft.Extensions.Hosting`.
 
+> 💡 **In-app documentation:** The full contents of this README are rendered directly inside the Economic Toolbox under the **Project README** tab so you can review setup guidance, module notes, and publishing steps without leaving the application.
+
 Key architectural highlights:
 
 - **Strongly typed MVVM infrastructure** – `ObservableObject`, source-generated commands, and validation helpers are available through the toolkit.
