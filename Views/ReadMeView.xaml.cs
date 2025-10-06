@@ -1,7 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Controls;
-using Markdig.Wpf;
+using System.Windows.Documents;
+using System.Windows.Navigation;
 
 namespace EconToolbox.Desktop.Views
 {
@@ -10,18 +11,17 @@ namespace EconToolbox.Desktop.Views
         public ReadMeView()
         {
             InitializeComponent();
+
+            MarkdownViewer.AddHandler(Hyperlink.RequestNavigateEvent,
+                new RequestNavigateEventHandler(MarkdownViewer_OnRequestNavigate));
         }
 
-        private void MarkdownViewer_OnLinkClicked(object sender, LinkEventArgs e)
+        private void MarkdownViewer_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(e.Link))
-            {
-                return;
-            }
-
             try
             {
-                if (Uri.TryCreate(e.Link, UriKind.Absolute, out var uri))
+                var link = e.Uri?.AbsoluteUri ?? e.Uri?.ToString() ?? string.Empty;
+                if (!string.IsNullOrWhiteSpace(link) && Uri.TryCreate(link, UriKind.Absolute, out var uri))
                 {
                     Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
                 }
@@ -30,6 +30,8 @@ namespace EconToolbox.Desktop.Views
             {
                 // Swallow exceptions to avoid crashing the UI when a link cannot be opened.
             }
+
+            e.Handled = true;
         }
     }
 }
