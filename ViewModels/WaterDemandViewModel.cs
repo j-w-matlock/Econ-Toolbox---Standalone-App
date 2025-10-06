@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
 using System.Collections.Specialized;
@@ -128,12 +128,15 @@ namespace EconToolbox.Desktop.ViewModels
             set { if (SelectedScenario != null) { SelectedScenario.PerCapitaDemandChangeRate = value; OnPropertyChanged(); } }
         }
 
-        public ICommand ForecastCommand { get; }
-        public ICommand ExportCommand { get; }
-        public ICommand ComputeCommand { get; }
+        public IRelayCommand ForecastCommand { get; }
+        public IAsyncRelayCommand ExportCommand { get; }
+        public IRelayCommand ComputeCommand { get; }
 
-        public WaterDemandViewModel()
+        private readonly IExcelExportService _excelExportService;
+
+        public WaterDemandViewModel(IExcelExportService excelExportService)
         {
+            _excelExportService = excelExportService;
             Scenarios.Add(new Scenario
             {
                 Name = "Baseline",
@@ -161,14 +164,14 @@ namespace EconToolbox.Desktop.ViewModels
 
             _baselineScenario = Scenarios.FirstOrDefault(s => string.Equals(s.Name, "Baseline", StringComparison.OrdinalIgnoreCase));
 
-            HistoricalData.CollectionChanged += HistoricalData_CollectionChanged;
-
             SelectedScenario = Scenarios.FirstOrDefault();
 
             ApplyScenarioAdjustments();
 
+            HistoricalData.CollectionChanged += HistoricalData_CollectionChanged;
+
             ForecastCommand = new RelayCommand(Forecast);
-            ExportCommand = new RelayCommand(Export);
+            ExportCommand = new AsyncRelayCommand(ExportAsync);
             ComputeCommand = ForecastCommand;
         }
 
@@ -692,16 +695,17 @@ namespace EconToolbox.Desktop.ViewModels
             return points;
         }
 
-        private void Export()
+        private async Task ExportAsync()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
                 Filter = "Excel Workbook (*.xlsx)|*.xlsx",
                 FileName = "water_demand.xlsx"
             };
+
             if (dlg.ShowDialog() == true)
             {
-                Services.ExcelExporter.ExportWaterDemand(Scenarios, dlg.FileName);
+                await Task.Run(() => _excelExportService.ExportWaterDemand(Scenarios, dlg.FileName));
             }
         }
     }

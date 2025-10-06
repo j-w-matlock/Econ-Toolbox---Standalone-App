@@ -17,10 +17,6 @@
         ToolTipService.Placement="Mouse"
         ToolTipService.HorizontalOffset="12"
         ToolTipService.VerticalOffset="12">
-    <Window.DataContext>
-        <vm:MainViewModel/>
-    </Window.DataContext>
-
     <Window.Resources>
             <ResourceDictionary>
                 <ResourceDictionary.MergedDictionaries>

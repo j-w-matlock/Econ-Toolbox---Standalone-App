@@ -13,7 +13,7 @@ using System.Globalization;
 
 namespace EconToolbox.Desktop.Services
 {
-    public static class ExcelExporter
+    public sealed class ExcelExportService : IExcelExportService
     {
         private const int ExcelMaxPictureNameLength = 31;
 
@@ -32,7 +32,7 @@ namespace EconToolbox.Desktop.Services
         private static readonly XLColor DashboardAccentText = XLColor.FromHtml("#2D6A8E");
         private static readonly XLColor DashboardPrimaryText = XLColor.FromHtml("#1F2937");
 
-        public static void ExportCapitalRecovery(double rate, int periods, double factor, string filePath)
+        public void ExportCapitalRecovery(double rate, int periods, double factor, string filePath)
         {
             using var wb = new XLWorkbook();
             var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -46,7 +46,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public static void ExportWaterDemand(IEnumerable<Scenario> scenarios, string filePath)
+        public void ExportWaterDemand(IEnumerable<Scenario> scenarios, string filePath)
         {
             using var wb = new XLWorkbook();
             foreach (var scenario in scenarios)
@@ -85,7 +85,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public static void ExportAnnualizer(double firstCost, double rate, double annualOm, double annualBenefits, IEnumerable<FutureCostEntry> future, double idc, double totalInvestment, double crf, double annualCost, double bcr, string filePath)
+        public void ExportAnnualizer(double firstCost, double rate, double annualOm, double annualBenefits, IEnumerable<FutureCostEntry> future, double idc, double totalInvestment, double crf, double annualCost, double bcr, string filePath)
         {
             using var wb = new XLWorkbook();
             var summary = wb.Worksheets.Add("Summary");
@@ -135,7 +135,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public static void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, PointCollection stagePoints, PointCollection frequencyPoints, string filePath)
+        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, PointCollection stagePoints, PointCollection frequencyPoints, string filePath)
         {
             using var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("EAD");
@@ -166,7 +166,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public static void ExportAll(EadViewModel ead, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, string filePath)
+        public void ExportAll(EadViewModel ead, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, string filePath)
         {
             using var wb = new XLWorkbook();
             var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

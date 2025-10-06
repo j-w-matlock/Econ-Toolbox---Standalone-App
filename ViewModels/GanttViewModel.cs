@@ -34,7 +34,7 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 _selectedTask = value;
                 OnPropertyChanged();
-                _removeTaskCommand.RaiseCanExecuteChanged();
+                _removeTaskCommand.NotifyCanExecuteChanged();
             }
         }
 

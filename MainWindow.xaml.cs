@@ -5,14 +5,16 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using EconToolbox.Desktop.ViewModels;
 
 namespace EconToolbox.Desktop
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
 
         private void MainScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

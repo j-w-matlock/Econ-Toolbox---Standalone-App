@@ -45,9 +45,9 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(SelectedRegionDescription));
                 SelectedRegionPoint = null;
                 AttachRegionHandlers(_selectedRegion);
-                _computeCommand.RaiseCanExecuteChanged();
-                _addDepthDurationPointCommand.RaiseCanExecuteChanged();
-                _removeDepthDurationPointCommand.RaiseCanExecuteChanged();
+                _computeCommand.NotifyCanExecuteChanged();
+                _addDepthDurationPointCommand.NotifyCanExecuteChanged();
+                _removeDepthDurationPointCommand.NotifyCanExecuteChanged();
                 if (!_isInitializing)
                 {
                     ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
@@ -70,7 +70,7 @@ namespace EconToolbox.Desktop.ViewModels
 
                 _selectedRegionPoint = value;
                 OnPropertyChanged();
-                _removeDepthDurationPointCommand.RaiseCanExecuteChanged();
+                _removeDepthDurationPointCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -90,7 +90,7 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(SelectedCropDescription));
                 AttachCropHandlers(_selectedCrop);
-                _computeCommand.RaiseCanExecuteChanged();
+                _computeCommand.NotifyCanExecuteChanged();
                 if (!_isInitializing)
                 {
                     ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
@@ -315,7 +315,7 @@ namespace EconToolbox.Desktop.ViewModels
                 }
             }
 
-            _removeDepthDurationPointCommand.RaiseCanExecuteChanged();
+            _removeDepthDurationPointCommand.NotifyCanExecuteChanged();
 
             if (_isInitializing)
             {
@@ -433,7 +433,7 @@ namespace EconToolbox.Desktop.ViewModels
                 DepthDurationRows.Clear();
                 ImpactSummary = "Select a region and crop to calculate flood impacts.";
                 CropInsight = "";
-                _exportCommand.RaiseCanExecuteChanged();
+                _exportCommand.NotifyCanExecuteChanged();
                 return;
             }
 
@@ -508,7 +508,7 @@ namespace EconToolbox.Desktop.ViewModels
             CropInsight =
                 $"Average expected damage across representative depth-duration events is {MeanDamageDisplay}. Seasonal alignment considers the flood window (days {SelectedRegion!.FloodWindowStartDay}–{SelectedRegion.FloodWindowEndDay}) and any {SelectedRegion.SeasonShiftDays:+#;-#;0}-day shift.{alignmentInsight} Adjust exposure days or tolerance to explore resilience.";
 
-            _exportCommand.RaiseCanExecuteChanged();
+            _exportCommand.NotifyCanExecuteChanged();
         }
 
         private void Export()

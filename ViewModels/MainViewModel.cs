@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using EconToolbox.Desktop.Services;
 
@@ -6,15 +7,15 @@ namespace EconToolbox.Desktop.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        public EadViewModel Ead { get; } = new();
-        public AgricultureDepthDamageViewModel AgricultureDepthDamage { get; } = new();
-        public UpdatedCostViewModel UpdatedCost { get; } = new();
-        public AnnualizerViewModel Annualizer { get; } = new();
-        public UdvViewModel Udv { get; } = new();
-        public WaterDemandViewModel WaterDemand { get; } = new();
-        public MindMapViewModel MindMap { get; } = new();
-        public GanttViewModel Gantt { get; } = new();
-        public DrawingViewModel Drawing { get; } = new();
+        public EadViewModel Ead { get; }
+        public AgricultureDepthDamageViewModel AgricultureDepthDamage { get; }
+        public UpdatedCostViewModel UpdatedCost { get; }
+        public AnnualizerViewModel Annualizer { get; }
+        public UdvViewModel Udv { get; }
+        public WaterDemandViewModel WaterDemand { get; }
+        public MindMapViewModel MindMap { get; }
+        public GanttViewModel Gantt { get; }
+        public DrawingViewModel Drawing { get; }
 
         public IReadOnlyList<ModuleDefinition> Modules { get; }
 
@@ -33,8 +34,8 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public ICommand CalculateCommand { get; }
-        public ICommand ExportCommand { get; }
+        public IRelayCommand CalculateCommand { get; }
+        public IAsyncRelayCommand ExportCommand { get; }
 
         public ModuleDefinition? SelectedModule => SelectedIndex >= 0 && SelectedIndex < Modules.Count
             ? Modules[SelectedIndex]
@@ -49,10 +50,33 @@ namespace EconToolbox.Desktop.ViewModels
             _ => "Calculate"
         };
 
-        public MainViewModel()
+        private readonly IExcelExportService _excelExportService;
+
+        public MainViewModel(
+            EadViewModel ead,
+            AgricultureDepthDamageViewModel agricultureDepthDamage,
+            UpdatedCostViewModel updatedCost,
+            AnnualizerViewModel annualizer,
+            UdvViewModel udv,
+            WaterDemandViewModel waterDemand,
+            MindMapViewModel mindMap,
+            GanttViewModel gantt,
+            DrawingViewModel drawing,
+            IExcelExportService excelExportService)
         {
+            Ead = ead;
+            AgricultureDepthDamage = agricultureDepthDamage;
+            UpdatedCost = updatedCost;
+            Annualizer = annualizer;
+            Udv = udv;
+            WaterDemand = waterDemand;
+            MindMap = mindMap;
+            Gantt = gantt;
+            Drawing = drawing;
+            _excelExportService = excelExportService;
+
             CalculateCommand = new RelayCommand(Calculate);
-            ExportCommand = new RelayCommand(Export);
+            ExportCommand = new AsyncRelayCommand(ExportAsync);
 
             Modules = new List<ModuleDefinition>
             {
@@ -245,16 +269,26 @@ namespace EconToolbox.Desktop.ViewModels
             command.CanExecuteChanged += (_, _) => OnPropertyChanged(nameof(IsCalculateVisible));
         }
 
-        private void Export()
+        private async Task ExportAsync()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
                 Filter = "Excel Workbook (*.xlsx)|*.xlsx",
                 FileName = "econ_toolbox.xlsx"
             };
+
             if (dlg.ShowDialog() == true)
             {
-                ExcelExporter.ExportAll(Ead, UpdatedCost, Annualizer, WaterDemand, Udv, MindMap, Gantt, Drawing, dlg.FileName);
+                await Task.Run(() => _excelExportService.ExportAll(
+                    Ead,
+                    UpdatedCost,
+                    Annualizer,
+                    WaterDemand,
+                    Udv,
+                    MindMap,
+                    Gantt,
+                    Drawing,
+                    dlg.FileName));
             }
         }
     }

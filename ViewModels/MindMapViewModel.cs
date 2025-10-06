@@ -246,9 +246,9 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void UpdateCommandStates()
         {
-            _addChildCommand.RaiseCanExecuteChanged();
-            _addSiblingCommand.RaiseCanExecuteChanged();
-            _removeNodeCommand.RaiseCanExecuteChanged();
+            _addChildCommand.NotifyCanExecuteChanged();
+            _addSiblingCommand.NotifyCanExecuteChanged();
+            _removeNodeCommand.NotifyCanExecuteChanged();
         }
 
         private void UpdatePathSubscriptions()
