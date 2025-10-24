@@ -33,6 +33,12 @@ namespace EconToolbox.Desktop.ViewModels
         private double _annualCost;
         private double _bcr;
 
+        private readonly record struct AnnualizerComputationInputs(
+            List<(double cost, double yearOffset, double timingOffset)> FutureCosts,
+            double[]? IdcCosts,
+            string[]? IdcTimings,
+            int[]? IdcMonths);
+
         public double FirstCost
         {
             get => _firstCost;
@@ -193,6 +199,7 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public IRelayCommand ComputeCommand { get; }
+        public IRelayCommand CalculateUnityFirstCostCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ResetIdcCommand { get; }
         public IRelayCommand ResetFutureCostsCommand { get; }
@@ -204,6 +211,7 @@ namespace EconToolbox.Desktop.ViewModels
             _excelExportService = excelExportService;
 
             ComputeCommand = new RelayCommand(Compute);
+            CalculateUnityFirstCostCommand = new RelayCommand(CalculateUnityFirstCost);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ResetIdcCommand = new RelayCommand(ResetIdcEntries);
             ResetFutureCostsCommand = new RelayCommand(ResetFutureCostEntries);
@@ -274,60 +282,169 @@ namespace EconToolbox.Desktop.ViewModels
         {
             try
             {
-                List<(double cost, double yearOffset, double timingOffset)> future = FutureCosts
-                    .Select(f => (f.Cost, (double)(f.Year - BaseYear), GetTimingOffset(f.Timing)))
-                    .ToList();
-
-                double[]? costArr = null;
-                string[]? timingArr = null;
-                int[]? monthArr = null;
-
-                if (IdcEntries.Count > 0)
-                {
-                    var schedule = IdcEntries
-                        .Select(e => new { e.Cost, Timing = string.IsNullOrWhiteSpace(e.Timing) ? "midpoint" : e.Timing, e.Year })
-                        .OrderBy(e => e.Year)
-                        .ToList();
-
-                    if (schedule.Count > 0)
-                    {
-                        costArr = new double[schedule.Count];
-                        timingArr = new string[schedule.Count];
-                        monthArr = new int[schedule.Count];
-
-                        for (int i = 0; i < schedule.Count; i++)
-                        {
-                            costArr[i] = schedule[i].Cost;
-                            timingArr[i] = schedule[i].Timing;
-                            int monthValue = schedule[i].Year;
-                            monthArr[i] = monthValue <= 0 ? 0 : monthValue - 1;
-                        }
-                    }
-                }
-
-                var result = AnnualizerModel.Compute(FirstCost, Rate / 100.0, AnnualOm, AnnualBenefits, future,
-                    AnalysisPeriod, BaseYear, ConstructionMonths, costArr, timingArr, monthArr,
-                    NormalizeTimingChoice(IdcTimingBasis), CalculateInterestAtPeriod,
-                    NormalizeFirstPaymentChoice(IdcFirstPaymentTiming), NormalizeLastPaymentChoice(IdcLastPaymentTiming));
-                Idc = result.Idc;
-                TotalInvestment = result.TotalInvestment;
-                Crf = result.Crf;
-                AnnualCost = result.AnnualCost;
-                Bcr = result.Bcr;
-
-                Results = new ObservableCollection<string>
-                {
-                    $"IDC: {Idc:F2}",
-                    $"Total Investment: {TotalInvestment:F2}",
-                    $"CRF: {Crf:F4}",
-                    $"Annual Cost: {AnnualCost:F2}",
-                    $"BCR: {Bcr:F2}"
-                };
+                var inputs = BuildComputationInputs();
+                var result = RunAnnualizer(FirstCost, inputs);
+                ApplyResult(result);
             }
             catch (Exception)
             {
                 Idc = TotalInvestment = Crf = AnnualCost = Bcr = double.NaN;
                 Results = new ObservableCollection<string> { "Error computing results" };
+            }
+        }
+
+        private AnnualizerComputationInputs BuildComputationInputs()
+        {
+            var future = FutureCosts
+                .Select(f => (f.Cost, (double)(f.Year - BaseYear), GetTimingOffset(f.Timing)))
+                .ToList();
+
+            double[]? costArr = null;
+            string[]? timingArr = null;
+            int[]? monthArr = null;
+
+            if (IdcEntries.Count > 0)
+            {
+                var schedule = IdcEntries
+                    .Select(e => new { e.Cost, Timing = string.IsNullOrWhiteSpace(e.Timing) ? "midpoint" : e.Timing, e.Year })
+                    .OrderBy(e => e.Year)
+                    .ToList();
+
+                if (schedule.Count > 0)
+                {
+                    costArr = new double[schedule.Count];
+                    timingArr = new string[schedule.Count];
+                    monthArr = new int[schedule.Count];
+
+                    for (int i = 0; i < schedule.Count; i++)
+                    {
+                        costArr[i] = schedule[i].Cost;
+                        timingArr[i] = schedule[i].Timing;
+                        int monthValue = schedule[i].Year;
+                        monthArr[i] = monthValue <= 0 ? 0 : monthValue - 1;
+                    }
+                }
+            }
+
+            return new AnnualizerComputationInputs(future, costArr, timingArr, monthArr);
+        }
+
+        private AnnualizerModel.Result RunAnnualizer(double firstCost, AnnualizerComputationInputs inputs)
+        {
+            return AnnualizerModel.Compute(firstCost, Rate / 100.0, AnnualOm, AnnualBenefits, inputs.FutureCosts,
+                AnalysisPeriod, BaseYear, ConstructionMonths, inputs.IdcCosts, inputs.IdcTimings, inputs.IdcMonths,
+                NormalizeTimingChoice(IdcTimingBasis), CalculateInterestAtPeriod,
+                NormalizeFirstPaymentChoice(IdcFirstPaymentTiming), NormalizeLastPaymentChoice(IdcLastPaymentTiming));
+        }
+
+        private void ApplyResult(AnnualizerModel.Result result)
+        {
+            Idc = result.Idc;
+            TotalInvestment = result.TotalInvestment;
+            Crf = result.Crf;
+            AnnualCost = result.AnnualCost;
+            Bcr = result.Bcr;
+
+            Results = new ObservableCollection<string>
+            {
+                $"IDC: {Idc:F2}",
+                $"Total Investment: {TotalInvestment:F2}",
+                $"CRF: {Crf:F4}",
+                $"Annual Cost: {AnnualCost:F2}",
+                $"BCR: {Bcr:F2}"
+            };
+        }
+
+        private void AppendResultMessage(string message)
+        {
+            var updated = Results != null ? new ObservableCollection<string>(Results) : new ObservableCollection<string>();
+            updated.Add(message);
+            Results = updated;
+        }
+
+        private void CalculateUnityFirstCost()
+        {
+            try
+            {
+                var inputs = BuildComputationInputs();
+                var currentResult = RunAnnualizer(FirstCost, inputs);
+                ApplyResult(currentResult);
+
+                if (AnnualBenefits <= 0)
+                {
+                    AppendResultMessage("Unity BCR First Cost: Requires positive annual benefits.");
+                    return;
+                }
+
+                double targetAnnual = AnnualBenefits;
+                double lowerCost = 0.0;
+                double lowerAnnual = RunAnnualizer(lowerCost, inputs).AnnualCost;
+
+                if (double.IsNaN(lowerAnnual) || lowerAnnual > targetAnnual)
+                {
+                    AppendResultMessage("Unity BCR First Cost: Not attainable with current benefits.");
+                    return;
+                }
+
+                double upperCost = Math.Max(Math.Max(FirstCost, 1.0), lowerCost + 1.0);
+                double upperAnnual = RunAnnualizer(upperCost, inputs).AnnualCost;
+                int expandAttempts = 0;
+                while (!double.IsNaN(upperAnnual) && upperAnnual <= targetAnnual && expandAttempts < 60)
+                {
+                    upperCost = upperCost <= 0 ? 1.0 : upperCost * 2.0;
+                    upperAnnual = RunAnnualizer(upperCost, inputs).AnnualCost;
+                    expandAttempts++;
+                    if (upperCost > 1_000_000_000_000d)
+                        break;
+                }
+
+                if (double.IsNaN(upperAnnual) || upperAnnual <= targetAnnual)
+                {
+                    AppendResultMessage("Unity BCR First Cost: Unable to locate a solution with the current benefits.");
+                    return;
+                }
+
+                double solvedCost = upperCost;
+                for (int i = 0; i < 80; i++)
+                {
+                    double midCost = (lowerCost + upperCost) / 2.0;
+                    double midAnnual = RunAnnualizer(midCost, inputs).AnnualCost;
+
+                    if (double.IsNaN(midAnnual))
+                    {
+                        upperCost = midCost;
+                        continue;
+                    }
+
+                    if (Math.Abs(midAnnual - targetAnnual) < 0.01 || Math.Abs(upperCost - lowerCost) < 0.01)
+                    {
+                        solvedCost = midCost;
+                        break;
+                    }
+
+                    if (midAnnual > targetAnnual)
+                    {
+                        upperCost = midCost;
+                        upperAnnual = midAnnual;
+                    }
+                    else
+                    {
+                        lowerCost = midCost;
+                        lowerAnnual = midAnnual;
+                    }
+
+                    solvedCost = midCost;
+                }
+
+                double finalCost = Math.Max(0.0, (lowerCost + upperCost) / 2.0);
+                if (!double.IsNaN(solvedCost))
+                    finalCost = Math.Max(0.0, solvedCost);
+
+                AppendResultMessage($"Unity BCR First Cost: {finalCost:F2}");
+            }
+            catch (Exception)
+            {
+                AppendResultMessage("Unity BCR First Cost: Error calculating.");
             }
         }
 
