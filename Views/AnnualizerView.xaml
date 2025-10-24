@@ -150,6 +150,22 @@
                                   </DataTrigger>
                               </Style.Triggers>
                           </Style>
+                          <Style x:Key="AnnualizerFieldInputContainerStyle" TargetType="FrameworkElement">
+                              <Setter Property="Grid.Column" Value="2"/>
+                              <Setter Property="Grid.ColumnSpan" Value="1"/>
+                              <Setter Property="Margin" Value="0,0,0,16"/>
+                              <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                              <Setter Property="VerticalAlignment" Value="Center"/>
+                              <Style.Triggers>
+                                  <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                               Value="Narrow">
+                                      <Setter Property="Grid.Column" Value="0"/>
+                                      <Setter Property="Grid.ColumnSpan" Value="3"/>
+                                      <Setter Property="Grid.Row" Value="{Binding Tag, RelativeSource={RelativeSource Self}}"/>
+                                      <Setter Property="Margin" Value="0,4,0,16"/>
+                                  </DataTrigger>
+                              </Style.Triggers>
+                          </Style>
                           <Style x:Key="AnnualizerFieldComboStyle" TargetType="ComboBox">
                               <Setter Property="Grid.Column" Value="2"/>
                               <Setter Property="Grid.ColumnSpan" Value="1"/>
@@ -283,7 +299,22 @@
                           </InlineUIContainer>
                           <Run Text="Annual Benefits"/>
                       </TextBlock>
-                      <TextBox Grid.Row="10" Text="{Binding AnnualBenefits}" Tag="11" Style="{StaticResource AnnualizerFieldInputStyle}"/>
+                      <Grid Grid.Row="10" Tag="11" Style="{StaticResource AnnualizerFieldInputContainerStyle}">
+                          <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="Auto"/>
+                          </Grid.ColumnDefinitions>
+                          <TextBox Grid.Column="0"
+                                   Text="{Binding AnnualBenefits}"
+                                   VerticalContentAlignment="Center"
+                                   Margin="0"
+                                   HorizontalAlignment="Stretch"/>
+                          <Button Grid.Column="1"
+                                  Margin="8,0,0,0"
+                                  Padding="16,6"
+                                  Content="Calculate Unity Level Project First Cost"
+                                  Command="{Binding CalculateUnityFirstCostCommand}"/>
+                      </Grid>
 
                       <Rectangle Grid.Row="12" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="12" Style="{StaticResource AnnualizerFieldLabelStyle}">
