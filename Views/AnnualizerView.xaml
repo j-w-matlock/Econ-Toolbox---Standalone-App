@@ -303,6 +303,7 @@
                           <Grid.ColumnDefinitions>
                               <ColumnDefinition Width="*"/>
                               <ColumnDefinition Width="Auto"/>
+                              <ColumnDefinition Width="*"/>
                           </Grid.ColumnDefinitions>
                           <TextBox Grid.Column="0"
                                    Text="{Binding AnnualBenefits}"
@@ -314,6 +315,15 @@
                                   Padding="16,6"
                                   Content="Calculate Unity Level Project First Cost"
                                   Command="{Binding CalculateUnityFirstCostCommand}"/>
+                          <TextBox Grid.Column="2"
+                                   Margin="8,0,0,0"
+                                   MinWidth="180"
+                                   Padding="16,6"
+                                   IsReadOnly="True"
+                                   Text="{Binding UnityFirstCostMessage}"
+                                   TextWrapping="Wrap"
+                                   VerticalContentAlignment="Center"
+                                   HorizontalAlignment="Stretch"/>
                       </Grid>
 
                       <Rectangle Grid.Row="12" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>

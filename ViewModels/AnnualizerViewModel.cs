@@ -22,6 +22,7 @@ namespace EconToolbox.Desktop.ViewModels
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
         private ObservableCollection<FutureCostEntry> _idcEntries = new();
         private ObservableCollection<string> _results = new();
+        private string? _unityFirstCostMessage;
         private string _idcTimingBasis = "Middle";
         private bool _calculateInterestAtPeriod;
         private string _idcFirstPaymentTiming = "Beginning";
@@ -198,6 +199,12 @@ namespace EconToolbox.Desktop.ViewModels
             set { _results = value; OnPropertyChanged(); }
         }
 
+        public string? UnityFirstCostMessage
+        {
+            get => _unityFirstCostMessage;
+            set { _unityFirstCostMessage = value; OnPropertyChanged(); }
+        }
+
         public IRelayCommand ComputeCommand { get; }
         public IRelayCommand CalculateUnityFirstCostCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
@@ -357,6 +364,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void AppendResultMessage(string message)
         {
+            UnityFirstCostMessage = message;
+
             var updated = Results != null ? new ObservableCollection<string>(Results) : new ObservableCollection<string>();
             updated.Add(message);
             Results = updated;
