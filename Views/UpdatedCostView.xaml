@@ -200,7 +200,9 @@
                         </InlineUIContainer>
                         <Run Text="Joint Operations Cost"/>
                     </TextBlock>
-                    <TextBox Text="{Binding JointOperationsCost}" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding JointOperationsCost, Converter={StaticResource CurrencyConverter}}"
+                             Grid.Column="1"
+                             Margin="0,0,0,5"/>
                     <TextBlock Grid.Row="1" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -208,7 +210,10 @@
                         </InlineUIContainer>
                         <Run Text="Joint Maintenance Cost"/>
                     </TextBlock>
-                    <TextBox Text="{Binding JointMaintenanceCost}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding JointMaintenanceCost, Converter={StaticResource CurrencyConverter}}"
+                             Grid.Row="1"
+                             Grid.Column="1"
+                             Margin="0,0,0,5"/>
                     <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
@@ -257,7 +262,10 @@
                                 </StackPanel>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Binding="{Binding ActualCost}">
+                        <DataGridTextColumn>
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="ActualCost" Converter="{StaticResource CurrencyConverter}"/>
+                            </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -275,7 +283,11 @@
                                 </StackPanel>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="Updated Cost" Binding="{Binding UpdatedCost}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Updated Cost" IsReadOnly="True">
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="UpdatedCost" Converter="{StaticResource CurrencyConverter}"/>
+                            </DataGridTextColumn.Binding>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
                 <Button Margin="0,4,0,4" Command="{Binding ResetUpdatedCostItemsCommand}" HorizontalAlignment="Right">
@@ -380,7 +392,10 @@
                                     </StackPanel>
                                 </DataGridTextColumn.Header>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding FutureCost}">
+                            <DataGridTextColumn>
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="FutureCost" Converter="{StaticResource CurrencyConverter}"/>
+                                </DataGridTextColumn.Binding>
                                 <DataGridTextColumn.Header>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -399,7 +414,11 @@
                                 </DataGridTextColumn.Header>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Present Value" Binding="{Binding PresentValue}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Present Value" IsReadOnly="True">
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="PresentValue" Converter="{StaticResource CurrencyConverter}"/>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <Button Grid.Row="5" Grid.ColumnSpan="2" Margin="0,4,0,4" Command="{Binding ResetRrrItemsCommand}" HorizontalAlignment="Right">

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using EconToolbox.Desktop.Models;
@@ -352,12 +353,14 @@ namespace EconToolbox.Desktop.ViewModels
             AnnualCost = result.AnnualCost;
             Bcr = result.Bcr;
 
+            var culture = CultureInfo.CurrentCulture;
+
             Results = new ObservableCollection<string>
             {
-                $"IDC: {Idc:F2}",
-                $"Total Investment: {TotalInvestment:F2}",
+                $"IDC: {Idc.ToString("C2", culture)}",
+                $"Total Investment: {TotalInvestment.ToString("C2", culture)}",
                 $"CRF: {Crf:F4}",
-                $"Annual Cost: {AnnualCost:F2}",
+                $"Annual Cost: {AnnualCost.ToString("C2", culture)}",
                 $"BCR: {Bcr:F2}"
             };
         }
@@ -449,7 +452,7 @@ namespace EconToolbox.Desktop.ViewModels
                 if (!double.IsNaN(solvedCost))
                     finalCost = Math.Max(0.0, solvedCost);
 
-                AppendResultMessage($"Unity BCR First Cost: {finalCost:F2}");
+                AppendResultMessage($"Unity BCR First Cost: {finalCost.ToString("C2", CultureInfo.CurrentCulture)}");
             }
             catch (Exception)
             {
