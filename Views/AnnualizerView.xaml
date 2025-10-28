@@ -247,7 +247,7 @@
                           <Run Text="First Cost"/>
                       </TextBlock>
                       <TextBox Grid.Row="0"
-                               Text="{Binding FirstCost}"
+                               Text="{Binding FirstCost, Converter={StaticResource CurrencyConverter}}"
                                Tag="1"
                                Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
@@ -289,7 +289,10 @@
                           </InlineUIContainer>
                           <Run Text="Annual O&amp;M"/>
                       </TextBlock>
-                      <TextBox Grid.Row="8" Text="{Binding AnnualOm}" Tag="9" Style="{StaticResource AnnualizerFieldInputStyle}"/>
+                      <TextBox Grid.Row="8"
+                               Text="{Binding AnnualOm, Converter={StaticResource CurrencyConverter}}"
+                               Tag="9"
+                               Style="{StaticResource AnnualizerFieldInputStyle}"/>
 
                       <Rectangle Grid.Row="10" Style="{StaticResource AnnualizerFieldConnectorStyle}"/>
                       <TextBlock Grid.Row="10" Style="{StaticResource AnnualizerFieldLabelStyle}">
@@ -306,7 +309,7 @@
                               <ColumnDefinition Width="*"/>
                           </Grid.ColumnDefinitions>
                           <TextBox Grid.Column="0"
-                                   Text="{Binding AnnualBenefits}"
+                                   Text="{Binding AnnualBenefits, Converter={StaticResource CurrencyConverter}}"
                                    VerticalContentAlignment="Center"
                                    Margin="0"
                                    HorizontalAlignment="Stretch"/>
@@ -457,7 +460,10 @@
                       <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
                           <DataGrid ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All">
                               <DataGrid.Columns>
-                                  <DataGridTextColumn Binding="{Binding Cost}">
+                                  <DataGridTextColumn>
+                                      <DataGridTextColumn.Binding>
+                                          <Binding Path="Cost" Converter="{StaticResource CurrencyConverter}"/>
+                                      </DataGridTextColumn.Binding>
                                       <DataGridTextColumn.Header>
                                           <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                               <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -541,7 +547,10 @@
                       <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
                           <DataGrid ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0">
                               <DataGrid.Columns>
-                                  <DataGridTextColumn Binding="{Binding Cost}">
+                                  <DataGridTextColumn>
+                                      <DataGridTextColumn.Binding>
+                                          <Binding Path="Cost" Converter="{StaticResource CurrencyConverter}"/>
+                                      </DataGridTextColumn.Binding>
                                       <DataGridTextColumn.Header>
                                           <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                               <ContentControl Style="{StaticResource Content.InfoIcon}"
