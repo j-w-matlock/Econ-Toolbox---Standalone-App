@@ -452,7 +452,7 @@
                             <Run Text="Total "/>
                             <Run Text="{Binding UpdatedJointCostLabel, Mode=OneWay}"/>
                             <Run Text=": "/>
-                            <Run Text="{Binding TotalUpdatedCost, StringFormat={}{0:C2}}"/>
+                            <Run Text="{Binding TotalUpdatedCost, Mode=OneWay, StringFormat={}{0:C2}}"/>
                         </TextBlock>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                             Each line item is escalated from the original ENR year to the 1967 CWCCIS base and then multiplied by the CWCCIS update value. The resulting total carries forward into the capital cost scenarios.
