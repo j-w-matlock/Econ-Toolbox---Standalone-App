@@ -268,16 +268,36 @@ namespace EconToolbox.Desktop.Services
             // Updated Cost Sheets
             var ucItems = wb.Worksheets.Add("UpdatedCost");
             ucItems.Cell(1,1).Value = "Category";
-            ucItems.Cell(1,2).Value = "Actual Cost";
-            ucItems.Cell(1,3).Value = "Update Factor";
-            ucItems.Cell(1,4).Value = "Updated Cost";
+            ucItems.Cell(1,2).Value = "Actual Joint Use (Mid-Point 1939)";
+            ucItems.Cell(1,3).Value = "1939 ENR Index Value";
+            ucItems.Cell(1,4).Value = "1948 ENR Index Value";
+            ucItems.Cell(1,5).Value = "ENR Ratio (1939 to 1948)";
+            ucItems.Cell(1,6).Value = "Actual Joint Use (Mid-Point 1948)";
+            ucItems.Cell(1,7).Value = "1948 ENR Index Value";
+            ucItems.Cell(1,8).Value = "1967 ENR Index Value";
+            ucItems.Cell(1,9).Value = "ENR Ratio (1948 to 1967)";
+            ucItems.Cell(1,10).Value = "1967 CWCCIS Index Base 100";
+            ucItems.Cell(1,11).Value = "Updated Joint-Use as of 1967";
+            ucItems.Cell(1,12).Value = "Mar 2019 CWCCIS Index Value";
+            ucItems.Cell(1,13).Value = "CWCCIS Update Value";
+            ucItems.Cell(1,14).Value = "FY 2020 Joint Costs";
             rowIdx = 2;
             foreach (var item in updated.UpdatedCostItems)
             {
                 ucItems.Cell(rowIdx,1).Value = item.Category;
-                ucItems.Cell(rowIdx,2).Value = item.ActualCost;
-                ucItems.Cell(rowIdx,3).Value = item.UpdateFactor;
-                ucItems.Cell(rowIdx,4).Value = item.UpdatedCost;
+                ucItems.Cell(rowIdx,2).Value = item.JointUsePre1967;
+                ucItems.Cell(rowIdx,3).Value = item.Pre1967EnrIndex;
+                ucItems.Cell(rowIdx,4).Value = item.TransitionEnrIndex;
+                ucItems.Cell(rowIdx,5).Value = item.EnrRatioPreToTransition;
+                ucItems.Cell(rowIdx,6).Value = item.JointUseTransition;
+                ucItems.Cell(rowIdx,7).Value = item.TransitionEnrIndex;
+                ucItems.Cell(rowIdx,8).Value = item.Enr1967Index;
+                ucItems.Cell(rowIdx,9).Value = item.EnrRatioTransitionTo1967;
+                ucItems.Cell(rowIdx,10).Value = item.CwccisBase;
+                ucItems.Cell(rowIdx,11).Value = item.JointUse1967;
+                ucItems.Cell(rowIdx,12).Value = item.CwccisIndex;
+                ucItems.Cell(rowIdx,13).Value = item.CwccisUpdateFactor;
+                ucItems.Cell(rowIdx,14).Value = item.UpdatedJointCost;
                 rowIdx++;
             }
             var ucRrr = wb.Worksheets.Add("RRR");
@@ -325,7 +345,7 @@ namespace EconToolbox.Desktop.Services
                 else if (kv.Key == "Total Joint O&M")
                     cell.GetComment().AddText("Total Joint O&M = Joint Operations Cost + Joint Maintenance Cost");
                 else if (kv.Key == "Total Updated Cost")
-                    cell.GetComment().AddText("Total Updated Cost = Σ(Actual Cost × Update Factor)");
+                    cell.GetComment().AddText("Total Updated Cost = Σ(Updated Joint-Use 1967 × CWCCIS Update Value)");
                 else if (kv.Key == "RRR Updated Cost")
                     cell.GetComment().AddText("RRR Updated Cost = Present Value × CWCCI");
                 else if (kv.Key == "RRR Annualized")
@@ -519,7 +539,7 @@ namespace EconToolbox.Desktop.Services
                 ("Benefit-Cost Ratio", annualizer.Bcr, "0.00", "Annual Benefits / Annual Cost.", true),
                 ("Storage Utilization", updated.Percent, "0.00%", "Storage Recommendation / Total Usable Storage.", false),
                 ("Total Joint O&M", updated.TotalJointOm, "$#,##0.00", "Joint Operations Cost + Joint Maintenance Cost.", false),
-                ("Total Updated Cost", updated.TotalUpdatedCost, "$#,##0.00", "Σ(Actual Cost × Update Factor).", false),
+                ("Total Updated Cost", updated.TotalUpdatedCost, "$#,##0.00", "Σ(Updated Joint-Use 1967 × CWCCIS Update Value).", false),
                 ("RRR Updated Cost", updated.RrrUpdatedCost, "$#,##0.00", "Present Value × CWCCI.", false),
                 ("RRR Annualized", updated.RrrAnnualized, "$#,##0.00", "RRR Updated Cost × CRF.", false),
                 ("O&M Scaled", updated.OmScaled, "$#,##0.00", "Total Joint O&M × Storage Utilization.", false),

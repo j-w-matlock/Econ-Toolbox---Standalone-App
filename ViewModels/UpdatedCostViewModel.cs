@@ -232,6 +232,8 @@ namespace EconToolbox.Desktop.ViewModels
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Lands and Damages" });
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Relocations" });
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Dam" });
+            UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Roads, Railroads, & Bridges" });
+            UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Channels & Canals" });
         }
 
         private void ComputeStorage()
@@ -248,9 +250,25 @@ namespace EconToolbox.Desktop.ViewModels
         {
             foreach (var item in UpdatedCostItems)
             {
-                item.UpdatedCost = item.ActualCost * item.UpdateFactor;
+                double enrRatioPreToTransition = (item.Pre1967EnrIndex > 0 && item.TransitionEnrIndex > 0)
+                    ? item.TransitionEnrIndex / item.Pre1967EnrIndex
+                    : 0.0;
+                item.EnrRatioPreToTransition = enrRatioPreToTransition;
+                item.JointUseTransition = item.JointUsePre1967 * enrRatioPreToTransition;
+
+                double enrRatioTransitionTo1967 = (item.TransitionEnrIndex > 0 && item.Enr1967Index > 0)
+                    ? item.Enr1967Index / item.TransitionEnrIndex
+                    : 0.0;
+                item.EnrRatioTransitionTo1967 = enrRatioTransitionTo1967;
+                item.JointUse1967 = item.JointUseTransition * enrRatioTransitionTo1967;
+
+                double cwccisBase = item.CwccisBase <= 0 ? 100.0 : item.CwccisBase;
+                item.CwccisBase = cwccisBase;
+                double cwccisUpdateFactor = cwccisBase > 0 ? item.CwccisIndex / cwccisBase : 0.0;
+                item.CwccisUpdateFactor = cwccisUpdateFactor;
+                item.UpdatedJointCost = item.JointUse1967 * cwccisUpdateFactor;
             }
-            TotalUpdatedCost = UpdatedCostItems.Sum(i => i.UpdatedCost);
+            TotalUpdatedCost = UpdatedCostItems.Sum(i => i.UpdatedJointCost);
         }
 
         private void ComputeRrr()
@@ -284,9 +302,18 @@ namespace EconToolbox.Desktop.ViewModels
         {
             foreach (var item in UpdatedCostItems)
             {
-                item.ActualCost = 0;
-                item.UpdateFactor = 0;
-                item.UpdatedCost = 0;
+                item.JointUsePre1967 = 0;
+                item.Pre1967EnrIndex = 0;
+                item.TransitionEnrIndex = 0;
+                item.EnrRatioPreToTransition = 0;
+                item.JointUseTransition = 0;
+                item.Enr1967Index = 0;
+                item.EnrRatioTransitionTo1967 = 0;
+                item.CwccisBase = 100;
+                item.JointUse1967 = 0;
+                item.CwccisIndex = 0;
+                item.CwccisUpdateFactor = 0;
+                item.UpdatedJointCost = 0;
             }
 
             TotalUpdatedCost = 0;
