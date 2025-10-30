@@ -272,12 +272,28 @@
                             <TextBox Text="{Binding PreEnrYear}" HorizontalContentAlignment="Right" ToolTip="Year associated with the initial ENR index values."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Original ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding PreEnrIndexValue}" HorizontalContentAlignment="Right" ToolTip="ENR index value tied to the original pre-construction year."/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
                             <TextBlock Text="Transition ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrYear}" HorizontalContentAlignment="Right" ToolTip="Year associated with the transition ENR index values."/>
                         </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="Transition ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding TransitionEnrIndexValue}" HorizontalContentAlignment="Right" ToolTip="ENR index value used for the transition mid-point."/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="1967 ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding Enr1967Year}" HorizontalContentAlignment="Right" ToolTip="Year anchoring the ENR and CWCCIS indexing, typically 1967."/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,12,8">
+                            <TextBlock Text="1967 ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding Enr1967IndexValue}" HorizontalContentAlignment="Right" ToolTip="ENR index value for the 1967 base year."/>
+                        </StackPanel>
                         <StackPanel Margin="0,0,12,0">
-                            <TextBlock Text="Current Base ENR Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding Enr1967Year}" HorizontalContentAlignment="Right" ToolTip="Year that anchors the modern ENR and CWCCIS calculations."/>
+                            <TextBlock Text="1967 CWCCIS Base Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding CwccisBaseIndexValue}" HorizontalContentAlignment="Right" ToolTip="CWCCIS base index value for 1967 (commonly 100)."/>
                         </StackPanel>
                     </UniformGrid>
                 </Grid>
