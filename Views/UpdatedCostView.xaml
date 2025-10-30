@@ -450,7 +450,7 @@
                     <StackPanel>
                         <TextBlock FontWeight="Bold">
                             <Run Text="Total "/>
-                            <Run Text="{Binding UpdatedJointCostLabel}"/>
+                            <Run Text="{Binding UpdatedJointCostLabel, Mode=OneWay}"/>
                             <Run Text=": "/>
                             <Run Text="{Binding TotalUpdatedCost, StringFormat={}{0:C2}}"/>
                         </TextBlock>
