@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:converters="clr-namespace:EconToolbox.Desktop.Converters">
+                    xmlns:converters="clr-namespace:EconToolbox.Desktop.Converters;assembly=EconToolbox.Desktop">
     <!-- Color palette -->
     <Color x:Key="Color.Primary">#164A75</Color>
     <Color x:Key="Color.Accent">#00A189</Color>
