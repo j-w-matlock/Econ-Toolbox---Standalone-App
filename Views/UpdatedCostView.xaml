@@ -283,7 +283,7 @@
                         <DataGridTextColumn Binding="{Binding TransitionEnrIndex}" Header="1948 ENR Index Value"/>
                         <DataGridTextColumn IsReadOnly="True">
                             <DataGridTextColumn.Binding>
-                                <Binding Path="EnrRatioPreToTransition" StringFormat="{0:N2}"/>
+                                <Binding Path="EnrRatioPreToTransition" StringFormat="{}{0:N2}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="ENR Ratio (1939 to 1948)"/>
@@ -308,7 +308,7 @@
                         <DataGridTextColumn Binding="{Binding Enr1967Index}" Header="1967 ENR Index Value"/>
                         <DataGridTextColumn IsReadOnly="True">
                             <DataGridTextColumn.Binding>
-                                <Binding Path="EnrRatioTransitionTo1967" StringFormat="{0:N2}"/>
+                                <Binding Path="EnrRatioTransitionTo1967" StringFormat="{}{0:N2}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="ENR Ratio (1948 to 1967)"/>
@@ -326,7 +326,7 @@
                         <DataGridTextColumn Binding="{Binding CwccisIndex}" Header="Mar 2019 CWCCIS Index Value"/>
                         <DataGridTextColumn IsReadOnly="True">
                             <DataGridTextColumn.Binding>
-                                <Binding Path="CwccisUpdateFactor" StringFormat="{0:N5}"/>
+                                <Binding Path="CwccisUpdateFactor" StringFormat="{}{0:N5}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="CWCCIS Update Value"/>
