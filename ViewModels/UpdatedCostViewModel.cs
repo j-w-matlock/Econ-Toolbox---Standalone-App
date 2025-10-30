@@ -28,6 +28,8 @@ namespace EconToolbox.Desktop.ViewModels
         private double _transitionEnrIndexValue;
         private double _enr1967IndexValue;
         private double _cwccisBaseIndexValue = 100.0;
+        private int _cwccisIndexYear = 2019;
+        private int _updatedJointCostYear = 2020;
 
         private double _rrrRate;
         private int _rrrPeriods = 30;
@@ -171,6 +173,7 @@ namespace EconToolbox.Desktop.ViewModels
                     OnPropertyChanged(nameof(EnrRatioTransitionTo1967Label));
                     OnPropertyChanged(nameof(JointUse1967Label));
                     OnPropertyChanged(nameof(CwccisBaseLabel));
+                    OnPropertyChanged(nameof(CwccisUpdateLabel));
                 }
             }
         }
@@ -248,6 +251,7 @@ namespace EconToolbox.Desktop.ViewModels
                     _cwccisBaseIndexValue = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(CwccisBaseLabel));
+                    OnPropertyChanged(nameof(CwccisUpdateLabel));
                     foreach (var item in UpdatedCostItems)
                     {
                         if (value > 0)
@@ -255,6 +259,35 @@ namespace EconToolbox.Desktop.ViewModels
                             item.CwccisBase = value;
                         }
                     }
+                }
+            }
+        }
+
+        public int CwccisIndexYear
+        {
+            get => _cwccisIndexYear;
+            set
+            {
+                if (_cwccisIndexYear != value)
+                {
+                    _cwccisIndexYear = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(CwccisIndexLabel));
+                    OnPropertyChanged(nameof(CwccisUpdateLabel));
+                }
+            }
+        }
+
+        public int UpdatedJointCostYear
+        {
+            get => _updatedJointCostYear;
+            set
+            {
+                if (_updatedJointCostYear != value)
+                {
+                    _updatedJointCostYear = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(UpdatedJointCostLabel));
                 }
             }
         }
@@ -275,7 +308,10 @@ namespace EconToolbox.Desktop.ViewModels
         public string CwccisBaseLabel => CwccisBaseIndexValue > 0
             ? $"{Enr1967Year} CWCCIS Base Index ({CwccisBaseIndexValue:N2})"
             : $"{Enr1967Year} CWCCIS Base Index";
+        public string CwccisIndexLabel => $"{CwccisIndexYear} CWCCIS Index Value";
+        public string CwccisUpdateLabel => $"CWCCIS Update Value ({CwccisIndexYear}/{Enr1967Year})";
         public string JointUse1967Label => $"Updated Joint-Use as of {Enr1967Year}";
+        public string UpdatedJointCostLabel => $"FY {UpdatedJointCostYear} Joint Costs";
 
         public double RrrRate
         {
@@ -439,45 +475,28 @@ namespace EconToolbox.Desktop.ViewModels
         {
             foreach (var item in UpdatedCostItems)
             {
-                if (item.Pre1967EnrIndex <= 0 && PreEnrIndexValue > 0)
-                {
-                    item.Pre1967EnrIndex = PreEnrIndexValue;
-                }
+                var preIndex = UseValueOrFallback(item.Pre1967EnrIndex, PreEnrIndexValue);
+                item.Pre1967EnrIndex = preIndex;
 
-                if (item.TransitionEnrIndex <= 0 && TransitionEnrIndexValue > 0)
-                {
-                    item.TransitionEnrIndex = TransitionEnrIndexValue;
-                }
+                var transitionIndexCandidate = UseValueOrFallback(item.TransitionEnrIndex, TransitionEnrIndexValue);
+                var transitionIndex = transitionIndexCandidate > 0 ? transitionIndexCandidate : preIndex;
+                item.TransitionEnrIndex = transitionIndex;
 
-                if (item.Enr1967Index <= 0 && Enr1967IndexValue > 0)
-                {
-                    item.Enr1967Index = Enr1967IndexValue;
-                }
+                var enr1967Index = UseValueOrFallback(item.Enr1967Index, Enr1967IndexValue);
+                item.Enr1967Index = enr1967Index;
 
-                if ((item.CwccisBase <= 0 || double.IsNaN(item.CwccisBase)) && CwccisBaseIndexValue > 0)
-                {
-                    item.CwccisBase = CwccisBaseIndexValue;
-                }
-
-                double transitionIndex = item.TransitionEnrIndex > 0 ? item.TransitionEnrIndex : item.Pre1967EnrIndex;
-                double enrRatioPreToTransition = (item.Pre1967EnrIndex > 0 && transitionIndex > 0)
-                    ? transitionIndex / item.Pre1967EnrIndex
-                    : 0.0;
-                item.EnrRatioPreToTransition = enrRatioPreToTransition;
-                item.JointUseTransition = item.JointUsePre1967 * (enrRatioPreToTransition > 0 ? enrRatioPreToTransition : 1.0);
-
-                double baseIndexFor1967 = transitionIndex > 0 ? transitionIndex : item.Pre1967EnrIndex;
-                double enrRatioTransitionTo1967 = (baseIndexFor1967 > 0 && item.Enr1967Index > 0)
-                    ? item.Enr1967Index / baseIndexFor1967
-                    : 0.0;
-                item.EnrRatioTransitionTo1967 = enrRatioTransitionTo1967;
-                item.JointUse1967 = item.JointUseTransition * (enrRatioTransitionTo1967 > 0 ? enrRatioTransitionTo1967 : 1.0);
-
-                double cwccisBase = item.CwccisBase <= 0
-                    ? (CwccisBaseIndexValue > 0 ? CwccisBaseIndexValue : 100.0)
-                    : item.CwccisBase;
+                var cwccisBase = UseValueOrFallback(item.CwccisBase, CwccisBaseIndexValue > 0 ? CwccisBaseIndexValue : 100.0);
                 item.CwccisBase = cwccisBase;
-                double cwccisUpdateFactor = cwccisBase > 0 ? item.CwccisIndex / cwccisBase : 0.0;
+
+                var (enrRatioPreToTransition, jointUseTransition) = CalculateRatioAndValue(item.JointUsePre1967, transitionIndex, preIndex);
+                item.EnrRatioPreToTransition = enrRatioPreToTransition;
+                item.JointUseTransition = jointUseTransition;
+
+                var (enrRatioTransitionTo1967, jointUse1967) = CalculateRatioAndValue(item.JointUseTransition, enr1967Index, transitionIndex);
+                item.EnrRatioTransitionTo1967 = enrRatioTransitionTo1967;
+                item.JointUse1967 = jointUse1967;
+
+                var cwccisUpdateFactor = CalculateRatio(item.CwccisIndex, cwccisBase);
                 item.CwccisUpdateFactor = cwccisUpdateFactor;
                 item.UpdatedJointCost = item.JointUse1967 * cwccisUpdateFactor;
             }
@@ -531,6 +550,30 @@ namespace EconToolbox.Desktop.ViewModels
 
             TotalUpdatedCost = 0;
             ComputeTotal();
+        }
+
+        private static double UseValueOrFallback(double value, double fallback)
+        {
+            if (double.IsNaN(value) || value <= 0)
+            {
+                return fallback > 0 ? fallback : 0;
+            }
+
+            return value;
+        }
+
+        private static double CalculateRatio(double numerator, double denominator)
+        {
+            return numerator > 0 && denominator > 0
+                ? numerator / denominator
+                : 0.0;
+        }
+
+        private static (double Ratio, double EscalatedValue) CalculateRatioAndValue(double baseValue, double numerator, double denominator)
+        {
+            var ratio = CalculateRatio(numerator, denominator);
+            var escalatedValue = ratio > 0 ? baseValue * ratio : baseValue;
+            return (ratio, escalatedValue);
         }
 
         private void ResetRrrCostItems()
