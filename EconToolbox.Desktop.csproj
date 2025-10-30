@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -6,19 +6,45 @@
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Pixstle.ico</ApplicationIcon>
+    <AssemblyName>EconToolbox.Desktop</AssemblyName>
+    <RootNamespace>EconToolbox.Desktop</RootNamespace>
+    <EnableDefaultItems>false</EnableDefaultItems>
   </PropertyGroup>
-  <ItemGroup>
-    <Resource Include="Pixstle.ico" />
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.104.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="MdXaml" Version="1.27.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+    <Page Include="MainWindow.xaml" />
+    <Page Include="Views\**\*.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="App.xaml.cs" />
+    <Compile Include="MainWindow.xaml.cs" />
+    <Compile Include="GlobalUsings.cs" />
+    <Compile Include="Behaviors\**\*.cs" />
+    <Compile Include="Converters\**\*.cs" />
+    <Compile Include="Models\**\*.cs" />
+    <Compile Include="Services\**\*.cs" />
+    <Compile Include="ViewModels\**\*.cs" />
+    <Compile Include="Views\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Pixstle.ico" />
+    <Resource Include="Themes\**\*.*" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Include="README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="app.manifest" />
   </ItemGroup>
 </Project>
