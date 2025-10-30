@@ -357,64 +357,64 @@
                                                     ToolTip="Joint-use cost at the mid-point of construction using the original ENR year."/>
                                     <TextBlock Margin="4,0,0,0"
                                                VerticalAlignment="Center"
-                                               Text="{Binding DataContext.ActualJointUsePreLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                               Text="Original Joint Use Costs at Midpoint of Construction"/>
                                 </StackPanel>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding Pre1967EnrIndex}"
                                            ElementStyle="{StaticResource NumericCellStyle}"
                                            EditingElementStyle="{StaticResource NumericEditingStyle}"
-                                           Header="{Binding DataContext.PreEnrIndexLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-                        <DataGridTextColumn Binding="{Binding TransitionEnrIndex}"
-                                           ElementStyle="{StaticResource NumericCellStyle}"
-                                           EditingElementStyle="{StaticResource NumericEditingStyle}"
-                                           Header="{Binding DataContext.TransitionEnrIndexLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                           Header="Original Joint Use Costs ENR Index Value"/>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
                             <DataGridTextColumn.Binding>
                                 <Binding Path="EnrRatioPreToTransition" StringFormat="{}{0:N2}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="{Binding DataContext.EnrRatioPreToTransitionLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                <TextBlock Text="ENR Ratio"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding TransitionEnrIndex}"
+                                           ElementStyle="{StaticResource NumericCellStyle}"
+                                           EditingElementStyle="{StaticResource NumericEditingStyle}"
+                                           Header="Transition ENR Index Value"/>
+                        <DataGridTextColumn Binding="{Binding Enr1967Index}"
+                                           ElementStyle="{StaticResource NumericCellStyle}"
+                                           EditingElementStyle="{StaticResource NumericEditingStyle}"
+                                           Header="1967 ENR Index Value"/>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
                             <DataGridTextColumn.Binding>
                                 <Binding Path="JointUseTransition" Converter="{StaticResource CurrencyConverter}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="{Binding DataContext.ActualJointUseTransitionLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                <TextBlock Text="Adjusted Joint Use Costs at Midpoint of Construction"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
-                            <DataGridTextColumn.Binding>
-                                <Binding Path="TransitionEnrIndex"/>
-                            </DataGridTextColumn.Binding>
-                            <DataGridTextColumn.Header>
-                                <TextBlock Text="{Binding DataContext.TransitionEnrIndexLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Binding="{Binding Enr1967Index}"
-                                           ElementStyle="{StaticResource NumericCellStyle}"
-                                           EditingElementStyle="{StaticResource NumericEditingStyle}"
-                                           Header="{Binding DataContext.Enr1967IndexLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
                             <DataGridTextColumn.Binding>
                                 <Binding Path="EnrRatioTransitionTo1967" StringFormat="{}{0:N2}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="{Binding DataContext.EnrRatioTransitionTo1967Label, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                <TextBlock Text="ENR Update Ratio"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding CwccisBase}"
                                            ElementStyle="{StaticResource NumericCellStyle}"
                                            EditingElementStyle="{StaticResource NumericEditingStyle}"
-                                           Header="{Binding DataContext.CwccisBaseLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                           Header="CWCCIS Base Index"/>
+                        <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="TransitionEnrIndex"/>
+                            </DataGridTextColumn.Binding>
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="Transition ENR Index Value"/>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
                             <DataGridTextColumn.Binding>
                                 <Binding Path="JointUse1967" Converter="{StaticResource CurrencyConverter}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="{Binding DataContext.JointUse1967Label, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                <TextBlock Text="Updated Joint Use Costs as of 1967 base"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding CwccisIndex}"
@@ -424,7 +424,7 @@
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
                                                     ToolTip="Latest CWCCIS index value used for escalation."/>
-                                    <TextBlock Text="{Binding DataContext.CwccisIndexLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                    <TextBlock Text="Current CWCCIS Index"
                                                Margin="4,0,0,0"
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
@@ -435,7 +435,7 @@
                                 <Binding Path="CwccisUpdateFactor" StringFormat="{}{0:N5}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="{Binding DataContext.CwccisUpdateLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                <TextBlock Text="CWCCIS Update Value"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
@@ -443,7 +443,7 @@
                                 <Binding Path="UpdatedJointCost" Converter="{StaticResource CurrencyConverter}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="{Binding DataContext.UpdatedJointCostLabel, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                <TextBlock Text="Updated Storage Cost"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                     </DataGrid.Columns>
