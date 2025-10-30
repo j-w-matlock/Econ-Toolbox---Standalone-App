@@ -257,53 +257,70 @@
                             <Setter Property="FontWeight" Value="SemiBold"/>
                             <Setter Property="Margin" Value="0,0,0,4"/>
                         </Style>
+                        <Style TargetType="TextBlock" x:Key="UpdatedCostColumnHeaderTextStyle">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Primary}"/>
+                            <Setter Property="Margin" Value="0,0,0,12"/>
+                        </Style>
                     </Grid.Resources>
-                    <UniformGrid Columns="3" Margin="0,0,0,0">
-                        <StackPanel Margin="0,0,12,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="Pre-Construction Inputs" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
+                        <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Pre-construction Mid-Point Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreMidpointYear}" HorizontalContentAlignment="Right" ToolTip="Year used to label the original construction mid-point joint-use column."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="Transition Mid-Point Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding TransitionMidpointYear}" HorizontalContentAlignment="Right" ToolTip="Year used to label the transition mid-point joint-use column."/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
+                        <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Original ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrYear}" HorizontalContentAlignment="Right" ToolTip="Year associated with the initial ENR index values."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
+                        <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Original ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrIndexValue}" HorizontalContentAlignment="Right" ToolTip="ENR index value tied to the original pre-construction year."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                        <TextBlock Text="Transition Inputs" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="Transition Mid-Point Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding TransitionMidpointYear}" HorizontalContentAlignment="Right" ToolTip="Year used to label the transition mid-point joint-use column."/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrYear}" HorizontalContentAlignment="Right" ToolTip="Year associated with the transition ENR index values."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
+                        <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrIndexValue}" HorizontalContentAlignment="Right" ToolTip="ENR index value used for the transition mid-point."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="1967 ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding Enr1967Year}" HorizontalContentAlignment="Right" ToolTip="Year anchoring the ENR and CWCCIS indexing, typically 1967."/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="1967 ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding Enr1967IndexValue}" HorizontalContentAlignment="Right" ToolTip="ENR index value for the 1967 base year."/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,0">
-                            <TextBlock Text="1967 CWCCIS Base Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding CwccisBaseIndexValue}" HorizontalContentAlignment="Right" ToolTip="CWCCIS base index value for 1967 (commonly 100)."/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,8">
-                            <TextBlock Text="CWCCIS Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding CwccisIndexYear}" HorizontalContentAlignment="Right" ToolTip="Calendar year tied to the current CWCCIS index values."/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,12,0">
+                        <StackPanel>
                             <TextBlock Text="Updated Joint Cost Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding UpdatedJointCostYear}" HorizontalContentAlignment="Right" ToolTip="Fiscal year represented by the updated joint cost results."/>
                         </StackPanel>
-                    </UniformGrid>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Base-Year &amp; CWCCIS Settings" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="1967 ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding Enr1967Year}" HorizontalContentAlignment="Right" ToolTip="Year anchoring the ENR and CWCCIS indexing, typically 1967."/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="1967 ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding Enr1967IndexValue}" HorizontalContentAlignment="Right" ToolTip="ENR index value for the 1967 base year."/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,8">
+                            <TextBlock Text="1967 CWCCIS Base Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding CwccisBaseIndexValue}" HorizontalContentAlignment="Right" ToolTip="CWCCIS base index value for 1967 (commonly 100)."/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="CWCCIS Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
+                            <TextBox Text="{Binding CwccisIndexYear}" HorizontalContentAlignment="Right" ToolTip="Calendar year tied to the current CWCCIS index values."/>
+                        </StackPanel>
+                    </StackPanel>
                 </Grid>
                 <DataGrid ItemsSource="{Binding UpdatedCostItems}"
                           AutoGenerateColumns="False"
