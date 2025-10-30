@@ -19,6 +19,12 @@ namespace EconToolbox.Desktop.ViewModels
         private ObservableCollection<UpdatedCostEntry> _updatedCostItems = new();
         private double _totalUpdatedCost;
 
+        private int _preMidpointYear = 1939;
+        private int _transitionMidpointYear = 1948;
+        private int _preEnrYear = 1939;
+        private int _transitionEnrYear = 1948;
+        private int _enr1967Year = 1967;
+
         private double _rrrRate;
         private int _rrrPeriods = 30;
         private double _rrrCwcci = 1.0;
@@ -87,6 +93,93 @@ namespace EconToolbox.Desktop.ViewModels
             get => _totalUpdatedCost;
             private set { _totalUpdatedCost = value; OnPropertyChanged(); }
         }
+
+        public int PreMidpointYear
+        {
+            get => _preMidpointYear;
+            set
+            {
+                if (_preMidpointYear != value)
+                {
+                    _preMidpointYear = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(ActualJointUsePreLabel));
+                    OnPropertyChanged(nameof(EnrRatioPreToTransitionLabel));
+                }
+            }
+        }
+
+        public int TransitionMidpointYear
+        {
+            get => _transitionMidpointYear;
+            set
+            {
+                if (_transitionMidpointYear != value)
+                {
+                    _transitionMidpointYear = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(ActualJointUseTransitionLabel));
+                }
+            }
+        }
+
+        public int PreEnrYear
+        {
+            get => _preEnrYear;
+            set
+            {
+                if (_preEnrYear != value)
+                {
+                    _preEnrYear = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(PreEnrIndexLabel));
+                    OnPropertyChanged(nameof(EnrRatioPreToTransitionLabel));
+                }
+            }
+        }
+
+        public int TransitionEnrYear
+        {
+            get => _transitionEnrYear;
+            set
+            {
+                if (_transitionEnrYear != value)
+                {
+                    _transitionEnrYear = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(TransitionEnrIndexLabel));
+                    OnPropertyChanged(nameof(EnrRatioPreToTransitionLabel));
+                    OnPropertyChanged(nameof(EnrRatioTransitionTo1967Label));
+                }
+            }
+        }
+
+        public int Enr1967Year
+        {
+            get => _enr1967Year;
+            set
+            {
+                if (_enr1967Year != value)
+                {
+                    _enr1967Year = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(Enr1967IndexLabel));
+                    OnPropertyChanged(nameof(EnrRatioTransitionTo1967Label));
+                    OnPropertyChanged(nameof(JointUse1967Label));
+                    OnPropertyChanged(nameof(CwccisBaseLabel));
+                }
+            }
+        }
+
+        public string ActualJointUsePreLabel => $"Actual Joint Use (Mid-Point {PreMidpointYear})";
+        public string ActualJointUseTransitionLabel => $"Actual Joint Use (Mid-Point {TransitionMidpointYear})";
+        public string PreEnrIndexLabel => $"{PreEnrYear} ENR Index Value";
+        public string TransitionEnrIndexLabel => $"{TransitionEnrYear} ENR Index Value";
+        public string EnrRatioPreToTransitionLabel => $"ENR Ratio ({PreEnrYear} to {TransitionEnrYear})";
+        public string Enr1967IndexLabel => $"{Enr1967Year} ENR Index Value";
+        public string EnrRatioTransitionTo1967Label => $"ENR Ratio ({TransitionEnrYear} to {Enr1967Year})";
+        public string CwccisBaseLabel => $"{Enr1967Year} CWCCIS Index Base 100";
+        public string JointUse1967Label => $"Updated Joint-Use as of {Enr1967Year}";
 
         public double RrrRate
         {

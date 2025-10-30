@@ -268,16 +268,16 @@ namespace EconToolbox.Desktop.Services
             // Updated Cost Sheets
             var ucItems = wb.Worksheets.Add("UpdatedCost");
             ucItems.Cell(1,1).Value = "Category";
-            ucItems.Cell(1,2).Value = "Actual Joint Use (Mid-Point 1939)";
-            ucItems.Cell(1,3).Value = "1939 ENR Index Value";
-            ucItems.Cell(1,4).Value = "1948 ENR Index Value";
-            ucItems.Cell(1,5).Value = "ENR Ratio (1939 to 1948)";
-            ucItems.Cell(1,6).Value = "Actual Joint Use (Mid-Point 1948)";
-            ucItems.Cell(1,7).Value = "1948 ENR Index Value";
-            ucItems.Cell(1,8).Value = "1967 ENR Index Value";
-            ucItems.Cell(1,9).Value = "ENR Ratio (1948 to 1967)";
-            ucItems.Cell(1,10).Value = "1967 CWCCIS Index Base 100";
-            ucItems.Cell(1,11).Value = "Updated Joint-Use as of 1967";
+            ucItems.Cell(1,2).Value = updated.ActualJointUsePreLabel;
+            ucItems.Cell(1,3).Value = updated.PreEnrIndexLabel;
+            ucItems.Cell(1,4).Value = updated.TransitionEnrIndexLabel;
+            ucItems.Cell(1,5).Value = updated.EnrRatioPreToTransitionLabel;
+            ucItems.Cell(1,6).Value = updated.ActualJointUseTransitionLabel;
+            ucItems.Cell(1,7).Value = updated.TransitionEnrIndexLabel;
+            ucItems.Cell(1,8).Value = updated.Enr1967IndexLabel;
+            ucItems.Cell(1,9).Value = updated.EnrRatioTransitionTo1967Label;
+            ucItems.Cell(1,10).Value = updated.CwccisBaseLabel;
+            ucItems.Cell(1,11).Value = updated.JointUse1967Label;
             ucItems.Cell(1,12).Value = "Mar 2019 CWCCIS Index Value";
             ucItems.Cell(1,13).Value = "CWCCIS Update Value";
             ucItems.Cell(1,14).Value = "FY 2020 Joint Costs";
