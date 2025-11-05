@@ -336,7 +336,7 @@
                                            Style="{StaticResource Text.Caption}"
                                            TextWrapping="Wrap"
                                            Margin="{StaticResource Margin.StackSmall}"/>
-                                <TextBlock Text="{Binding CropScapeTotalAcreageDisplay}"
+                                <TextBlock Text="{Binding CropScapeTotalAcreageDisplay, Mode=OneWay}"
                                            FontWeight="SemiBold"
                                            Margin="{StaticResource Margin.StackSmall}"/>
                                 <DataGrid ItemsSource="{Binding CropScapeSummaries}"
@@ -602,7 +602,7 @@
                                    TextWrapping="Wrap"
                                    Margin="{StaticResource Margin.Stack}">
                             <Run Text="Applying the modeled depth-damage curve to "/>
-                            <Run Text="{Binding CropScapeTotalAcreageDisplay}" FontWeight="SemiBold"/>
+                            <Run Text="{Binding CropScapeTotalAcreageDisplay, Mode=OneWay}" FontWeight="SemiBold"/>
                             <Run Text=" highlights the acreage exposed at each inundation depth."/>
                         </TextBlock>
                         <Grid Margin="{StaticResource Margin.Stack}">
