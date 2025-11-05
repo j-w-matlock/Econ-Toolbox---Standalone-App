@@ -8,7 +8,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Win32;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
@@ -27,6 +29,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<CropDefinition> Crops { get; }
         public ObservableCollection<StageExposure> StageExposures { get; }
         public ObservableCollection<DepthDurationDamageRow> DepthDurationRows { get; } = new();
+        public ObservableCollection<CropScapeDamageRow> CropScapeDamageRows { get; } = new();
         public ObservableCollection<CropScapeAcreageSummary> CropScapeSummaries { get; } = new();
 
         private readonly RelayCommand _addDepthDurationPointCommand;
@@ -265,12 +268,31 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     summary.UpdateShare(_cropScapeTotalAcreage);
                 }
+                UpdateCropScapeDamageOutputs();
             }
         }
 
         public string CropScapeTotalAcreageDisplay => $"{CropScapeTotalAcreage:N1} acres";
 
         public bool HasCropScapeSummary => CropScapeSummaries.Count > 0;
+
+        private PointCollection _cropScapeDamagePoints = new();
+        public PointCollection CropScapeDamagePoints
+        {
+            get => _cropScapeDamagePoints;
+            private set
+            {
+                if (Equals(_cropScapeDamagePoints, value))
+                {
+                    return;
+                }
+
+                _cropScapeDamagePoints = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool HasCropScapeDamage => CropScapeDamageRows.Count > 0;
 
         public ICommand ComputeCommand => _computeCommand;
         public ICommand ExportCommand => _exportCommand;
@@ -285,6 +307,7 @@ namespace EconToolbox.Desktop.ViewModels
             Crops = new ObservableCollection<CropDefinition>(CropDefinition.CreateDefaults());
             StageExposures = new ObservableCollection<StageExposure>(StageExposure.CreateDefaults());
             CropScapeSummaries.CollectionChanged += CropScapeSummaries_CollectionChanged;
+            CropScapeDamageRows.CollectionChanged += CropScapeDamageRows_CollectionChanged;
 
             foreach (var stage in StageExposures)
             {
@@ -562,6 +585,68 @@ namespace EconToolbox.Desktop.ViewModels
             _clearCropScapeSummaryCommand.NotifyCanExecuteChanged();
         }
 
+        private void CropScapeDamageRows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(HasCropScapeDamage));
+        }
+
+        private void UpdateCropScapeDamageOutputs()
+        {
+            CropScapeDamageRows.Clear();
+
+            if (CropScapeTotalAcreage <= 0 || DepthDurationRows.Count == 0)
+            {
+                CropScapeDamagePoints = new PointCollection();
+                return;
+            }
+
+            var chartData = new List<(double Depth, double Acres)>();
+
+            foreach (var row in DepthDurationRows)
+            {
+                double damageFraction = Math.Clamp(row.DamagePercent / 100.0, 0.0, 1.0);
+                double damagedAcres = CropScapeTotalAcreage * damageFraction;
+                double residualAcres = CropScapeTotalAcreage - damagedAcres;
+
+                CropScapeDamageRows.Add(new CropScapeDamageRow(
+                    row.DepthFeet,
+                    row.DurationDays,
+                    row.DamagePercent,
+                    damagedAcres,
+                    residualAcres));
+
+                chartData.Add((row.DepthFeet, damagedAcres));
+            }
+
+            chartData.Sort((a, b) => a.Depth.CompareTo(b.Depth));
+            CropScapeDamagePoints = CreatePointCollection(chartData);
+        }
+
+        private static PointCollection CreatePointCollection(List<(double Depth, double Acres)> data)
+        {
+            var points = new PointCollection();
+            if (data.Count == 0)
+            {
+                return points;
+            }
+
+            double maxDepth = Math.Max(data.Max(p => p.Depth), 0.1);
+            double maxAcres = Math.Max(data.Max(p => p.Acres), 0.1);
+            const double width = 300.0;
+            const double height = 180.0;
+
+            foreach (var point in data)
+            {
+                double normalizedX = point.Depth / maxDepth;
+                double normalizedY = point.Acres / maxAcres;
+                double x = normalizedX * width;
+                double y = height - (normalizedY * height);
+                points.Add(new Point(x, y));
+            }
+
+            return points;
+        }
+
         private void Compute()
         {
             if (!CanCompute())
@@ -569,6 +654,8 @@ namespace EconToolbox.Desktop.ViewModels
                 ModeledImpactProbability = 0;
                 MeanDamagePercent = 0;
                 DepthDurationRows.Clear();
+                CropScapeDamageRows.Clear();
+                CropScapeDamagePoints = new PointCollection();
                 ImpactSummary = "Select a region and crop to calculate flood impacts.";
                 CropInsight = "";
                 _exportCommand.NotifyCanExecuteChanged();
@@ -646,6 +733,7 @@ namespace EconToolbox.Desktop.ViewModels
             CropInsight =
                 $"Average expected damage across representative depth-duration events is {MeanDamageDisplay}. Seasonal alignment considers the flood window (days {SelectedRegion!.FloodWindowStartDay}–{SelectedRegion.FloodWindowEndDay}) and any {SelectedRegion.SeasonShiftDays:+#;-#;0}-day shift.{alignmentInsight} Adjust exposure days or tolerance to explore resilience.";
 
+            UpdateCropScapeDamageOutputs();
             _exportCommand.NotifyCanExecuteChanged();
         }
 
@@ -1799,5 +1887,7 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public record DepthDurationDamageRow(double DepthFeet, double DurationDays, double DamagePercent);
+
+        public record CropScapeDamageRow(double DepthFeet, double DurationDays, double DamagePercent, double DamagedAcres, double ResidualAcres);
     }
 }
