@@ -306,6 +306,82 @@
                             </StackPanel>
                         </Border>
 
+                        <Border BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1"
+                                Background="{StaticResource Brush.SurfaceAlt}"
+                                CornerRadius="4"
+                                Padding="{StaticResource Padding.Content}"
+                                Margin="{StaticResource Margin.Stack}">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="{StaticResource Margin.StackSmall}">
+                                    <TextBlock Text="CropScape acreage summary"
+                                               FontWeight="SemiBold"
+                                               FontSize="14"
+                                               VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                Margin="{StaticResource Margin.InlineLarge}">
+                                        <Button Content="Import CropScape CDL"
+                                                Command="{Binding ImportCropScapeRasterCommand}"
+                                                Margin="{StaticResource Margin.Inline}"/>
+                                        <Button Content="Clear summary"
+                                                Command="{Binding ClearCropScapeSummaryCommand}"
+                                                Margin="{StaticResource Margin.Inline}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="{Binding CropScapeImportStatus}"
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBlock Text="{Binding CropScapeTotalAcreageDisplay}"
+                                           FontWeight="SemiBold"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <DataGrid ItemsSource="{Binding CropScapeSummaries}"
+                                          AutoGenerateColumns="False"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          HeadersVisibility="Column"
+                                          IsReadOnly="True"
+                                          Margin="{StaticResource Margin.StackSmall}"
+                                          RowHeaderWidth="0"
+                                          MinHeight="160"
+                                          MaxHeight="260">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Code"
+                                                            Binding="{Binding Code}"
+                                                            Width="80"/>
+                                        <DataGridTextColumn Header="Crop type"
+                                                            Binding="{Binding Name}"
+                                                            Width="2*"/>
+                                        <DataGridTextColumn Header="Acres"
+                                                            Binding="{Binding Acres, StringFormat={}{0:N1}}"
+                                                            Width="*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="% of total"
+                                                            Binding="{Binding PercentOfTotal, StringFormat={}{0:P1}}"
+                                                            Width="*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <TextBlock Text="Import a USDA CropScape Cropland Data Layer raster to automatically tally acreage by crop class."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                            </StackPanel>
+                        </Border>
+
                         <Separator Margin="{StaticResource Margin.Stack}"/>
 
                         <TextBlock Text="How resilient is the field during the season?"

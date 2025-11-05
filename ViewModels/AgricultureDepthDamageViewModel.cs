@@ -7,8 +7,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Win32;
+using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -24,9 +27,16 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<CropDefinition> Crops { get; }
         public ObservableCollection<StageExposure> StageExposures { get; }
         public ObservableCollection<DepthDurationDamageRow> DepthDurationRows { get; } = new();
+        public ObservableCollection<CropScapeAcreageSummary> CropScapeSummaries { get; } = new();
 
         private readonly RelayCommand _addDepthDurationPointCommand;
         private readonly RelayCommand _removeDepthDurationPointCommand;
+        private readonly AsyncRelayCommand _importCropScapeRasterCommand;
+        private readonly RelayCommand _clearCropScapeSummaryCommand;
+        private readonly CropScapeRasterService _cropScapeRasterService = new();
+        private bool _isImportingCropScape;
+        private string _cropScapeImportStatus = "No CropScape raster imported.";
+        private double _cropScapeTotalAcreage;
 
         private RegionDefinition? _selectedRegion;
         public RegionDefinition? SelectedRegion
@@ -206,16 +216,75 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        public bool IsImportingCropScape
+        {
+            get => _isImportingCropScape;
+            private set
+            {
+                if (_isImportingCropScape == value)
+                {
+                    return;
+                }
+
+                _isImportingCropScape = value;
+                OnPropertyChanged();
+                _importCropScapeRasterCommand.NotifyCanExecuteChanged();
+                _clearCropScapeSummaryCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        public string CropScapeImportStatus
+        {
+            get => _cropScapeImportStatus;
+            private set
+            {
+                if (_cropScapeImportStatus == value)
+                {
+                    return;
+                }
+
+                _cropScapeImportStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double CropScapeTotalAcreage
+        {
+            get => _cropScapeTotalAcreage;
+            private set
+            {
+                if (Math.Abs(_cropScapeTotalAcreage - value) < 1e-6)
+                {
+                    return;
+                }
+
+                _cropScapeTotalAcreage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CropScapeTotalAcreageDisplay));
+                foreach (var summary in CropScapeSummaries)
+                {
+                    summary.UpdateShare(_cropScapeTotalAcreage);
+                }
+            }
+        }
+
+        public string CropScapeTotalAcreageDisplay => $"{CropScapeTotalAcreage:N1} acres";
+
+        public bool HasCropScapeSummary => CropScapeSummaries.Count > 0;
+
         public ICommand ComputeCommand => _computeCommand;
         public ICommand ExportCommand => _exportCommand;
         public ICommand AddDepthDurationPointCommand => _addDepthDurationPointCommand;
         public ICommand RemoveDepthDurationPointCommand => _removeDepthDurationPointCommand;
+        public IAsyncRelayCommand ImportCropScapeRasterCommand => _importCropScapeRasterCommand;
+        public ICommand ClearCropScapeSummaryCommand => _clearCropScapeSummaryCommand;
 
         public AgricultureDepthDamageViewModel()
         {
             Regions = new ObservableCollection<RegionDefinition>(RegionDefinition.CreateDefaults());
             Crops = new ObservableCollection<CropDefinition>(CropDefinition.CreateDefaults());
             StageExposures = new ObservableCollection<StageExposure>(StageExposure.CreateDefaults());
+            CropScapeSummaries.CollectionChanged += CropScapeSummaries_CollectionChanged;
 
             foreach (var stage in StageExposures)
             {
@@ -226,6 +295,8 @@ namespace EconToolbox.Desktop.ViewModels
             _exportCommand = new RelayCommand(Export, () => DepthDurationRows.Count > 0);
             _addDepthDurationPointCommand = new RelayCommand(AddDepthDurationPoint, () => SelectedRegion != null);
             _removeDepthDurationPointCommand = new RelayCommand(RemoveDepthDurationPoint, () => SelectedRegionPoint != null);
+            _importCropScapeRasterCommand = new AsyncRelayCommand(ImportCropScapeRasterAsync, () => !IsImportingCropScape);
+            _clearCropScapeSummaryCommand = new RelayCommand(ClearCropScapeSummary, () => CropScapeSummaries.Count > 0 && !IsImportingCropScape);
 
             if (Regions.Count > 0)
             {
@@ -422,6 +493,73 @@ namespace EconToolbox.Desktop.ViewModels
             SelectedRegion.DepthDuration.Remove(SelectedRegionPoint);
             SelectedRegionPoint = null;
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+        }
+
+        private async Task ImportCropScapeRasterAsync()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Select CropScape CDL raster",
+                Filter = "CropScape CDL (*.tif;*.tiff)|*.tif;*.tiff|All files (*.*)|*.*"
+            };
+
+            bool? result = dialog.ShowDialog();
+            if (result != true || string.IsNullOrWhiteSpace(dialog.FileName))
+            {
+                return;
+            }
+
+            string filePath = dialog.FileName;
+
+            try
+            {
+                IsImportingCropScape = true;
+                CropScapeImportStatus = $"Processing {Path.GetFileName(filePath)}…";
+
+                var areas = await Task.Run(() => _cropScapeRasterService.ReadClassAreas(filePath));
+
+                CropScapeSummaries.Clear();
+
+                if (areas.Count == 0)
+                {
+                    CropScapeTotalAcreage = 0;
+                    CropScapeImportStatus = $"No crop classes found in \"{Path.GetFileName(filePath)}\".";
+                    return;
+                }
+
+                double totalAcres = areas.Sum(area => area.Acres);
+
+                foreach (var area in areas)
+                {
+                    double share = totalAcres > 0 ? area.Acres / totalAcres : 0;
+                    CropScapeSummaries.Add(new CropScapeAcreageSummary(area.Code, area.Name, area.PixelCount, area.Acres, share));
+                }
+
+                CropScapeTotalAcreage = totalAcres;
+
+                CropScapeImportStatus = $"Loaded {CropScapeSummaries.Count} crop classes from \"{Path.GetFileName(filePath)}\".";
+            }
+            catch (Exception ex)
+            {
+                CropScapeImportStatus = $"Failed to import CropScape raster: {ex.Message}";
+            }
+            finally
+            {
+                IsImportingCropScape = false;
+            }
+        }
+
+        private void ClearCropScapeSummary()
+        {
+            CropScapeSummaries.Clear();
+            CropScapeTotalAcreage = 0;
+            CropScapeImportStatus = "CropScape acreage summary cleared.";
+        }
+
+        private void CropScapeSummaries_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(HasCropScapeSummary));
+            _clearCropScapeSummaryCommand.NotifyCanExecuteChanged();
         }
 
         private void Compute()
