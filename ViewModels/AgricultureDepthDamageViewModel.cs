@@ -613,7 +613,8 @@ namespace EconToolbox.Desktop.ViewModels
                     row.DurationDays,
                     row.DamagePercent,
                     damagedAcres,
-                    residualAcres));
+                    residualAcres,
+                    CropScapeTotalAcreage));
 
                 chartData.Add((row.DepthFeet, damagedAcres));
             }
@@ -755,15 +756,44 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            var lines = new List<string>
-            {
-                "Depth (ft),Duration (days),Damage (%)"
-            };
+            var lines = new List<string>();
 
-            lines.AddRange(DepthDurationRows.Select(r => string.Join(',',
-                r.DepthFeet.ToString("0.##", CultureInfo.InvariantCulture),
-                r.DurationDays.ToString("0.##", CultureInfo.InvariantCulture),
-                r.DamagePercent.ToString("0.##", CultureInfo.InvariantCulture))));
+            if (CropScapeDamageRows.Count > 0)
+            {
+                lines.Add("Depth (ft),Duration (days),Damage (%),Damaged acres,Residual acres,Total acres");
+                lines.AddRange(CropScapeDamageRows.Select(r => string.Join(',',
+                    r.DepthFeet.ToString("0.##", CultureInfo.InvariantCulture),
+                    r.DurationDays.ToString("0.##", CultureInfo.InvariantCulture),
+                    r.DamagePercent.ToString("0.##", CultureInfo.InvariantCulture),
+                    r.DamagedAcres.ToString("N1", CultureInfo.InvariantCulture),
+                    r.ResidualAcres.ToString("N1", CultureInfo.InvariantCulture),
+                    r.TotalAcres.ToString("N1", CultureInfo.InvariantCulture))));
+            }
+            else
+            {
+                lines.Add("Depth (ft),Duration (days),Damage (%)");
+                lines.AddRange(DepthDurationRows.Select(r => string.Join(',',
+                    r.DepthFeet.ToString("0.##", CultureInfo.InvariantCulture),
+                    r.DurationDays.ToString("0.##", CultureInfo.InvariantCulture),
+                    r.DamagePercent.ToString("0.##", CultureInfo.InvariantCulture))));
+            }
+
+            if (CropScapeSummaries.Count > 0)
+            {
+                if (lines.Count > 0)
+                {
+                    lines.Add(string.Empty);
+                }
+
+                lines.Add("CropScape acreage summary");
+                lines.Add("Crop code,Crop name,Pixel count,Acres,Percent of total");
+                lines.AddRange(CropScapeSummaries.Select(summary => string.Join(',',
+                    summary.Code.ToString(CultureInfo.InvariantCulture),
+                    summary.Name,
+                    summary.PixelCount.ToString(CultureInfo.InvariantCulture),
+                    summary.Acres.ToString("N1", CultureInfo.InvariantCulture),
+                    summary.PercentOfTotal.ToString("P1", CultureInfo.InvariantCulture))));
+            }
 
             File.WriteAllLines(dialog.FileName, lines);
         }
@@ -1888,6 +1918,6 @@ namespace EconToolbox.Desktop.ViewModels
 
         public record DepthDurationDamageRow(double DepthFeet, double DurationDays, double DamagePercent);
 
-        public record CropScapeDamageRow(double DepthFeet, double DurationDays, double DamagePercent, double DamagedAcres, double ResidualAcres);
+        public record CropScapeDamageRow(double DepthFeet, double DurationDays, double DamagePercent, double DamagedAcres, double ResidualAcres, double TotalAcres);
     }
 }
