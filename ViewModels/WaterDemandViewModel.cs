@@ -37,13 +37,117 @@ namespace EconToolbox.Desktop.ViewModels
                 ["Commercial"] = (10.0, 15.0)
             };
 
-        private const double ScenarioVariationPercentValue = 20.0;
+        private double _alternative1PopulationAdjustment = 20.0;
+        public double Alternative1PopulationAdjustment
+        {
+            get => _alternative1PopulationAdjustment;
+            set
+            {
+                if (Math.Abs(_alternative1PopulationAdjustment - value) < 0.0001)
+                    return;
+                _alternative1PopulationAdjustment = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
 
-        public double ScenarioVariationPercent => ScenarioVariationPercentValue;
+        private double _alternative1PerCapitaAdjustment = 20.0;
+        public double Alternative1PerCapitaAdjustment
+        {
+            get => _alternative1PerCapitaAdjustment;
+            set
+            {
+                if (Math.Abs(_alternative1PerCapitaAdjustment - value) < 0.0001)
+                    return;
+                _alternative1PerCapitaAdjustment = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
 
-        public string PositiveVariationDescription => $"+{ScenarioVariationPercentValue:0.#}% (automatic)";
+        private double _alternative1ImprovementsAdjustment = -20.0;
+        public double Alternative1ImprovementsAdjustment
+        {
+            get => _alternative1ImprovementsAdjustment;
+            set
+            {
+                if (Math.Abs(_alternative1ImprovementsAdjustment - value) < 0.0001)
+                    return;
+                _alternative1ImprovementsAdjustment = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
 
-        public string NegativeVariationDescription => $"-{ScenarioVariationPercentValue:0.#}% (automatic)";
+        private double _alternative1LossesAdjustment = 20.0;
+        public double Alternative1LossesAdjustment
+        {
+            get => _alternative1LossesAdjustment;
+            set
+            {
+                if (Math.Abs(_alternative1LossesAdjustment - value) < 0.0001)
+                    return;
+                _alternative1LossesAdjustment = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _alternative2PopulationAdjustment = -20.0;
+        public double Alternative2PopulationAdjustment
+        {
+            get => _alternative2PopulationAdjustment;
+            set
+            {
+                if (Math.Abs(_alternative2PopulationAdjustment - value) < 0.0001)
+                    return;
+                _alternative2PopulationAdjustment = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _alternative2PerCapitaAdjustment = -20.0;
+        public double Alternative2PerCapitaAdjustment
+        {
+            get => _alternative2PerCapitaAdjustment;
+            set
+            {
+                if (Math.Abs(_alternative2PerCapitaAdjustment - value) < 0.0001)
+                    return;
+                _alternative2PerCapitaAdjustment = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _alternative2ImprovementsAdjustment = 20.0;
+        public double Alternative2ImprovementsAdjustment
+        {
+            get => _alternative2ImprovementsAdjustment;
+            set
+            {
+                if (Math.Abs(_alternative2ImprovementsAdjustment - value) < 0.0001)
+                    return;
+                _alternative2ImprovementsAdjustment = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
+
+        private double _alternative2LossesAdjustment = -20.0;
+        public double Alternative2LossesAdjustment
+        {
+            get => _alternative2LossesAdjustment;
+            set
+            {
+                if (Math.Abs(_alternative2LossesAdjustment - value) < 0.0001)
+                    return;
+                _alternative2LossesAdjustment = value;
+                OnPropertyChanged();
+                ApplyScenarioAdjustments();
+            }
+        }
 
         public ObservableCollection<DemandEntry> HistoricalData
         {
@@ -145,15 +249,15 @@ namespace EconToolbox.Desktop.ViewModels
             });
             Scenarios.Add(new Scenario
             {
-                Name = "Optimistic",
+                Name = "Alternative Forecast 1",
                 LineBrush = Brushes.Green,
-                Description = "Higher growth assumptions resulting in greater future demand"
+                Description = "User-adjustable alternative that scales baseline assumptions upward"
             });
             Scenarios.Add(new Scenario
             {
-                Name = "Pessimistic",
+                Name = "Alternative Forecast 2",
                 LineBrush = Brushes.Red,
-                Description = "Lower growth assumptions producing reduced future demand"
+                Description = "User-adjustable alternative that scales baseline assumptions downward"
             });
 
             foreach (var s in Scenarios)
@@ -302,10 +406,10 @@ namespace EconToolbox.Desktop.ViewModels
                 if (ReferenceEquals(scenario, _baselineScenario))
                     continue;
 
-                bool isOptimistic = IsOptimisticScenario(scenario);
-                bool isPessimistic = IsPessimisticScenario(scenario);
+                bool isAlternative1 = IsAlternativeForecast1(scenario);
+                bool isAlternative2 = IsAlternativeForecast2(scenario);
 
-                if (!isOptimistic && !isPessimistic)
+                if (!isAlternative1 && !isAlternative2)
                 {
                     FillMissingSectorPercentsFromBaseline(scenario);
                     continue;
@@ -320,22 +424,15 @@ namespace EconToolbox.Desktop.ViewModels
                 double improvements = _baselineScenario.SystemImprovementsPercent;
                 double losses = _baselineScenario.SystemLossesPercent;
 
-                double variationPercent = ScenarioVariationPercent;
+                double populationAdjustment = isAlternative1 ? Alternative1PopulationAdjustment : Alternative2PopulationAdjustment;
+                double perCapitaAdjustment = isAlternative1 ? Alternative1PerCapitaAdjustment : Alternative2PerCapitaAdjustment;
+                double improvementsAdjustment = isAlternative1 ? Alternative1ImprovementsAdjustment : Alternative2ImprovementsAdjustment;
+                double lossesAdjustment = isAlternative1 ? Alternative1LossesAdjustment : Alternative2LossesAdjustment;
 
-                if (isOptimistic)
-                {
-                    scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, variationPercent);
-                    scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, variationPercent);
-                    scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, -variationPercent));
-                    scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, variationPercent));
-                }
-                else if (isPessimistic)
-                {
-                    scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, -variationPercent);
-                    scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, -variationPercent);
-                    scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, variationPercent));
-                    scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, -variationPercent));
-                }
+                scenario.PopulationGrowthRate = AdjustByPercent(popGrowth, populationAdjustment);
+                scenario.PerCapitaDemandChangeRate = AdjustByPercent(perCapita, perCapitaAdjustment);
+                scenario.SystemImprovementsPercent = ClampNonNegative(AdjustByPercent(improvements, improvementsAdjustment));
+                scenario.SystemLossesPercent = ClampNonNegative(AdjustByPercent(losses, lossesAdjustment));
 
                 FillMissingSectorPercentsFromBaseline(scenario);
             }
@@ -349,11 +446,11 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private static bool IsOptimisticScenario(Scenario scenario) =>
-            scenario.Name.Contains("Optimistic", StringComparison.OrdinalIgnoreCase);
+        private static bool IsAlternativeForecast1(Scenario scenario) =>
+            scenario.Name.Contains("Alternative Forecast 1", StringComparison.OrdinalIgnoreCase);
 
-        private static bool IsPessimisticScenario(Scenario scenario) =>
-            scenario.Name.Contains("Pessimistic", StringComparison.OrdinalIgnoreCase);
+        private static bool IsAlternativeForecast2(Scenario scenario) =>
+            scenario.Name.Contains("Alternative Forecast 2", StringComparison.OrdinalIgnoreCase);
 
         private static double AdjustByPercent(double value, double percent)
         {
