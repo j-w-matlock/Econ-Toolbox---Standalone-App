@@ -54,8 +54,19 @@
                                       HeadersVisibility="Column"
                                       Margin="0,0,0,8">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Task" Binding="{Binding Name, Mode=TwoWay}" Width="160"/>
+                                    <DataGridTextColumn Header="Task" Binding="{Binding Name, Mode=TwoWay}" Width="160">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Name of the activity displayed on the schedule."/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
                                     <DataGridTemplateColumn Header="Color" Width="70" IsReadOnly="True">
+                                        <DataGridTemplateColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Color applied to the bar representing this task."/>
+                                            </Style>
+                                        </DataGridTemplateColumn.HeaderStyle>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Border Background="{Binding ColorBrush}"
@@ -64,20 +75,44 @@
                                                         CornerRadius="4"
                                                         Height="18"
                                                         Width="36"
-                                                        HorizontalAlignment="Center"/>
+                                                        HorizontalAlignment="Center"
+                                                        ToolTip="Preview of the color that will be used on the timeline."/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Workstream" Binding="{Binding Workstream, Mode=TwoWay}" Width="110"/>
+                                    <DataGridTextColumn Header="Workstream" Binding="{Binding Workstream, Mode=TwoWay}" Width="110">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Team or workstream responsible for the task."/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
                                     <DataGridTemplateColumn Header="Start" Width="120">
+                                        <DataGridTemplateColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Planned start date for the task."/>
+                                            </Style>
+                                        </DataGridTemplateColumn.HeaderStyle>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <DatePicker SelectedDate="{Binding StartDate, Mode=TwoWay}"/>
+                                                <DatePicker SelectedDate="{Binding StartDate, Mode=TwoWay}"
+                                                            ToolTip="Choose the planned start date for this task."/>
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Duration (days)" Binding="{Binding DurationDays, Mode=TwoWay}" Width="100"/>
+                                    <DataGridTextColumn Header="Duration (days)" Binding="{Binding DurationDays, Mode=TwoWay}" Width="100">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Planned length of the task in calendar days."/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
                                     <DataGridTextColumn Header="Labor Cost $/day" Width="120">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Daily labor rate applied to the task."/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
                                         <DataGridTextColumn.Binding>
                                             <Binding Path="LaborCostPerDay"
                                                      Mode="TwoWay"
@@ -85,31 +120,60 @@
                                         </DataGridTextColumn.Binding>
                                     </DataGridTextColumn>
                                     <DataGridTextColumn Header="Task Cost $" Width="120" IsReadOnly="True">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Calculated total labor cost (labor rate × duration)."/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
                                         <DataGridTextColumn.Binding>
                                             <Binding Path="TotalCost"
                                                      Mode="OneWay"
                                                      Converter="{StaticResource CurrencyConverter}"/>
                                         </DataGridTextColumn.Binding>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Dependencies" Binding="{Binding Dependencies, Mode=TwoWay}" Width="140"/>
-                                    <DataGridCheckBoxColumn Header="Milestone" Binding="{Binding IsMilestone, Mode=TwoWay}" Width="80"/>
-                                    <DataGridTextColumn Header="% Complete" Binding="{Binding PercentComplete, Mode=TwoWay}" Width="90"/>
+                                    <DataGridTextColumn Header="Dependencies" Binding="{Binding Dependencies, Mode=TwoWay}" Width="140">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Comma-separated predecessors that must finish before this task starts."/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridCheckBoxColumn Header="Milestone" Binding="{Binding IsMilestone, Mode=TwoWay}" Width="80">
+                                        <DataGridCheckBoxColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Toggle to flag zero-duration milestones."/>
+                                            </Style>
+                                        </DataGridCheckBoxColumn.HeaderStyle>
+                                        <DataGridCheckBoxColumn.ElementStyle>
+                                            <Style TargetType="CheckBox">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="ToolTip" Value="Check to show this task as a milestone on the chart."/>
+                                            </Style>
+                                        </DataGridCheckBoxColumn.ElementStyle>
+                                    </DataGridCheckBoxColumn>
+                                    <DataGridTextColumn Header="% Complete" Binding="{Binding PercentComplete, Mode=TwoWay}" Width="90">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="ToolTip" Value="Overall percent complete for this task."/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                <Button Command="{Binding AddTaskCommand}" Width="120" Margin="0,0,8,0">
+                                <Button Command="{Binding AddTaskCommand}" Width="120" Margin="0,0,8,0" ToolTip="Insert a new task row at the bottom of the table.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
                                         <TextBlock Text="Add Task"/>
                                     </StackPanel>
                                 </Button>
-                                <Button Command="{Binding RemoveTaskCommand}" Width="140" Margin="0,0,8,0">
+                                <Button Command="{Binding RemoveTaskCommand}" Width="140" Margin="0,0,8,0" ToolTip="Delete the currently selected task from the list.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
                                         <TextBlock Text="Remove Selected"/>
                                     </StackPanel>
                                 </Button>
-                                <Button Command="{Binding ClearTasksCommand}" Width="120">
+                                <Button Command="{Binding ClearTasksCommand}" Width="120" ToolTip="Clear all tasks so you can start a fresh schedule.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
                                         <TextBlock Text="Clear"/>

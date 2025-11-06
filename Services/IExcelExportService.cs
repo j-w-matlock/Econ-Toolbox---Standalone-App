@@ -35,6 +35,7 @@ public interface IExcelExportService
 
     void ExportAll(
         EadViewModel ead,
+        AgricultureDepthDamageViewModel agriculture,
         UpdatedCostViewModel updated,
         AnnualizerViewModel annualizer,
         WaterDemandViewModel waterDemand,

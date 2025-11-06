@@ -62,13 +62,17 @@
                             </Style.Triggers>
                         </Style>
                     </WrapPanel.Style>
-                    <Button Command="{Binding AddDamageColumnCommand}" Margin="{StaticResource Margin.Inline}">
+                    <Button Command="{Binding AddDamageColumnCommand}"
+                            Margin="{StaticResource Margin.Inline}"
+                            ToolTip="Append a new damage column for an additional category or scenario.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
                             <TextBlock Text="Add Damage Column"/>
                         </StackPanel>
                     </Button>
-                    <Button Command="{Binding RemoveDamageColumnCommand}" Margin="{StaticResource Margin.Inline}">
+                    <Button Command="{Binding RemoveDamageColumnCommand}"
+                            Margin="{StaticResource Margin.Inline}"
+                            ToolTip="Remove the most recently added damage column.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
                             <TextBlock Text="Remove Damage Column"/>

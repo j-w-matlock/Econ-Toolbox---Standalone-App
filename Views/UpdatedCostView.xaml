@@ -143,7 +143,11 @@
                         <Run Text="Storage Recommendation"/>
                     </TextBlock>
                     <TextBox Text="{Binding StorageRecommendation}" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
-                    <Button Command="{Binding ComputeStorageCommand}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5">
+                    <Button Command="{Binding ComputeStorageCommand}"
+                            Grid.Row="2"
+                            Grid.ColumnSpan="2"
+                            Margin="0,5,0,5"
+                            ToolTip="Calculate the storage utilization percentage based on the values above.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -214,7 +218,8 @@
                              Grid.Row="1"
                              Grid.Column="1"
                              Margin="0,0,0,5"/>
-                    <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}">
+                    <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}"
+                            ToolTip="Sum annual joint operations and maintenance costs for allocation.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -448,13 +453,18 @@
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <Button Margin="0,4,0,4" Command="{Binding ResetUpdatedCostItemsCommand}" HorizontalAlignment="Right">
+                <Button Margin="0,4,0,4"
+                        Command="{Binding ResetUpdatedCostItemsCommand}"
+                        HorizontalAlignment="Right"
+                        ToolTip="Clear all updated cost rows so you can rebuild the table from scratch.">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
                         <TextBlock Text="Reset Table"/>
                     </StackPanel>
                 </Button>
-                <Button Margin="0,5,0,5" Command="{Binding ComputeUpdatedStorageCommand}">
+                <Button Margin="0,5,0,5"
+                        Command="{Binding ComputeUpdatedStorageCommand}"
+                        ToolTip="Escalate the cost rows using the ENR and CWCCIS factors provided above.">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text="&#xE8EF;"
@@ -584,13 +594,22 @@
                             </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Grid.Row="5" Grid.ColumnSpan="2" Margin="0,4,0,4" Command="{Binding ResetRrrItemsCommand}" HorizontalAlignment="Right">
+                    <Button Grid.Row="5"
+                            Grid.ColumnSpan="2"
+                            Margin="0,4,0,4"
+                            Command="{Binding ResetRrrItemsCommand}"
+                            HorizontalAlignment="Right"
+                            ToolTip="Clear all RR&amp;R and mitigation entries from the table.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
                             <TextBlock Text="Reset Table"/>
                         </StackPanel>
                     </Button>
-                    <Button Grid.Row="6" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeRrrCommand}">
+                    <Button Grid.Row="6"
+                            Grid.ColumnSpan="2"
+                            Margin="0,5,0,5"
+                            Command="{Binding ComputeRrrCommand}"
+                            ToolTip="Discount and escalate the RR&amp;R / mitigation schedule using the settings above.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -675,7 +694,11 @@
                         <Run Text="Analysis Period 2"/>
                     </TextBlock>
                     <TextBox Text="{Binding AnalysisPeriod2}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
-                    <Button Grid.Row="4" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeTotalCommand}">
+                    <Button Grid.Row="4"
+                            Grid.ColumnSpan="2"
+                            Margin="0,5,0,5"
+                            Command="{Binding ComputeTotalCommand}"
+                            ToolTip="Combine capital, O&amp;M, and RR&amp;R values to update the allocation scenarios.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
