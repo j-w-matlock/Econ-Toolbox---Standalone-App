@@ -14,6 +14,7 @@ namespace EconToolbox.Desktop.ViewModels
         public AnnualizerViewModel Annualizer { get; }
         public UdvViewModel Udv { get; }
         public WaterDemandViewModel WaterDemand { get; }
+        public RecreationCapacityViewModel RecreationCapacity { get; }
         public MindMapViewModel MindMap { get; }
         public GanttViewModel Gantt { get; }
         public DrawingViewModel Drawing { get; }
@@ -61,6 +62,7 @@ namespace EconToolbox.Desktop.ViewModels
             AnnualizerViewModel annualizer,
             UdvViewModel udv,
             WaterDemandViewModel waterDemand,
+            RecreationCapacityViewModel recreationCapacity,
             MindMapViewModel mindMap,
             GanttViewModel gantt,
             DrawingViewModel drawing,
@@ -73,6 +75,7 @@ namespace EconToolbox.Desktop.ViewModels
             Annualizer = annualizer;
             Udv = udv;
             WaterDemand = waterDemand;
+            RecreationCapacity = recreationCapacity;
             MindMap = mindMap;
             Gantt = gantt;
             Drawing = drawing;
@@ -210,6 +213,24 @@ namespace EconToolbox.Desktop.ViewModels
                     Udv,
                     Udv.ComputeCommand),
                 new ModuleDefinition(
+                    "Recreation Capacity Study",
+                    "Evaluate camping, shoreline fishing, and boating capacity using USACE design day standards.",
+                    new[]
+                    {
+                        "Document the campsite inventory, managed shoreline, and usable water surface from the master plan.",
+                        "Confirm occupancy, spacing, and turnover multipliers consistent with EP 1130-2-550 and ER 1130-2-550 guidance.",
+                        "Enter recreation season lengths before calculating to align with policy reporting periods."
+                    },
+                    new[]
+                    {
+                        "Computes people-at-one-time and design day user capacities for each recreation activity.",
+                        "Rolls the activities into a seasonal user-day total for master plan documentation.",
+                        "Captures key assumptions with policy references for audit packages."
+                    },
+                    "Example: Updating a lake master plan with 120 campsites, 2,400 feet of managed shoreline, and 650 acres of usable water surface.",
+                    RecreationCapacity,
+                    RecreationCapacity.ComputeCommand),
+                new ModuleDefinition(
                     "Mind Map Workspace",
                     "Capture qualitative insights, organize themes, and track next steps collaboratively.",
                     new[]
@@ -307,6 +328,7 @@ namespace EconToolbox.Desktop.ViewModels
                     Annualizer,
                     WaterDemand,
                     Udv,
+                    RecreationCapacity,
                     MindMap,
                     Gantt,
                     Drawing,

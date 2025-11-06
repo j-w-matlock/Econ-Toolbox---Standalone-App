@@ -40,6 +40,7 @@ public interface IExcelExportService
         AnnualizerViewModel annualizer,
         WaterDemandViewModel waterDemand,
         UdvViewModel udv,
+        RecreationCapacityViewModel recreationCapacity,
         MindMapViewModel mindMap,
         GanttViewModel gantt,
         DrawingViewModel drawing,

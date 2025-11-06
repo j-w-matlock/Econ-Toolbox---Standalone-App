@@ -335,7 +335,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, string filePath)
+        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, string filePath)
         {
             using var wb = new XLWorkbook();
             var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -827,6 +827,85 @@ namespace EconToolbox.Desktop.Services
                 udvSheet.Columns(1, 2).AdjustToContents();
             }
 
+            // Recreation Capacity Sheet
+            var recreationSheet = wb.Worksheets.Add("RecreationCapacity");
+            recreationSheet.Style.Font.SetFontName("Segoe UI");
+
+            var capacityHeaders = new[]
+            {
+                "Activity",
+                "Resource",
+                "Quantity",
+                "Units",
+                "People per Unit",
+                "Daily Turnover",
+                "Season Days",
+                "People at One Time",
+                "Daily Capacity",
+                "Seasonal Capacity",
+                "Guidance"
+            };
+
+            for (int i = 0; i < capacityHeaders.Length; i++)
+            {
+                var headerCell = recreationSheet.Cell(1, i + 1);
+                headerCell.Value = capacityHeaders[i];
+                headerCell.Style.Font.SetBold();
+                headerCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
+                headerCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                headerCell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                headerCell.Style.Border.OutsideBorderColor = DashboardBorder;
+            }
+
+            int capacityRow = 2;
+            foreach (var activity in recreationCapacity.ActivitySummaries)
+            {
+                recreationSheet.Cell(capacityRow, 1).Value = activity.Activity;
+                recreationSheet.Cell(capacityRow, 2).Value = activity.ResourceDescription;
+                recreationSheet.Cell(capacityRow, 3).Value = activity.ResourceQuantity;
+                recreationSheet.Cell(capacityRow, 3).Style.NumberFormat.Format = "#,##0.##";
+                recreationSheet.Cell(capacityRow, 4).Value = activity.ResourceUnits;
+                recreationSheet.Cell(capacityRow, 5).Value = activity.PeoplePerUnit;
+                recreationSheet.Cell(capacityRow, 5).Style.NumberFormat.Format = "0.000";
+                recreationSheet.Cell(capacityRow, 6).Value = activity.DailyTurnover;
+                recreationSheet.Cell(capacityRow, 6).Style.NumberFormat.Format = "0.00";
+                recreationSheet.Cell(capacityRow, 7).Value = activity.SeasonDays;
+                recreationSheet.Cell(capacityRow, 7).Style.NumberFormat.Format = "0.0";
+                recreationSheet.Cell(capacityRow, 8).Value = activity.PeopleAtOneTime;
+                recreationSheet.Cell(capacityRow, 8).Style.NumberFormat.Format = "#,##0.##";
+                recreationSheet.Cell(capacityRow, 9).Value = activity.DailyCapacity;
+                recreationSheet.Cell(capacityRow, 9).Style.NumberFormat.Format = "#,##0.##";
+                recreationSheet.Cell(capacityRow, 10).Value = activity.SeasonalCapacity;
+                recreationSheet.Cell(capacityRow, 10).Style.NumberFormat.Format = "#,##0.##";
+                recreationSheet.Cell(capacityRow, 11).Value = activity.GuidanceNote;
+                capacityRow++;
+            }
+
+            if (capacityRow > 2)
+            {
+                var capacityRange = recreationSheet.Range(1, 1, capacityRow - 1, capacityHeaders.Length);
+                var capacityTable = capacityRange.CreateTable(GetTableName("RecreationCapacity", tableNames));
+                capacityTable.Theme = XLTableTheme.TableStyleMedium4;
+            }
+
+            var capacitySummaryRange = recreationSheet.Range(capacityRow + 1, 1, capacityRow + 1, capacityHeaders.Length);
+            capacitySummaryRange.Merge();
+            capacitySummaryRange.Value = recreationCapacity.Summary;
+            capacitySummaryRange.Style.Alignment.WrapText = true;
+            capacitySummaryRange.Style.Fill.BackgroundColor = DashboardRowLight;
+            capacitySummaryRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            capacitySummaryRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+            var capacityGuidanceRange = recreationSheet.Range(capacityRow + 2, 1, capacityRow + 2, capacityHeaders.Length);
+            capacityGuidanceRange.Merge();
+            capacityGuidanceRange.Value = recreationCapacity.GuidanceNotes;
+            capacityGuidanceRange.Style.Alignment.WrapText = true;
+            capacityGuidanceRange.Style.Fill.BackgroundColor = DashboardRowAlt;
+            capacityGuidanceRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            capacityGuidanceRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+            recreationSheet.Columns(1, capacityHeaders.Length).AdjustToContents();
+
             // Mind Map Sheet
             var mindMapSheet = wb.Worksheets.Add("MindMap");
             mindMapSheet.Style.Font.SetFontName("Segoe UI");
@@ -1095,6 +1174,16 @@ namespace EconToolbox.Desktop.Services
                 : "Add ideas to build the map";
 
             double recreationBenefit = UdvModel.ComputeBenefit(udv.UnitDayValue, udv.TotalUserDays);
+            var recreationRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+            {
+                ("Camping PAOT", recreationCapacity.CampingPeopleAtOneTime, "#,##0.0", "People-at-one-time supported by the campsite inventory.", false),
+                ("Camping Design Day", recreationCapacity.CampingDailyCapacity, "#,##0.0", "Design day user capacity for camping.", false),
+                ("Fishing PAOT", recreationCapacity.FishingPeopleAtOneTime, "#,##0.0", "Accessible shoreline positions multiplied by typical party size.", false),
+                ("Boating PAOT", recreationCapacity.BoatingPeopleAtOneTime, "#,##0.0", "Water surface capacity using USACE acres-per-vessel guidance.", false),
+                ("Total PAOT", recreationCapacity.TotalPeopleAtOneTime, "#,##0.0", "Aggregate people-at-one-time across recreation activities.", true),
+                ("Design Day Total", recreationCapacity.TotalDailyCapacity, "#,##0.0", "Combined design day capacity across camping, fishing, and boating.", true),
+                ("Seasonal User Days", recreationCapacity.TotalSeasonCapacity, "#,##0", "Seasonal user capacity based on the supplied season lengths and turnover rates.", true)
+            };
             var udvRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
                 ("Recreation Type", udv.RecreationType, null, null, false),
@@ -1113,6 +1202,8 @@ namespace EconToolbox.Desktop.Services
                 ("Ideas With Notes", notedIdeas, "0", "Nodes that include detailed notes.", false),
                 ("Primary Themes", primaryThemes, null, "Top-level branches currently defined.", false)
             };
+
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation Capacity", recreationRows, tableNames);
 
             int udvStart = currentRow;
             currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation Highlights", udvRows, tableNames);

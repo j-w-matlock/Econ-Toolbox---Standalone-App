@@ -44,6 +44,9 @@
             <DataTemplate DataType="{x:Type vm:UdvViewModel}">
                 <views:UdvView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:RecreationCapacityViewModel}">
+                <views:RecreationCapacityView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:MindMapViewModel}">
                 <views:MindMapView/>
             </DataTemplate>
