@@ -401,10 +401,17 @@ namespace EconToolbox.Desktop.Services
                 agSheet.Cell(agRow, 1).Value = entry.Label;
                 agSheet.Cell(agRow, 1).Style.Font.SetBold();
                 var valueCell = agSheet.Cell(agRow, 2);
-                valueCell.Value = entry.Value;
-                if (entry.Value is double && !string.IsNullOrWhiteSpace(entry.Format))
+                SetCellValue(valueCell, entry.Value);
+
+                switch (entry.Value)
                 {
-                    valueCell.Style.NumberFormat.Format = entry.Format;
+                    case double or float or decimal:
+                        if (!string.IsNullOrWhiteSpace(entry.Format))
+                            valueCell.Style.NumberFormat.Format = entry.Format;
+                        break;
+                    case int or long or short or byte or uint or ulong or ushort:
+                        valueCell.Style.NumberFormat.Format = string.IsNullOrWhiteSpace(entry.Format) ? "0" : entry.Format;
+                        break;
                 }
                 agRow++;
             }
@@ -1234,6 +1241,64 @@ namespace EconToolbox.Desktop.Services
             table.Theme = XLTableTheme.TableStyleMedium9;
 
             return row + 2;
+        }
+
+        private static void SetCellValue(IXLCell cell, object? value)
+        {
+            switch (value)
+            {
+                case null:
+                    cell.Value = string.Empty;
+                    break;
+                case XLCellValue xlValue:
+                    cell.Value = xlValue;
+                    break;
+                case double d:
+                    cell.Value = d;
+                    break;
+                case float f:
+                    cell.Value = f;
+                    break;
+                case decimal dec:
+                    cell.Value = (double)dec;
+                    break;
+                case int i:
+                    cell.Value = i;
+                    break;
+                case long l:
+                    cell.Value = l;
+                    break;
+                case short s:
+                    cell.Value = s;
+                    break;
+                case sbyte sb:
+                    cell.Value = sb;
+                    break;
+                case byte b:
+                    cell.Value = b;
+                    break;
+                case uint ui:
+                    cell.Value = ui;
+                    break;
+                case ulong ul:
+                    cell.Value = ul;
+                    break;
+                case ushort us:
+                    cell.Value = us;
+                    break;
+                case bool boolValue:
+                    cell.Value = boolValue;
+                    break;
+                case DateTime dateTime:
+                    cell.Value = dateTime;
+                    break;
+                case TimeSpan timeSpan:
+                    cell.Value = timeSpan;
+                    break;
+                default:
+                    cell.Value = value?.ToString() ?? string.Empty;
+                    break;
+            }
         }
 
         private static int WriteWaterDemandTable(IXLWorksheet ws, int startRow, int startColumn, string title, List<(string Scenario, int Year, double Adjusted, string? Description, double? ChangePercent, bool Highlight, bool HasResults)> entries, HashSet<string> tableNames)
