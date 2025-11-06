@@ -999,12 +999,12 @@ namespace EconToolbox.Desktop.Services
                 sketchPicture.MoveTo(sketchSheet.Cell(2, 4));
             }
 
-            BuildDashboard(wb, ead, agriculture, annualizer, updated, waterDemand, udv, mindMap, gantt, drawing, tableNames);
+            BuildDashboard(wb, ead, agriculture, annualizer, updated, waterDemand, udv, recreationCapacity, mindMap, gantt, drawing, tableNames);
 
             wb.SaveAs(filePath);
         }
 
-        private static void BuildDashboard(XLWorkbook wb, EadViewModel ead, AgricultureDepthDamageViewModel agriculture, AnnualizerViewModel annualizer, UpdatedCostViewModel updated, WaterDemandViewModel waterDemand, UdvViewModel udv, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, HashSet<string> tableNames)
+        private static void BuildDashboard(XLWorkbook wb, EadViewModel ead, AgricultureDepthDamageViewModel agriculture, AnnualizerViewModel annualizer, UpdatedCostViewModel updated, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, HashSet<string> tableNames)
         {
             var ws = wb.Worksheets.Add("Dashboard");
             ws.Position = 1;
