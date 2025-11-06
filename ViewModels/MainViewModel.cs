@@ -302,6 +302,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 await Task.Run(() => _excelExportService.ExportAll(
                     Ead,
+                    AgricultureDepthDamage,
                     UpdatedCost,
                     Annualizer,
                     WaterDemand,

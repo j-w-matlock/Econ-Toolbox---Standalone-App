@@ -43,7 +43,8 @@
                                  BorderThickness="0"
                                  Background="Transparent"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                 ToolTip="Select the pen color applied to new strokes.">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal"/>
@@ -81,16 +82,17 @@
                                 TickFrequency="1"
                                 IsSnapToTickEnabled="True"
                                 Value="{Binding PenThickness, Mode=TwoWay}"
-                                Margin="0,6,0,0"/>
+                                Margin="0,6,0,0"
+                                ToolTip="Set the stroke thickness in pixels for new strokes."/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                        <Button Command="{Binding UndoCommand}" Width="110" Margin="0,0,8,0">
+                        <Button Command="{Binding UndoCommand}" Width="110" Margin="0,0,8,0" ToolTip="Remove the most recent stroke from the canvas.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
                                 <TextBlock Text="Undo"/>
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding ClearCommand}" Width="110">
+                        <Button Command="{Binding ClearCommand}" Width="110" ToolTip="Erase all strokes from the sketch.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
                                 <TextBlock Text="Clear"/>
@@ -106,7 +108,8 @@
                                Background="#FAFCFF"
                                Width="{Binding CanvasWidth}"
                                Height="{Binding CanvasHeight}"
-                               EditingMode="Ink"/>
+                               EditingMode="Ink"
+                               ToolTip="Draw freehand notes, diagrams, or signatures using the selected pen settings."/>
                 </Grid>
             </Border>
         </Grid>

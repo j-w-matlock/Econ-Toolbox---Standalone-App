@@ -317,7 +317,8 @@
                                   Margin="8,0,0,0"
                                   Padding="16,6"
                                   Content="Calculate Unity Level Project First Cost"
-                                  Command="{Binding CalculateUnityFirstCostCommand}"/>
+                                  Command="{Binding CalculateUnityFirstCostCommand}"
+                                  ToolTip="Estimate the unity-level first cost using the current annual benefits value."/>
                           <TextBox Grid.Column="2"
                                    Margin="8,0,0,0"
                                    MinWidth="180"

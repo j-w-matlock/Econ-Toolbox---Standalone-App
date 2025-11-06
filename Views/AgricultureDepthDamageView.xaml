@@ -228,10 +228,12 @@
                                             Margin="{StaticResource Margin.StackSmall}">
                                     <Button Content="Add point"
                                             Command="{Binding AddDepthDurationPointCommand}"
-                                            Margin="{StaticResource Margin.Inline}"/>
+                                            Margin="{StaticResource Margin.Inline}"
+                                            ToolTip="Insert another depth-duration point using the regional template as a starting value."/>
                                     <Button Content="Remove selected"
                                             Command="{Binding RemoveDepthDurationPointCommand}"
-                                            Margin="{StaticResource Margin.Inline}"/>
+                                            Margin="{StaticResource Margin.Inline}"
+                                            ToolTip="Delete the highlighted depth-duration row from the table."/>
                                 </StackPanel>
                                 <TextBlock Text="Base damage represents the fraction of acreage lost at the specified depth and duration (0 = no loss, 1 = total loss)."
                                            Style="{StaticResource Text.Caption}"
@@ -326,10 +328,12 @@
                                                 Margin="{StaticResource Margin.InlineLarge}">
                                         <Button Content="Import CropScape CDL"
                                                 Command="{Binding ImportCropScapeRasterCommand}"
-                                                Margin="{StaticResource Margin.Inline}"/>
+                                                Margin="{StaticResource Margin.Inline}"
+                                                ToolTip="Load a USDA CropScape raster to populate acreage shares for each crop class."/>
                                         <Button Content="Clear summary"
                                                 Command="{Binding ClearCropScapeSummaryCommand}"
-                                                Margin="{StaticResource Margin.Inline}"/>
+                                                Margin="{StaticResource Margin.Inline}"
+                                                ToolTip="Remove the imported CropScape acreage totals so you can start a fresh summary."/>
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="{Binding CropScapeImportStatus}"
@@ -434,7 +438,8 @@
                                                     </StackPanel>
                                                     <StackPanel Margin="{StaticResource Margin.Inline}">
                                                         <Button Content="Reset"
-                                                                Command="{Binding ResetCommand}"/>
+                                                                Command="{Binding ResetCommand}"
+                                                                ToolTip="Restore the default exposure and flood tolerance for this stage."/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </StackPanel>
@@ -721,10 +726,12 @@
                             Margin="{StaticResource Margin.StackLarge}">
                     <Button Content="Calculate"
                             Command="{Binding ComputeCommand}"
-                            Margin="{StaticResource Margin.Inline}"/>
+                            Margin="{StaticResource Margin.Inline}"
+                            ToolTip="Run the simulation and refresh the agriculture depth-damage results."/>
                     <Button Content="CSV Export"
                             Command="{Binding ExportCommand}"
-                            Margin="{StaticResource Margin.Inline}"/>
+                            Margin="{StaticResource Margin.Inline}"
+                            ToolTip="Save the current depth-duration table to a CSV file for external analysis."/>
                 </StackPanel>
             </Grid>
         </StackPanel>
