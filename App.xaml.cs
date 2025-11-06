@@ -25,6 +25,7 @@ namespace EconToolbox.Desktop
                     services.AddSingleton<AnnualizerViewModel>();
                     services.AddSingleton<UdvViewModel>();
                     services.AddSingleton<WaterDemandViewModel>();
+                    services.AddSingleton<RecreationCapacityViewModel>();
                     services.AddSingleton<MindMapViewModel>();
                     services.AddSingleton<GanttViewModel>();
                     services.AddSingleton<DrawingViewModel>();
