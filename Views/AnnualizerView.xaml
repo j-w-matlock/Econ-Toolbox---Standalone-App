@@ -743,6 +743,225 @@
                 </TabItem>
                 <TabItem Header="SCRB Analysis" Padding="0">
                     <StackPanel>
+                        <Border Style="{StaticResource Border.ResultInfo}"
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                               Text=""
+                                               FontSize="18"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock Text="SCRB Scenario Builder"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource Brush.Primary}"/>
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource Text.Body}"
+                                           Margin="{StaticResource Margin.TopSmall}">
+                                    <Run Text="Capture separable elements, refresh benefits, and test sensitivities to generate updated SCRB ratios."/>
+                                </TextBlock>
+                                <Grid Margin="{StaticResource Margin.TopLarge}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Row="0"
+                                               Grid.ColumnSpan="2"
+                                               Style="{StaticResource Text.Body}"
+                                               TextWrapping="Wrap"
+                                               Text="Sensitivity adjustments apply to every feature and update the adjusted totals automatically."/>
+
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="0"
+                                               Margin="0,12,12,0"
+                                               FontWeight="SemiBold"
+                                               Text="Benefit sensitivity (%)"/>
+                                    <StackPanel Grid.Row="1"
+                                                Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                Margin="0,12,0,0">
+                                        <Slider Minimum="0"
+                                                Maximum="200"
+                                                Value="{Binding ScrbBenefitSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                Width="150"
+                                                Margin="0,0,8,0"
+                                                TickFrequency="5"
+                                                IsSnapToTickEnabled="False"/>
+                                        <TextBox Width="72"
+                                                 Margin="0,0,4,0"
+                                                 HorizontalContentAlignment="Right"
+                                                 Text="{Binding ScrbBenefitSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <TextBlock VerticalAlignment="Center"
+                                                   Text="%"/>
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Row="2"
+                                               Grid.Column="0"
+                                               Margin="0,12,12,0"
+                                               FontWeight="SemiBold"
+                                               Text="Cost sensitivity (%)"/>
+                                    <StackPanel Grid.Row="2"
+                                                Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                Margin="0,12,0,0">
+                                        <Slider Minimum="0"
+                                                Maximum="200"
+                                                Value="{Binding ScrbCostSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                Width="150"
+                                                Margin="0,0,8,0"
+                                                TickFrequency="5"
+                                                IsSnapToTickEnabled="False"/>
+                                        <TextBox Width="72"
+                                                 Margin="0,0,4,0"
+                                                 HorizontalContentAlignment="Right"
+                                                 Text="{Binding ScrbCostSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <TextBlock VerticalAlignment="Center"
+                                                   Text="%"/>
+                                    </StackPanel>
+
+                                    <DataGrid Grid.Row="3"
+                                              Grid.ColumnSpan="2"
+                                              ItemsSource="{Binding ScrbEntries}"
+                                              AutoGenerateColumns="False"
+                                              HeadersVisibility="All"
+                                              Margin="0,16,0,0"
+                                              CanUserAddRows="True">
+                                        <DataGrid.Resources>
+                                            <Style x:Key="NumericCellStyle" TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                                <Setter Property="TextAlignment" Value="Right"/>
+                                                <Setter Property="Padding" Value="4,0,4,0"/>
+                                            </Style>
+                                            <Style x:Key="NumericEditingStyle" TargetType="TextBox">
+                                                <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                <Setter Property="Padding" Value="4,0,4,0"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                            </Style>
+                                        </DataGrid.Resources>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Feature"
+                                                                Width="2*"
+                                                                Binding="{Binding FeatureName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            <DataGridTextColumn Width="*"
+                                                                ElementStyle="{StaticResource NumericCellStyle}"
+                                                                EditingElementStyle="{StaticResource NumericEditingStyle}">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="Separable Cost ($)"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.Binding>
+                                                    <Binding Path="SeparableCost"
+                                                             Mode="TwoWay"
+                                                             UpdateSourceTrigger="PropertyChanged"
+                                                             Converter="{StaticResource CurrencyConverter}"/>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Width="*"
+                                                                ElementStyle="{StaticResource NumericCellStyle}"
+                                                                EditingElementStyle="{StaticResource NumericEditingStyle}">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="Remaining Benefit ($)"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.Binding>
+                                                    <Binding Path="RemainingBenefit"
+                                                             Mode="TwoWay"
+                                                             UpdateSourceTrigger="PropertyChanged"
+                                                             Converter="{StaticResource CurrencyConverter}"/>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Width="*"
+                                                                IsReadOnly="True"
+                                                                ElementStyle="{StaticResource NumericCellStyle}">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="Adjusted Cost ($)"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.Binding>
+                                                    <Binding Path="AdjustedCost"
+                                                             Converter="{StaticResource CurrencyConverter}"/>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Width="*"
+                                                                IsReadOnly="True"
+                                                                ElementStyle="{StaticResource NumericCellStyle}">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="Adjusted Benefit ($)"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.Binding>
+                                                    <Binding Path="AdjustedBenefit"
+                                                             Converter="{StaticResource CurrencyConverter}"/>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Width="*"
+                                                                IsReadOnly="True"
+                                                                ElementStyle="{StaticResource NumericCellStyle}">
+                                                <DataGridTextColumn.Header>
+                                                    <TextBlock Text="SCRB Ratio"/>
+                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.Binding>
+                                                    <Binding Path="ScrbRatio"
+                                                             StringFormat="{}{0:0.00}"
+                                                             TargetNullValue="—"/>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+
+                                    <Grid Grid.Row="4"
+                                          Grid.ColumnSpan="2"
+                                          Margin="0,16,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="0"
+                                                   FontWeight="SemiBold"
+                                                   Text="{Binding ScrbBaseTotalCost, StringFormat=Baseline Remaining Cost: {0:C2}}"/>
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   FontWeight="SemiBold"
+                                                   Text="{Binding ScrbBaseTotalBenefit, StringFormat=Baseline Remaining Benefit: {0:C2}}"/>
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   Grid.ColumnSpan="2"
+                                                   Margin="0,4,0,0"
+                                                   Text="{Binding ScrbBaseOverallRatio, StringFormat=Baseline SCRB Ratio: {0:0.00}, TargetNullValue=Baseline SCRB Ratio: —}"/>
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="0"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,12,0,0"
+                                                   Text="{Binding ScrbAdjustedTotalCost, StringFormat=Adjusted Remaining Cost: {0:C2}}"/>
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="1"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,12,0,0"
+                                                   Text="{Binding ScrbAdjustedTotalBenefit, StringFormat=Adjusted Remaining Benefit: {0:C2}}"/>
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="0"
+                                                   Grid.ColumnSpan="2"
+                                                   Margin="0,4,0,0"
+                                                   Text="{Binding ScrbAdjustedOverallRatio, StringFormat=Adjusted SCRB Ratio: {0:0.00}, TargetNullValue=Adjusted SCRB Ratio: —}"/>
+                                    </Grid>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
                         <Border Style="{StaticResource Border.Explainer}"
                                 Padding="{StaticResource Padding.Card}"
                                 Margin="0,0,0,16">
