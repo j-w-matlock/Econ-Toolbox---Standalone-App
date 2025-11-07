@@ -774,7 +774,7 @@
                         <LineBreak/>
                         <Run Text="• Confirm Monte Carlo assumptions and CropScape layers with planning and GIS leads when preparing feasibility or PED documentation."/>
                         <LineBreak/>
-                        <Run Text="• Retain exported acreage summaries with cost and benefit files to satisfy ER 1105-2-100 audit expectations."/>
+                        <Run Text="• Retain exported acreage summaries with cost and benefit files to satisfy ER 1105-2-100 audit expectations (Chapter 2, Section 2-5, pp. 2-23–2-28)."/>
                     </TextBlock>
                 </StackPanel>
             </Border>

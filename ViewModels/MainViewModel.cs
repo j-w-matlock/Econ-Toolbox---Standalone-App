@@ -218,7 +218,7 @@ namespace EconToolbox.Desktop.ViewModels
                     new[]
                     {
                         "Document the campsite inventory, managed shoreline, and usable water surface from the master plan.",
-                        "Confirm occupancy, spacing, and turnover multipliers consistent with EP 1130-2-550 and ER 1130-2-550 guidance.",
+                        "Confirm occupancy, spacing, and turnover multipliers consistent with EP 1130-2-550 (Chapter 8, pp. 8-3–8-7; Appendix H, Tables H-1–H-3) and ER 1130-2-550 (Chapter 3, pp. 3-1–3-6) guidance.",
                         "Enter recreation season lengths before calculating to align with policy reporting periods."
                     },
                     new[]

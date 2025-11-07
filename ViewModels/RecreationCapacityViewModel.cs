@@ -282,8 +282,8 @@ public class RecreationCapacityViewModel : BaseViewModel
     }
 
     public string GuidanceNotes =>
-        "Baseline multipliers align with the U.S. Army Corps of Engineers Recreation Facility and Customer Service Standards (EP 1130-2-550) " +
-        "and the Planning Guidance Notebook design day concepts. Adjust the occupancy, spacing, and turnover factors when more detailed " +
+        "Baseline multipliers align with the U.S. Army Corps of Engineers Recreation Facility and Customer Service Standards (EP 1130-2-550, Chapter 8, pp. 8-3–8-7; Appendix H, Tables H-1–H-3) " +
+        "and the Planning Guidance Notebook design day concepts (ER 1105-2-100, Appendix E, pp. E-79–E-86). Adjust the occupancy, spacing, and turnover factors when more detailed " +
         "site studies are available.";
 
     public double CampingPeopleAtOneTime => Math.Round(CampingCampsites * CampingAverageGroupSize, 2);
@@ -325,7 +325,7 @@ public class RecreationCapacityViewModel : BaseViewModel
                 CampingPeopleAtOneTime,
                 CampingDailyCapacity,
                 CampingSeasonCapacity,
-                "5 persons per site design occupancy; turnover reflects Corps campground handbook guidance."),
+                "5 persons per site design occupancy (EP 1130-2-550, Table 8-1, p. 8-4); turnover reflects Corps campground guidance (EP 1130-2-550, Table H-2, p. H-3)."),
             new(
                 "Shoreline Fishing",
                 "Accessible shoreline",
@@ -337,7 +337,7 @@ public class RecreationCapacityViewModel : BaseViewModel
                 FishingPeopleAtOneTime,
                 FishingDailyCapacity,
                 FishingSeasonCapacity,
-                "One angling position per 50 feet of shoreline with typical 1.5 person parties."),
+                "One angling position per 50 feet of shoreline with typical 1.5 person parties (EP 1130-2-550, Table H-1, p. H-2)."),
             new(
                 "Boating",
                 "Usable water surface",

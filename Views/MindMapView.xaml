@@ -503,7 +503,7 @@
                         <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                        <Run Text="• Treat the canvas as working notes—store final decisions in the project file system per ER 5-1-11 records management."/>
+                        <Run Text="• Treat the canvas as working notes—store final decisions in the project file system per ER 5-1-11, Appendix C (pp. C-3–C-5) records management."/>
                         <LineBreak/>
                         <Run Text="• Avoid capturing PII or procurement-sensitive details; reference secure SharePoint or RMS locations instead."/>
                         <LineBreak/>

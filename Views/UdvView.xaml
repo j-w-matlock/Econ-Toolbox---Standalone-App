@@ -276,11 +276,11 @@
                         <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                        <Run Text="• Follow ER 1105-2-100 Appendix E tables when selecting point scores and document any district supplements."/>
+                        <Run Text="• Follow ER 1105-2-100, Appendix E (Section E-18, Tables E-18-1 through E-18-6, pp. E-182–E-207) when selecting point scores and document any district supplements."/>
                         <LineBreak/>
-                        <Run Text="• Coordinate visitation forecasts with recreation planners so season lengths and user day assumptions align with master plan updates."/>
+                        <Run Text="• Coordinate visitation forecasts with recreation planners so season lengths and user day assumptions align with master plan updates (ER 1130-2-550, Chapter 2, pp. 2-6–2-8)."/>
                         <LineBreak/>
-                        <Run Text="• Archive the calculation output alongside benefit-cost files to support quality assurance and policy compliance reviews."/>
+                        <Run Text="• Archive the calculation output alongside benefit-cost files to support quality assurance and policy compliance reviews (ER 5-1-11, Appendix C, pp. C-3–C-5)."/>
                     </TextBlock>
                 </StackPanel>
             </Border>
