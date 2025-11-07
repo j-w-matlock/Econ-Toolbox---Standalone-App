@@ -22,6 +22,7 @@ namespace EconToolbox.Desktop.ViewModels
         private double _annualBenefits;
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
         private ObservableCollection<FutureCostEntry> _idcEntries = new();
+        private ObservableCollection<ScrbEntry> _scrbEntries = new();
         private ObservableCollection<string> _results = new();
         private string? _unityFirstCostMessage;
         private string _idcTimingBasis = "Middle";
@@ -34,6 +35,14 @@ namespace EconToolbox.Desktop.ViewModels
         private double _crf;
         private double _annualCost;
         private double _bcr;
+        private double _scrbCostSensitivity = 100.0;
+        private double _scrbBenefitSensitivity = 100.0;
+        private double _scrbBaseTotalCost;
+        private double _scrbBaseTotalBenefit;
+        private double? _scrbBaseOverallRatio;
+        private double _scrbAdjustedTotalCost;
+        private double _scrbAdjustedTotalBenefit;
+        private double? _scrbAdjustedOverallRatio;
 
         private readonly record struct AnnualizerComputationInputs(
             List<(double cost, double yearOffset, double timingOffset)> FutureCosts,
@@ -102,6 +111,35 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get => _idcEntries;
             set { _idcEntries = value; OnPropertyChanged(); }
+        }
+
+        public ObservableCollection<ScrbEntry> ScrbEntries
+        {
+            get => _scrbEntries;
+            set
+            {
+                if (_scrbEntries == value)
+                    return;
+
+                if (_scrbEntries != null)
+                {
+                    _scrbEntries.CollectionChanged -= ScrbEntriesChanged;
+                    foreach (var entry in _scrbEntries)
+                        entry.PropertyChanged -= ScrbEntryOnPropertyChanged;
+                }
+
+                _scrbEntries = value;
+                OnPropertyChanged();
+
+                if (_scrbEntries != null)
+                {
+                    _scrbEntries.CollectionChanged += ScrbEntriesChanged;
+                    foreach (var entry in _scrbEntries)
+                        entry.PropertyChanged += ScrbEntryOnPropertyChanged;
+                }
+
+                RecalculateScrb();
+            }
         }
 
         public IReadOnlyList<string> IdcTimingOptions { get; } = new[] { "Beginning", "Middle", "End" };
@@ -200,6 +238,108 @@ namespace EconToolbox.Desktop.ViewModels
             set { _results = value; OnPropertyChanged(); }
         }
 
+        public double ScrbCostSensitivity
+        {
+            get => _scrbCostSensitivity;
+            set
+            {
+                double sanitized = SanitizeSensitivity(value);
+                if (Math.Abs(_scrbCostSensitivity - sanitized) < 0.000001)
+                    return;
+                _scrbCostSensitivity = sanitized;
+                OnPropertyChanged();
+                RecalculateScrb();
+            }
+        }
+
+        public double ScrbBenefitSensitivity
+        {
+            get => _scrbBenefitSensitivity;
+            set
+            {
+                double sanitized = SanitizeSensitivity(value);
+                if (Math.Abs(_scrbBenefitSensitivity - sanitized) < 0.000001)
+                    return;
+                _scrbBenefitSensitivity = sanitized;
+                OnPropertyChanged();
+                RecalculateScrb();
+            }
+        }
+
+        public double ScrbBaseTotalCost
+        {
+            get => _scrbBaseTotalCost;
+            private set
+            {
+                if (Math.Abs(_scrbBaseTotalCost - value) < 0.000001)
+                    return;
+                _scrbBaseTotalCost = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double ScrbBaseTotalBenefit
+        {
+            get => _scrbBaseTotalBenefit;
+            private set
+            {
+                if (Math.Abs(_scrbBaseTotalBenefit - value) < 0.000001)
+                    return;
+                _scrbBaseTotalBenefit = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double? ScrbBaseOverallRatio
+        {
+            get => _scrbBaseOverallRatio;
+            private set
+            {
+                if (_scrbBaseOverallRatio.HasValue == value.HasValue &&
+                    (!_scrbBaseOverallRatio.HasValue || Math.Abs(_scrbBaseOverallRatio.Value - value!.Value) < 0.000001))
+                    return;
+                _scrbBaseOverallRatio = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double ScrbAdjustedTotalCost
+        {
+            get => _scrbAdjustedTotalCost;
+            private set
+            {
+                if (Math.Abs(_scrbAdjustedTotalCost - value) < 0.000001)
+                    return;
+                _scrbAdjustedTotalCost = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double ScrbAdjustedTotalBenefit
+        {
+            get => _scrbAdjustedTotalBenefit;
+            private set
+            {
+                if (Math.Abs(_scrbAdjustedTotalBenefit - value) < 0.000001)
+                    return;
+                _scrbAdjustedTotalBenefit = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double? ScrbAdjustedOverallRatio
+        {
+            get => _scrbAdjustedOverallRatio;
+            private set
+            {
+                if (_scrbAdjustedOverallRatio.HasValue == value.HasValue &&
+                    (!_scrbAdjustedOverallRatio.HasValue || Math.Abs(_scrbAdjustedOverallRatio.Value - value!.Value) < 0.000001))
+                    return;
+                _scrbAdjustedOverallRatio = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string? UnityFirstCostMessage
         {
             get => _unityFirstCostMessage;
@@ -226,6 +366,9 @@ namespace EconToolbox.Desktop.ViewModels
 
             FutureCosts.CollectionChanged += EntriesChanged;
             IdcEntries.CollectionChanged += EntriesChanged;
+            ScrbEntries.CollectionChanged += ScrbEntriesChanged;
+
+            RecalculateScrb();
         }
 
         private void EntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -250,6 +393,38 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 UpdatePvFactors();
                 Compute();
+            }
+        }
+
+        private void ScrbEntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (ScrbEntry entry in e.OldItems)
+                    entry.PropertyChanged -= ScrbEntryOnPropertyChanged;
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (ScrbEntry entry in e.NewItems)
+                    entry.PropertyChanged += ScrbEntryOnPropertyChanged;
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach (var entry in ScrbEntries)
+                    entry.PropertyChanged += ScrbEntryOnPropertyChanged;
+            }
+
+            RecalculateScrb();
+        }
+
+        private void ScrbEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ScrbEntry.SeparableCost) ||
+                e.PropertyName == nameof(ScrbEntry.RemainingBenefit))
+            {
+                RecalculateScrb();
             }
         }
 
@@ -299,6 +474,52 @@ namespace EconToolbox.Desktop.ViewModels
                 Idc = TotalInvestment = Crf = AnnualCost = Bcr = double.NaN;
                 Results = new ObservableCollection<string> { "Error computing results" };
             }
+        }
+
+        private void RecalculateScrb()
+        {
+            double costFactor = ScrbCostSensitivity / 100.0;
+            double benefitFactor = ScrbBenefitSensitivity / 100.0;
+
+            double baseCost = 0.0;
+            double baseBenefit = 0.0;
+            double adjustedCostTotal = 0.0;
+            double adjustedBenefitTotal = 0.0;
+
+            foreach (var entry in ScrbEntries)
+            {
+                baseCost += entry.SeparableCost;
+                baseBenefit += entry.RemainingBenefit;
+
+                double adjustedCost = entry.SeparableCost * costFactor;
+                double adjustedBenefit = entry.RemainingBenefit * benefitFactor;
+
+                entry.AdjustedCost = adjustedCost;
+                entry.AdjustedBenefit = adjustedBenefit;
+                entry.ScrbRatio = adjustedCost > 0.0 ? adjustedBenefit / adjustedCost : null;
+
+                adjustedCostTotal += adjustedCost;
+                adjustedBenefitTotal += adjustedBenefit;
+            }
+
+            ScrbBaseTotalCost = baseCost;
+            ScrbBaseTotalBenefit = baseBenefit;
+            ScrbBaseOverallRatio = baseCost > 0.0 ? baseBenefit / baseCost : null;
+
+            ScrbAdjustedTotalCost = adjustedCostTotal;
+            ScrbAdjustedTotalBenefit = adjustedBenefitTotal;
+            ScrbAdjustedOverallRatio = adjustedCostTotal > 0.0 ? adjustedBenefitTotal / adjustedCostTotal : null;
+        }
+
+        private static double SanitizeSensitivity(double value)
+        {
+            if (double.IsNaN(value) || double.IsInfinity(value))
+                return 0.0;
+
+            if (value < 0.0)
+                return 0.0;
+
+            return value;
         }
 
         private AnnualizerComputationInputs BuildComputationInputs()
