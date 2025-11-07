@@ -1018,10 +1018,9 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <TextBlock Margin="0,12,0,0"
-                                           Style="{StaticResource Text.Body}">
+                                <TextBlock Margin="0,12,0,0">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ScrbHasDataIssues}" Value="True">
@@ -1035,10 +1034,9 @@
                                     <Run Text="Data validation checks: "/>
                                     <Run Text="Needs attention"/>
                                 </TextBlock>
-                                <TextBlock Margin="0,12,0,0"
-                                           Style="{StaticResource Text.Body}">
+                                <TextBlock Margin="0,12,0,0">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ScrbHasDataIssues}" Value="False">
@@ -1051,10 +1049,9 @@
                                     <Run Text="Data validation checks: "/>
                                     <Run Text="Pass"/>
                                 </TextBlock>
-                                <TextBlock Margin="0,4,0,0"
-                                           Style="{StaticResource Text.Body}">
+                                <TextBlock Margin="0,4,0,0">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ScrbHasBelowUnity}" Value="True">
@@ -1068,10 +1065,9 @@
                                     <Run Text="Unity compliance: "/>
                                     <Run Text="One or more features are below unity"/>
                                 </TextBlock>
-                                <TextBlock Margin="0,4,0,0"
-                                           Style="{StaticResource Text.Body}">
+                                <TextBlock Margin="0,4,0,0">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding ScrbHasBelowUnity}" Value="False">
