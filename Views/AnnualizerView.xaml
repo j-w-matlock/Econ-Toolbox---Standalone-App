@@ -9,8 +9,12 @@
                       HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto"
                       Padding="{StaticResource Padding.Card}">
-              <Grid>
-                  <Grid.RowDefinitions>
+            <TabControl Margin="0"
+                        Padding="0"
+                        HorizontalContentAlignment="Stretch">
+                <TabItem Header="Annualization" Padding="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
                       <RowDefinition Height="Auto"/>
                       <RowDefinition Height="Auto"/>
                       <RowDefinition Height="Auto"/>
@@ -736,6 +740,169 @@
                       </Border>
                   </StackPanel>
               </Grid>
-          </ScrollViewer>
+                </TabItem>
+                <TabItem Header="SCRB Analysis" Padding="0">
+                    <StackPanel>
+                        <Border Style="{StaticResource Border.Explainer}"
+                                Padding="{StaticResource Padding.Card}"
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                               Text=""
+                                               FontSize="22"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               Margin="{StaticResource Margin.Inline}"/>
+                                    <TextBlock Text="SCRB Economic Update Workflow"
+                                               FontWeight="Bold"
+                                               FontSize="16"
+                                               Foreground="{StaticResource Brush.Primary}"/>
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource Text.Body}">
+                                    <Run Text="• Use the separated costs-remaining benefits (SCRB) framework to show how each feature supports the project purpose."/>
+                                    <LineBreak/>
+                                    <Run Text="• Align the price level, base year, and discount rate with the annualization tab so findings can be compared directly."/>
+                                    <LineBreak/>
+                                    <Run Text="• Document incremental benefit narratives that justify retaining each separable element per ER 1105-2-100, Chapter 2."/>
+                                    <LineBreak/>
+                                    <Run Text="• Summarize policy references and reviewer coordination notes before exporting for decision milestones."/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Border.ResultInfo}"
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                               Text=""
+                                               FontSize="18"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock Text="Pre-Update Checklist"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource Brush.Primary}"/>
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource Text.Body}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.TopSmall}">
+                                    <Run Text="• Confirm the separable feature list, current scope, and responsible district economist."/>
+                                    <LineBreak/>
+                                    <Run Text="• Gather the latest price-level indices, CWCCIS factors, and approved discount rate (OMB Circular A-94, Appendix C)."/>
+                                    <LineBreak/>
+                                    <Run Text="• Compile updated benefit estimates, traffic or demand assumptions, and any project performance constraints."/>
+                                    <LineBreak/>
+                                    <Run Text="• Log coordination with Planning, Engineering, and Project Management so reviewers know who validated each assumption."/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Border.ResultInfo}"
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                               Text=""
+                                               FontSize="18"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock Text="Analysis Steps"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource Brush.Primary}"/>
+                                </StackPanel>
+                                <Grid Margin="{StaticResource Margin.Stack}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" MinWidth="180"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="0"
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,12,12"
+                                               Text="1. Update separable costs"/>
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="1"
+                                               Style="{StaticResource Text.Body}"
+                                               TextWrapping="Wrap"
+                                               Text="Reprice each separable element to the current price level, aligning assumptions with the IDC schedule and any future cost entries."/>
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="0"
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,12,12"
+                                               Text="2. Refresh remaining benefits"/>
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="1"
+                                               Style="{StaticResource Text.Body}"
+                                               TextWrapping="Wrap"
+                                               Text="Pair updated traffic, demand, or performance data with the benefits methodology approved for the study and note any risk adjustments."/>
+                                    <TextBlock Grid.Row="2"
+                                               Grid.Column="0"
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,12,0"
+                                               Text="3. Compare SCRB ratios"/>
+                                    <TextBlock Grid.Row="2"
+                                               Grid.Column="1"
+                                               Style="{StaticResource Text.Body}"
+                                               TextWrapping="Wrap"
+                                               Text="Compute SCRB ratios feature-by-feature, highlight those exceeding one, and flag items below one for management review."/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Border.ResultInfo}"
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                               Text=""
+                                               FontSize="18"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock Text="Policy References"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource Brush.Primary}"/>
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource Text.Body}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.TopSmall}">
+                                    <Run Text="• ER 1105-2-100, Chapter 2 and Appendix E outline SCRB expectations and documentation standards."/>
+                                    <LineBreak/>
+                                    <Run Text="• ER 1165-2-502 and Planning Bulletin 2017-01 provide annual economic update guidance for separable elements."/>
+                                    <LineBreak/>
+                                    <Run Text="• Follow SMART Planning milestones and MSC policy memos when presenting SCRB findings for decision briefings."/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Border.ResultInfo}">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                               Text=""
+                                               FontSize="18"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock Text="Documentation Prompts"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource Brush.Primary}"/>
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource Text.Body}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.TopSmall}">
+                                    <Run Text="• Record how SCRB ratios changed from the last update and explain the cost or benefit drivers."/>
+                                    <LineBreak/>
+                                    <Run Text="• Identify mitigation or design commitments tied to each separable element so reviewers understand retained obligations."/>
+                                    <LineBreak/>
+                                    <Run Text="• Note when HQ or MSC policy reviews were completed and capture any conditions placed on continued authorization."/>
+                                    <LineBreak/>
+                                    <Run Text="• Attach supporting spreadsheets or memorandums in the project file so the annualization tab and SCRB summary stay synchronized."/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>
