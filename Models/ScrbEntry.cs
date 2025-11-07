@@ -10,6 +10,9 @@ namespace EconToolbox.Desktop.Models
         private double _adjustedCost;
         private double _adjustedBenefit;
         private double? _scrbRatio;
+        private bool _isBelowUnity;
+        private bool _hasDataIssue;
+        private string? _complianceNote;
 
         public string FeatureName
         {
@@ -80,6 +83,42 @@ namespace EconToolbox.Desktop.Models
                     (!_scrbRatio.HasValue || Math.Abs(_scrbRatio.Value - value!.Value) < 0.000001))
                     return;
                 _scrbRatio = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsBelowUnity
+        {
+            get => _isBelowUnity;
+            set
+            {
+                if (_isBelowUnity == value)
+                    return;
+                _isBelowUnity = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool HasDataIssue
+        {
+            get => _hasDataIssue;
+            set
+            {
+                if (_hasDataIssue == value)
+                    return;
+                _hasDataIssue = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string? ComplianceNote
+        {
+            get => _complianceNote;
+            set
+            {
+                if (string.Equals(_complianceNote, value, StringComparison.Ordinal))
+                    return;
+                _complianceNote = value;
                 OnPropertyChanged();
             }
         }

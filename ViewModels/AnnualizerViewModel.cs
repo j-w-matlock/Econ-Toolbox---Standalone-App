@@ -43,6 +43,9 @@ namespace EconToolbox.Desktop.ViewModels
         private double _scrbAdjustedTotalCost;
         private double _scrbAdjustedTotalBenefit;
         private double? _scrbAdjustedOverallRatio;
+        private bool _scrbHasBelowUnity;
+        private bool _scrbHasDataIssues;
+        private readonly ObservableCollection<string> _scrbComplianceFindings = new();
 
         private readonly record struct AnnualizerComputationInputs(
             List<(double cost, double yearOffset, double timingOffset)> FutureCosts,
@@ -340,6 +343,32 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        public bool ScrbHasBelowUnity
+        {
+            get => _scrbHasBelowUnity;
+            private set
+            {
+                if (_scrbHasBelowUnity == value)
+                    return;
+                _scrbHasBelowUnity = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ScrbHasDataIssues
+        {
+            get => _scrbHasDataIssues;
+            private set
+            {
+                if (_scrbHasDataIssues == value)
+                    return;
+                _scrbHasDataIssues = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<string> ScrbComplianceFindings => _scrbComplianceFindings;
+
         public string? UnityFirstCostMessage
         {
             get => _unityFirstCostMessage;
@@ -422,7 +451,8 @@ namespace EconToolbox.Desktop.ViewModels
         private void ScrbEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ScrbEntry.SeparableCost) ||
-                e.PropertyName == nameof(ScrbEntry.RemainingBenefit))
+                e.PropertyName == nameof(ScrbEntry.RemainingBenefit) ||
+                e.PropertyName == nameof(ScrbEntry.FeatureName))
             {
                 RecalculateScrb();
             }
@@ -485,6 +515,8 @@ namespace EconToolbox.Desktop.ViewModels
             double baseBenefit = 0.0;
             double adjustedCostTotal = 0.0;
             double adjustedBenefitTotal = 0.0;
+            bool hasBelowUnity = false;
+            bool hasDataIssues = false;
 
             foreach (var entry in ScrbEntries)
             {
@@ -498,6 +530,28 @@ namespace EconToolbox.Desktop.ViewModels
                 entry.AdjustedBenefit = adjustedBenefit;
                 entry.ScrbRatio = adjustedCost > 0.0 ? adjustedBenefit / adjustedCost : null;
 
+                bool missingName = string.IsNullOrWhiteSpace(entry.FeatureName);
+                bool invalidCost = entry.SeparableCost <= 0.0;
+                bool invalidBenefit = entry.RemainingBenefit < 0.0;
+
+                entry.HasDataIssue = missingName || invalidCost || invalidBenefit;
+                entry.IsBelowUnity = entry.ScrbRatio.HasValue && entry.ScrbRatio.Value < 1.0;
+
+                var complianceNotes = new List<string>();
+                if (missingName)
+                    complianceNotes.Add("Identify the separable element per ER 1105-2-100, Chapter 2.");
+                if (invalidCost)
+                    complianceNotes.Add("Report separable costs greater than zero per ER 1105-2-100, Appendix E.");
+                if (invalidBenefit)
+                    complianceNotes.Add("Confirm remaining benefits are non-negative and supported by documentation.");
+                if (entry.IsBelowUnity)
+                    complianceNotes.Add("SCRB ratio below 1.0; coordinate management decision per SMART Planning policy.");
+
+                entry.ComplianceNote = complianceNotes.Count > 0 ? string.Join(' ', complianceNotes) : null;
+
+                hasDataIssues |= entry.HasDataIssue;
+                hasBelowUnity |= entry.IsBelowUnity;
+
                 adjustedCostTotal += adjustedCost;
                 adjustedBenefitTotal += adjustedBenefit;
             }
@@ -509,6 +563,11 @@ namespace EconToolbox.Desktop.ViewModels
             ScrbAdjustedTotalCost = adjustedCostTotal;
             ScrbAdjustedTotalBenefit = adjustedBenefitTotal;
             ScrbAdjustedOverallRatio = adjustedCostTotal > 0.0 ? adjustedBenefitTotal / adjustedCostTotal : null;
+
+            ScrbHasDataIssues = hasDataIssues;
+            ScrbHasBelowUnity = hasBelowUnity;
+
+            UpdateScrbComplianceFindings();
         }
 
         private static double SanitizeSensitivity(double value)
@@ -519,7 +578,77 @@ namespace EconToolbox.Desktop.ViewModels
             if (value < 0.0)
                 return 0.0;
 
+            if (value > 200.0)
+                return 200.0;
+
             return value;
+        }
+
+        private void UpdateScrbComplianceFindings()
+        {
+            var findings = new List<string>();
+
+            if (ScrbEntries.Count == 0)
+            {
+                findings.Add("No SCRB features are defined. Provide the current separable elements list in the decision file per ER 1105-2-100, Chapter 2.");
+            }
+            else
+            {
+                int unnamedCount = ScrbEntries.Count(e => string.IsNullOrWhiteSpace(e.FeatureName));
+                if (unnamedCount > 0)
+                    findings.Add($"{unnamedCount} separable element(s) are missing names. Identify each feature to align with the approved PMP and economic appendix.");
+
+                var invalidCosts = ScrbEntries
+                    .Where(e => e.SeparableCost <= 0.0)
+                    .Select(e => FormatFeatureName(e.FeatureName))
+                    .ToList();
+                if (invalidCosts.Count > 0)
+                    findings.Add($"Costs for {string.Join(", ", invalidCosts)} are not greater than zero. Reconcile the estimate with current price level guidance.");
+
+                var negativeBenefits = ScrbEntries
+                    .Where(e => e.RemainingBenefit < 0.0)
+                    .Select(e => FormatFeatureName(e.FeatureName))
+                    .ToList();
+                if (negativeBenefits.Count > 0)
+                    findings.Add($"Benefits for {string.Join(", ", negativeBenefits)} are negative. Document risk adjustments or correct the inputs per ER 1105-2-100, Appendix E.");
+
+                var belowUnity = ScrbEntries
+                    .Where(e => e.IsBelowUnity)
+                    .Select(e => FormatFeatureName(e.FeatureName))
+                    .ToList();
+                if (belowUnity.Count > 0)
+                    findings.Add($"SCRB ratios below 1.0 for {string.Join(", ", belowUnity)}. Coordinate mitigation or scope decisions with the PDT and MSC reviewers per SMART Planning guidance.");
+            }
+
+            if (ScrbBaseOverallRatio.HasValue && ScrbAdjustedOverallRatio.HasValue)
+            {
+                double delta = ScrbAdjustedOverallRatio.Value - ScrbBaseOverallRatio.Value;
+                if (Math.Abs(delta) >= 0.01)
+                {
+                    string direction = delta > 0 ? "increased" : "decreased";
+                    findings.Add($"Overall SCRB ratio {direction} by {Math.Abs(delta):0.00} after applying sensitivities. Explain the drivers in the annual economic update memorandum.");
+                }
+            }
+
+            _scrbComplianceFindings.Clear();
+
+            if (findings.Count == 0)
+            {
+                _scrbComplianceFindings.Add("All SCRB inputs pass basic checks. Document reviewer concurrence and attach supporting schedules per ER 1105-2-100, Appendix E.");
+            }
+            else
+            {
+                foreach (var finding in findings)
+                    _scrbComplianceFindings.Add(finding);
+            }
+        }
+
+        private static string FormatFeatureName(string? featureName)
+        {
+            if (string.IsNullOrWhiteSpace(featureName))
+                return "(unnamed element)";
+
+            return featureName.Trim();
         }
 
         private AnnualizerComputationInputs BuildComputationInputs()

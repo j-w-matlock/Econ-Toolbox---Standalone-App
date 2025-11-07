@@ -848,7 +848,30 @@
                                                 <Setter Property="Padding" Value="4,0,4,0"/>
                                                 <Setter Property="Margin" Value="0"/>
                                             </Style>
+                                            <Style x:Key="ScrbRatioCellStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsBelowUnity}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource Brush.AlertForeground}"/>
+                                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
                                         </DataGrid.Resources>
+                                        <DataGrid.RowStyle>
+                                            <Style TargetType="DataGridRow">
+                                                <Setter Property="ToolTip" Value="{Binding ComplianceNote}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasDataIssue}" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                                        <Setter Property="BorderBrush" Value="{StaticResource Brush.WarningBorder}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsBelowUnity}" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource Brush.HighlightBackground}"/>
+                                                        <Setter Property="BorderBrush" Value="{StaticResource Brush.HighlightBorder}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DataGrid.RowStyle>
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Feature"
                                                                 Width="2*"
@@ -903,7 +926,7 @@
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Width="*"
                                                                 IsReadOnly="True"
-                                                                ElementStyle="{StaticResource NumericCellStyle}">
+                                                                ElementStyle="{StaticResource ScrbRatioCellStyle}">
                                                 <DataGridTextColumn.Header>
                                                     <TextBlock Text="SCRB Ratio"/>
                                                 </DataGridTextColumn.Header>
@@ -960,6 +983,107 @@
                                                    Text="{Binding ScrbAdjustedOverallRatio, StringFormat=Adjusted SCRB Ratio: {0:0.00}, TargetNullValue=Adjusted SCRB Ratio: —}"/>
                                     </Grid>
                                 </Grid>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Border.ResultInfo}"
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                               Text=""
+                                               FontSize="18"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock Text="Compliance Review Summary"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource Brush.Primary}"/>
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource Text.Body}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.TopSmall}"
+                                           Text="Automated checks highlight policy-sensitive items to document before submitting the SCRB package for review."/>
+                                <ItemsControl ItemsSource="{Binding ScrbComplianceFindings}"
+                                              Margin="0,8,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                <TextBlock Text="•"
+                                                           Margin="0,0,8,0"
+                                                           FontWeight="Bold"
+                                                           Foreground="{StaticResource Brush.Primary}"/>
+                                                <TextBlock Style="{StaticResource Text.Body}"
+                                                           TextWrapping="Wrap"
+                                                           Text="{Binding}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Margin="0,12,0,0"
+                                           Style="{StaticResource Text.Body}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ScrbHasDataIssues}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource Brush.AlertForeground}"/>
+                                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <Run Text="Data validation checks: "/>
+                                    <Run Text="Needs attention"/>
+                                </TextBlock>
+                                <TextBlock Margin="0,12,0,0"
+                                           Style="{StaticResource Text.Body}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ScrbHasDataIssues}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <Run Text="Data validation checks: "/>
+                                    <Run Text="Pass"/>
+                                </TextBlock>
+                                <TextBlock Margin="0,4,0,0"
+                                           Style="{StaticResource Text.Body}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ScrbHasBelowUnity}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource Brush.AlertForeground}"/>
+                                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <Run Text="Unity compliance: "/>
+                                    <Run Text="One or more features are below unity"/>
+                                </TextBlock>
+                                <TextBlock Margin="0,4,0,0"
+                                           Style="{StaticResource Text.Body}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ScrbHasBelowUnity}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <Run Text="Unity compliance: "/>
+                                    <Run Text="All features at or above unity"/>
+                                </TextBlock>
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource Border.Explainer}"
