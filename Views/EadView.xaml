@@ -247,11 +247,11 @@
                                            Foreground="{StaticResource Brush.Primary}"/>
                             </StackPanel>
                             <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0">
-                                <Run Text="• Document sources for stage-frequency and damage data in accordance with ER 1105-2-100 economic evaluation requirements."/>
+                                <Run Text="• Document sources for stage-frequency and damage data in accordance with ER 1105-2-100, Chapter 2 (Section 2-3, pp. 2-14–2-20) economic evaluation requirements."/>
                                 <LineBreak/>
-                                <Run Text="• Coordinate curve assumptions with hydraulics and economics PDT leads before releasing EAD figures for decision documents."/>
+                                <Run Text="• Coordinate curve assumptions with hydraulics and economics PDT leads before releasing EAD figures for decision documents (ER 1105-2-100, Appendix D, pp. D-14–D-22)."/>
                                 <LineBreak/>
-                                <Run Text="• Archive exported tables and charts within the district quality management system (ER 5-1-11) so reviewers can trace updates."/>
+                                <Run Text="• Archive exported tables and charts within the district quality management system (ER 5-1-11, Appendix C, pp. C-3–C-5) so reviewers can trace updates."/>
                             </TextBlock>
                         </StackPanel>
                     </Border>

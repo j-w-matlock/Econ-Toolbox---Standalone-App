@@ -17,8 +17,9 @@
                     <TextBlock Margin="{StaticResource Margin.TopSmall}">
                         This worksheet estimates people-at-one-time (PAOT) and design day user capacities for
                         camping, shoreline fishing, and boating in accordance with U.S. Army Corps of Engineers
-                        recreation planning policy. Supply facility inventory counts and adjust the policy
-                        multipliers to align with site-specific guidance before selecting <Run Text="Calculate"/>.
+                        recreation planning policy (ER 1130-2-550, Chapter 3, pp. 3-1–3-6). Supply facility
+                        inventory counts and adjust the policy multipliers to align with site-specific guidance
+                        before selecting <Run Text="Calculate"/>.
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -84,7 +85,7 @@
 
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Typical number of people per occupied site (5 per Corps guidance)."/>
+                                            ToolTip="Typical number of people per occupied site (5 per Corps guidance from EP 1130-2-550, Table 8-1, p. 8-4)."/>
                             <TextBlock Margin="4,0,0,0" Text="Average occupancy"/>
                         </StackPanel>
                         <TextBox Grid.Row="1"
@@ -345,11 +346,11 @@
                     <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                 </StackPanel>
                 <TextBlock Margin="{StaticResource Margin.TopSmall}" TextWrapping="Wrap">
-                    <Run Text="• Reference EP 1130-2-550 and ER 1130-2-550 when selecting turnover, spacing, and season length multipliers."/>
+                    <Run Text="• Reference EP 1130-2-550, Chapter 8 (pp. 8-3–8-7) and Appendix H (Tables H-1 through H-3, pp. H-2–H-4) alongside ER 1130-2-550, Chapter 3 (pp. 3-1–3-6) when selecting turnover, spacing, and season length multipliers."/>
                     <LineBreak/>
-                    <Run Text="• Document any deviations from master plan assumptions so reviewers understand why capacities differ from legacy reports."/>
+                    <Run Text="• Document any deviations from master plan assumptions so reviewers understand why capacities differ from legacy reports (ER 1130-2-550, Chapter 2, pp. 2-6–2-8)."/>
                     <LineBreak/>
-                    <Run Text="• Store exported tables and notes with the project delivery team's PMP records to support policy and real estate coordination."/>
+                    <Run Text="• Store exported tables and notes with the project delivery team's PMP records to support policy and real estate coordination (ER 5-1-11, Appendix C, pp. C-3–C-5)."/>
                 </TextBlock>
             </StackPanel>
         </Border>
