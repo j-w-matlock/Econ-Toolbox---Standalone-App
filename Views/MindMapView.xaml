@@ -23,6 +23,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
@@ -483,5 +484,33 @@
                 </Grid>
             </Border>
         </Grid>
+        <StackPanel Grid.Row="2" Margin="0,16,0,0">
+            <Border Style="{StaticResource Border.ResultInfo}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        Use the breadcrumb path and zoom percentage above the canvas to orient teammates. Nodes capture titles, notes, and owners; hover tooltips on connection points help explain how themes link together when exporting or presenting the map.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <Run Text="• Treat the canvas as working notes—store final decisions in the project file system per ER 5-1-11 records management."/>
+                        <LineBreak/>
+                        <Run Text="• Avoid capturing PII or procurement-sensitive details; reference secure SharePoint or RMS locations instead."/>
+                        <LineBreak/>
+                        <Run Text="• Export mind maps with meeting summaries so leadership sees the qualitative context behind quantitative analyses."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
     </Grid>
 </UserControl>

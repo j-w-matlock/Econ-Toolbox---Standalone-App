@@ -283,21 +283,34 @@
                     </Grid>
                 </Border>
             </Grid>
-            <Border Grid.Row="2"
-                    Margin="0,16,0,0"
-                    Background="#F9FAFE"
-                    BorderBrush="#D8E4F8"
-                    BorderThickness="1"
-                    CornerRadius="8"
-                    Padding="12">
-                <StackPanel>
-                    <TextBlock Text="Milestone Notes"
-                               FontWeight="SemiBold"/>
-                    <TextBlock TextWrapping="Wrap" Margin="0,4,0,0" FontSize="12">
-                        Milestones use zero duration and the diamond marker in the timeline. Enter comma separated dependencies to chain tasks in the correct order.
-                    </TextBlock>
-                </StackPanel>
-            </Border>
+            <StackPanel Grid.Row="2" Margin="0,16,0,0">
+                <Border Style="{StaticResource Border.ResultInfo}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                            <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            The task grid drives the bars, milestone diamonds, and total cost at the bottom of the table. Use the Schedule Summary caption above the chart to describe the active window, and remember that zero-duration tasks render as milestones with the diamond marker.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                            <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            <Run Text="• Align task names, durations, and dependencies with the approved PMP baseline; document revisions through configuration control."/>
+                            <LineBreak/>
+                            <Run Text="• Share exported schedules with the district planning lead so milestones integrate with MSC reporting requirements."/>
+                            <LineBreak/>
+                            <Run Text="• Avoid storing sensitive acquisition details—link to secure contract files instead and capture summary notes within the timeline."/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </UserControl>

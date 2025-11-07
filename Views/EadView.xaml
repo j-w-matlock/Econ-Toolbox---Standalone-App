@@ -216,28 +216,67 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Border Grid.Row="4"
-                        Style="{StaticResource Border.ResultInfo}">
-                    <StackPanel>
-                        <TextBlock Text="Result Interpretation"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"
-                                   Margin="{StaticResource Margin.Stack}"/>
-                        <TextBlock Style="{StaticResource Text.Body}">
-                            Each Expected Annual Damage value averages the damage column across the entire probability curve you supplied. Higher damages at frequent events raise the EAD most dramatically. The plotted curves update with every calculation, helping you confirm the shape of the probability and stage relationships before exporting your Excel summary.
-                        </TextBlock>
-                        <TextBlock Text="Formula Reference"
-                                   FontWeight="SemiBold"
-                                   Margin="{StaticResource Margin.Stack}"/>
-                        <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap">
-                            <Run Text="• Input rows are ordered by exceedance probability p, then the tool inserts anchors at p = 1 with damage = 0 and at p = 0 with damage equal to the maximum entered value."/>
-                            <LineBreak/>
-                            <Run Text="• Expected Annual Damage is integrated with the trapezoidal rule: EAD = Σ 0.5 × (dᵢ + dᵢ₊₁) × (pᵢ − pᵢ₊₁)."/>
-                            <LineBreak/>
-                            <Run Text="• Stage and frequency curves plot the same damage values against their paired probabilities or stages for visual QA/QC."/>
-                        </TextBlock>
-                    </StackPanel>
-                </Border>
+                <StackPanel Grid.Row="4" Margin="{StaticResource Margin.StackLarge}">
+                    <Border Style="{StaticResource Border.ResultInfo}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                           Text=""
+                                           FontSize="18"
+                                           Foreground="{StaticResource Brush.Primary}"
+                                           Margin="0,0,8,0"/>
+                                <TextBlock Text="How to Read the Results"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource Brush.Primary}"/>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0">
+                                Each Expected Annual Damage value averages the damage column across the entire probability curve you supplied. Higher damages at frequent events raise the EAD most dramatically. The plotted curves update with every calculation, helping you confirm the shape of the frequency and stage relationships before exporting your Excel summary.
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                           Text=""
+                                           FontSize="18"
+                                           Foreground="{StaticResource Brush.Primary}"
+                                           Margin="0,0,8,0"/>
+                                <TextBlock Text="Policy Notes"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource Brush.Primary}"/>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0">
+                                <Run Text="• Document sources for stage-frequency and damage data in accordance with ER 1105-2-100 economic evaluation requirements."/>
+                                <LineBreak/>
+                                <Run Text="• Coordinate curve assumptions with hydraulics and economics PDT leads before releasing EAD figures for decision documents."/>
+                                <LineBreak/>
+                                <Run Text="• Archive exported tables and charts within the district quality management system (ER 5-1-11) so reviewers can trace updates."/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock FontFamily="Segoe MDL2 Assets"
+                                           Text=""
+                                           FontSize="18"
+                                           Foreground="{StaticResource Brush.Primary}"
+                                           Margin="0,0,8,0"/>
+                                <TextBlock Text="Formula Reference"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource Brush.Primary}"/>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0">
+                                <Run Text="• Input rows are ordered by exceedance probability p, then the tool inserts anchors at p = 1 with damage = 0 and at p = 0 with damage equal to the maximum entered value."/>
+                                <LineBreak/>
+                                <Run Text="• Expected Annual Damage is integrated with the trapezoidal rule: EAD = Σ 0.5 × (dᵢ + dᵢ₊₁) × (pᵢ − pᵢ₊₁)."/>
+                                <LineBreak/>
+                                <Run Text="• Stage and frequency curves plot the same damage values against their paired probabilities or stages for visual QA/QC."/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
             </Grid>
         </ScrollViewer>
     </Grid>

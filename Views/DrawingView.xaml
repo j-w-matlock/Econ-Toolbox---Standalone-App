@@ -13,6 +13,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Style="{StaticResource Border.Explainer}">
                 <StackPanel>
@@ -112,6 +113,34 @@
                                ToolTip="Draw freehand notes, diagrams, or signatures using the selected pen settings."/>
                 </Grid>
             </Border>
+            <StackPanel Grid.Row="3" Margin="0,16,0,0">
+                <Border Style="{StaticResource Border.ResultInfo}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                            <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            The canvas preserves every stroke so exported workbooks reproduce the sketch exactly. Pen settings only affect new strokes, so note color and thickness changes if they convey meaning for reviewers.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                            <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            <Run Text="• Use the sketch pad for conceptual communication only—archive signed drawings and approvals in the official design repository."/>
+                            <LineBreak/>
+                            <Run Text="• Avoid depicting controlled unclassified information or PII; reference secure systems when necessary."/>
+                            <LineBreak/>
+                            <Run Text="• When sharing exports, include context in meeting notes so the hand sketch aligns with formal design documentation."/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </UserControl>
