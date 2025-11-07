@@ -10,6 +10,9 @@
     <Color x:Key="Color.Border">#CBD9E6</Color>
     <Color x:Key="Color.TextPrimary">#102337</Color>
     <Color x:Key="Color.TextSecondary">#3B5B75</Color>
+    <Color x:Key="Color.WarningBackground">#FFF5E5</Color>
+    <Color x:Key="Color.WarningBorder">#F0B429</Color>
+    <Color x:Key="Color.AlertForeground">#8A1C1C</Color>
 
     <!-- Brushes -->
     <SolidColorBrush x:Key="Brush.Primary" Color="{StaticResource Color.Primary}"/>
@@ -19,6 +22,9 @@
     <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}"/>
     <SolidColorBrush x:Key="Brush.TextPrimary" Color="{StaticResource Color.TextPrimary}"/>
     <SolidColorBrush x:Key="Brush.TextSecondary" Color="{StaticResource Color.TextSecondary}"/>
+    <SolidColorBrush x:Key="Brush.WarningBackground" Color="{StaticResource Color.WarningBackground}"/>
+    <SolidColorBrush x:Key="Brush.WarningBorder" Color="{StaticResource Color.WarningBorder}"/>
+    <SolidColorBrush x:Key="Brush.AlertForeground" Color="{StaticResource Color.AlertForeground}"/>
     <Color x:Key="Color.HighlightBackground">#E6F3F7</Color>
     <Color x:Key="Color.HighlightBorder">#9CC7D5</Color>
     <SolidColorBrush x:Key="Brush.HighlightBackground" Color="{StaticResource Color.HighlightBackground}"/>
