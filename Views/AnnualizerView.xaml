@@ -840,7 +840,7 @@
                                         <TextBox Width="72"
                                                  Margin="0,0,4,0"
                                                  HorizontalContentAlignment="Right"
-                                                 Text="{Binding ScrbBenefitSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                 Text="{Binding ScrbBenefitSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}"/>
                                         <TextBlock VerticalAlignment="Center"
                                                    Text="%"/>
                                     </StackPanel>
@@ -865,7 +865,7 @@
                                         <TextBox Width="72"
                                                  Margin="0,0,4,0"
                                                  HorizontalContentAlignment="Right"
-                                                 Text="{Binding ScrbCostSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                 Text="{Binding ScrbCostSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}"/>
                                         <TextBlock VerticalAlignment="Center"
                                                    Text="%"/>
                                     </StackPanel>
@@ -893,7 +893,7 @@
                                                    Margin="0,0,8,0"/>
                                         <TextBox Width="72"
                                                  HorizontalContentAlignment="Right"
-                                                 Text="{Binding ScrbDiscountRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                 Text="{Binding ScrbDiscountRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}"/>
                                     </StackPanel>
 
                                     <Grid Grid.Row="4"
@@ -928,6 +928,7 @@
                                                         <Binding Path="OriginalCost"
                                                                  Mode="TwoWay"
                                                                  UpdateSourceTrigger="PropertyChanged"
+                                                                 Delay="300"
                                                                  Converter="{StaticResource CurrencyConverter}"/>
                                                     </DataGridTextColumn.Binding>
                                                 </DataGridTextColumn>
@@ -953,7 +954,8 @@
                                                     <DataGridTextColumn.Binding>
                                                         <Binding Path="UpdateFactor"
                                                                  Mode="TwoWay"
-                                                                 UpdateSourceTrigger="PropertyChanged"/>
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 Delay="300"/>
                                                     </DataGridTextColumn.Binding>
                                                 </DataGridTextColumn>
                                                 <DataGridTextColumn Width="*"
@@ -1003,6 +1005,7 @@
                                                         <Binding Path="OriginalBenefit"
                                                                  Mode="TwoWay"
                                                                  UpdateSourceTrigger="PropertyChanged"
+                                                                 Delay="300"
                                                                  Converter="{StaticResource CurrencyConverter}"/>
                                                     </DataGridTextColumn.Binding>
                                                 </DataGridTextColumn>
@@ -1028,7 +1031,8 @@
                                                     <DataGridTextColumn.Binding>
                                                         <Binding Path="UpdateFactor"
                                                                  Mode="TwoWay"
-                                                                 UpdateSourceTrigger="PropertyChanged"/>
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 Delay="300"/>
                                                     </DataGridTextColumn.Binding>
                                                 </DataGridTextColumn>
                                                 <DataGridTextColumn Width="*"
