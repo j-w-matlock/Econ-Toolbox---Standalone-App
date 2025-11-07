@@ -780,6 +780,32 @@
             </StackPanel>
         </TabItem>
         </TabControl>
+        <Border Style="{StaticResource Border.ResultInfo}" Margin="10,0,10,0">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                    <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    Storage Allocation, Updated RR&amp;R, and Total Annual Cost tabs feed the same allocation percentage and cost streams. Review the allocation tab first, then confirm how escalated costs, RR&amp;R schedules, and annualized totals change as you adjust discounting assumptions across scenarios.
+                </TextBlock>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource Border.ResultInfo}" Margin="10,12,10,0">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    <Run Text="• Apply the latest CWCCI escalation factors and document the fiscal year consistent with ER 1105-2-100 and EM 1110-2-1304 guidance."/>
+                    <LineBreak/>
+                    <Run Text="• Use the current OMB Circular A-94 real discount rate tables when entering capital recovery factors for Federal evaluations."/>
+                    <LineBreak/>
+                    <Run Text="• Save exported workbooks with plan formulation records so reviewers can trace storage allocation, joint cost sharing, and RR&amp;R assumptions."/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

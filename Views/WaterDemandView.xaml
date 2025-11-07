@@ -16,6 +16,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0"
                     Style="{StaticResource Border.Explainer}"
@@ -489,6 +490,21 @@
                 </StackPanel>
             </Border>
             <Border Grid.Row="5" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <Run Text="• Align forecast assumptions with current municipal and USACE water supply planning guidance (ER 1105-2-100, Appendix E)."/>
+                        <LineBreak/>
+                        <Run Text="• Coordinate demand scenarios with system operations, environmental, and plan formulation leads before citing results in decision documents."/>
+                        <LineBreak/>
+                        <Run Text="• Retain exported demand tables and adjustment notes in the study's official records so reviewers can trace conservation or loss-factor changes."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="6" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>

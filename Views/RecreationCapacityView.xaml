@@ -328,18 +328,37 @@
 
         <Border Style="{StaticResource Border.ResultInfo}">
             <StackPanel>
-                <TextBlock Text="Policy notes"
-                           FontWeight="Bold"
-                           FontSize="15"/>
-                <TextBlock Margin="{StaticResource Margin.TopSmall}"
-                           Text="{Binding GuidanceNotes}"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                    <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap"
+                           Margin="{StaticResource Margin.TopSmall}">
+                    Camping, shoreline fishing, and boating blocks each report people-at-one-time (PAOT), design day capacity, and seasonal user days. The totals at the bottom combine all activities so you can immediately compare recreation supply against plan targets or historic visitation.
+                </TextBlock>
             </StackPanel>
         </Border>
-        <Border Style="{StaticResource Border.ResultInfo}">
+        <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
             <StackPanel>
-                <TextBlock Text="Formula Reference"
-                           FontWeight="SemiBold"
-                           FontSize="15"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                </StackPanel>
+                <TextBlock Margin="{StaticResource Margin.TopSmall}" TextWrapping="Wrap">
+                    <Run Text="• Reference EP 1130-2-550 and ER 1130-2-550 when selecting turnover, spacing, and season length multipliers."/>
+                    <LineBreak/>
+                    <Run Text="• Document any deviations from master plan assumptions so reviewers understand why capacities differ from legacy reports."/>
+                    <LineBreak/>
+                    <Run Text="• Store exported tables and notes with the project delivery team's PMP records to support policy and real estate coordination."/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                </StackPanel>
                 <TextBlock TextWrapping="Wrap"
                            Margin="{StaticResource Margin.TopSmall}">
                     <Run Text="• Camping PAOT = Campsites × Average Group Size; Daily Capacity = PAOT × Daily Turnover; Seasonal Capacity = Daily Capacity × Season Length."/>

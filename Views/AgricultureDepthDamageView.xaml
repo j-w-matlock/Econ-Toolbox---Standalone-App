@@ -737,9 +737,60 @@
             <Border Style="{StaticResource Border.ResultInfo}"
                     Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
-                    <TextBlock Text="Formula Reference"
-                               FontWeight="SemiBold"
-                               Foreground="{StaticResource Brush.Primary}"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets"
+                                   Text=""
+                                   FontSize="18"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Text="How to Read the Results"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Text.Body}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.TopSmall}">
+                        The modeled impact probability highlights how seasonal stress raises or lowers annual risk given your exposure settings. The depth-duration table and CropScape export translate that stress into percent damage and acreage so you can see which stages or locations drive losses.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Border.ResultInfo}"
+                    Margin="0,12,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets"
+                                   Text=""
+                                   FontSize="18"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Text="Policy Notes"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Text.Body}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.TopSmall}">
+                        <Run Text="• Align crop damage factors with current district agricultural economics guidance and document data sources in the project record."/>
+                        <LineBreak/>
+                        <Run Text="• Confirm Monte Carlo assumptions and CropScape layers with planning and GIS leads when preparing feasibility or PED documentation."/>
+                        <LineBreak/>
+                        <Run Text="• Retain exported acreage summaries with cost and benefit files to satisfy ER 1105-2-100 audit expectations."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Border.ResultInfo}"
+                    Margin="0,12,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets"
+                                   Text=""
+                                   FontSize="18"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Text="Formula Reference"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap"
                                Margin="{StaticResource Margin.TopSmall}">
