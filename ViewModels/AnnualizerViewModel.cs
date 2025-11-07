@@ -22,7 +22,9 @@ namespace EconToolbox.Desktop.ViewModels
         private double _annualBenefits;
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
         private ObservableCollection<FutureCostEntry> _idcEntries = new();
-        private ObservableCollection<ScrbEntry> _scrbEntries = new();
+        private ObservableCollection<ScrbCostEntry> _scrbCostEntries = new();
+        private ObservableCollection<ScrbBenefitEntry> _scrbBenefitEntries = new();
+        private readonly ObservableCollection<ScrbEntry> _scrbSummaries = new();
         private ObservableCollection<string> _results = new();
         private string? _unityFirstCostMessage;
         private string _idcTimingBasis = "Middle";
@@ -37,6 +39,8 @@ namespace EconToolbox.Desktop.ViewModels
         private double _bcr;
         private double _scrbCostSensitivity = 100.0;
         private double _scrbBenefitSensitivity = 100.0;
+        private int _scrbEvaluationYear;
+        private double _scrbDiscountRate = 2.5;
         private double _scrbBaseTotalCost;
         private double _scrbBaseTotalBenefit;
         private double? _scrbBaseOverallRatio;
@@ -116,34 +120,65 @@ namespace EconToolbox.Desktop.ViewModels
             set { _idcEntries = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<ScrbEntry> ScrbEntries
+        public ObservableCollection<ScrbCostEntry> ScrbCostEntries
         {
-            get => _scrbEntries;
+            get => _scrbCostEntries;
             set
             {
-                if (_scrbEntries == value)
+                if (_scrbCostEntries == value)
                     return;
 
-                if (_scrbEntries != null)
+                if (_scrbCostEntries != null)
                 {
-                    _scrbEntries.CollectionChanged -= ScrbEntriesChanged;
-                    foreach (var entry in _scrbEntries)
-                        entry.PropertyChanged -= ScrbEntryOnPropertyChanged;
+                    _scrbCostEntries.CollectionChanged -= ScrbCostEntriesChanged;
+                    foreach (var entry in _scrbCostEntries)
+                        entry.PropertyChanged -= ScrbCostEntryOnPropertyChanged;
                 }
 
-                _scrbEntries = value;
+                _scrbCostEntries = value;
                 OnPropertyChanged();
 
-                if (_scrbEntries != null)
+                if (_scrbCostEntries != null)
                 {
-                    _scrbEntries.CollectionChanged += ScrbEntriesChanged;
-                    foreach (var entry in _scrbEntries)
-                        entry.PropertyChanged += ScrbEntryOnPropertyChanged;
+                    _scrbCostEntries.CollectionChanged += ScrbCostEntriesChanged;
+                    foreach (var entry in _scrbCostEntries)
+                        entry.PropertyChanged += ScrbCostEntryOnPropertyChanged;
                 }
 
                 RecalculateScrb();
             }
         }
+
+        public ObservableCollection<ScrbBenefitEntry> ScrbBenefitEntries
+        {
+            get => _scrbBenefitEntries;
+            set
+            {
+                if (_scrbBenefitEntries == value)
+                    return;
+
+                if (_scrbBenefitEntries != null)
+                {
+                    _scrbBenefitEntries.CollectionChanged -= ScrbBenefitEntriesChanged;
+                    foreach (var entry in _scrbBenefitEntries)
+                        entry.PropertyChanged -= ScrbBenefitEntryOnPropertyChanged;
+                }
+
+                _scrbBenefitEntries = value;
+                OnPropertyChanged();
+
+                if (_scrbBenefitEntries != null)
+                {
+                    _scrbBenefitEntries.CollectionChanged += ScrbBenefitEntriesChanged;
+                    foreach (var entry in _scrbBenefitEntries)
+                        entry.PropertyChanged += ScrbBenefitEntryOnPropertyChanged;
+                }
+
+                RecalculateScrb();
+            }
+        }
+
+        public ObservableCollection<ScrbEntry> ScrbSummaries => _scrbSummaries;
 
         public IReadOnlyList<string> IdcTimingOptions { get; } = new[] { "Beginning", "Middle", "End" };
         public IReadOnlyList<string> IdcFirstPaymentOptions { get; } = new[] { "Beginning", "End" };
@@ -264,6 +299,32 @@ namespace EconToolbox.Desktop.ViewModels
                 if (Math.Abs(_scrbBenefitSensitivity - sanitized) < 0.000001)
                     return;
                 _scrbBenefitSensitivity = sanitized;
+                OnPropertyChanged();
+                RecalculateScrb();
+            }
+        }
+
+        public int ScrbEvaluationYear
+        {
+            get => _scrbEvaluationYear;
+            set
+            {
+                if (_scrbEvaluationYear == value)
+                    return;
+                _scrbEvaluationYear = value;
+                OnPropertyChanged();
+                RecalculateScrb();
+            }
+        }
+
+        public double ScrbDiscountRate
+        {
+            get => _scrbDiscountRate;
+            set
+            {
+                if (Math.Abs(_scrbDiscountRate - value) < 0.000001)
+                    return;
+                _scrbDiscountRate = value;
                 OnPropertyChanged();
                 RecalculateScrb();
             }
@@ -395,7 +456,11 @@ namespace EconToolbox.Desktop.ViewModels
 
             FutureCosts.CollectionChanged += EntriesChanged;
             IdcEntries.CollectionChanged += EntriesChanged;
-            ScrbEntries.CollectionChanged += ScrbEntriesChanged;
+            ScrbCostEntries.CollectionChanged += ScrbCostEntriesChanged;
+            ScrbBenefitEntries.CollectionChanged += ScrbBenefitEntriesChanged;
+
+            ScrbEvaluationYear = BaseYear;
+            ScrbDiscountRate = Rate;
 
             RecalculateScrb();
         }
@@ -425,34 +490,69 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private void ScrbEntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void ScrbCostEntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.OldItems != null)
             {
-                foreach (ScrbEntry entry in e.OldItems)
-                    entry.PropertyChanged -= ScrbEntryOnPropertyChanged;
+                foreach (ScrbCostEntry entry in e.OldItems)
+                    entry.PropertyChanged -= ScrbCostEntryOnPropertyChanged;
             }
 
             if (e.NewItems != null)
             {
-                foreach (ScrbEntry entry in e.NewItems)
-                    entry.PropertyChanged += ScrbEntryOnPropertyChanged;
+                foreach (ScrbCostEntry entry in e.NewItems)
+                    entry.PropertyChanged += ScrbCostEntryOnPropertyChanged;
             }
 
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                foreach (var entry in ScrbEntries)
-                    entry.PropertyChanged += ScrbEntryOnPropertyChanged;
+                foreach (var entry in ScrbCostEntries)
+                    entry.PropertyChanged += ScrbCostEntryOnPropertyChanged;
             }
 
             RecalculateScrb();
         }
 
-        private void ScrbEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void ScrbCostEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ScrbEntry.SeparableCost) ||
-                e.PropertyName == nameof(ScrbEntry.RemainingBenefit) ||
-                e.PropertyName == nameof(ScrbEntry.FeatureName))
+            if (e.PropertyName == nameof(ScrbCostEntry.OriginalCost) ||
+                e.PropertyName == nameof(ScrbCostEntry.OriginalYear) ||
+                e.PropertyName == nameof(ScrbCostEntry.UpdateFactor) ||
+                e.PropertyName == nameof(ScrbCostEntry.FeatureName))
+            {
+                RecalculateScrb();
+            }
+        }
+
+        private void ScrbBenefitEntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (ScrbBenefitEntry entry in e.OldItems)
+                    entry.PropertyChanged -= ScrbBenefitEntryOnPropertyChanged;
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (ScrbBenefitEntry entry in e.NewItems)
+                    entry.PropertyChanged += ScrbBenefitEntryOnPropertyChanged;
+            }
+
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                foreach (var entry in ScrbBenefitEntries)
+                    entry.PropertyChanged += ScrbBenefitEntryOnPropertyChanged;
+            }
+
+            RecalculateScrb();
+        }
+
+        private void ScrbBenefitEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ScrbBenefitEntry.OriginalBenefit) ||
+                e.PropertyName == nameof(ScrbBenefitEntry.OriginalYear) ||
+                e.PropertyName == nameof(ScrbBenefitEntry.UpdateFactor) ||
+                e.PropertyName == nameof(ScrbBenefitEntry.FeatureName))
             {
                 RecalculateScrb();
             }
@@ -510,6 +610,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             double costFactor = ScrbCostSensitivity / 100.0;
             double benefitFactor = ScrbBenefitSensitivity / 100.0;
+            double discountRate = ScrbDiscountRate / 100.0;
 
             double baseCost = 0.0;
             double baseBenefit = 0.0;
@@ -518,43 +619,212 @@ namespace EconToolbox.Desktop.ViewModels
             bool hasBelowUnity = false;
             bool hasDataIssues = false;
 
-            foreach (var entry in ScrbEntries)
+            var costGroups = new Dictionary<string, List<ScrbCostEntry>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var entry in ScrbCostEntries)
             {
-                baseCost += entry.SeparableCost;
-                baseBenefit += entry.RemainingBenefit;
+                string featureName = FormatFeatureName(entry.FeatureName);
+                bool entryIssue = string.IsNullOrWhiteSpace(entry.FeatureName);
 
-                double adjustedCost = entry.SeparableCost * costFactor;
-                double adjustedBenefit = entry.RemainingBenefit * benefitFactor;
+                double originalCost = entry.OriginalCost;
+                if (double.IsNaN(originalCost) || double.IsInfinity(originalCost))
+                {
+                    originalCost = 0.0;
+                    entryIssue = true;
+                }
+
+                if (originalCost <= 0.0)
+                    entryIssue = true;
+
+                double updateFactor = entry.UpdateFactor;
+                if (double.IsNaN(updateFactor) || double.IsInfinity(updateFactor) || updateFactor <= 0.0)
+                {
+                    updateFactor = 0.0;
+                    entryIssue = true;
+                }
+
+                double adjustedCost = originalCost * updateFactor;
+                if (entry.OriginalYear.HasValue)
+                {
+                    double yearsDifference = entry.OriginalYear.Value - ScrbEvaluationYear;
+                    double discountFactor = Math.Pow(1.0 + discountRate, yearsDifference);
+                    if (double.IsNaN(discountFactor) || double.IsInfinity(discountFactor) || Math.Abs(discountFactor) < 0.0000001)
+                    {
+                        discountFactor = 1.0;
+                        entryIssue = true;
+                    }
+                    adjustedCost /= discountFactor;
+                }
+                else
+                {
+                    entryIssue = true;
+                }
+
+                adjustedCost *= costFactor;
+
+                if (double.IsNaN(adjustedCost) || double.IsInfinity(adjustedCost))
+                {
+                    adjustedCost = 0.0;
+                    entryIssue = true;
+                }
 
                 entry.AdjustedCost = adjustedCost;
-                entry.AdjustedBenefit = adjustedBenefit;
-                entry.ScrbRatio = adjustedCost > 0.0 ? adjustedBenefit / adjustedCost : null;
+                entry.HasDataIssue = entryIssue;
 
-                bool missingName = string.IsNullOrWhiteSpace(entry.FeatureName);
-                bool invalidCost = entry.SeparableCost <= 0.0;
-                bool invalidBenefit = entry.RemainingBenefit < 0.0;
-
-                entry.HasDataIssue = missingName || invalidCost || invalidBenefit;
-                entry.IsBelowUnity = entry.ScrbRatio.HasValue && entry.ScrbRatio.Value < 1.0;
-
-                var complianceNotes = new List<string>();
-                if (missingName)
-                    complianceNotes.Add("Identify the separable element per ER 1105-2-100, Chapter 2.");
-                if (invalidCost)
-                    complianceNotes.Add("Report separable costs greater than zero per ER 1105-2-100, Appendix E.");
-                if (invalidBenefit)
-                    complianceNotes.Add("Confirm remaining benefits are non-negative and supported by documentation.");
-                if (entry.IsBelowUnity)
-                    complianceNotes.Add("SCRB ratio below 1.0; coordinate management decision per SMART Planning policy.");
-
-                entry.ComplianceNote = complianceNotes.Count > 0 ? string.Join(' ', complianceNotes) : null;
-
-                hasDataIssues |= entry.HasDataIssue;
-                hasBelowUnity |= entry.IsBelowUnity;
-
+                baseCost += originalCost;
                 adjustedCostTotal += adjustedCost;
-                adjustedBenefitTotal += adjustedBenefit;
+
+                if (!costGroups.TryGetValue(featureName, out var list))
+                {
+                    list = new List<ScrbCostEntry>();
+                    costGroups.Add(featureName, list);
+                }
+                list.Add(entry);
+
+                hasDataIssues |= entryIssue;
             }
+
+            var benefitGroups = new Dictionary<string, List<ScrbBenefitEntry>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var entry in ScrbBenefitEntries)
+            {
+                string featureName = FormatFeatureName(entry.FeatureName);
+                bool entryIssue = string.IsNullOrWhiteSpace(entry.FeatureName);
+
+                double originalBenefit = entry.OriginalBenefit;
+                if (double.IsNaN(originalBenefit) || double.IsInfinity(originalBenefit))
+                {
+                    originalBenefit = 0.0;
+                    entryIssue = true;
+                }
+
+                if (originalBenefit < 0.0)
+                    entryIssue = true;
+
+                double updateFactor = entry.UpdateFactor;
+                if (double.IsNaN(updateFactor) || double.IsInfinity(updateFactor) || updateFactor <= 0.0)
+                {
+                    updateFactor = 0.0;
+                    entryIssue = true;
+                }
+
+                double adjustedBenefit = originalBenefit * updateFactor;
+                if (entry.OriginalYear.HasValue)
+                {
+                    double yearsDifference = entry.OriginalYear.Value - ScrbEvaluationYear;
+                    double discountFactor = Math.Pow(1.0 + discountRate, yearsDifference);
+                    if (double.IsNaN(discountFactor) || double.IsInfinity(discountFactor) || Math.Abs(discountFactor) < 0.0000001)
+                    {
+                        discountFactor = 1.0;
+                        entryIssue = true;
+                    }
+                    adjustedBenefit /= discountFactor;
+                }
+                else
+                {
+                    entryIssue = true;
+                }
+
+                adjustedBenefit *= benefitFactor;
+
+                if (double.IsNaN(adjustedBenefit) || double.IsInfinity(adjustedBenefit))
+                {
+                    adjustedBenefit = 0.0;
+                    entryIssue = true;
+                }
+
+                entry.AdjustedBenefit = adjustedBenefit;
+                entry.HasDataIssue = entryIssue;
+
+                baseBenefit += originalBenefit;
+                adjustedBenefitTotal += adjustedBenefit;
+
+                if (!benefitGroups.TryGetValue(featureName, out var list))
+                {
+                    list = new List<ScrbBenefitEntry>();
+                    benefitGroups.Add(featureName, list);
+                }
+                list.Add(entry);
+
+                hasDataIssues |= entryIssue;
+            }
+
+            var featureOrder = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            int order = 0;
+            foreach (var entry in ScrbCostEntries)
+            {
+                string featureName = FormatFeatureName(entry.FeatureName);
+                if (!featureOrder.ContainsKey(featureName))
+                    featureOrder[featureName] = order++;
+            }
+            foreach (var entry in ScrbBenefitEntries)
+            {
+                string featureName = FormatFeatureName(entry.FeatureName);
+                if (!featureOrder.ContainsKey(featureName))
+                    featureOrder[featureName] = order++;
+            }
+
+            var features = new HashSet<string>(costGroups.Keys, StringComparer.OrdinalIgnoreCase);
+            features.UnionWith(benefitGroups.Keys);
+
+            var summaries = features
+                .OrderBy(f => featureOrder.TryGetValue(f, out var idx) ? idx : int.MaxValue)
+                .ThenBy(f => f, StringComparer.OrdinalIgnoreCase)
+                .Select(featureName =>
+                {
+                    costGroups.TryGetValue(featureName, out var costEntries);
+                    benefitGroups.TryGetValue(featureName, out var benefitEntries);
+
+                    double featureBaseCost = costEntries?.Sum(e => e.OriginalCost) ?? 0.0;
+                    double featureBaseBenefit = benefitEntries?.Sum(e => e.OriginalBenefit) ?? 0.0;
+                    double featureAdjustedCost = costEntries?.Sum(e => e.AdjustedCost) ?? 0.0;
+                    double featureAdjustedBenefit = benefitEntries?.Sum(e => e.AdjustedBenefit) ?? 0.0;
+
+                    var summary = new ScrbEntry
+                    {
+                        FeatureName = featureName,
+                        SeparableCost = featureBaseCost,
+                        RemainingBenefit = featureBaseBenefit,
+                        AdjustedCost = featureAdjustedCost,
+                        AdjustedBenefit = featureAdjustedBenefit
+                    };
+
+                    summary.ScrbRatio = featureAdjustedCost > 0.0 ? featureAdjustedBenefit / featureAdjustedCost : null;
+                    summary.IsBelowUnity = summary.ScrbRatio.HasValue && summary.ScrbRatio.Value < 1.0;
+
+                    bool invalidCost = featureBaseCost <= 0.0;
+                    bool invalidBenefit = featureBaseBenefit < 0.0;
+                    bool missingName = featureName == "(unnamed element)";
+                    bool missingYear = (costEntries?.Any(e => !e.OriginalYear.HasValue) ?? false) ||
+                                       (benefitEntries?.Any(e => !e.OriginalYear.HasValue) ?? false);
+                    bool invalidFactor = (costEntries?.Any(e => e.UpdateFactor <= 0.0) ?? false) ||
+                                         (benefitEntries?.Any(e => e.UpdateFactor <= 0.0) ?? false);
+
+                    var complianceNotes = new List<string>();
+                    if (missingName)
+                        complianceNotes.Add("Identify the separable element per ER 1105-2-100, Chapter 2.");
+                    if (invalidCost)
+                        complianceNotes.Add("Report separable costs greater than zero per ER 1105-2-100, Appendix E.");
+                    if (invalidBenefit)
+                        complianceNotes.Add("Confirm remaining benefits are non-negative and supported by documentation.");
+                    if (missingYear)
+                        complianceNotes.Add("Specify original years so discounting aligns with the evaluation period.");
+                    if (invalidFactor)
+                        complianceNotes.Add("Use positive update factors when escalating SCRB inputs.");
+                    if (summary.IsBelowUnity)
+                        complianceNotes.Add("SCRB ratio below 1.0; coordinate management decision per SMART Planning policy.");
+
+                    summary.HasDataIssue = complianceNotes.Count > 0;
+                    summary.ComplianceNote = complianceNotes.Count > 0 ? string.Join(' ', complianceNotes) : null;
+
+                    hasDataIssues |= summary.HasDataIssue;
+                    hasBelowUnity |= summary.IsBelowUnity;
+
+                    return summary;
+                })
+                .ToList();
+
+            _scrbSummaries.Clear();
+            foreach (var summary in summaries)
+                _scrbSummaries.Add(summary);
 
             ScrbBaseTotalCost = baseCost;
             ScrbBaseTotalBenefit = baseBenefit;
@@ -588,33 +858,59 @@ namespace EconToolbox.Desktop.ViewModels
         {
             var findings = new List<string>();
 
-            if (ScrbEntries.Count == 0)
+            if (ScrbCostEntries.Count == 0 && ScrbBenefitEntries.Count == 0)
             {
                 findings.Add("No SCRB features are defined. Provide the current separable elements list in the decision file per ER 1105-2-100, Chapter 2.");
             }
             else
             {
-                int unnamedCount = ScrbEntries.Count(e => string.IsNullOrWhiteSpace(e.FeatureName));
-                if (unnamedCount > 0)
-                    findings.Add($"{unnamedCount} separable element(s) are missing names. Identify each feature to align with the approved PMP and economic appendix.");
-
-                var invalidCosts = ScrbEntries
-                    .Where(e => e.SeparableCost <= 0.0)
+                var unnamedFeatures = ScrbCostEntries
+                    .Where(e => string.IsNullOrWhiteSpace(e.FeatureName))
                     .Select(e => FormatFeatureName(e.FeatureName))
+                    .Concat(ScrbBenefitEntries.Where(e => string.IsNullOrWhiteSpace(e.FeatureName)).Select(e => FormatFeatureName(e.FeatureName)))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                if (unnamedFeatures.Count > 0)
+                    findings.Add($"{unnamedFeatures.Count} separable element input(s) are missing names. Identify each feature to align with the approved PMP and economic appendix.");
+
+                var invalidCosts = ScrbCostEntries
+                    .Where(e => e.OriginalCost <= 0.0)
+                    .Select(e => FormatFeatureName(e.FeatureName))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
                 if (invalidCosts.Count > 0)
                     findings.Add($"Costs for {string.Join(", ", invalidCosts)} are not greater than zero. Reconcile the estimate with current price level guidance.");
 
-                var negativeBenefits = ScrbEntries
-                    .Where(e => e.RemainingBenefit < 0.0)
+                var negativeBenefits = ScrbBenefitEntries
+                    .Where(e => e.OriginalBenefit < 0.0)
                     .Select(e => FormatFeatureName(e.FeatureName))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
                 if (negativeBenefits.Count > 0)
                     findings.Add($"Benefits for {string.Join(", ", negativeBenefits)} are negative. Document risk adjustments or correct the inputs per ER 1105-2-100, Appendix E.");
 
-                var belowUnity = ScrbEntries
+                var missingYears = ScrbCostEntries
+                    .Where(e => !e.OriginalYear.HasValue)
+                    .Select(e => FormatFeatureName(e.FeatureName))
+                    .Concat(ScrbBenefitEntries.Where(e => !e.OriginalYear.HasValue).Select(e => FormatFeatureName(e.FeatureName)))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                if (missingYears.Count > 0)
+                    findings.Add($"Provide the original year for {string.Join(", ", missingYears)} so discounting aligns with the evaluation period.");
+
+                var invalidFactors = ScrbCostEntries
+                    .Where(e => e.UpdateFactor <= 0.0)
+                    .Select(e => FormatFeatureName(e.FeatureName))
+                    .Concat(ScrbBenefitEntries.Where(e => e.UpdateFactor <= 0.0).Select(e => FormatFeatureName(e.FeatureName)))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+                if (invalidFactors.Count > 0)
+                    findings.Add($"Update factors for {string.Join(", ", invalidFactors)} must be positive to establish adjusted SCRB values.");
+
+                var belowUnity = ScrbSummaries
                     .Where(e => e.IsBelowUnity)
                     .Select(e => FormatFeatureName(e.FeatureName))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
                 if (belowUnity.Count > 0)
                     findings.Add($"SCRB ratios below 1.0 for {string.Join(", ", belowUnity)}. Coordinate mitigation or scope decisions with the PDT and MSC reviewers per SMART Planning guidance.");

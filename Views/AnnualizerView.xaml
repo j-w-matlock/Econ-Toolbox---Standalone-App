@@ -762,11 +762,51 @@
                                     <Run Text="Capture separable elements, refresh benefits, and test sensitivities to generate updated SCRB ratios."/>
                                 </TextBlock>
                                 <Grid Margin="{StaticResource Margin.TopLarge}">
+                                    <Grid.Resources>
+                                        <Style x:Key="NumericCellStyle" TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                            <Setter Property="TextAlignment" Value="Right"/>
+                                        <Setter Property="Padding" Value="4,0,4,0"/>
+                                        </Style>
+                                        <Style x:Key="NumericEditingStyle" TargetType="TextBox">
+                                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                            <Setter Property="Padding" Value="4,0,4,0"/>
+                                            <Setter Property="Margin" Value="0"/>
+                                        </Style>
+                                        <Style x:Key="ScrbIssueRowStyle" TargetType="DataGridRow">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasDataIssue}" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource Brush.WarningBorder}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <Style x:Key="ScrbSummaryRowStyle" TargetType="DataGridRow" BasedOn="{StaticResource ScrbIssueRowStyle}">
+                                            <Setter Property="ToolTip" Value="{Binding ComplianceNote}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsBelowUnity}" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource Brush.HighlightBackground}"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource Brush.HighlightBorder}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                        <Style x:Key="ScrbRatioCellStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsBelowUnity}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource Brush.AlertForeground}"/>
+                                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Resources>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
@@ -830,116 +870,261 @@
                                                    Text="%"/>
                                     </StackPanel>
 
-                                    <DataGrid Grid.Row="3"
-                                              Grid.ColumnSpan="2"
-                                              ItemsSource="{Binding ScrbEntries}"
-                                              AutoGenerateColumns="False"
-                                              HeadersVisibility="All"
-                                              Margin="0,16,0,0"
-                                              CanUserAddRows="True">
-                                        <DataGrid.Resources>
-                                            <Style x:Key="NumericCellStyle" TargetType="TextBlock">
-                                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                                <Setter Property="TextAlignment" Value="Right"/>
-                                                <Setter Property="Padding" Value="4,0,4,0"/>
-                                            </Style>
-                                            <Style x:Key="NumericEditingStyle" TargetType="TextBox">
-                                                <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                                                <Setter Property="Padding" Value="4,0,4,0"/>
-                                                <Setter Property="Margin" Value="0"/>
-                                            </Style>
-                                            <Style x:Key="ScrbRatioCellStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsBelowUnity}" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource Brush.AlertForeground}"/>
-                                                        <Setter Property="FontWeight" Value="SemiBold"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </DataGrid.Resources>
-                                        <DataGrid.RowStyle>
-                                            <Style TargetType="DataGridRow">
-                                                <Setter Property="ToolTip" Value="{Binding ComplianceNote}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasDataIssue}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
-                                                        <Setter Property="BorderBrush" Value="{StaticResource Brush.WarningBorder}"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsBelowUnity}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource Brush.HighlightBackground}"/>
-                                                        <Setter Property="BorderBrush" Value="{StaticResource Brush.HighlightBorder}"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </DataGrid.RowStyle>
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Feature"
-                                                                Width="2*"
-                                                                Binding="{Binding FeatureName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                            <DataGridTextColumn Width="*"
-                                                                ElementStyle="{StaticResource NumericCellStyle}"
-                                                                EditingElementStyle="{StaticResource NumericEditingStyle}">
-                                                <DataGridTextColumn.Header>
-                                                    <TextBlock Text="Separable Cost ($)"/>
-                                                </DataGridTextColumn.Header>
-                                                <DataGridTextColumn.Binding>
-                                                    <Binding Path="SeparableCost"
-                                                             Mode="TwoWay"
-                                                             UpdateSourceTrigger="PropertyChanged"
-                                                             Converter="{StaticResource CurrencyConverter}"/>
-                                                </DataGridTextColumn.Binding>
-                                            </DataGridTextColumn>
-                                            <DataGridTextColumn Width="*"
-                                                                ElementStyle="{StaticResource NumericCellStyle}"
-                                                                EditingElementStyle="{StaticResource NumericEditingStyle}">
-                                                <DataGridTextColumn.Header>
-                                                    <TextBlock Text="Remaining Benefit ($)"/>
-                                                </DataGridTextColumn.Header>
-                                                <DataGridTextColumn.Binding>
-                                                    <Binding Path="RemainingBenefit"
-                                                             Mode="TwoWay"
-                                                             UpdateSourceTrigger="PropertyChanged"
-                                                             Converter="{StaticResource CurrencyConverter}"/>
-                                                </DataGridTextColumn.Binding>
-                                            </DataGridTextColumn>
-                                            <DataGridTextColumn Width="*"
-                                                                IsReadOnly="True"
-                                                                ElementStyle="{StaticResource NumericCellStyle}">
-                                                <DataGridTextColumn.Header>
-                                                    <TextBlock Text="Adjusted Cost ($)"/>
-                                                </DataGridTextColumn.Header>
-                                                <DataGridTextColumn.Binding>
-                                                    <Binding Path="AdjustedCost"
-                                                             Converter="{StaticResource CurrencyConverter}"/>
-                                                </DataGridTextColumn.Binding>
-                                            </DataGridTextColumn>
-                                            <DataGridTextColumn Width="*"
-                                                                IsReadOnly="True"
-                                                                ElementStyle="{StaticResource NumericCellStyle}">
-                                                <DataGridTextColumn.Header>
-                                                    <TextBlock Text="Adjusted Benefit ($)"/>
-                                                </DataGridTextColumn.Header>
-                                                <DataGridTextColumn.Binding>
-                                                    <Binding Path="AdjustedBenefit"
-                                                             Converter="{StaticResource CurrencyConverter}"/>
-                                                </DataGridTextColumn.Binding>
-                                            </DataGridTextColumn>
-                                            <DataGridTextColumn Width="*"
-                                                                IsReadOnly="True"
-                                                                ElementStyle="{StaticResource ScrbRatioCellStyle}">
-                                                <DataGridTextColumn.Header>
-                                                    <TextBlock Text="SCRB Ratio"/>
-                                                </DataGridTextColumn.Header>
-                                                <DataGridTextColumn.Binding>
-                                                    <Binding Path="ScrbRatio"
-                                                             StringFormat="{}{0:0.00}"
-                                                             TargetNullValue="—"/>
-                                                </DataGridTextColumn.Binding>
-                                            </DataGridTextColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                    <StackPanel Grid.Row="3"
+                                                Grid.Column="0"
+                                                Orientation="Horizontal"
+                                                Margin="0,12,12,0"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="Evaluation year"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBox Width="80"
+                                                 HorizontalContentAlignment="Right"
+                                                 Text="{Binding ScrbEvaluationYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="3"
+                                                Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                Margin="0,12,0,0"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="Discount rate (%)"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,8,0"/>
+                                        <TextBox Width="72"
+                                                 HorizontalContentAlignment="Right"
+                                                 Text="{Binding ScrbDiscountRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </StackPanel>
 
                                     <Grid Grid.Row="4"
+                                          Grid.ColumnSpan="2"
+                                          Margin="0,16,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0"
+                                                   Text="Separable costs"
+                                                   FontWeight="SemiBold"/>
+                                        <DataGrid Grid.Row="1"
+                                                  ItemsSource="{Binding ScrbCostEntries}"
+                                                  AutoGenerateColumns="False"
+                                                  HeadersVisibility="All"
+                                                  Margin="0,4,0,0"
+                                                  CanUserAddRows="True"
+                                                  RowStyle="{StaticResource ScrbIssueRowStyle}"
+                                                  Height="160">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Feature"
+                                                                    Width="2*"
+                                                                    Binding="{Binding FeatureName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}"
+                                                                    EditingElementStyle="{StaticResource NumericEditingStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Original Cost ($)"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="OriginalCost"
+                                                                 Mode="TwoWay"
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 Converter="{StaticResource CurrencyConverter}"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}"
+                                                                    EditingElementStyle="{StaticResource NumericEditingStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Original Year"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="OriginalYear"
+                                                                 Mode="TwoWay"
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 TargetNullValue=""/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}"
+                                                                    EditingElementStyle="{StaticResource NumericEditingStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Update Factor"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="UpdateFactor"
+                                                                 Mode="TwoWay"
+                                                                 UpdateSourceTrigger="PropertyChanged"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    IsReadOnly="True"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Adjusted Cost ($)"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="AdjustedCost"
+                                                                 Converter="{StaticResource CurrencyConverter}"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+
+                                    <Grid Grid.Row="5"
+                                          Grid.ColumnSpan="2"
+                                          Margin="0,16,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0"
+                                                   Text="Remaining benefits"
+                                                   FontWeight="SemiBold"/>
+                                        <DataGrid Grid.Row="1"
+                                                  ItemsSource="{Binding ScrbBenefitEntries}"
+                                                  AutoGenerateColumns="False"
+                                                  HeadersVisibility="All"
+                                                  Margin="0,4,0,0"
+                                                  CanUserAddRows="True"
+                                                  RowStyle="{StaticResource ScrbIssueRowStyle}"
+                                                  Height="160">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Feature"
+                                                                    Width="2*"
+                                                                    Binding="{Binding FeatureName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}"
+                                                                    EditingElementStyle="{StaticResource NumericEditingStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Original Benefit ($)"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="OriginalBenefit"
+                                                                 Mode="TwoWay"
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 Converter="{StaticResource CurrencyConverter}"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}"
+                                                                    EditingElementStyle="{StaticResource NumericEditingStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Original Year"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="OriginalYear"
+                                                                 Mode="TwoWay"
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 TargetNullValue=""/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}"
+                                                                    EditingElementStyle="{StaticResource NumericEditingStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Update Factor"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="UpdateFactor"
+                                                                 Mode="TwoWay"
+                                                                 UpdateSourceTrigger="PropertyChanged"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    IsReadOnly="True"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Adjusted Benefit ($)"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="AdjustedBenefit"
+                                                                 Converter="{StaticResource CurrencyConverter}"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+
+                                    <Grid Grid.Row="6"
+                                          Grid.ColumnSpan="2"
+                                          Margin="0,16,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0"
+                                                   Text="SCRB ratios"
+                                                   FontWeight="SemiBold"/>
+                                        <DataGrid Grid.Row="1"
+                                                  ItemsSource="{Binding ScrbSummaries}"
+                                                  AutoGenerateColumns="False"
+                                                  HeadersVisibility="All"
+                                                  Margin="0,4,0,0"
+                                                  CanUserAddRows="False"
+                                                  IsReadOnly="True"
+                                                  RowStyle="{StaticResource ScrbSummaryRowStyle}"
+                                                  Height="200">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Feature"
+                                                                    Width="2*"
+                                                                    Binding="{Binding FeatureName}"/>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Baseline Cost ($)"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="SeparableCost"
+                                                                 Converter="{StaticResource CurrencyConverter}"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Baseline Benefit ($)"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="RemainingBenefit"
+                                                                 Converter="{StaticResource CurrencyConverter}"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Adjusted Cost ($)"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="AdjustedCost"
+                                                                 Converter="{StaticResource CurrencyConverter}"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource NumericCellStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="Adjusted Benefit ($)"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="AdjustedBenefit"
+                                                                 Converter="{StaticResource CurrencyConverter}"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Width="*"
+                                                                    ElementStyle="{StaticResource ScrbRatioCellStyle}">
+                                                    <DataGridTextColumn.Header>
+                                                        <TextBlock Text="SCRB Ratio"/>
+                                                    </DataGridTextColumn.Header>
+                                                    <DataGridTextColumn.Binding>
+                                                        <Binding Path="ScrbRatio"
+                                                                 StringFormat="{}{0:0.00}"
+                                                                 TargetNullValue="—"/>
+                                                    </DataGridTextColumn.Binding>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+
+                                    <Grid Grid.Row="7"
                                           Grid.ColumnSpan="2"
                                           Margin="0,16,0,0">
                                         <Grid.RowDefinitions>
