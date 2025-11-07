@@ -326,15 +326,32 @@
                 </StackPanel>
             </Border>
 
-            <Border Style="{StaticResource Border.ResultInfo}">
-                <StackPanel>
-                    <TextBlock Text="Policy notes"
-                               FontWeight="Bold"
-                               FontSize="15"/>
-                    <TextBlock Margin="{StaticResource Margin.TopSmall}"
-                               Text="{Binding GuidanceNotes}"/>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-    </ScrollViewer>
+        <Border Style="{StaticResource Border.ResultInfo}">
+            <StackPanel>
+                <TextBlock Text="Policy notes"
+                           FontWeight="Bold"
+                           FontSize="15"/>
+                <TextBlock Margin="{StaticResource Margin.TopSmall}"
+                           Text="{Binding GuidanceNotes}"/>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource Border.ResultInfo}">
+            <StackPanel>
+                <TextBlock Text="Formula Reference"
+                           FontWeight="SemiBold"
+                           FontSize="15"/>
+                <TextBlock TextWrapping="Wrap"
+                           Margin="{StaticResource Margin.TopSmall}">
+                    <Run Text="• Camping PAOT = Campsites × Average Group Size; Daily Capacity = PAOT × Daily Turnover; Seasonal Capacity = Daily Capacity × Season Length."/>
+                    <LineBreak/>
+                    <Run Text="• Shoreline Fishing PAOT = (Accessible Shoreline ÷ Spacing) × Average Group Size, with the same turnover and season multipliers to reach daily and seasonal capacity."/>
+                    <LineBreak/>
+                    <Run Text="• Boating PAOT = (Water Surface Acres ÷ Acres per Vessel) × Persons per Vessel; subsequent multipliers mirror the camping/fishing equations."/>
+                    <LineBreak/>
+                    <Run Text="• Total PAOT, daily, and seasonal capacities are the sums of the three activity categories."/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</ScrollViewer>
 </UserControl>

@@ -734,6 +734,27 @@
                             ToolTip="Save the current depth-duration table to a CSV file for external analysis."/>
                 </StackPanel>
             </Grid>
+            <Border Style="{StaticResource Border.ResultInfo}"
+                    Margin="{StaticResource Margin.StackLarge}">
+                <StackPanel>
+                    <TextBlock Text="Formula Reference"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource Brush.Primary}"/>
+                    <TextBlock Style="{StaticResource Text.Body}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.TopSmall}">
+                        <Run Text="• Stage stress normalizes each growth stage by its tolerance: Stressᵢ = (Exposure Days ÷ Flood Tolerance) × Timing Modifier, limited between 0 and 2."/>
+                        <LineBreak/>
+                        <Run Text="• Weighted stress combines stages as Σ Weightᵢ × Stressᵢ ÷ Σ Weightᵢ. AverageResponse then scales the effect, along with region and crop modifiers."/>
+                        <LineBreak/>
+                        <Run Text="• Modeled Impact Probability = clamp(Baseline AEP × Weighted Stress × Region Impact Modifier × Crop Impact Modifier × AverageResponse, 0, 1)."/>
+                        <LineBreak/>
+                        <Run Text="• Depth-duration damage percent = clamp(Base Damage × (0.6 + 0.4 × Weighted Stress) × Crop Damage Factor × (1 + Duration/Max Duration × 0.25) × max(1, AverageResponse × 0.5), 0, 1) × 100."/>
+                        <LineBreak/>
+                        <Run Text="• CropScape damaged acres = Acreage × Damage% ÷ 100; residual acres = Acreage − Damaged Acres."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

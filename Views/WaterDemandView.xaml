@@ -15,6 +15,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0"
                     Style="{StaticResource Border.Explainer}"
@@ -484,6 +485,21 @@
                         • Adjusted demand applies the Advanced Adjustments so you can see conservation impacts immediately.
                         <LineBreak/>
                         • Adjusted (ac-ft/yr) multiplies the adjusted demand by 365 and divides by 325,851 so you can translate daily demand into reservoir storage requirements.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="5" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <Run Text="• Linear regression fits Demand = m × Year + b, with m = (nΣXY − ΣXΣY)/(nΣX² − (ΣX)²) and b = (ΣY − mΣX)/n."/>
+                        <LineBreak/>
+                        <Run Text="• Growth rate forecasts use r = (Last/First)^(1/ΔYears) − 1 (or your override), then Demandᵗ = Demandᵗ₋₁ × (1 + r)."/>
+                        <LineBreak/>
+                        <Run Text="• Scenario demand scales by population and per-capita adjustments; sector shares and advanced adjustments are applied multiplicatively to the projected totals."/>
                     </TextBlock>
                 </StackPanel>
             </Border>

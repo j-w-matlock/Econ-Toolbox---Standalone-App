@@ -163,6 +163,11 @@
                         The resulting P value shows how much of the joint facilities support your recommendation. Increasing the recommendation or decreasing total storage raises the percentage and, consequently, the share of downstream costs assigned to this project.
                     </TextBlock>
                 </Border>
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                    <TextBlock TextWrapping="Wrap">
+                        • Storage utilization is computed as Percent = Storage Recommendation ÷ Total Usable Storage. The value is clamped to zero when either input is missing.
+                    </TextBlock>
+                </Border>
             </StackPanel>
         </TabItem>
         <TabItem Header="Joint Costs O&amp;M">
@@ -233,6 +238,11 @@
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
                         This total represents the joint-system expenses before scaling. When the storage percentage increases, more of this amount will be allocated to the recommended plan in the Total Annual Cost tab.
+                    </TextBlock>
+                </Border>
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                    <TextBlock TextWrapping="Wrap">
+                        • Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost. The value is recalculated whenever either input changes.
                     </TextBlock>
                 </Border>
             </StackPanel>
@@ -486,6 +496,17 @@
                         </TextBlock>
                     </StackPanel>
                 </Border>
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                    <TextBlock TextWrapping="Wrap">
+                        • ENR ratio (pre → transition) = Transition ENR Index ÷ Pre ENR Index, and Joint Use Transition = Joint Use Pre-1967 × ENR ratio.
+                        <LineBreak/>
+                        • ENR ratio (transition → 1967) = 1967 ENR Index ÷ Transition ENR Index, and Joint Use 1967 = Joint Use Transition × ENR ratio.
+                        <LineBreak/>
+                        • CWCCIS update factor = Current CWCCIS Index ÷ CWCCIS Base; Updated Joint Cost = Joint Use 1967 × CWCCIS update factor.
+                        <LineBreak/>
+                        • Total Updated Cost is the sum of Updated Joint Cost across all rows.
+                    </TextBlock>
+                </Border>
             </StackPanel>
         </TabItem>
         <TabItem Header="RR&amp;R and Mitigation">
@@ -628,6 +649,15 @@
                         Present Value aggregates each scheduled cost using the discount rate and base year. The Updated Cost multiplies that total by CWCCI, and the Annualized figure then applies your capital recovery factor. Larger future costs, slower discounting, or higher CWCCI will elevate every downstream total.
                     </TextBlock>
                 </Border>
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                    <TextBlock TextWrapping="Wrap">
+                        • PV Factor = 1 ÷ (1 + r)^(Year − Base Year); Present Value = Future Cost × PV Factor.
+                        <LineBreak/>
+                        • RRR Updated Cost = Σ Present Value × CWCCI.
+                        <LineBreak/>
+                        • Annualized RR&amp;R = RRR Updated Cost × CRF(r, periods), where CRF follows r(1 + r)ⁿ ÷ ((1 + r)ⁿ − 1) or 1/n when r = 0.
+                    </TextBlock>
+                </Border>
             </StackPanel>
         </TabItem>
         <TabItem Header="Total Annual Cost">
@@ -736,6 +766,15 @@
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
                         Cost 1 and Cost 2 let you compare alternative discounting assumptions. Lower discount rates or longer analysis periods increase the capital recovery factor and therefore annualized storage costs. Because joint O&amp;M and RR&amp;R values scale with the storage percentage, any change you make on earlier tabs will ripple into both scenarios here.
+                    </TextBlock>
+                </Border>
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                    <TextBlock TextWrapping="Wrap">
+                        • Cost Recommendation = Total Updated Cost × Percent; Joint O&amp;M and RR&amp;R allocations scale as Total Joint O&amp;M × Percent and RRR Annualized × Percent.
+                        <LineBreak/>
+                        • Capital1 = Total Updated Cost × Percent × CRF(Discount Rate 1, Analysis Period 1); Capital2 mirrors this with the second rate and period.
+                        <LineBreak/>
+                        • Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R; Total Annual Cost 2 = Capital2 + Joint O&amp;M.
                     </TextBlock>
                 </Border>
             </StackPanel>

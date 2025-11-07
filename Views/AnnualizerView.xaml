@@ -31,6 +31,7 @@
                       <RowDefinition Height="Auto"/>
                       <RowDefinition Height="Auto"/>
                       <RowDefinition Height="Auto"/>
+                      <RowDefinition Height="Auto"/>
                   </Grid.RowDefinitions>
                   <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="Auto" MinWidth="160"/>
@@ -667,6 +668,27 @@
                           </StackPanel>
                       </Border>
                   </UniformGrid>
+                  <Border Grid.Row="20"
+                          Grid.ColumnSpan="2"
+                          Style="{StaticResource Border.ResultInfo}"
+                          Margin="{StaticResource Margin.StackLarge}">
+                      <StackPanel>
+                          <TextBlock Text="Formula Reference"
+                                     FontWeight="SemiBold"
+                                     Margin="{StaticResource Margin.Stack}"/>
+                          <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap">
+                              <Run Text="• Future cost present values use PV = cost × (1 + r)⁻ⁿ where n equals the year offset plus the timing fraction (0 for beginning, 0.5 for middle, 1 for end)."/>
+                              <LineBreak/>
+                              <Run Text="• Monthly IDC schedules accumulate as Σ costₙ × r/12 × max(0, totalMonths − eventMonthₙ); period-based IDC uses the same monthly rate but extends to the chosen first/last payment boundaries."/>
+                              <LineBreak/>
+                              <Run Text="• Total Investment = First Cost + IDC + Σ present value of future costs."/>
+                              <LineBreak/>
+                              <Run Text="• The capital recovery factor is CRF = r(1 + r)ⁿ / ((1 + r)ⁿ − 1) (or 1/n when r = 0)."/>
+                              <LineBreak/>
+                              <Run Text="• Annual Cost = Total Investment × CRF + Annual O&amp;M; Benefit-Cost Ratio = Annual Benefits ÷ Annual Cost."/>
+                          </TextBlock>
+                      </StackPanel>
+                  </Border>
               </Grid>
           </ScrollViewer>
     </Grid>

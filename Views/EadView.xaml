@@ -226,6 +226,16 @@
                         <TextBlock Style="{StaticResource Text.Body}">
                             Each Expected Annual Damage value averages the damage column across the entire probability curve you supplied. Higher damages at frequent events raise the EAD most dramatically. The plotted curves update with every calculation, helping you confirm the shape of the probability and stage relationships before exporting your Excel summary.
                         </TextBlock>
+                        <TextBlock Text="Formula Reference"
+                                   FontWeight="SemiBold"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap">
+                            <Run Text="• Input rows are ordered by exceedance probability p, then the tool inserts anchors at p = 1 with damage = 0 and at p = 0 with damage equal to the maximum entered value."/>
+                            <LineBreak/>
+                            <Run Text="• Expected Annual Damage is integrated with the trapezoidal rule: EAD = Σ 0.5 × (dᵢ + dᵢ₊₁) × (pᵢ − pᵢ₊₁)."/>
+                            <LineBreak/>
+                            <Run Text="• Stage and frequency curves plot the same damage values against their paired probabilities or stages for visual QA/QC."/>
+                        </TextBlock>
                     </StackPanel>
                 </Border>
             </Grid>

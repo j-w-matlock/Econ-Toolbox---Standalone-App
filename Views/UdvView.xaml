@@ -12,6 +12,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Style="{StaticResource Border.Explainer}">
             <StackPanel>
@@ -254,6 +255,18 @@
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="6" Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.Stack}">
+            <StackPanel>
+                <TextBlock Text="Formula Reference" FontWeight="SemiBold" Foreground="{StaticResource Brush.Primary}"/>
+                <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
+                    <Run Text="• Unit day values are interpolated between table breakpoints: UDV = yᵢ + (Points − xᵢ)/(xᵢ₊₁ − xᵢ) × (yᵢ₊₁ − yᵢ)."/>
+                    <LineBreak/>
+                    <Run Text="• Total user days come from visitation cadence, season length, and group size settings in the header inputs."/>
+                    <LineBreak/>
+                    <Run Text="• Annual recreation benefit multiplies the interpolated UDV by the total user days: Benefit = UDV × User Days."/>
+                </TextBlock>
             </StackPanel>
         </Border>
         </Grid>
