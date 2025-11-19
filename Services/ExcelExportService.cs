@@ -33,6 +33,30 @@ namespace EconToolbox.Desktop.Services
         private static readonly XLColor DashboardAccentText = XLColor.FromHtml("#2D6A8E");
         private static readonly XLColor DashboardPrimaryText = XLColor.FromHtml("#1F2937");
 
+        private static IXLWorksheet CreateWorksheet(XLWorkbook workbook, string name)
+        {
+            var worksheet = workbook.Worksheets.Add(name);
+            worksheet.Style.Font.SetFontName("Segoe UI");
+            return worksheet;
+        }
+
+        private static void WriteHeaderRow(IXLWorksheet ws, int row, int startColumn, IReadOnlyList<string> headers, bool center = true, bool includeBorder = true)
+        {
+            for (int i = 0; i < headers.Count; i++)
+            {
+                var headerCell = ws.Cell(row, startColumn + i);
+                headerCell.Value = headers[i];
+                headerCell.Style.Font.SetBold();
+                headerCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
+                headerCell.Style.Alignment.Horizontal = center ? XLAlignmentHorizontalValues.Center : XLAlignmentHorizontalValues.Left;
+                if (includeBorder)
+                {
+                    headerCell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                    headerCell.Style.Border.OutsideBorderColor = DashboardBorder;
+                }
+            }
+        }
+
         private static void RunOnSta(Action action)
         {
             if (Application.Current?.Dispatcher?.CheckAccess() == true)
@@ -82,8 +106,7 @@ namespace EconToolbox.Desktop.Services
             {
                 using var wb = new XLWorkbook();
                 var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                var ws = wb.Worksheets.Add("CapitalRecovery");
-                ws.Style.Font.SetFontName("Segoe UI");
+                var ws = CreateWorksheet(wb, "CapitalRecovery");
 
                 var entries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
                 {
@@ -117,10 +140,9 @@ namespace EconToolbox.Desktop.Services
                 foreach (var scenario in scenarios)
                 {
                     string baseName = string.IsNullOrWhiteSpace(scenario.Name) ? $"Scenario {scenarioIndex}" : scenario.Name;
-                    var ws = wb.Worksheets.Add(CreateWorksheetName(wb, baseName));
-                    ws.Style.Font.SetFontName("Segoe UI");
+                    var ws = CreateWorksheet(wb, CreateWorksheetName(wb, baseName));
 
-                    var headers = new[]
+                    var headers = new List<string>
                     {
                         "Year",
                         "Growth Rate",
@@ -133,16 +155,7 @@ namespace EconToolbox.Desktop.Services
                         "Adjusted (ac-ft/yr)"
                     };
 
-                    for (int i = 0; i < headers.Length; i++)
-                    {
-                        var headerCell = ws.Cell(1, i + 1);
-                        headerCell.Value = headers[i];
-                        headerCell.Style.Font.SetBold();
-                        headerCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
-                        headerCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                        headerCell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-                        headerCell.Style.Border.OutsideBorderColor = DashboardBorder;
-                    }
+                    WriteHeaderRow(ws, 1, 1, headers);
 
                     ws.Cell(1, 3).GetComment().AddText("Demand = Prior Demand × (1 + Growth Rate)");
                     ws.Cell(1, 4).GetComment().AddText("Residential = Demand × Residential %");
@@ -226,8 +239,7 @@ namespace EconToolbox.Desktop.Services
                 using var wb = new XLWorkbook();
                 var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-                var summary = wb.Worksheets.Add("Summary");
-                summary.Style.Font.SetFontName("Segoe UI");
+                var summary = CreateWorksheet(wb, "Summary");
 
             var summaryRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
@@ -253,20 +265,10 @@ namespace EconToolbox.Desktop.Services
             noteRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
             noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
 
-            var futureSheet = wb.Worksheets.Add("FutureCosts");
-            futureSheet.Style.Font.SetFontName("Segoe UI");
+            var futureSheet = CreateWorksheet(wb, "FutureCosts");
 
-            var futureHeaders = new[] { "Nominal Cost", "Year", "Timing", "PV Factor" };
-            for (int i = 0; i < futureHeaders.Length; i++)
-            {
-                var headerCell = futureSheet.Cell(1, i + 1);
-                headerCell.Value = futureHeaders[i];
-                headerCell.Style.Font.SetBold();
-                headerCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
-                headerCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                headerCell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-                headerCell.Style.Border.OutsideBorderColor = DashboardBorder;
-            }
+            var futureHeaders = new List<string> { "Nominal Cost", "Year", "Timing", "PV Factor" };
+            WriteHeaderRow(futureSheet, 1, 1, futureHeaders);
 
             int futureRow = 2;
             foreach (var entry in future)
@@ -303,8 +305,7 @@ namespace EconToolbox.Desktop.Services
                 using var wb = new XLWorkbook();
                 var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            var inputSheet = wb.Worksheets.Add("EAD Inputs");
-            inputSheet.Style.Font.SetFontName("Segoe UI");
+            var inputSheet = CreateWorksheet(wb, "EAD Inputs");
 
             var damageList = damageColumns.ToList();
             var rowList = rows.ToList();
@@ -316,16 +317,7 @@ namespace EconToolbox.Desktop.Services
             }
             headers.AddRange(damageList);
 
-            for (int i = 0; i < headers.Count; i++)
-            {
-                var headerCell = inputSheet.Cell(1, i + 1);
-                headerCell.Value = headers[i];
-                headerCell.Style.Font.SetBold();
-                headerCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
-                headerCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                headerCell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-                headerCell.Style.Border.OutsideBorderColor = DashboardBorder;
-            }
+            WriteHeaderRow(inputSheet, 1, 1, headers);
 
             int rowIndex = 2;
             foreach (var entry in rowList)
@@ -359,8 +351,7 @@ namespace EconToolbox.Desktop.Services
             int chartRow = dataRowCount + 3;
             AddEadChart(inputSheet, stagePoints, frequencyPoints, chartRow, 1);
 
-            var summary = wb.Worksheets.Add("Summary");
-            summary.Style.Font.SetFontName("Segoe UI");
+            var summary = CreateWorksheet(wb, "Summary");
 
             var summaryEntries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
@@ -399,8 +390,7 @@ namespace EconToolbox.Desktop.Services
                 var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // EAD Sheet
-            var eadSheet = wb.Worksheets.Add("EAD");
-            eadSheet.Style.Font.SetFontName("Segoe UI");
+            var eadSheet = CreateWorksheet(wb, "EAD");
             int col = 1;
             eadSheet.Cell(1, col++).Value = "Probability";
             if (ead.UseStage)
@@ -435,8 +425,7 @@ namespace EconToolbox.Desktop.Services
             AddEadChart(eadSheet, eadStagePoints, eadFrequencyPoints, rowIdx + 3, 1);
 
             // Agriculture Depth-Damage Sheet
-            var agSheet = wb.Worksheets.Add("Agriculture");
-            agSheet.Style.Font.SetFontName("Segoe UI");
+            var agSheet = CreateWorksheet(wb, "Agriculture");
             agSheet.Cell(1, 1).Value = "Agriculture Depth-Damage";
             agSheet.Range(1, 1, 1, 6).Merge();
             agSheet.Cell(1, 1).Style.Font.SetBold();
@@ -495,14 +484,8 @@ namespace EconToolbox.Desktop.Services
 
             if (agriculture.StageExposures.Count > 0)
             {
-                var stageHeaders = new[] { "Stage", "Exposure Days", "Tolerance (days)", "Overlap %", "Timing Modifier", "Guidance" };
-                for (int i = 0; i < stageHeaders.Length; i++)
-                {
-                    var stageHeaderCell = agSheet.Cell(agRow, i + 1);
-                    stageHeaderCell.Value = stageHeaders[i];
-                    stageHeaderCell.Style.Font.SetBold();
-                    stageHeaderCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
-                }
+                var stageHeaders = new List<string> { "Stage", "Exposure Days", "Tolerance (days)", "Overlap %", "Timing Modifier", "Guidance" };
+                WriteHeaderRow(agSheet, agRow, 1, stageHeaders, center: false, includeBorder: false);
                 int stageStart = agRow;
                 agRow++;
                 foreach (var stage in agriculture.StageExposures)
@@ -527,16 +510,10 @@ namespace EconToolbox.Desktop.Services
             }
 
             var damageHeaders = agriculture.CropScapeDamageRows.Count > 0
-                ? new[] { "Depth (ft)", "Duration (days)", "Damage (%)", "Damaged Acres", "Residual Acres", "Total Acres" }
-                : new[] { "Depth (ft)", "Duration (days)", "Damage (%)" };
+                ? new List<string> { "Depth (ft)", "Duration (days)", "Damage (%)", "Damaged Acres", "Residual Acres", "Total Acres" }
+                : new List<string> { "Depth (ft)", "Duration (days)", "Damage (%)" };
 
-            for (int i = 0; i < damageHeaders.Length; i++)
-            {
-                var headerCell = agSheet.Cell(agRow, i + 1);
-                headerCell.Value = damageHeaders[i];
-                headerCell.Style.Font.SetBold();
-                headerCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
-            }
+            WriteHeaderRow(agSheet, agRow, 1, damageHeaders, center: false, includeBorder: false);
 
             int damageRowStart = agRow;
             agRow++;
@@ -618,8 +595,7 @@ namespace EconToolbox.Desktop.Services
             agSheet.Columns().AdjustToContents();
 
             // Annualizer Sheets
-            var annSummary = wb.Worksheets.Add("Annualizer");
-            annSummary.Style.Font.SetFontName("Segoe UI");
+            var annSummary = CreateWorksheet(wb, "Annualizer");
             var annData = new Dictionary<string, double>
             {
                 {"First Cost", annualizer.FirstCost},
@@ -659,8 +635,7 @@ namespace EconToolbox.Desktop.Services
                 annTable.Theme = XLTableTheme.TableStyleLight11;
                 annSummary.Columns(1, 2).AdjustToContents();
             }
-            var annFc = wb.Worksheets.Add("FutureCosts");
-            annFc.Style.Font.SetFontName("Segoe UI");
+            var annFc = CreateWorksheet(wb, "FutureCosts");
             annFc.Cell(1,1).Value = "Cost";
             annFc.Cell(1,2).Value = "Year";
             rowIdx = 2;
@@ -682,8 +657,7 @@ namespace EconToolbox.Desktop.Services
             foreach (var scenario in waterDemand.Scenarios)
             {
                 string wdSheetName = CreateWorksheetName(wb, $"WaterDemand_{scenario.Name}");
-                var wdSheet = wb.Worksheets.Add(wdSheetName);
-                wdSheet.Style.Font.SetFontName("Segoe UI");
+                var wdSheet = CreateWorksheet(wb, wdSheetName);
                 wdSheet.Cell(1,1).Value = "Year";
                 wdSheet.Cell(1,2).Value = "Growth Rate";
                 wdSheet.Cell(1,3).Value = "Demand (MGD)";
@@ -729,8 +703,7 @@ namespace EconToolbox.Desktop.Services
             }
 
             // Updated Cost Sheets
-            var ucItems = wb.Worksheets.Add("UpdatedCost");
-            ucItems.Style.Font.SetFontName("Segoe UI");
+            var ucItems = CreateWorksheet(wb, "UpdatedCost");
             ucItems.Cell(1,1).Value = "Category";
             ucItems.Cell(1,2).Value = "Original Joint Use Costs at Midpoint of Construction";
             ucItems.Cell(1,3).Value = "Original Joint Use Costs ENR Index Value";
@@ -771,8 +744,7 @@ namespace EconToolbox.Desktop.Services
                 ucTable.Theme = XLTableTheme.TableStyleMedium9;
                 ucItems.Columns(1, 14).AdjustToContents();
             }
-            var ucRrr = wb.Worksheets.Add("RRR");
-            ucRrr.Style.Font.SetFontName("Segoe UI");
+            var ucRrr = CreateWorksheet(wb, "RRR");
             ucRrr.Cell(1,1).Value = "Item";
             ucRrr.Cell(1,2).Value = "Future Cost";
             ucRrr.Cell(1,3).Value = "Year";
@@ -795,8 +767,7 @@ namespace EconToolbox.Desktop.Services
                 rrrTable.Theme = XLTableTheme.TableStyleMedium6;
                 ucRrr.Columns(1, 5).AdjustToContents();
             }
-            var ucSummary = wb.Worksheets.Add("UpdatedCostSummary");
-            ucSummary.Style.Font.SetFontName("Segoe UI");
+            var ucSummary = CreateWorksheet(wb, "UpdatedCostSummary");
             var ucData = new Dictionary<string, double>
             {
                 {"Percent", updated.Percent},
@@ -855,8 +826,7 @@ namespace EconToolbox.Desktop.Services
             }
 
             // Unit Day Value Sheet
-            var udvSheet = wb.Worksheets.Add("Udv");
-            udvSheet.Style.Font.SetFontName("Segoe UI");
+            var udvSheet = CreateWorksheet(wb, "Udv");
             var udvData = new Dictionary<string, object>
             {
                 {"Recreation Type", udv.RecreationType},
@@ -887,8 +857,7 @@ namespace EconToolbox.Desktop.Services
             }
 
             // Recreation Capacity Sheet
-            var recreationSheet = wb.Worksheets.Add("RecreationCapacity");
-            recreationSheet.Style.Font.SetFontName("Segoe UI");
+            var recreationSheet = CreateWorksheet(wb, "RecreationCapacity");
 
             var capacityHeaders = new[]
             {
@@ -966,8 +935,7 @@ namespace EconToolbox.Desktop.Services
             recreationSheet.Columns(1, capacityHeaders.Length).AdjustToContents();
 
             // Mind Map Sheet
-            var mindMapSheet = wb.Worksheets.Add("MindMap");
-            mindMapSheet.Style.Font.SetFontName("Segoe UI");
+            var mindMapSheet = CreateWorksheet(wb, "MindMap");
             var mindMapHeaders = new[]
             {
                 "Depth",
@@ -1017,8 +985,7 @@ namespace EconToolbox.Desktop.Services
             AddMindMapImage(mindMapSheet, mindMap, mindMapRow + 2, 1);
 
             // Gantt Sheet
-            var ganttSheet = wb.Worksheets.Add("Gantt");
-            ganttSheet.Style.Font.SetFontName("Segoe UI");
+            var ganttSheet = CreateWorksheet(wb, "Gantt");
             ganttSheet.Cell(1, 1).Value = "Task";
             ganttSheet.Cell(1, 2).Value = "Workstream";
             ganttSheet.Cell(1, 3).Value = "Start";
@@ -1055,8 +1022,7 @@ namespace EconToolbox.Desktop.Services
             }
 
             // Drawing Sheet
-            var sketchSheet = wb.Worksheets.Add("Sketch");
-            sketchSheet.Style.Font.SetFontName("Segoe UI");
+            var sketchSheet = CreateWorksheet(wb, "Sketch");
             sketchSheet.Cell(1, 1).Value = "Sketch Notes";
             sketchSheet.Cell(2, 1).Value = "Strokes";
             var strokes = drawing.ExportStrokes().ToList();
@@ -1092,9 +1058,8 @@ namespace EconToolbox.Desktop.Services
 
         private static void BuildDashboard(XLWorkbook wb, EadViewModel ead, AgricultureDepthDamageViewModel agriculture, AnnualizerViewModel annualizer, UpdatedCostViewModel updated, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, HashSet<string> tableNames)
         {
-            var ws = wb.Worksheets.Add("Dashboard");
+            var ws = CreateWorksheet(wb, "Dashboard");
             ws.Position = 1;
-            ws.Style.Font.SetFontName("Segoe UI");
             ws.Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
 
             ws.Column(1).Width = 32;
