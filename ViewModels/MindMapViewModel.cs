@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Input;
 
 namespace EconToolbox.Desktop.ViewModels
@@ -24,6 +25,22 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<MindMapNodeViewModel> Nodes { get; } = new();
         public ObservableCollection<MindMapNodeViewModel> CanvasNodes { get; } = new();
         public ObservableCollection<MindMapConnectionViewModel> Connections { get; } = new();
+
+        public IReadOnlyList<MindMapConnectionStyleOption> ConnectionStyles { get; }
+
+        private MindMapConnectionStyleOption _selectedConnectionStyle;
+        public MindMapConnectionStyleOption SelectedConnectionStyle
+        {
+            get => _selectedConnectionStyle;
+            set
+            {
+                if (_selectedConnectionStyle == value)
+                    return;
+
+                _selectedConnectionStyle = value;
+                OnPropertyChanged();
+            }
+        }
 
         public IReadOnlyList<MindMapIconOption> IconPalette { get; }
 
@@ -102,6 +119,33 @@ namespace EconToolbox.Desktop.ViewModels
                 new("🚀", "Milestone", "Use for major deliverables or launches."),
                 new("🗂️", "Reference", "Denote documents, links, or research notes."),
             };
+
+            ConnectionStyles = new List<MindMapConnectionStyleOption>
+            {
+                new(
+                    "Solid rail",
+                    "Use a solid connection for electrical-diagram clarity.",
+                    Color.FromRgb(35, 71, 135),
+                    3.2,
+                    null,
+                    PenLineCap.Round),
+                new(
+                    "Dashed cable",
+                    "Default dashed wiring with a gentle glow.",
+                    Color.FromRgb(45, 74, 136),
+                    2.8,
+                    new DoubleCollection { 6, 3 },
+                    PenLineCap.Round),
+                new(
+                    "Dotted trace",
+                    "Lightweight dotted edges for secondary ideas.",
+                    Color.FromRgb(50, 90, 160),
+                    2.4,
+                    new DoubleCollection { 2, 3 },
+                    PenLineCap.Round)
+            };
+
+            _selectedConnectionStyle = ConnectionStyles[1];
 
             AddRootNodeCommand = new RelayCommand(() => AddRootAt(null));
             _addChildCommand = new RelayCommand(() => AddChildAt(SelectedNode, null), () => SelectedNode != null);
@@ -592,5 +636,40 @@ namespace EconToolbox.Desktop.ViewModels
         public string Glyph { get; }
         public string Label { get; }
         public string Description { get; }
+    }
+
+    public sealed class MindMapConnectionStyleOption
+    {
+        public MindMapConnectionStyleOption(string name, string description, Color strokeColor, double thickness, DoubleCollection? dashArray, PenLineCap lineCap)
+        {
+            Name = name;
+            Description = description;
+            StrokeColor = strokeColor;
+            Thickness = thickness;
+            DashArray = dashArray ?? new DoubleCollection();
+            LineCap = lineCap;
+
+            StrokeBrush = CreateFrozenBrush(strokeColor);
+            GlowBrush = CreateFrozenBrush(Color.FromArgb(60, strokeColor.R, strokeColor.G, strokeColor.B));
+            AnchorFillBrush = CreateFrozenBrush(Color.FromArgb(235, (byte)Math.Min(strokeColor.R + 80, 255), (byte)Math.Min(strokeColor.G + 80, 255), (byte)Math.Min(strokeColor.B + 80, 255)));
+        }
+
+        public string Name { get; }
+        public string Description { get; }
+        public Color StrokeColor { get; }
+        public double Thickness { get; }
+        public DoubleCollection DashArray { get; }
+        public PenLineCap LineCap { get; }
+        public SolidColorBrush StrokeBrush { get; }
+        public SolidColorBrush GlowBrush { get; }
+        public SolidColorBrush AnchorFillBrush { get; }
+
+        private static SolidColorBrush CreateFrozenBrush(Color color)
+        {
+            var brush = new SolidColorBrush(color);
+            if (brush.CanFreeze)
+                brush.Freeze();
+            return brush;
+        }
     }
 }

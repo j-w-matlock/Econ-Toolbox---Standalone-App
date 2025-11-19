@@ -1772,11 +1772,19 @@ namespace EconToolbox.Desktop.Services
 
             dc.PushTransform(new TranslateTransform(-minX, -minY));
 
-            var connectionPen = new Pen(new SolidColorBrush(Color.FromRgb(45, 74, 136)), 2.4)
+            var style = mindMap.SelectedConnectionStyle ?? mindMap.ConnectionStyles.FirstOrDefault();
+            var strokeColor = style?.StrokeColor ?? Color.FromRgb(45, 74, 136);
+            var strokeThickness = style?.Thickness ?? 2.8;
+            var dashArray = style?.DashArray;
+            var lineCap = style?.LineCap ?? PenLineCap.Round;
+
+            var connectionPen = new Pen(new SolidColorBrush(strokeColor), strokeThickness)
             {
-                DashStyle = new DashStyle(new double[] { 6, 3 }, 0),
-                StartLineCap = PenLineCap.Round,
-                EndLineCap = PenLineCap.Round,
+                DashStyle = dashArray == null || dashArray.Count == 0
+                    ? DashStyles.Solid
+                    : new DashStyle(dashArray, 0),
+                StartLineCap = lineCap,
+                EndLineCap = lineCap,
                 LineJoin = PenLineJoin.Round
             };
             connectionPen.Freeze();
