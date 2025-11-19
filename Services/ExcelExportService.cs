@@ -107,6 +107,13 @@ namespace EconToolbox.Desktop.Services
             }
         }
 
+        private static IReadOnlyList<string> WriteSanitizedHeaders(IXLWorksheet ws, int row, int startColumn, IEnumerable<string> headers, string fallbackPrefix, bool center = true, bool includeBorder = true)
+        {
+            var sanitizedHeaders = SanitizeHeaders(headers, fallbackPrefix);
+            WriteHeaderRow(ws, row, startColumn, sanitizedHeaders, center, includeBorder);
+            return sanitizedHeaders;
+        }
+
         private static void RunOnSta(Action action)
         {
             if (Application.Current?.Dispatcher?.CheckAccess() == true)
@@ -757,20 +764,24 @@ namespace EconToolbox.Desktop.Services
 
             // Updated Cost Sheets
             var ucItems = CreateWorksheet(wb, "UpdatedCost");
-            ucItems.Cell(1,1).Value = "Category";
-            ucItems.Cell(1,2).Value = "Original Joint Use Costs at Midpoint of Construction";
-            ucItems.Cell(1,3).Value = "Original Joint Use Costs ENR Index Value";
-            ucItems.Cell(1,4).Value = "ENR Ratio";
-            ucItems.Cell(1,5).Value = "Transition ENR Index Value";
-            ucItems.Cell(1,6).Value = "1967 ENR Index Value";
-            ucItems.Cell(1,7).Value = "Adjusted Joint Use Costs at Midpoint of Construction";
-            ucItems.Cell(1,8).Value = "ENR Update Ratio";
-            ucItems.Cell(1,9).Value = "CWCCIS Base Index";
-            ucItems.Cell(1,10).Value = "Transition ENR Index Value";
-            ucItems.Cell(1,11).Value = "Updated Joint Use Costs as of 1967 base";
-            ucItems.Cell(1,12).Value = "Current CWCCIS Index";
-            ucItems.Cell(1,13).Value = "CWCCIS Update Value";
-            ucItems.Cell(1,14).Value = "Updated Storage Cost";
+            var ucHeaders = new[]
+            {
+                "Category",
+                "Original Joint Use Costs at Midpoint of Construction",
+                "Original Joint Use Costs ENR Index Value",
+                "ENR Ratio",
+                "Transition ENR Index Value",
+                "1967 ENR Index Value",
+                "Adjusted Joint Use Costs at Midpoint of Construction",
+                "ENR Update Ratio",
+                "CWCCIS Base Index",
+                "Transition ENR Index Value",
+                "Updated Joint Use Costs as of 1967 base",
+                "Current CWCCIS Index",
+                "CWCCIS Update Value",
+                "Updated Storage Cost"
+            };
+            WriteSanitizedHeaders(ucItems, 1, 1, ucHeaders, "Column");
             rowIdx = 2;
             foreach (var item in updated.UpdatedCostItems)
             {
