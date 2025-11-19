@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
@@ -25,12 +26,10 @@ namespace EconToolbox.Desktop.ViewModels
         private PointCollection _connectorPoints = new();
         private Point _startAnchor;
         private Point _endAnchor;
-        private Point _firstBend;
-        private Point _secondBend;
-        private Point _manualFirstBend;
-        private Point _manualSecondBend;
-        private bool _hasManualFirstBend;
-        private bool _hasManualSecondBend;
+        private readonly List<Point> _manualBends = new();
+        private IReadOnlyList<Point> _currentBends = Array.Empty<Point>();
+        private AnchorSnap? _sourceAnchorSnap;
+        private AnchorSnap? _targetAnchorSnap;
 
         public double StartX => _startAnchor.X;
         public double StartY => _startAnchor.Y;
@@ -50,31 +49,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public Point FirstBend
-        {
-            get => _firstBend;
-            private set
-            {
-                if (_firstBend != value)
-                {
-                    _firstBend = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public Point SecondBend
-        {
-            get => _secondBend;
-            private set
-            {
-                if (_secondBend != value)
-                {
-                    _secondBend = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+        public IReadOnlyList<Point> BendPoints => _currentBends;
 
         public void Dispose()
         {
@@ -100,6 +75,7 @@ namespace EconToolbox.Desktop.ViewModels
             OnPropertyChanged(nameof(StartY));
             OnPropertyChanged(nameof(EndX));
             OnPropertyChanged(nameof(EndY));
+            OnPropertyChanged(nameof(BendPoints));
         }
 
         private PointCollection CreateConnectorPoints()
@@ -109,63 +85,159 @@ namespace EconToolbox.Desktop.ViewModels
 
             (_startAnchor, _endAnchor) = CalculateAnchors();
 
-            if (_hasManualFirstBend)
-            {
-                _manualFirstBend = TranslateWithAnchorDelta(_manualFirstBend, previousStart, _startAnchor);
-            }
+            TranslateManualBends(previousStart, previousEnd);
 
-            if (_hasManualSecondBend)
-            {
-                _manualSecondBend = TranslateWithAnchorDelta(_manualSecondBend, previousEnd, _endAnchor);
-            }
+            var bends = GetBendPoints();
+            _currentBends = bends;
 
-            var (first, second) = GetBendPoints();
-
-            FirstBend = first;
-            SecondBend = second;
-
-            return new PointCollection(new[]
-            {
-                _startAnchor,
-                FirstBend,
-                SecondBend,
-                _endAnchor
-            });
+            var points = new List<Point>(bends.Count + 2) { _startAnchor };
+            points.AddRange(bends);
+            points.Add(_endAnchor);
+            return new PointCollection(points);
         }
 
-        private (Point first, Point second) GetBendPoints()
+        private void TranslateManualBends(Point previousStart, Point previousEnd)
         {
+            if (_manualBends.Count == 0)
+                return;
+
+            var deltaStart = new Vector(_startAnchor.X - previousStart.X, _startAnchor.Y - previousStart.Y);
+            var deltaEnd = new Vector(_endAnchor.X - previousEnd.X, _endAnchor.Y - previousEnd.Y);
+
+            for (int i = 0; i < _manualBends.Count; i++)
+            {
+                var bend = _manualBends[i];
+                var distanceToStart = DistanceSquared(bend, previousStart);
+                var distanceToEnd = DistanceSquared(bend, previousEnd);
+                var delta = distanceToStart <= distanceToEnd ? deltaStart : deltaEnd;
+                _manualBends[i] = new Point(bend.X + delta.X, bend.Y + delta.Y);
+            }
+        }
+
+        private IReadOnlyList<Point> GetBendPoints()
+        {
+            if (_manualBends.Count > 0)
+                return _manualBends.ToList();
+
             var auto = CreateAutomaticBends(_startAnchor, _endAnchor);
-            var first = _hasManualFirstBend ? _manualFirstBend : auto.first;
-            var second = _hasManualSecondBend ? _manualSecondBend : auto.second;
-            return (first, second);
+            return new List<Point> { auto.first, auto.second };
         }
 
         public void SetManualBend(int index, Point point)
         {
-            if (index == 1)
+            EnsureManualBendCapacity(index + 1);
+            _manualBends[index] = point;
+            RaisePositionChanges();
+        }
+
+        public void AddManualVertex(Point point)
+        {
+            if (_manualBends.Count == 0)
             {
-                _hasManualFirstBend = true;
-                _manualFirstBend = point;
-            }
-            else if (index == 2)
-            {
-                _hasManualSecondBend = true;
-                _manualSecondBend = point;
+                var auto = CreateAutomaticBends(_startAnchor, _endAnchor);
+                _manualBends.Add(auto.first);
+                _manualBends.Add(auto.second);
             }
 
-            ConnectorPoints = new PointCollection(new[]
-            {
-                _startAnchor,
-                index == 1 ? point : FirstBend,
-                index == 2 ? point : SecondBend,
-                _endAnchor
-            });
+            _manualBends.Add(point);
+            RaisePositionChanges();
+        }
 
-            if (index == 1)
-                FirstBend = point;
-            if (index == 2)
-                SecondBend = point;
+        public void RemoveNearestVertex(Point point, double thresholdSquared)
+        {
+            if (_manualBends.Count == 0)
+                return;
+
+            int bestIndex = -1;
+            double bestDistance = thresholdSquared;
+
+            for (int i = 0; i < _manualBends.Count; i++)
+            {
+                var distance = DistanceSquared(_manualBends[i], point);
+                if (distance <= bestDistance)
+                {
+                    bestDistance = distance;
+                    bestIndex = i;
+                }
+            }
+
+            if (bestIndex >= 0)
+            {
+                _manualBends.RemoveAt(bestIndex);
+                RaisePositionChanges();
+            }
+        }
+
+        public void ResetManualVertices()
+        {
+            if (_manualBends.Count == 0 && _sourceAnchorSnap == null && _targetAnchorSnap == null)
+                return;
+
+            _manualBends.Clear();
+            _sourceAnchorSnap = null;
+            _targetAnchorSnap = null;
+            RaisePositionChanges();
+        }
+
+        public void SetAnchor(ConnectionEnd end, Point draggedPosition)
+        {
+            var rect = end == ConnectionEnd.Source
+                ? new Rect(Source.X, Source.Y, Source.VisualWidth, Source.VisualHeight)
+                : new Rect(Target.X, Target.Y, Target.VisualWidth, Target.VisualHeight);
+
+            var closest = FindClosestAnchor(rect, draggedPosition);
+
+            if (end == ConnectionEnd.Source)
+                _sourceAnchorSnap = closest;
+            else
+                _targetAnchorSnap = closest;
+
+            RaisePositionChanges();
+        }
+
+        private static AnchorSnap FindClosestAnchor(Rect rect, Point to)
+        {
+            var anchors = new Dictionary<AnchorSnap, Point>
+            {
+                { AnchorSnap.Center, new Point(rect.Left + rect.Width / 2, rect.Top + rect.Height / 2) },
+                { AnchorSnap.TopLeft, new Point(rect.Left, rect.Top) },
+                { AnchorSnap.TopRight, new Point(rect.Right, rect.Top) },
+                { AnchorSnap.BottomLeft, new Point(rect.Left, rect.Bottom) },
+                { AnchorSnap.BottomRight, new Point(rect.Right, rect.Bottom) }
+            };
+
+            AnchorSnap best = AnchorSnap.Center;
+            double bestDistance = double.MaxValue;
+
+            foreach (var kvp in anchors)
+            {
+                var distance = DistanceSquared(kvp.Value, to);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = kvp.Key;
+                }
+            }
+
+            return best;
+        }
+
+        private void EnsureManualBendCapacity(int size)
+        {
+            if (_manualBends.Count >= size)
+                return;
+
+            if (_manualBends.Count == 0)
+            {
+                var auto = CreateAutomaticBends(_startAnchor, _endAnchor);
+                _manualBends.Add(auto.first);
+                _manualBends.Add(auto.second);
+            }
+
+            while (_manualBends.Count < size)
+            {
+                _manualBends.Add(_manualBends[^1]);
+            }
         }
 
         private (Point first, Point second) CreateAutomaticBends(Point start, Point end)
@@ -195,6 +267,11 @@ namespace EconToolbox.Desktop.ViewModels
 
             var sourceCenter = new Point(sourceRect.Left + sourceRect.Width / 2, sourceRect.Top + sourceRect.Height / 2);
             var targetCenter = new Point(targetRect.Left + targetRect.Width / 2, targetRect.Top + targetRect.Height / 2);
+
+            if (_sourceAnchorSnap is AnchorSnap sourceSnap)
+                sourceCenter = GetAnchorPoint(sourceRect, sourceSnap);
+            if (_targetAnchorSnap is AnchorSnap targetSnap)
+                targetCenter = GetAnchorPoint(targetRect, targetSnap);
 
             if (Math.Abs(sourceCenter.X - targetCenter.X) < 0.1 || Math.Abs(sourceCenter.Y - targetCenter.Y) < 0.1)
             {
@@ -238,12 +315,15 @@ namespace EconToolbox.Desktop.ViewModels
             return (bestSource, bestTarget);
         }
 
-        private static Point TranslateWithAnchorDelta(Point bend, Point previousAnchor, Point newAnchor)
+        private static Point GetAnchorPoint(Rect rect, AnchorSnap snap) => snap switch
         {
-            var deltaX = newAnchor.X - previousAnchor.X;
-            var deltaY = newAnchor.Y - previousAnchor.Y;
-            return new Point(bend.X + deltaX, bend.Y + deltaY);
-        }
+            AnchorSnap.Center => new Point(rect.Left + rect.Width / 2, rect.Top + rect.Height / 2),
+            AnchorSnap.TopLeft => new Point(rect.Left, rect.Top),
+            AnchorSnap.TopRight => new Point(rect.Right, rect.Top),
+            AnchorSnap.BottomLeft => new Point(rect.Left, rect.Bottom),
+            AnchorSnap.BottomRight => new Point(rect.Right, rect.Bottom),
+            _ => new Point(rect.Left + rect.Width / 2, rect.Top + rect.Height / 2)
+        };
 
         private static double DistanceSquared(Point a, Point b)
         {
@@ -251,5 +331,20 @@ namespace EconToolbox.Desktop.ViewModels
             double dy = a.Y - b.Y;
             return dx * dx + dy * dy;
         }
+    }
+
+    public enum ConnectionEnd
+    {
+        Source,
+        Target
+    }
+
+    public enum AnchorSnap
+    {
+        Center,
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
     }
 }

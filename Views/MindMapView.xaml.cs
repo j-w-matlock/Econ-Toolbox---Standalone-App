@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -24,7 +25,9 @@ namespace EconToolbox.Desktop.Views
         private Canvas? _connectionCanvas;
         private MindMapConnectionViewModel? _draggingConnection;
         private ConnectionHandle _activeHandle = ConnectionHandle.None;
+        private int _activeBendIndex = -1;
         private Point _handleOffset;
+        private Point _connectionContextPoint;
 
         private double GetZoomFactor()
         {
@@ -264,11 +267,13 @@ namespace EconToolbox.Desktop.Views
                 return;
 
             _draggingConnection = connection;
-            _activeHandle = element.Tag as string == "Second" ? ConnectionHandle.Second : ConnectionHandle.First;
+            _activeHandle = ConnectionHandle.Bend;
+            _activeBendIndex = element.Tag is int index ? index : 0;
 
             var reference = (IInputElement?)_connectionCanvas ?? element;
             var position = GetCanvasPosition(e, reference);
-            var bend = _activeHandle == ConnectionHandle.Second ? connection.SecondBend : connection.FirstBend;
+            var bendPoints = connection.BendPoints.ToList();
+            var bend = bendPoints.Count > _activeBendIndex ? bendPoints[_activeBendIndex] : new Point();
             _handleOffset = new Point(position.X - bend.X, position.Y - bend.Y);
 
             element.CaptureMouse();
@@ -277,7 +282,7 @@ namespace EconToolbox.Desktop.Views
 
         private void OnConnectionHandleMouseMove(object sender, MouseEventArgs e)
         {
-            if (_draggingConnection == null || _activeHandle == ConnectionHandle.None)
+            if (_draggingConnection == null || _activeHandle != ConnectionHandle.Bend)
                 return;
 
             if (sender is not FrameworkElement element || !element.IsMouseCaptured)
@@ -295,8 +300,7 @@ namespace EconToolbox.Desktop.Views
             var reference = (IInputElement?)_connectionCanvas ?? element;
             var position = GetCanvasPosition(e, reference);
             var targetPoint = SnapToGrid(new Point(position.X - _handleOffset.X, position.Y - _handleOffset.Y));
-            var bendIndex = _activeHandle == ConnectionHandle.Second ? 2 : 1;
-            _draggingConnection.SetManualBend(bendIndex, targetPoint);
+            _draggingConnection.SetManualBend(_activeBendIndex, targetPoint);
             e.Handled = true;
         }
 
@@ -315,14 +319,113 @@ namespace EconToolbox.Desktop.Views
 
             _draggingConnection = null;
             _activeHandle = ConnectionHandle.None;
+            _activeBendIndex = -1;
             _handleOffset = new Point();
+        }
+
+        private void OnConnectionAnchorMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not FrameworkElement element || element.DataContext is not MindMapConnectionViewModel connection)
+                return;
+
+            _draggingConnection = connection;
+            _activeHandle = element.Tag as string == "End" ? ConnectionHandle.EndAnchor : ConnectionHandle.StartAnchor;
+
+            var reference = (IInputElement?)_connectionCanvas ?? element;
+            var position = GetCanvasPosition(e, reference);
+            var anchor = _activeHandle == ConnectionHandle.EndAnchor
+                ? new Point(connection.EndX, connection.EndY)
+                : new Point(connection.StartX, connection.StartY);
+            _handleOffset = new Point(position.X - anchor.X, position.Y - anchor.Y);
+
+            element.CaptureMouse();
+            e.Handled = true;
+        }
+
+        private void OnConnectionAnchorMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_draggingConnection == null || (_activeHandle != ConnectionHandle.StartAnchor && _activeHandle != ConnectionHandle.EndAnchor))
+                return;
+
+            if (sender is not FrameworkElement element || !element.IsMouseCaptured)
+            {
+                EndConnectionDrag();
+                return;
+            }
+
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                EndConnectionDrag();
+                return;
+            }
+
+            var reference = (IInputElement?)_connectionCanvas ?? element;
+            var position = GetCanvasPosition(e, reference);
+            var target = SnapToGrid(new Point(position.X - _handleOffset.X, position.Y - _handleOffset.Y));
+            var end = _activeHandle == ConnectionHandle.EndAnchor ? ConnectionEnd.Target : ConnectionEnd.Source;
+            _draggingConnection.SetAnchor(end, target);
+            e.Handled = true;
+        }
+
+        private void OnConnectionAnchorMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            EndConnectionDrag();
+            e.Handled = true;
+        }
+
+        private void OnConnectionLineRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not IInputElement element)
+                return;
+
+            _connectionContextPoint = SnapToGrid(GetCanvasPosition(e, element));
+        }
+
+        private void OnConnectionContextMenuOpened(object sender, RoutedEventArgs e)
+        {
+            if (sender is not ContextMenu { PlacementTarget: FrameworkElement element })
+                return;
+
+            if (element.DataContext is not MindMapConnectionViewModel connection)
+                return;
+
+            if (sender is ContextMenu menu)
+            {
+                if (menu.Items.Count > 1 && menu.Items[1] is MenuItem remove)
+                    remove.IsEnabled = connection.BendPoints.Any();
+            }
+        }
+
+        private void OnConnectionAddVertex(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem { PlacementTarget: FrameworkElement element } && element.DataContext is MindMapConnectionViewModel connection)
+            {
+                connection.AddManualVertex(_connectionContextPoint);
+            }
+        }
+
+        private void OnConnectionRemoveVertex(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem { PlacementTarget: FrameworkElement element } && element.DataContext is MindMapConnectionViewModel connection)
+            {
+                connection.RemoveNearestVertex(_connectionContextPoint, 20 * 20);
+            }
+        }
+
+        private void OnConnectionResetVertices(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem { PlacementTarget: FrameworkElement element } && element.DataContext is MindMapConnectionViewModel connection)
+            {
+                connection.ResetManualVertices();
+            }
         }
 
         private enum ConnectionHandle
         {
             None,
-            First,
-            Second
+            Bend,
+            StartAnchor,
+            EndAnchor
         }
     }
 }
