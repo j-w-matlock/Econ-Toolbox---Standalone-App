@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Globalization;
+using System.Threading;
 
 namespace EconToolbox.Desktop.Services
 {
@@ -32,150 +33,189 @@ namespace EconToolbox.Desktop.Services
         private static readonly XLColor DashboardAccentText = XLColor.FromHtml("#2D6A8E");
         private static readonly XLColor DashboardPrimaryText = XLColor.FromHtml("#1F2937");
 
+        private static void RunOnSta(Action action)
+        {
+            if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
+            {
+                action();
+                return;
+            }
+
+            Exception? exception = null;
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+            });
+
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            if (exception is not null)
+            {
+                throw exception;
+            }
+        }
+
         public void ExportCapitalRecovery(double rate, int periods, double factor, string filePath)
         {
-            using var wb = new XLWorkbook();
-            var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var ws = wb.Worksheets.Add("CapitalRecovery");
-            ws.Style.Font.SetFontName("Segoe UI");
-
-            var entries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+            RunOnSta(() =>
             {
-                ("Interest Rate", rate, "0.00%", "Input discount rate used to compute the capital recovery factor.", false),
-                ("Number of Periods", periods, "0", "Total compounding periods used in the schedule.", false),
-                ("Capital Recovery Factor", factor, "0.000000", "r(1+r)^n / ((1+r)^n - 1)", true)
-            };
+                using var wb = new XLWorkbook();
+                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var ws = wb.Worksheets.Add("CapitalRecovery");
+                ws.Style.Font.SetFontName("Segoe UI");
 
-            int nextRow = WriteKeyValueTable(ws, 1, 1, "Capital Recovery Factor", entries, tableNames);
-            var noteRange = ws.Range(nextRow, 1, nextRow, 2);
-            noteRange.Merge();
-            noteRange.Value = "Use this sheet to document standalone capital recovery calculations for audit packages.";
-            noteRange.Style.Alignment.WrapText = true;
-            noteRange.Style.Fill.BackgroundColor = DashboardRowLight;
-            noteRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-            noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
+                var entries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+                {
+                    ("Interest Rate", rate, "0.00%", "Input discount rate used to compute the capital recovery factor.", false),
+                    ("Number of Periods", periods, "0", "Total compounding periods used in the schedule.", false),
+                    ("Capital Recovery Factor", factor, "0.000000", "r(1+r)^n / ((1+r)^n - 1)", true)
+                };
 
-            ws.Columns(1, 2).AdjustToContents();
-            wb.SaveAs(filePath);
+                int nextRow = WriteKeyValueTable(ws, 1, 1, "Capital Recovery Factor", entries, tableNames);
+                var noteRange = ws.Range(nextRow, 1, nextRow, 2);
+                noteRange.Merge();
+                noteRange.Value = "Use this sheet to document standalone capital recovery calculations for audit packages.";
+                noteRange.Style.Alignment.WrapText = true;
+                noteRange.Style.Fill.BackgroundColor = DashboardRowLight;
+                noteRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+                ws.Columns(1, 2).AdjustToContents();
+                wb.SaveAs(filePath);
+            });
         }
 
         public void ExportWaterDemand(IEnumerable<Scenario> scenarios, string filePath)
         {
-            using var wb = new XLWorkbook();
-            var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            int scenarioIndex = 1;
-
-            foreach (var scenario in scenarios)
+            RunOnSta(() =>
             {
-                string baseName = string.IsNullOrWhiteSpace(scenario.Name) ? $"Scenario {scenarioIndex}" : scenario.Name;
-                var ws = wb.Worksheets.Add(CreateWorksheetName(wb, baseName));
-                ws.Style.Font.SetFontName("Segoe UI");
+                using var wb = new XLWorkbook();
+                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                int scenarioIndex = 1;
 
-                var headers = new[]
+                foreach (var scenario in scenarios)
                 {
-                    "Year",
-                    "Growth Rate",
-                    "Demand (MGD)",
-                    "Residential (MGD)",
-                    "Commercial (MGD)",
-                    "Industrial (MGD)",
-                    "Agricultural (MGD)",
-                    "Adjusted (MGD)",
-                    "Adjusted (ac-ft/yr)"
-                };
+                    string baseName = string.IsNullOrWhiteSpace(scenario.Name) ? $"Scenario {scenarioIndex}" : scenario.Name;
+                    var ws = wb.Worksheets.Add(CreateWorksheetName(wb, baseName));
+                    ws.Style.Font.SetFontName("Segoe UI");
 
-                for (int i = 0; i < headers.Length; i++)
-                {
-                    var headerCell = ws.Cell(1, i + 1);
-                    headerCell.Value = headers[i];
-                    headerCell.Style.Font.SetBold();
-                    headerCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
-                    headerCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    headerCell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-                    headerCell.Style.Border.OutsideBorderColor = DashboardBorder;
+                    var headers = new[]
+                    {
+                        "Year",
+                        "Growth Rate",
+                        "Demand (MGD)",
+                        "Residential (MGD)",
+                        "Commercial (MGD)",
+                        "Industrial (MGD)",
+                        "Agricultural (MGD)",
+                        "Adjusted (MGD)",
+                        "Adjusted (ac-ft/yr)"
+                    };
+
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        var headerCell = ws.Cell(1, i + 1);
+                        headerCell.Value = headers[i];
+                        headerCell.Style.Font.SetBold();
+                        headerCell.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
+                        headerCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        headerCell.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                        headerCell.Style.Border.OutsideBorderColor = DashboardBorder;
+                    }
+
+                    ws.Cell(1, 3).GetComment().AddText("Demand = Prior Demand × (1 + Growth Rate)");
+                    ws.Cell(1, 4).GetComment().AddText("Residential = Demand × Residential %");
+                    ws.Cell(1, 5).GetComment().AddText("Commercial = Demand × Commercial %");
+                    ws.Cell(1, 6).GetComment().AddText("Industrial = Demand × Industrial %");
+                    ws.Cell(1, 7).GetComment().AddText("Agricultural = Demand × Agricultural %");
+                    ws.Cell(1, 8).GetComment().AddText("Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)");
+                    ws.Cell(1, 9).GetComment().AddText("Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851");
+
+                    int row = 2;
+                    foreach (var result in scenario.Results)
+                    {
+                        ws.Cell(row, 1).Value = result.Year;
+                        ws.Cell(row, 1).Style.NumberFormat.Format = "0";
+
+                        ws.Cell(row, 2).Value = result.GrowthRate;
+                        ws.Cell(row, 2).Style.NumberFormat.Format = "0.0%";
+
+                        ws.Cell(row, 3).Value = result.Demand;
+                        ws.Cell(row, 3).Style.NumberFormat.Format = "#,##0.00";
+
+                        ws.Cell(row, 4).Value = result.ResidentialDemand;
+                        ws.Cell(row, 4).Style.NumberFormat.Format = "#,##0.00";
+
+                        ws.Cell(row, 5).Value = result.CommercialDemand;
+                        ws.Cell(row, 5).Style.NumberFormat.Format = "#,##0.00";
+
+                        ws.Cell(row, 6).Value = result.IndustrialDemand;
+                        ws.Cell(row, 6).Style.NumberFormat.Format = "#,##0.00";
+
+                        ws.Cell(row, 7).Value = result.AgriculturalDemand;
+                        ws.Cell(row, 7).Style.NumberFormat.Format = "#,##0.00";
+
+                        ws.Cell(row, 8).Value = result.AdjustedDemand;
+                        ws.Cell(row, 8).Style.NumberFormat.Format = "#,##0.00";
+
+                        ws.Cell(row, 9).Value = result.AdjustedDemandAcreFeet;
+                        ws.Cell(row, 9).Style.NumberFormat.Format = "#,##0.00";
+                        row++;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(scenario.Description))
+                    {
+                        var descriptionRange = ws.Range(row, 1, row, headers.Length);
+                        descriptionRange.Merge();
+                        descriptionRange.Value = scenario.Description;
+                        descriptionRange.Style.Alignment.WrapText = true;
+                        descriptionRange.Style.Fill.BackgroundColor = DashboardRowLight;
+                        descriptionRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                        descriptionRange.Style.Border.OutsideBorderColor = DashboardBorder;
+                        row += 2;
+                    }
+                    else
+                    {
+                        row += 1;
+                    }
+
+                    int dataEndRow = Math.Max(2, scenario.Results.Count + 1);
+                    var dataRange = ws.Range(1, 1, dataEndRow, headers.Length);
+                    var table = dataRange.CreateTable(GetTableName($"WaterDemand_{baseName}", tableNames));
+                    table.Theme = XLTableTheme.TableStyleMedium4;
+
+                    ws.Columns(1, headers.Length).AdjustToContents();
+
+                    if (scenario.Results.Count >= 2)
+                    {
+                        AddWaterDemandChart(ws, new[] { scenario }, row + 1, 1);
+                    }
+
+                    scenarioIndex++;
                 }
 
-                ws.Cell(1, 3).GetComment().AddText("Demand = Prior Demand × (1 + Growth Rate)");
-                ws.Cell(1, 4).GetComment().AddText("Residential = Demand × Residential %");
-                ws.Cell(1, 5).GetComment().AddText("Commercial = Demand × Commercial %");
-                ws.Cell(1, 6).GetComment().AddText("Industrial = Demand × Industrial %");
-                ws.Cell(1, 7).GetComment().AddText("Agricultural = Demand × Agricultural %");
-                ws.Cell(1, 8).GetComment().AddText("Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)");
-                ws.Cell(1, 9).GetComment().AddText("Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851");
-
-                int row = 2;
-                foreach (var result in scenario.Results)
-                {
-                    ws.Cell(row, 1).Value = result.Year;
-                    ws.Cell(row, 1).Style.NumberFormat.Format = "0";
-
-                    ws.Cell(row, 2).Value = result.GrowthRate;
-                    ws.Cell(row, 2).Style.NumberFormat.Format = "0.0%";
-
-                    ws.Cell(row, 3).Value = result.Demand;
-                    ws.Cell(row, 3).Style.NumberFormat.Format = "#,##0.00";
-
-                    ws.Cell(row, 4).Value = result.ResidentialDemand;
-                    ws.Cell(row, 4).Style.NumberFormat.Format = "#,##0.00";
-
-                    ws.Cell(row, 5).Value = result.CommercialDemand;
-                    ws.Cell(row, 5).Style.NumberFormat.Format = "#,##0.00";
-
-                    ws.Cell(row, 6).Value = result.IndustrialDemand;
-                    ws.Cell(row, 6).Style.NumberFormat.Format = "#,##0.00";
-
-                    ws.Cell(row, 7).Value = result.AgriculturalDemand;
-                    ws.Cell(row, 7).Style.NumberFormat.Format = "#,##0.00";
-
-                    ws.Cell(row, 8).Value = result.AdjustedDemand;
-                    ws.Cell(row, 8).Style.NumberFormat.Format = "#,##0.00";
-
-                    ws.Cell(row, 9).Value = result.AdjustedDemandAcreFeet;
-                    ws.Cell(row, 9).Style.NumberFormat.Format = "#,##0.00";
-                    row++;
-                }
-
-                if (!string.IsNullOrWhiteSpace(scenario.Description))
-                {
-                    var descriptionRange = ws.Range(row, 1, row, headers.Length);
-                    descriptionRange.Merge();
-                    descriptionRange.Value = scenario.Description;
-                    descriptionRange.Style.Alignment.WrapText = true;
-                    descriptionRange.Style.Fill.BackgroundColor = DashboardRowLight;
-                    descriptionRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-                    descriptionRange.Style.Border.OutsideBorderColor = DashboardBorder;
-                    row += 2;
-                }
-                else
-                {
-                    row += 1;
-                }
-
-                int dataEndRow = Math.Max(2, scenario.Results.Count + 1);
-                var dataRange = ws.Range(1, 1, dataEndRow, headers.Length);
-                var table = dataRange.CreateTable(GetTableName($"WaterDemand_{baseName}", tableNames));
-                table.Theme = XLTableTheme.TableStyleMedium4;
-
-                ws.Columns(1, headers.Length).AdjustToContents();
-
-                if (scenario.Results.Count >= 2)
-                {
-                    AddWaterDemandChart(ws, new[] { scenario }, row + 1, 1);
-                }
-
-                scenarioIndex++;
-            }
-
-            wb.SaveAs(filePath);
+                wb.SaveAs(filePath);
+            });
         }
 
         public void ExportAnnualizer(double firstCost, double rate, double annualOm, double annualBenefits, IEnumerable<FutureCostEntry> future, double idc, double totalInvestment, double crf, double annualCost, double bcr, string filePath)
         {
-            using var wb = new XLWorkbook();
-            var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            RunOnSta(() =>
+            {
+                using var wb = new XLWorkbook();
+                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            var summary = wb.Worksheets.Add("Summary");
-            summary.Style.Font.SetFontName("Segoe UI");
+                var summary = wb.Worksheets.Add("Summary");
+                summary.Style.Font.SetFontName("Segoe UI");
 
             var summaryRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
@@ -240,13 +280,16 @@ namespace EconToolbox.Desktop.Services
             futureTable.Theme = XLTableTheme.TableStyleLight11;
             futureSheet.Columns(1, futureHeaders.Length).AdjustToContents();
 
-            wb.SaveAs(filePath);
+                wb.SaveAs(filePath);
+            });
         }
 
         public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, IReadOnlyList<Point> stagePoints, IReadOnlyList<Point> frequencyPoints, string filePath)
         {
-            using var wb = new XLWorkbook();
-            var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            RunOnSta(() =>
+            {
+                using var wb = new XLWorkbook();
+                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var inputSheet = wb.Worksheets.Add("EAD Inputs");
             inputSheet.Style.Font.SetFontName("Segoe UI");
@@ -332,13 +375,16 @@ namespace EconToolbox.Desktop.Services
             int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, tableNames);
             AddEadChart(summary, stagePoints, frequencyPoints, summaryNextRow, 1);
 
-            wb.SaveAs(filePath);
+                wb.SaveAs(filePath);
+            });
         }
 
         public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, IReadOnlyList<Point> eadStagePoints, IReadOnlyList<Point> eadFrequencyPoints, string filePath)
         {
-            using var wb = new XLWorkbook();
-            var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            RunOnSta(() =>
+            {
+                using var wb = new XLWorkbook();
+                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // EAD Sheet
             var eadSheet = wb.Worksheets.Add("EAD");
@@ -1028,6 +1074,7 @@ namespace EconToolbox.Desktop.Services
             BuildDashboard(wb, ead, agriculture, annualizer, updated, waterDemand, udv, recreationCapacity, mindMap, gantt, drawing, tableNames);
 
             wb.SaveAs(filePath);
+            });
         }
 
         private static void BuildDashboard(XLWorkbook wb, EadViewModel ead, AgricultureDepthDamageViewModel agriculture, AnnualizerViewModel annualizer, UpdatedCostViewModel updated, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, HashSet<string> tableNames)
