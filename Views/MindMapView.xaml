@@ -8,13 +8,13 @@
              UseLayoutRounding="True">
     <UserControl.Resources>
         <Style x:Key="ConnectionLineStyle" TargetType="Polyline">
-            <Setter Property="Stroke" Value="#2D4A88"/>
-            <Setter Property="StrokeThickness" Value="2.8"/>
-            <Setter Property="StrokeStartLineCap" Value="Round"/>
-            <Setter Property="StrokeEndLineCap" Value="Round"/>
+            <Setter Property="Stroke" Value="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <Setter Property="StrokeThickness" Value="{Binding DataContext.SelectedConnectionStyle.Thickness, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <Setter Property="StrokeStartLineCap" Value="{Binding DataContext.SelectedConnectionStyle.LineCap, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <Setter Property="StrokeEndLineCap" Value="{Binding DataContext.SelectedConnectionStyle.LineCap, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Setter Property="StrokeLineJoin" Value="Round"/>
-            <Setter Property="StrokeDashArray" Value="6 3"/>
-            <Setter Property="Opacity" Value="0.9"/>
+            <Setter Property="StrokeDashArray" Value="{Binding DataContext.SelectedConnectionStyle.DashArray, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <Setter Property="Opacity" Value="0.96"/>
             <Setter Property="Fill" Value="Transparent"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Effect">
@@ -22,7 +22,7 @@
                     <DropShadowEffect BlurRadius="6"
                                       ShadowDepth="0"
                                       Color="#132952"
-                                      Opacity="0.35"/>
+                                      Opacity="0.28"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -149,6 +149,33 @@
                                        VerticalAlignment="Center"
                                        Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0,8,0,0"
+                                    VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                ToolTip="Choose the wiring look for parent-child connections."/>
+                                <TextBlock Text="Edge style"
+                                           Margin="4,0,0,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource Brush.TextSecondary}"/>
+                            </StackPanel>
+                            <ComboBox ItemsSource="{Binding ConnectionStyles}"
+                                      SelectedItem="{Binding SelectedConnectionStyle, Mode=TwoWay}"
+                                      Width="180"
+                                      Margin="10,0,0,0"
+                                      VerticalAlignment="Center"
+                                      ToolTip="Swap between solid, dashed, or dotted wiring styles.">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:MindMapConnectionStyleOption}">
+                                        <StackPanel Orientation="Vertical" Margin="2,4">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{StaticResource Brush.TextSecondary}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1"
@@ -177,8 +204,8 @@
                                                        Height="8"
                                                        RadiusX="1"
                                                        RadiusY="1"
-                                                       Fill="#E4E9FB"
-                                                       Stroke="#27477F"
+                                                       Fill="{Binding DataContext.SelectedConnectionStyle.AnchorFillBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                       Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                        StrokeThickness="1.2"
                                                        Canvas.Left="{Binding FirstBend.X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
                                                        Canvas.Top="{Binding FirstBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"/>
@@ -186,22 +213,22 @@
                                                        Height="8"
                                                        RadiusX="1"
                                                        RadiusY="1"
-                                                       Fill="#E4E9FB"
-                                                       Stroke="#27477F"
+                                                       Fill="{Binding DataContext.SelectedConnectionStyle.AnchorFillBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                       Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                        StrokeThickness="1.2"
                                                        Canvas.Left="{Binding SecondBend.X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
                                                        Canvas.Top="{Binding SecondBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"/>
                                             <Ellipse Width="10"
                                                      Height="10"
                                                      Fill="White"
-                                                     Stroke="#1F3A7A"
+                                                     Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                      StrokeThickness="1.4"
                                                      Canvas.Left="{Binding StartX, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"
                                                      Canvas.Top="{Binding StartY, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"/>
                                             <Ellipse Width="10"
                                                      Height="10"
-                                                     Fill="#1F3A7A"
-                                                     Stroke="#F7F9FF"
+                                                     Fill="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                     Stroke="{Binding DataContext.SelectedConnectionStyle.GlowBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                      StrokeThickness="1"
                                                      Canvas.Left="{Binding EndX, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"
                                                      Canvas.Top="{Binding EndY, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"/>
