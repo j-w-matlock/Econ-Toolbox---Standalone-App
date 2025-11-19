@@ -514,7 +514,7 @@
                                             Padding="12"
                                             Margin="0,0,0,16">
                                         <StackPanel>
-                                            <TextBlock Text="Icon & emphasis" FontWeight="SemiBold"/>
+                                            <TextBlock Text="Icon &amp; emphasis" FontWeight="SemiBold"/>
                                             <ListBox ItemsSource="{Binding DataContext.IconPalette, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                      SelectedValuePath="Glyph"
                                                      SelectedValue="{Binding IconGlyph, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
