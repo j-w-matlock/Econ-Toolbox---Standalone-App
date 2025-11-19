@@ -21,6 +21,7 @@ namespace EconToolbox.Desktop.ViewModels
         private const double MinZoomLevel = 0.4;
         private const double MaxZoomLevel = 1.6;
         private double _zoomLevel = 1.0;
+        private double _snapStep = 10;
 
         public ObservableCollection<MindMapNodeViewModel> Nodes { get; } = new();
         public ObservableCollection<MindMapNodeViewModel> CanvasNodes { get; } = new();
@@ -98,6 +99,22 @@ namespace EconToolbox.Desktop.ViewModels
 
         public double ZoomLevelMinimum => MinZoomLevel;
         public double ZoomLevelMaximum => MaxZoomLevel;
+
+        public double SnapStep
+        {
+            get => _snapStep;
+            set
+            {
+                if (value <= 0)
+                    return;
+
+                if (Math.Abs(_snapStep - value) > 0.001)
+                {
+                    _snapStep = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public ICommand AddRootNodeCommand { get; }
         public ICommand AddChildNodeCommand => _addChildCommand;

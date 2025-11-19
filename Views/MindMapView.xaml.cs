@@ -21,11 +21,27 @@ namespace EconToolbox.Desktop.Views
         }
 
         private MindMapViewModel? ViewModel => DataContext as MindMapViewModel;
+        private Canvas? _connectionCanvas;
+        private MindMapConnectionViewModel? _draggingConnection;
+        private ConnectionHandle _activeHandle = ConnectionHandle.None;
+        private Point _handleOffset;
 
         private double GetZoomFactor()
         {
             var zoom = ViewModel?.ZoomLevel ?? 1.0;
             return zoom <= 0 ? 1.0 : zoom;
+        }
+
+        private double GetSnapStep()
+        {
+            var snap = ViewModel?.SnapStep ?? 10;
+            return snap <= 0 ? 1 : snap;
+        }
+
+        private Point SnapToGrid(Point point)
+        {
+            var step = GetSnapStep();
+            return new Point(Math.Round(point.X / step) * step, Math.Round(point.Y / step) * step);
         }
 
         private Point NormalizeToCanvas(Point point)
@@ -47,6 +63,14 @@ namespace EconToolbox.Desktop.Views
             if (sender is ItemsControl itemsControl)
             {
                 _nodeCanvas = FindItemsPanelCanvas(itemsControl);
+            }
+        }
+
+        private void OnConnectionsLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is ItemsControl itemsControl)
+            {
+                _connectionCanvas = FindItemsPanelCanvas(itemsControl);
             }
         }
 
@@ -77,7 +101,7 @@ namespace EconToolbox.Desktop.Views
         private void OnCanvasRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var reference = (IInputElement?)_nodeCanvas ?? (IInputElement)sender;
-            _lastCanvasContextPosition = GetCanvasPosition(e, reference);
+            _lastCanvasContextPosition = SnapToGrid(GetCanvasPosition(e, reference));
         }
 
         private void OnCanvasContextMenuOpened(object sender, RoutedEventArgs e)
@@ -152,8 +176,10 @@ namespace EconToolbox.Desktop.Views
             var newX = position.X - _dragOffset.X;
             var newY = position.Y - _dragOffset.Y;
 
-            _draggingNode.X = Math.Max(0, newX);
-            _draggingNode.Y = Math.Max(0, newY);
+            var snapped = SnapToGrid(new Point(newX, newY));
+
+            _draggingNode.X = Math.Max(0, snapped.X);
+            _draggingNode.Y = Math.Max(0, snapped.Y);
             e.Handled = true;
         }
 
@@ -182,7 +208,7 @@ namespace EconToolbox.Desktop.Views
                     ViewModel.SelectedNode = node;
 
                 var reference = (IInputElement?)_nodeCanvas ?? element;
-                _lastCanvasContextPosition = GetCanvasPosition(e, reference);
+                _lastCanvasContextPosition = SnapToGrid(GetCanvasPosition(e, reference));
             }
         }
 
@@ -230,6 +256,73 @@ namespace EconToolbox.Desktop.Views
                 if (Math.Abs(node.VisualHeight - e.NewSize.Height) > 0.1)
                     node.VisualHeight = e.NewSize.Height;
             }
+        }
+
+        private void OnConnectionHandleMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not FrameworkElement element || element.DataContext is not MindMapConnectionViewModel connection)
+                return;
+
+            _draggingConnection = connection;
+            _activeHandle = element.Tag as string == "Second" ? ConnectionHandle.Second : ConnectionHandle.First;
+
+            var reference = (IInputElement?)_connectionCanvas ?? element;
+            var position = GetCanvasPosition(e, reference);
+            var bend = _activeHandle == ConnectionHandle.Second ? connection.SecondBend : connection.FirstBend;
+            _handleOffset = new Point(position.X - bend.X, position.Y - bend.Y);
+
+            element.CaptureMouse();
+            e.Handled = true;
+        }
+
+        private void OnConnectionHandleMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_draggingConnection == null || _activeHandle == ConnectionHandle.None)
+                return;
+
+            if (sender is not FrameworkElement element || !element.IsMouseCaptured)
+            {
+                EndConnectionDrag();
+                return;
+            }
+
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                EndConnectionDrag();
+                return;
+            }
+
+            var reference = (IInputElement?)_connectionCanvas ?? element;
+            var position = GetCanvasPosition(e, reference);
+            var targetPoint = SnapToGrid(new Point(position.X - _handleOffset.X, position.Y - _handleOffset.Y));
+            var bendIndex = _activeHandle == ConnectionHandle.Second ? 2 : 1;
+            _draggingConnection.SetManualBend(bendIndex, targetPoint);
+            e.Handled = true;
+        }
+
+        private void OnConnectionHandleMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            EndConnectionDrag();
+            e.Handled = true;
+        }
+
+        private void EndConnectionDrag()
+        {
+            if (Mouse.Captured is FrameworkElement element)
+            {
+                element.ReleaseMouseCapture();
+            }
+
+            _draggingConnection = null;
+            _activeHandle = ConnectionHandle.None;
+            _handleOffset = new Point();
+        }
+
+        private enum ConnectionHandle
+        {
+            None,
+            First,
+            Second
         }
     }
 }

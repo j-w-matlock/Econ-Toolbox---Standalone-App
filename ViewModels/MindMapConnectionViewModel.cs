@@ -23,13 +23,19 @@ namespace EconToolbox.Desktop.ViewModels
         public MindMapNodeViewModel Target { get; }
 
         private PointCollection _connectorPoints = new();
+        private Point _startAnchor;
+        private Point _endAnchor;
         private Point _firstBend;
         private Point _secondBend;
+        private Point _manualFirstBend;
+        private Point _manualSecondBend;
+        private bool _hasManualFirstBend;
+        private bool _hasManualSecondBend;
 
-        public double StartX => Source.X + Source.VisualWidth / 2;
-        public double StartY => Source.Y + Source.VisualHeight / 2;
-        public double EndX => Target.X + Target.VisualWidth / 2;
-        public double EndY => Target.Y + Target.VisualHeight / 2;
+        public double StartX => _startAnchor.X;
+        public double StartY => _startAnchor.Y;
+        public double EndX => _endAnchor.X;
+        public double EndY => _endAnchor.Y;
 
         public PointCollection ConnectorPoints
         {
@@ -89,85 +95,161 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void RaisePositionChanges()
         {
+            ConnectorPoints = CreateConnectorPoints();
             OnPropertyChanged(nameof(StartX));
             OnPropertyChanged(nameof(StartY));
             OnPropertyChanged(nameof(EndX));
             OnPropertyChanged(nameof(EndY));
-            ConnectorPoints = CreateConnectorPoints();
         }
 
         private PointCollection CreateConnectorPoints()
         {
-            var sourceRight = Source.X + Source.VisualWidth;
-            var sourceLeft = Source.X;
-            var sourceMidY = Source.Y + Source.VisualHeight / 2;
+            var previousStart = _startAnchor;
+            var previousEnd = _endAnchor;
 
-            var targetLeft = Target.X;
-            var targetRight = Target.X + Target.VisualWidth;
-            var targetMidY = Target.Y + Target.VisualHeight / 2;
+            (_startAnchor, _endAnchor) = CalculateAnchors();
 
-            bool targetToRight = targetLeft >= sourceRight;
-
-            double startX = targetToRight ? sourceRight : sourceLeft;
-            double endX = targetToRight ? targetLeft : targetRight;
-
-            var start = new Point(startX, sourceMidY);
-            var end = new Point(endX, targetMidY);
-
-            double midX = Math.Abs(start.X - end.X) < 0.1
-                ? start.X
-                : (start.X + end.X) / 2.0;
-
-            var points = new List<Point>
+            if (_hasManualFirstBend)
             {
-                start,
-                new Point(midX, start.Y)
-            };
-
-            var zigSource = new Point(midX, start.Y);
-            var zigTarget = new Point(midX, end.Y);
-            var zigPoints = CreateZigZagPoints(zigSource, zigTarget, targetToRight ? 1 : -1);
-            points.AddRange(zigPoints);
-            points.Add(zigTarget);
-            points.Add(end);
-
-            if (points.Count >= 3)
-            {
-                FirstBend = points[1];
-                SecondBend = points[^2];
+                _manualFirstBend = TranslateWithAnchorDelta(_manualFirstBend, previousStart, _startAnchor);
             }
 
-            return new PointCollection(points);
+            if (_hasManualSecondBend)
+            {
+                _manualSecondBend = TranslateWithAnchorDelta(_manualSecondBend, previousEnd, _endAnchor);
+            }
+
+            var (first, second) = GetBendPoints();
+
+            FirstBend = first;
+            SecondBend = second;
+
+            return new PointCollection(new[]
+            {
+                _startAnchor,
+                FirstBend,
+                SecondBend,
+                _endAnchor
+            });
         }
 
-        private static IEnumerable<Point> CreateZigZagPoints(Point start, Point end, int directionSign)
+        private (Point first, Point second) GetBendPoints()
         {
-            var results = new List<Point>();
-            double deltaY = end.Y - start.Y;
-            double amplitude = 24 * directionSign;
+            var auto = CreateAutomaticBends(_startAnchor, _endAnchor);
+            var first = _hasManualFirstBend ? _manualFirstBend : auto.first;
+            var second = _hasManualSecondBend ? _manualSecondBend : auto.second;
+            return (first, second);
+        }
 
-            if (Math.Abs(deltaY) < 12)
+        public void SetManualBend(int index, Point point)
+        {
+            if (index == 1)
             {
-                results.Add(new Point(start.X + amplitude, start.Y - 18));
-                results.Add(new Point(start.X - amplitude, start.Y + 18));
-                return results;
+                _hasManualFirstBend = true;
+                _manualFirstBend = point;
+            }
+            else if (index == 2)
+            {
+                _hasManualSecondBend = true;
+                _manualSecondBend = point;
             }
 
-            int segments = Math.Max(2, (int)(Math.Abs(deltaY) / 50));
-            if (segments % 2 != 0)
-                segments++;
-
-            double step = deltaY / (segments + 1);
-            double currentY = start.Y;
-
-            for (int i = 0; i < segments; i++)
+            ConnectorPoints = new PointCollection(new[]
             {
-                currentY += step;
-                double offset = (i % 2 == 0 ? amplitude : -amplitude);
-                results.Add(new Point(start.X + offset, currentY));
+                _startAnchor,
+                index == 1 ? point : FirstBend,
+                index == 2 ? point : SecondBend,
+                _endAnchor
+            });
+
+            if (index == 1)
+                FirstBend = point;
+            if (index == 2)
+                SecondBend = point;
+        }
+
+        private (Point first, Point second) CreateAutomaticBends(Point start, Point end)
+        {
+            if (Math.Abs(start.X - end.X) < 0.01)
+            {
+                double y1 = start.Y + (end.Y - start.Y) / 3.0;
+                double y2 = start.Y + 2 * (end.Y - start.Y) / 3.0;
+                return (new Point(start.X, y1), new Point(start.X, y2));
             }
 
-            return results;
+            if (Math.Abs(start.Y - end.Y) < 0.01)
+            {
+                double x1 = start.X + (end.X - start.X) / 3.0;
+                double x2 = start.X + 2 * (end.X - start.X) / 3.0;
+                return (new Point(x1, start.Y), new Point(x2, start.Y));
+            }
+
+            double midX = (start.X + end.X) / 2.0;
+            return (new Point(midX, start.Y), new Point(midX, end.Y));
+        }
+
+        private (Point start, Point end) CalculateAnchors()
+        {
+            var sourceRect = new Rect(Source.X, Source.Y, Source.VisualWidth, Source.VisualHeight);
+            var targetRect = new Rect(Target.X, Target.Y, Target.VisualWidth, Target.VisualHeight);
+
+            var sourceCenter = new Point(sourceRect.Left + sourceRect.Width / 2, sourceRect.Top + sourceRect.Height / 2);
+            var targetCenter = new Point(targetRect.Left + targetRect.Width / 2, targetRect.Top + targetRect.Height / 2);
+
+            if (Math.Abs(sourceCenter.X - targetCenter.X) < 0.1 || Math.Abs(sourceCenter.Y - targetCenter.Y) < 0.1)
+            {
+                return (sourceCenter, targetCenter);
+            }
+
+            var sourceCorners = new[]
+            {
+                new Point(sourceRect.Left, sourceRect.Top),
+                new Point(sourceRect.Left, sourceRect.Bottom),
+                new Point(sourceRect.Right, sourceRect.Top),
+                new Point(sourceRect.Right, sourceRect.Bottom)
+            };
+
+            var targetCorners = new[]
+            {
+                new Point(targetRect.Left, targetRect.Top),
+                new Point(targetRect.Left, targetRect.Bottom),
+                new Point(targetRect.Right, targetRect.Top),
+                new Point(targetRect.Right, targetRect.Bottom)
+            };
+
+            double bestDistance = double.MaxValue;
+            Point bestSource = sourceCorners[0];
+            Point bestTarget = targetCorners[0];
+
+            foreach (var source in sourceCorners)
+            {
+                foreach (var target in targetCorners)
+                {
+                    var distance = DistanceSquared(source, target);
+                    if (distance < bestDistance)
+                    {
+                        bestDistance = distance;
+                        bestSource = source;
+                        bestTarget = target;
+                    }
+                }
+            }
+
+            return (bestSource, bestTarget);
+        }
+
+        private static Point TranslateWithAnchorDelta(Point bend, Point previousAnchor, Point newAnchor)
+        {
+            var deltaX = newAnchor.X - previousAnchor.X;
+            var deltaY = newAnchor.Y - previousAnchor.Y;
+            return new Point(bend.X + deltaX, bend.Y + deltaY);
+        }
+
+        private static double DistanceSquared(Point a, Point b)
+        {
+            double dx = a.X - b.X;
+            double dy = a.Y - b.Y;
+            return dx * dx + dy * dy;
         }
     }
 }
