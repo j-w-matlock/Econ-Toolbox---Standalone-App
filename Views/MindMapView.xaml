@@ -211,7 +211,7 @@
                                                         <MenuItem Header="Remove nearest vertex"
                                                                   Click="OnConnectionRemoveVertex"/>
                                                         <Separator/>
-                                                        <MenuItem Header="Reset anchors & bends"
+                                                          <MenuItem Header="Reset anchors &amp; bends"
                                                                   Click="OnConnectionResetVertices"/>
                                                     </ContextMenu>
                                                 </Polyline.ContextMenu>
