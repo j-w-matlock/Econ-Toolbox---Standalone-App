@@ -909,27 +909,53 @@ namespace EconToolbox.Desktop.Services
             // Mind Map Sheet
             var mindMapSheet = wb.Worksheets.Add("MindMap");
             mindMapSheet.Style.Font.SetFontName("Segoe UI");
-            mindMapSheet.Cell(1,1).Value = "Depth";
-            mindMapSheet.Cell(1,2).Value = "Idea";
-            mindMapSheet.Cell(1,3).Value = "Path";
-            mindMapSheet.Cell(1,4).Value = "Notes";
+            var mindMapHeaders = new[]
+            {
+                "Depth",
+                "Icon",
+                "Idea",
+                "Path",
+                "Parent",
+                "Siblings",
+                "Children",
+                "Notes",
+                "Relationship Notes"
+            };
+            for (int i = 0; i < mindMapHeaders.Length; i++)
+            {
+                mindMapSheet.Cell(1, i + 1).Value = mindMapHeaders[i];
+            }
             int mindMapRow = 2;
             foreach (var node in mindMap.Flatten())
             {
                 var path = node.GetPath().ToList();
                 mindMapSheet.Cell(mindMapRow,1).Value = path.Count - 1;
-                mindMapSheet.Cell(mindMapRow,2).Value = node.Title;
-                mindMapSheet.Cell(mindMapRow,3).Value = string.Join(" > ", path.Select(p => p.Title));
-                mindMapSheet.Cell(mindMapRow,4).Value = node.Notes;
+                mindMapSheet.Cell(mindMapRow,2).Value = node.IconGlyph;
+                mindMapSheet.Cell(mindMapRow,3).Value = node.Title;
+                mindMapSheet.Cell(mindMapRow,4).Value = string.Join(" > ", path.Select(p => p.Title));
+                mindMapSheet.Cell(mindMapRow,5).Value = node.Parent?.Title ?? string.Empty;
+                string siblingTitles = node.Parent == null
+                    ? string.Empty
+                    : string.Join(", ", node.Parent.Children.Where(n => n != node).Select(n => n.Title));
+                mindMapSheet.Cell(mindMapRow,6).Value = siblingTitles;
+                string childTitles = string.Join(", ", node.Children.Select(c => c.Title));
+                mindMapSheet.Cell(mindMapRow,7).Value = childTitles;
+                mindMapSheet.Cell(mindMapRow,8).Value = node.Notes;
+                mindMapSheet.Cell(mindMapRow,9).Value = node.RelationshipNotes;
                 mindMapRow++;
             }
             if (mindMapRow > 2)
             {
-                var mindMapRange = mindMapSheet.Range(1, 1, mindMapRow - 1, 4);
+                var mindMapRange = mindMapSheet.Range(1, 1, mindMapRow - 1, mindMapHeaders.Length);
                 var mindMapTable = mindMapRange.CreateTable(GetTableName("MindMapNodes", tableNames));
                 mindMapTable.Theme = XLTableTheme.TableStyleLight11;
-                mindMapSheet.Columns(1,4).AdjustToContents();
+                mindMapSheet.Columns(1, mindMapHeaders.Length).AdjustToContents();
             }
+
+            mindMapSheet.Cell(mindMapRow + 1, 1).Value = "Visual Snapshot";
+            mindMapSheet.Cell(mindMapRow + 1, 1).Style.Font.SetBold();
+            mindMapSheet.Range(mindMapRow + 1, 1, mindMapRow + 1, Math.Max(1, mindMapHeaders.Length)).Merge();
+            AddMindMapImage(mindMapSheet, mindMap, mindMapRow + 2, 1);
 
             // Gantt Sheet
             var ganttSheet = wb.Worksheets.Add("Gantt");
@@ -1583,6 +1609,22 @@ namespace EconToolbox.Desktop.Services
             picture.MoveTo(ws.Cell(row, column));
         }
 
+        private static void AddMindMapImage(IXLWorksheet ws, MindMapViewModel mindMap, int row, int column)
+        {
+            byte[] bytes = CreateMindMapImage(mindMap);
+            if (bytes.Length == 0)
+                return;
+
+            using var stream = new MemoryStream(bytes);
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("MindMapCanvas_"));
+            picture.MoveTo(ws.Cell(row, column));
+            double widthLimit = 900;
+            double heightLimit = 520;
+            double scale = Math.Min(widthLimit / picture.Width, heightLimit / picture.Height);
+            if (scale < 1)
+                picture.Scale(scale);
+        }
+
         private static void AddUdvChart(IXLWorksheet ws, UdvViewModel udv, int row, int column)
         {
             byte[] bytes = CreateUdvChartImage(udv);
@@ -1615,6 +1657,141 @@ namespace EconToolbox.Desktop.Services
             using var stream = new MemoryStream();
             encoder.Save(stream);
             return stream.ToArray();
+        }
+
+        private static byte[] CreateMindMapImage(MindMapViewModel mindMap)
+        {
+            var nodes = mindMap.CanvasNodes.ToList();
+            if (nodes.Count == 0)
+                return Array.Empty<byte>();
+
+            double margin = 60;
+            double minX = nodes.Min(n => n.X) - margin;
+            double minY = nodes.Min(n => n.Y) - margin;
+            double maxX = nodes.Max(n => n.X + n.VisualWidth) + margin;
+            double maxY = nodes.Max(n => n.Y + n.VisualHeight) + margin;
+
+            double width = Math.Max(400, maxX - minX);
+            double height = Math.Max(280, maxY - minY);
+
+            DrawingVisual visual = new();
+            using var dc = visual.RenderOpen();
+
+            var background = new LinearGradientBrush(Color.FromRgb(246, 250, 255), Color.FromRgb(227, 236, 250), new Point(0, 0), new Point(0, 1));
+            background.Freeze();
+            dc.DrawRectangle(background, null, new Rect(0, 0, width, height));
+
+            dc.PushTransform(new TranslateTransform(-minX, -minY));
+
+            var connectionPen = new Pen(new SolidColorBrush(Color.FromRgb(45, 74, 136)), 2.4)
+            {
+                DashStyle = new DashStyle(new double[] { 6, 3 }, 0),
+                StartLineCap = PenLineCap.Round,
+                EndLineCap = PenLineCap.Round,
+                LineJoin = PenLineJoin.Round
+            };
+            connectionPen.Freeze();
+
+            foreach (var connection in mindMap.Connections)
+            {
+                var points = connection.ConnectorPoints;
+                if (points == null || points.Count < 2)
+                    continue;
+
+                var geometry = new StreamGeometry();
+                using (var ctx = geometry.Open())
+                {
+                    ctx.BeginFigure(points[0], false, false);
+                    ctx.PolyLineTo(points.Skip(1).ToArray(), true, true);
+                }
+                geometry.Freeze();
+                dc.DrawGeometry(null, connectionPen, geometry);
+            }
+
+            var nodeBorderPen = new Pen(new SolidColorBrush(Color.FromRgb(199, 214, 241)), 1.2);
+            nodeBorderPen.Freeze();
+            var nodeTypeface = new Typeface("Segoe UI");
+            var titleBrush = new SolidColorBrush(Color.FromRgb(45, 74, 136));
+            titleBrush.Freeze();
+            var noteBrush = new SolidColorBrush(Color.FromRgb(90, 104, 126));
+            noteBrush.Freeze();
+            var relationshipBrush = new SolidColorBrush(Color.FromRgb(117, 130, 150));
+            relationshipBrush.Freeze();
+
+            foreach (var node in nodes.OrderBy(n => n.Y))
+            {
+                var rect = new Rect(node.X, node.Y, node.VisualWidth, node.VisualHeight);
+                var nodeBrush = new LinearGradientBrush(Color.FromArgb(235, 255, 255, 255), Color.FromArgb(235, 232, 239, 255), new Point(0, 0), new Point(1, 1));
+                nodeBrush.Freeze();
+                dc.DrawRoundedRectangle(nodeBrush, nodeBorderPen, rect, 16, 16);
+
+                var iconCenter = new Point(rect.X + rect.Width / 2.0, rect.Y + 38);
+                var iconFill = new SolidColorBrush(Color.FromRgb(229, 236, 255));
+                iconFill.Freeze();
+                var iconStroke = new Pen(new SolidColorBrush(Color.FromRgb(148, 172, 214)), 1.4);
+                iconStroke.Freeze();
+                dc.DrawEllipse(iconFill, iconStroke, iconCenter, 30, 30);
+
+                var iconText = new FormattedText(node.IconGlyph ?? string.Empty,
+                    CultureInfo.CurrentCulture,
+                    FlowDirection.LeftToRight,
+                    new Typeface("Segoe UI Emoji"),
+                    28,
+                    Brushes.Black,
+                    1.0);
+                dc.DrawText(iconText, new Point(iconCenter.X - iconText.Width / 2.0, iconCenter.Y - iconText.Height / 2.0));
+
+                var title = new FormattedText(node.Title ?? string.Empty,
+                    CultureInfo.CurrentCulture,
+                    FlowDirection.LeftToRight,
+                    nodeTypeface,
+                    14,
+                    titleBrush,
+                    1.0);
+                title.SetFontWeight(FontWeights.SemiBold);
+                title.MaxTextWidth = Math.Max(0, rect.Width - 24);
+                dc.DrawText(title, new Point(rect.X + 12, rect.Y + 70));
+
+                var notes = new FormattedText(node.Notes ?? string.Empty,
+                    CultureInfo.CurrentCulture,
+                    FlowDirection.LeftToRight,
+                    nodeTypeface,
+                    11,
+                    noteBrush,
+                    1.0)
+                {
+                    MaxTextWidth = Math.Max(0, rect.Width - 24),
+                    Trimming = TextTrimming.CharacterEllipsis
+                };
+                dc.DrawText(notes, new Point(rect.X + 12, rect.Y + 88));
+
+                if (!string.IsNullOrWhiteSpace(node.RelationshipNotes))
+                {
+                    var relText = new FormattedText(node.RelationshipNotes,
+                        CultureInfo.CurrentCulture,
+                        FlowDirection.LeftToRight,
+                        nodeTypeface,
+                        10,
+                        relationshipBrush,
+                        1.0)
+                    {
+                        MaxTextWidth = Math.Max(0, rect.Width - 24),
+                        Trimming = TextTrimming.CharacterEllipsis
+                    };
+                    relText.SetFontStyle(FontStyles.Italic);
+                    dc.DrawText(relText, new Point(rect.X + 12, rect.Y + 106));
+                }
+            }
+
+            dc.Pop();
+
+            RenderTargetBitmap rtb = new((int)Math.Ceiling(width), (int)Math.Ceiling(height), 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(visual);
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            using MemoryStream ms = new();
+            encoder.Save(ms);
+            return ms.ToArray();
         }
 
         private static byte[] CreateAnnualizerBarChartImage(double annualBenefits, double annualCost, double bcr)
