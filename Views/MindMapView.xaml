@@ -187,7 +187,9 @@
                                 <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}"/>
                             </Grid.LayoutTransform>
                             <ItemsControl ItemsSource="{Binding Connections}"
-                                          IsHitTestVisible="False"
+                                          x:Name="ConnectionItemsControl"
+                                          IsHitTestVisible="True"
+                                          Loaded="OnConnectionsLoaded"
                                           Panel.ZIndex="0">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -197,8 +199,9 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type vm:MindMapConnectionViewModel}">
-                                        <Canvas IsHitTestVisible="False">
+                                        <Canvas IsHitTestVisible="True">
                                             <Polyline Style="{StaticResource ConnectionLineStyle}"
+                                                      IsHitTestVisible="False"
                                                       Points="{Binding ConnectorPoints}"/>
                                             <Rectangle Width="8"
                                                        Height="8"
@@ -208,7 +211,12 @@
                                                        Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                        StrokeThickness="1.2"
                                                        Canvas.Left="{Binding FirstBend.X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
-                                                       Canvas.Top="{Binding FirstBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"/>
+                                                       Canvas.Top="{Binding FirstBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
+                                                       MouseLeftButtonDown="OnConnectionHandleMouseDown"
+                                                       MouseMove="OnConnectionHandleMouseMove"
+                                                       MouseLeftButtonUp="OnConnectionHandleMouseUp"
+                                                       Tag="First"
+                                                       IsHitTestVisible="True"/>
                                             <Rectangle Width="8"
                                                        Height="8"
                                                        RadiusX="1"
@@ -217,7 +225,12 @@
                                                        Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                        StrokeThickness="1.2"
                                                        Canvas.Left="{Binding SecondBend.X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
-                                                       Canvas.Top="{Binding SecondBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"/>
+                                                       Canvas.Top="{Binding SecondBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
+                                                       MouseLeftButtonDown="OnConnectionHandleMouseDown"
+                                                       MouseMove="OnConnectionHandleMouseMove"
+                                                       MouseLeftButtonUp="OnConnectionHandleMouseUp"
+                                                       Tag="Second"
+                                                       IsHitTestVisible="True"/>
                                             <Ellipse Width="10"
                                                      Height="10"
                                                      Fill="White"
