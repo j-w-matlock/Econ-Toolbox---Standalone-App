@@ -201,50 +201,69 @@
                                     <DataTemplate DataType="{x:Type vm:MindMapConnectionViewModel}">
                                         <Canvas IsHitTestVisible="True">
                                             <Polyline Style="{StaticResource ConnectionLineStyle}"
-                                                      IsHitTestVisible="False"
-                                                      Points="{Binding ConnectorPoints}"/>
-                                            <Rectangle Width="8"
-                                                       Height="8"
-                                                       RadiusX="1"
-                                                       RadiusY="1"
-                                                       Fill="{Binding DataContext.SelectedConnectionStyle.AnchorFillBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                       Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                       StrokeThickness="1.2"
-                                                       Canvas.Left="{Binding FirstBend.X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
-                                                       Canvas.Top="{Binding FirstBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
-                                                       MouseLeftButtonDown="OnConnectionHandleMouseDown"
-                                                       MouseMove="OnConnectionHandleMouseMove"
-                                                       MouseLeftButtonUp="OnConnectionHandleMouseUp"
-                                                       Tag="First"
-                                                       IsHitTestVisible="True"/>
-                                            <Rectangle Width="8"
-                                                       Height="8"
-                                                       RadiusX="1"
-                                                       RadiusY="1"
-                                                       Fill="{Binding DataContext.SelectedConnectionStyle.AnchorFillBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                       Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                       StrokeThickness="1.2"
-                                                       Canvas.Left="{Binding SecondBend.X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
-                                                       Canvas.Top="{Binding SecondBend.Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
-                                                       MouseLeftButtonDown="OnConnectionHandleMouseDown"
-                                                       MouseMove="OnConnectionHandleMouseMove"
-                                                       MouseLeftButtonUp="OnConnectionHandleMouseUp"
-                                                       Tag="Second"
-                                                       IsHitTestVisible="True"/>
+                                                      IsHitTestVisible="True"
+                                                      Points="{Binding ConnectorPoints}"
+                                                      MouseRightButtonDown="OnConnectionLineRightButtonDown">
+                                                <Polyline.ContextMenu>
+                                                    <ContextMenu Opened="OnConnectionContextMenuOpened">
+                                                        <MenuItem Header="Add vertex here"
+                                                                  Click="OnConnectionAddVertex"/>
+                                                        <MenuItem Header="Remove nearest vertex"
+                                                                  Click="OnConnectionRemoveVertex"/>
+                                                        <Separator/>
+                                                        <MenuItem Header="Reset anchors & bends"
+                                                                  Click="OnConnectionResetVertices"/>
+                                                    </ContextMenu>
+                                                </Polyline.ContextMenu>
+                                            </Polyline>
+                                            <ItemsControl ItemsSource="{Binding BendPoints}"
+                                                          AlternationCount="50">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <Canvas />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Rectangle Width="8"
+                                                                   Height="8"
+                                                                   RadiusX="1"
+                                                                   RadiusY="1"
+                                                                   Fill="{Binding DataContext.SelectedConnectionStyle.AnchorFillBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                   Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                   StrokeThickness="1.2"
+                                                                   Canvas.Left="{Binding X, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
+                                                                   Canvas.Top="{Binding Y, Converter={StaticResource OffsetConverter}, ConverterParameter=4}"
+                                                                   MouseLeftButtonDown="OnConnectionHandleMouseDown"
+                                                                   MouseMove="OnConnectionHandleMouseMove"
+                                                                   MouseLeftButtonUp="OnConnectionHandleMouseUp"
+                                                                   Tag="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}, Path=(ItemsControl.AlternationIndex)}"
+                                                                   IsHitTestVisible="True"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
                                             <Ellipse Width="10"
                                                      Height="10"
                                                      Fill="White"
                                                      Stroke="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                      StrokeThickness="1.4"
                                                      Canvas.Left="{Binding StartX, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"
-                                                     Canvas.Top="{Binding StartY, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"/>
+                                                     Canvas.Top="{Binding StartY, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"
+                                                     MouseLeftButtonDown="OnConnectionAnchorMouseDown"
+                                                     MouseMove="OnConnectionAnchorMouseMove"
+                                                     MouseLeftButtonUp="OnConnectionAnchorMouseUp"
+                                                     Tag="Start"/>
                                             <Ellipse Width="10"
                                                      Height="10"
                                                      Fill="{Binding DataContext.SelectedConnectionStyle.StrokeBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                      Stroke="{Binding DataContext.SelectedConnectionStyle.GlowBrush, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                      StrokeThickness="1"
                                                      Canvas.Left="{Binding EndX, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"
-                                                     Canvas.Top="{Binding EndY, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"/>
+                                                     Canvas.Top="{Binding EndY, Converter={StaticResource OffsetConverter}, ConverterParameter=5}"
+                                                     MouseLeftButtonDown="OnConnectionAnchorMouseDown"
+                                                     MouseMove="OnConnectionAnchorMouseMove"
+                                                     MouseLeftButtonUp="OnConnectionAnchorMouseUp"
+                                                     Tag="End"/>
                                         </Canvas>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
