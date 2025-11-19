@@ -243,7 +243,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, PointCollection stagePoints, PointCollection frequencyPoints, string filePath)
+        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, IReadOnlyList<Point> stagePoints, IReadOnlyList<Point> frequencyPoints, string filePath)
         {
             using var wb = new XLWorkbook();
             var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -335,7 +335,7 @@ namespace EconToolbox.Desktop.Services
             wb.SaveAs(filePath);
         }
 
-        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, string filePath)
+        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, IReadOnlyList<Point> eadStagePoints, IReadOnlyList<Point> eadFrequencyPoints, string filePath)
         {
             using var wb = new XLWorkbook();
             var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -374,7 +374,7 @@ namespace EconToolbox.Desktop.Services
             eadSheet.Range(rowIdx + 1, 1, rowIdx + 1, Math.Max(2, eadColumnCount)).Merge();
             eadSheet.Range(1, 1, 1, eadColumnCount).Style.Font.SetBold();
             eadSheet.Columns(1, eadColumnCount).AdjustToContents();
-            AddEadChart(eadSheet, ead.StageDamagePoints, ead.FrequencyDamagePoints, rowIdx + 3, 1);
+            AddEadChart(eadSheet, eadStagePoints, eadFrequencyPoints, rowIdx + 3, 1);
 
             // Agriculture Depth-Damage Sheet
             var agSheet = wb.Worksheets.Add("Agriculture");
@@ -2453,7 +2453,7 @@ namespace EconToolbox.Desktop.Services
             };
         }
 
-        private static void AddEadChart(IXLWorksheet ws, PointCollection? stagePoints, PointCollection? frequencyPoints, int row, int column)
+        private static void AddEadChart(IXLWorksheet ws, IReadOnlyList<Point>? stagePoints, IReadOnlyList<Point>? frequencyPoints, int row, int column)
         {
             if ((stagePoints == null || stagePoints.Count == 0) && (frequencyPoints == null || frequencyPoints.Count == 0))
                 return;
@@ -2463,7 +2463,7 @@ namespace EconToolbox.Desktop.Services
             pic.MoveTo(ws.Cell(row, column));
         }
 
-        private static byte[] CreateEadChartImage(PointCollection? stagePoints, PointCollection? frequencyPoints)
+        private static byte[] CreateEadChartImage(IReadOnlyList<Point>? stagePoints, IReadOnlyList<Point>? frequencyPoints)
         {
             double width = 300;
             double height = 150;
@@ -2485,7 +2485,7 @@ namespace EconToolbox.Desktop.Services
             return ms.ToArray();
         }
 
-        private static void DrawPolyline(DrawingContext dc, PointCollection points, Pen pen)
+        private static void DrawPolyline(DrawingContext dc, IReadOnlyList<Point> points, Pen pen)
         {
             if (points.Count < 2) return;
             var geom = new StreamGeometry();
