@@ -561,11 +561,12 @@ namespace EconToolbox.Desktop.Services
                 agRow += 1;
             }
 
-            var damageHeaders = agriculture.CropScapeDamageRows.Count > 0
+            // Use a distinct variable name to avoid conflicts with the earlier EAD damage headers.
+            var agDamageHeaders = agriculture.CropScapeDamageRows.Count > 0
                 ? new List<string> { "Depth (ft)", "Duration (days)", "Damage (%)", "Damaged Acres", "Residual Acres", "Total Acres" }
                 : new List<string> { "Depth (ft)", "Duration (days)", "Damage (%)" };
 
-            WriteHeaderRow(agSheet, agRow, 1, damageHeaders, center: false, includeBorder: false);
+            WriteHeaderRow(agSheet, agRow, 1, agDamageHeaders, center: false, includeBorder: false);
 
             int damageRowStart = agRow;
             agRow++;
@@ -604,7 +605,7 @@ namespace EconToolbox.Desktop.Services
 
             if (agRow > damageRowStart + 1)
             {
-                var agRange = agSheet.Range(damageRowStart, 1, agRow - 1, damageHeaders.Count);
+                var agRange = agSheet.Range(damageRowStart, 1, agRow - 1, agDamageHeaders.Count);
                 var agTable = agRange.CreateTable(GetTableName("AgricultureDamage", tableNames));
                 agTable.Theme = XLTableTheme.TableStyleMedium9;
             }
