@@ -669,7 +669,8 @@ namespace EconToolbox.Desktop.Services
             // Water Demand Sheet
             foreach (var scenario in waterDemand.Scenarios)
             {
-                var wdSheet = wb.Worksheets.Add($"WaterDemand_{scenario.Name}");
+                string wdSheetName = CreateWorksheetName(wb, $"WaterDemand_{scenario.Name}");
+                var wdSheet = wb.Worksheets.Add(wdSheetName);
                 wdSheet.Style.Font.SetFontName("Segoe UI");
                 wdSheet.Cell(1,1).Value = "Year";
                 wdSheet.Cell(1,2).Value = "Growth Rate";
