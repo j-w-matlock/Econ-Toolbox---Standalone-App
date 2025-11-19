@@ -199,7 +199,7 @@ namespace EconToolbox.Desktop.Services
 
                     if (!string.IsNullOrWhiteSpace(scenario.Description))
                     {
-                        var descriptionRange = ws.Range(row, 1, row, headers.Length);
+                    var descriptionRange = ws.Range(row, 1, row, headers.Count);
                         descriptionRange.Merge();
                         descriptionRange.Value = scenario.Description;
                         descriptionRange.Style.Alignment.WrapText = true;
@@ -214,11 +214,11 @@ namespace EconToolbox.Desktop.Services
                     }
 
                     int dataEndRow = Math.Max(2, scenario.Results.Count + 1);
-                    var dataRange = ws.Range(1, 1, dataEndRow, headers.Length);
+                    var dataRange = ws.Range(1, 1, dataEndRow, headers.Count);
                     var table = dataRange.CreateTable(GetTableName($"WaterDemand_{baseName}", tableNames));
                     table.Theme = XLTableTheme.TableStyleMedium4;
 
-                    ws.Columns(1, headers.Length).AdjustToContents();
+                    ws.Columns(1, headers.Count).AdjustToContents();
 
                     if (scenario.Results.Count >= 2)
                     {
@@ -289,10 +289,10 @@ namespace EconToolbox.Desktop.Services
             }
 
             int futureEndRow = Math.Max(2, futureRow - 1);
-            var futureRange = futureSheet.Range(1, 1, futureEndRow, futureHeaders.Length);
+            var futureRange = futureSheet.Range(1, 1, futureEndRow, futureHeaders.Count);
             var futureTable = futureRange.CreateTable(GetTableName("AnnualizerFuture", tableNames));
             futureTable.Theme = XLTableTheme.TableStyleLight11;
-            futureSheet.Columns(1, futureHeaders.Length).AdjustToContents();
+            futureSheet.Columns(1, futureHeaders.Count).AdjustToContents();
 
                 wb.SaveAs(filePath);
             });
@@ -503,7 +503,7 @@ namespace EconToolbox.Desktop.Services
                     agSheet.Cell(agRow, 6).Style.Alignment.WrapText = true;
                     agRow++;
                 }
-                var stageRange = agSheet.Range(stageStart, 1, agRow - 1, stageHeaders.Length);
+                var stageRange = agSheet.Range(stageStart, 1, agRow - 1, stageHeaders.Count);
                 var stageTable = stageRange.CreateTable(GetTableName("AgricultureStages", tableNames));
                 stageTable.Theme = XLTableTheme.TableStyleMedium2;
                 agRow += 1;
@@ -552,7 +552,7 @@ namespace EconToolbox.Desktop.Services
 
             if (agRow > damageRowStart + 1)
             {
-                var agRange = agSheet.Range(damageRowStart, 1, agRow - 1, damageHeaders.Length);
+                var agRange = agSheet.Range(damageRowStart, 1, agRow - 1, damageHeaders.Count);
                 var agTable = agRange.CreateTable(GetTableName("AgricultureDamage", tableNames));
                 agTable.Theme = XLTableTheme.TableStyleMedium9;
             }
