@@ -398,7 +398,9 @@ namespace EconToolbox.Desktop.Views
 
         private void OnConnectionAddVertex(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem { PlacementTarget: FrameworkElement element } && element.DataContext is MindMapConnectionViewModel connection)
+            if (sender is MenuItem menuItem &&
+                TryGetMenuItemPlacementTarget(menuItem, out var element) &&
+                element.DataContext is MindMapConnectionViewModel connection)
             {
                 connection.AddManualVertex(_connectionContextPoint);
             }
@@ -406,7 +408,9 @@ namespace EconToolbox.Desktop.Views
 
         private void OnConnectionRemoveVertex(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem { PlacementTarget: FrameworkElement element } && element.DataContext is MindMapConnectionViewModel connection)
+            if (sender is MenuItem menuItem &&
+                TryGetMenuItemPlacementTarget(menuItem, out var element) &&
+                element.DataContext is MindMapConnectionViewModel connection)
             {
                 connection.RemoveNearestVertex(_connectionContextPoint, 20 * 20);
             }
@@ -414,10 +418,18 @@ namespace EconToolbox.Desktop.Views
 
         private void OnConnectionResetVertices(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem { PlacementTarget: FrameworkElement element } && element.DataContext is MindMapConnectionViewModel connection)
+            if (sender is MenuItem menuItem &&
+                TryGetMenuItemPlacementTarget(menuItem, out var element) &&
+                element.DataContext is MindMapConnectionViewModel connection)
             {
                 connection.ResetManualVertices();
             }
+        }
+
+        private static bool TryGetMenuItemPlacementTarget(MenuItem menuItem, out FrameworkElement element)
+        {
+            element = (FrameworkElement?)ContextMenuService.GetPlacementTarget(menuItem);
+            return element is not null;
         }
 
         private enum ConnectionHandle
