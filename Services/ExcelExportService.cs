@@ -35,6 +35,18 @@ namespace EconToolbox.Desktop.Services
 
         private static void RunOnSta(Action action)
         {
+            if (Application.Current?.Dispatcher?.CheckAccess() == true)
+            {
+                action();
+                return;
+            }
+
+            if (Application.Current?.Dispatcher is not null)
+            {
+                Application.Current.Dispatcher.Invoke(action);
+                return;
+            }
+
             if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
             {
                 action();
