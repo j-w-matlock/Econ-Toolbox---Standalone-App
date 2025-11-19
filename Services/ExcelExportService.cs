@@ -2506,7 +2506,7 @@ namespace EconToolbox.Desktop.Services
                 return;
             byte[] img = CreateEadChartImage(stagePoints, frequencyPoints);
             using var stream = new MemoryStream(img);
-            var pic = ws.AddPicture(stream, XLPictureFormat.Png, "EADChart");
+            var pic = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("EADChart_"));
             pic.MoveTo(ws.Cell(row, column));
         }
 
