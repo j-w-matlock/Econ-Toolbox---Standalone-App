@@ -12,8 +12,8 @@ namespace EconToolbox.Desktop.Services
         private const double SquareMetersPerAcre = 4046.8564224;
         private const int GeoKeyDirectoryTag = 34735;
         private const int GeoDoubleParamsTag = 34736;
-        private const short ProjLinearUnitsGeoKey = 2052;
-        private const short ProjLinearUnitSizeGeoKey = 2053;
+        private const ushort ProjLinearUnitsGeoKey = 2052;
+        private const ushort ProjLinearUnitSizeGeoKey = 2053;
 
         public IReadOnlyList<CropScapeClassArea> ReadClassAreas(string path)
         {
@@ -134,10 +134,10 @@ namespace EconToolbox.Desktop.Services
 
             for (int i = 0; i < keyCount && offset + 3 < directory.Length; i++, offset += 4)
             {
-                short keyId = directory[offset];
-                short tiffTagLocation = directory[offset + 1];
-                short count = directory[offset + 2];
-                short valueOffset = directory[offset + 3];
+                ushort keyId = unchecked((ushort)directory[offset]);
+                ushort tiffTagLocation = unchecked((ushort)directory[offset + 1]);
+                ushort count = unchecked((ushort)directory[offset + 2]);
+                ushort valueOffset = unchecked((ushort)directory[offset + 3]);
 
                 if (keyId == ProjLinearUnitSizeGeoKey && count == 1 && tiffTagLocation == GeoDoubleParamsTag && doubleParams != null)
                 {
