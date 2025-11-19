@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.ViewModels;
