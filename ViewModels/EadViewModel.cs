@@ -283,13 +283,15 @@ namespace EconToolbox.Desktop.ViewModels
             if (dlg.ShowDialog() == true)
             {
                 string combined = string.Join(" | ", Results);
+                var stagePointsCopy = StageDamagePoints.Select(p => new Point(p.X, p.Y)).ToList();
+                var frequencyPointsCopy = FrequencyDamagePoints.Select(p => new Point(p.X, p.Y)).ToList();
                 await Task.Run(() => _excelExportService.ExportEad(
                     Rows,
                     DamageColumns.Select(c => c.Name),
                     UseStage,
                     combined,
-                    StageDamagePoints,
-                    FrequencyDamagePoints,
+                    stagePointsCopy,
+                    frequencyPointsCopy,
                     dlg.FileName));
             }
         }
