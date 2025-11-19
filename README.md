@@ -62,6 +62,7 @@ Calibrate recreational benefits using USACE unit day value tables. Quality point
 
 ### Mind Map Workspace
 Capture qualitative insights during workshops. Drag-and-drop nodes, add notes, and export the resulting hierarchy for meeting summaries or reports.
+- Choose from curated icon palettes, electrical-style connectors, and relationship notes to visually reinforce how parents, siblings, and child ideas relate.
 
 ### Standard Gantt Planner
 Plan tasks, dependencies, and milestones in a familiar tabular layout. The timeline visual automatically reflects task color, duration, percent complete, and milestone diamonds.

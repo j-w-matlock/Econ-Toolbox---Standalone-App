@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -23,6 +24,8 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<MindMapNodeViewModel> Nodes { get; } = new();
         public ObservableCollection<MindMapNodeViewModel> CanvasNodes { get; } = new();
         public ObservableCollection<MindMapConnectionViewModel> Connections { get; } = new();
+
+        public IReadOnlyList<MindMapIconOption> IconPalette { get; }
 
         public double CanvasWidth { get; } = 2200;
         public double CanvasHeight { get; } = 1400;
@@ -86,6 +89,20 @@ namespace EconToolbox.Desktop.ViewModels
 
         public MindMapViewModel()
         {
+            IconPalette = new List<MindMapIconOption>
+            {
+                new("💡", "Insight", "Use for ideas or observations."),
+                new("📌", "Action", "Flag concrete to-dos or follow ups."),
+                new("⚙️", "Process", "Represent workflows, systems, or mechanics."),
+                new("📊", "Data", "Use when a node summarizes evidence or metrics."),
+                new("🎯", "Goal", "Highlight primary objectives or success criteria."),
+                new("🧩", "Dependency", "Call out prerequisites or blockers."),
+                new("🛡️", "Risk", "Track assumptions, issues, or risk statements."),
+                new("🤝", "Partner", "Represents stakeholders, teams, or counterparts."),
+                new("🚀", "Milestone", "Use for major deliverables or launches."),
+                new("🗂️", "Reference", "Denote documents, links, or research notes."),
+            };
+
             AddRootNodeCommand = new RelayCommand(() => AddRootAt(null));
             _addChildCommand = new RelayCommand(() => AddChildAt(SelectedNode, null), () => SelectedNode != null);
             _addSiblingCommand = new RelayCommand(() => AddSiblingAt(SelectedNode, null), () => SelectedNode != null);
@@ -93,15 +110,18 @@ namespace EconToolbox.Desktop.ViewModels
 
             var coreIdea = CreateNode("Central Idea");
             coreIdea.Notes = "Capture the main question, opportunity, or challenge you are exploring.";
+            coreIdea.IconGlyph = IconPalette.First(i => i.Label == "Goal").Glyph;
             Nodes.Add(coreIdea);
 
             var themes = CreateNode("Key Themes", coreIdea);
             themes.Notes = "Break the central idea into major themes, components, or workstreams.";
+            themes.IconGlyph = IconPalette.First(i => i.Label == "Insight").Glyph;
             coreIdea.Children.Add(themes);
             AddConnection(coreIdea, themes);
 
             var actions = CreateNode("Next Actions", coreIdea);
             actions.Notes = "Record immediate tasks, owners, and follow-ups.";
+            actions.IconGlyph = IconPalette.First(i => i.Label == "Action").Glyph;
             coreIdea.Children.Add(actions);
             AddConnection(coreIdea, actions);
 
@@ -227,6 +247,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             node.SelectionChanged -= NodeOnSelectionChanged;
             node.PropertyChanged -= PathNodeOnPropertyChanged;
+            node.Parent = null;
             RemoveConnectionsFor(node);
             CanvasNodes.Remove(node);
             foreach (var child in node.Children.ToList())
@@ -344,12 +365,15 @@ namespace EconToolbox.Desktop.ViewModels
     {
         private string _title;
         private string _notes = string.Empty;
+        private string _relationshipNotes = string.Empty;
+        private string _iconGlyph = "💡";
         private bool _isExpanded;
         private bool _isSelected;
         private double _x;
         private double _y;
         private double _visualWidth = 180;
         private double _visualHeight = 120;
+        private MindMapNodeViewModel? _parent;
 
         public MindMapNodeViewModel(string title)
         {
@@ -384,7 +408,35 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<MindMapNodeViewModel> Children { get; } = new();
 
-        public MindMapNodeViewModel? Parent { get; internal set; }
+        public MindMapNodeViewModel? Parent
+        {
+            get => _parent;
+            internal set
+            {
+                if (_parent == value)
+                    return;
+
+                if (_parent != null)
+                {
+                    _parent.PropertyChanged -= ParentOnPropertyChanged;
+                    _parent.Children.CollectionChanged -= OnParentChildrenChanged;
+                }
+
+                _parent = value;
+
+                if (_parent != null)
+                {
+                    _parent.PropertyChanged += ParentOnPropertyChanged;
+                    _parent.Children.CollectionChanged += OnParentChildrenChanged;
+                }
+
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasParent));
+                OnPropertyChanged(nameof(ParentTitle));
+                OnPropertyChanged(nameof(Siblings));
+                OnPropertyChanged(nameof(SiblingCount));
+            }
+        }
 
         public double X
         {
@@ -465,6 +517,42 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        public string IconGlyph
+        {
+            get => _iconGlyph;
+            set
+            {
+                if (_iconGlyph != value)
+                {
+                    _iconGlyph = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string RelationshipNotes
+        {
+            get => _relationshipNotes;
+            set
+            {
+                if (_relationshipNotes != value)
+                {
+                    _relationshipNotes = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool HasParent => Parent != null;
+
+        public string ParentTitle => Parent?.Title ?? "Top-level idea";
+
+        public IEnumerable<MindMapNodeViewModel> Siblings => Parent == null
+            ? Enumerable.Empty<MindMapNodeViewModel>()
+            : Parent.Children.Where(c => c != this);
+
+        public int SiblingCount => Parent == null ? 0 : Math.Max(0, Parent.Children.Count - 1);
+
         public event EventHandler<bool>? SelectionChanged;
 
         public IEnumerable<MindMapNodeViewModel> GetPath()
@@ -478,5 +566,31 @@ namespace EconToolbox.Desktop.ViewModels
             }
             return stack;
         }
+
+        private void ParentOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Title))
+                OnPropertyChanged(nameof(ParentTitle));
+        }
+
+        private void OnParentChildrenChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(Siblings));
+            OnPropertyChanged(nameof(SiblingCount));
+        }
+    }
+
+    public sealed class MindMapIconOption
+    {
+        public MindMapIconOption(string glyph, string label, string description)
+        {
+            Glyph = glyph;
+            Label = label;
+            Description = description;
+        }
+
+        public string Glyph { get; }
+        public string Label { get; }
+        public string Description { get; }
     }
 }
