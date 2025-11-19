@@ -17,6 +17,8 @@ namespace EconToolbox.Desktop.Services
     public sealed class ExcelExportService : IExcelExportService
     {
         private const int ExcelMaxPictureNameLength = 31;
+        private const int ExcelMaxWorksheetNameLength = 31;
+        private const int ExcelMaxHeaderLength = 255;
 
         private static readonly Color ChartBlue = (Color)ColorConverter.ConvertFromString("#2D6A8E");
         private static readonly Color ChartTeal = (Color)ColorConverter.ConvertFromString("#1ABC9C");
@@ -35,9 +37,57 @@ namespace EconToolbox.Desktop.Services
 
         private static IXLWorksheet CreateWorksheet(XLWorkbook workbook, string name)
         {
-            var worksheet = workbook.Worksheets.Add(name);
+            var worksheet = workbook.Worksheets.Add(CreateWorksheetName(workbook, name));
             worksheet.Style.Font.SetFontName("Segoe UI");
             return worksheet;
+        }
+
+        private static string NormalizeWhitespace(string input)
+        {
+            var chars = input.Select(c => char.IsWhiteSpace(c) ? ' ' : c).ToArray();
+            var normalized = new string(chars).Trim();
+            while (normalized.Contains("  "))
+            {
+                normalized = normalized.Replace("  ", " ");
+            }
+
+            return normalized;
+        }
+
+        private static string TruncateWithSuffix(string value, int maxLength)
+        {
+            if (value.Length <= maxLength)
+                return value;
+
+            return value.Substring(0, maxLength);
+        }
+
+        private static List<string> SanitizeHeaders(IEnumerable<string> headers, string fallbackPrefix)
+        {
+            var sanitizedHeaders = new List<string>();
+            var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            int index = 1;
+
+            foreach (var header in headers)
+            {
+                string value = string.IsNullOrWhiteSpace(header) ? $"{fallbackPrefix} {index}" : NormalizeWhitespace(header);
+                value = TruncateWithSuffix(value, ExcelMaxHeaderLength);
+
+                string candidate = value;
+                int suffix = 2;
+                while (!used.Add(candidate))
+                {
+                    string suffixText = $" ({suffix})";
+                    int maxLength = ExcelMaxHeaderLength - suffixText.Length;
+                    candidate = TruncateWithSuffix(value, Math.Max(1, maxLength)) + suffixText;
+                    suffix++;
+                }
+
+                sanitizedHeaders.Add(candidate);
+                index++;
+            }
+
+            return sanitizedHeaders;
         }
 
         private static void WriteHeaderRow(IXLWorksheet ws, int row, int startColumn, IReadOnlyList<string> headers, bool center = true, bool includeBorder = true)
@@ -308,6 +358,7 @@ namespace EconToolbox.Desktop.Services
             var inputSheet = CreateWorksheet(wb, "EAD Inputs");
 
             var damageList = damageColumns.ToList();
+            var sanitizedDamageList = SanitizeHeaders(damageList, "Damage");
             var rowList = rows.ToList();
 
             var headers = new List<string> { "Probability" };
@@ -315,7 +366,7 @@ namespace EconToolbox.Desktop.Services
             {
                 headers.Add("Stage");
             }
-            headers.AddRange(damageList);
+            headers.AddRange(sanitizedDamageList);
 
             WriteHeaderRow(inputSheet, 1, 1, headers);
 
@@ -332,7 +383,7 @@ namespace EconToolbox.Desktop.Services
                     columnIndex++;
                 }
 
-                for (int i = 0; i < damageList.Count; i++)
+                for (int i = 0; i < sanitizedDamageList.Count; i++)
                 {
                     double value = entry.Damages.Count > i ? entry.Damages[i] : 0.0;
                     inputSheet.Cell(rowIndex, columnIndex + i).Value = value;
@@ -359,14 +410,14 @@ namespace EconToolbox.Desktop.Services
                 ("Includes Stage Data", useStage ? "Yes" : "No", null, useStage ? "Stage values were captured alongside each probability." : "Stage values were not provided.", false)
             };
 
-            if (rowList.Count > 0 && damageList.Count > 0)
+            if (rowList.Count > 0 && sanitizedDamageList.Count > 0)
             {
                 var probabilities = rowList.Select(r => r.Probability).ToArray();
-                for (int i = 0; i < damageList.Count; i++)
+                for (int i = 0; i < sanitizedDamageList.Count; i++)
                 {
                     var damages = rowList.Select(r => r.Damages.Count > i ? r.Damages[i] : 0.0).ToArray();
                     double eadValue = EadModel.Compute(probabilities, damages);
-                    summaryEntries.Add(($"{damageList[i]} EAD", eadValue, "$#,##0.00", "Expected annual damage for this column.", i == 0));
+                    summaryEntries.Add(($"{sanitizedDamageList[i]} EAD", eadValue, "$#,##0.00", "Expected annual damage for this column.", i == 0));
                 }
             }
 
@@ -395,8 +446,9 @@ namespace EconToolbox.Desktop.Services
             eadSheet.Cell(1, col++).Value = "Probability";
             if (ead.UseStage)
                 eadSheet.Cell(1, col++).Value = "Stage";
-            int dcCount = ead.DamageColumns.Count;
-            foreach (var name in ead.DamageColumns.Select(c => c.Name))
+            var damageHeaders = SanitizeHeaders(ead.DamageColumns.Select(c => c.Name), "Damage");
+            int dcCount = damageHeaders.Count;
+            foreach (var name in damageHeaders)
                 eadSheet.Cell(1, col++).Value = name;
             int eadColumnCount = col - 1;
             int rowIdx = 2;
@@ -1557,13 +1609,13 @@ namespace EconToolbox.Desktop.Services
                 sanitized = "Sheet";
             }
 
-            string trimmed = sanitized.Length > 31 ? sanitized[..31] : sanitized;
+            string trimmed = sanitized.Length > ExcelMaxWorksheetNameLength ? sanitized[..ExcelMaxWorksheetNameLength] : sanitized;
             string candidate = trimmed;
             int suffix = 1;
             while (workbook.Worksheets.Any(ws => string.Equals(ws.Name, candidate, StringComparison.OrdinalIgnoreCase)))
             {
                 string suffixText = $"_{suffix}";
-                int maxLength = 31 - suffixText.Length;
+                int maxLength = ExcelMaxWorksheetNameLength - suffixText.Length;
                 maxLength = Math.Max(1, maxLength);
                 string prefix = trimmed.Length > maxLength ? trimmed[..maxLength] : trimmed;
                 candidate = prefix + suffixText;
