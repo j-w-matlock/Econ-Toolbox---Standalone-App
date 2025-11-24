@@ -81,6 +81,11 @@ namespace EconToolbox.Desktop
                             LogUnhandledException(dialogEx, "DispatcherDialog");
                         }
                     }
+                    MessageBox.Show(
+                        "An unexpected error occurred. The app will continue running, but some results may be unavailable. Check the logs for details.",
+                        "Unexpected Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                 };
             }
         }
