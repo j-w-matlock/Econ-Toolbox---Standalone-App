@@ -78,6 +78,15 @@
         <Setter Property="Margin" Value="{StaticResource Margin.StackLarge}"/>
     </Style>
 
+    <Style x:Key="Border.Surface" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Brush.Surface}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="{StaticResource Padding.Section}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+    </Style>
+
     <!-- Type ramp -->
     <Style x:Key="Text.Caption" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI"/>
