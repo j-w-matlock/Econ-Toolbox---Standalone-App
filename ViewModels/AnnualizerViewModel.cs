@@ -456,7 +456,44 @@ namespace EconToolbox.Desktop.ViewModels
 
             RecalculateScrb();
 
+            InitializeExampleAnnualizerData();
             AddScenarioComparison();
+        }
+
+        private void InitializeExampleAnnualizerData()
+        {
+            if (FirstCost != 0 || AnnualOm != 0 || AnnualBenefits != 0 || FutureCosts.Count > 0 || IdcEntries.Count > 0)
+                return;
+
+            FirstCost = 45_000_000d;
+            Rate = 3.5d;
+            AnalysisPeriod = 50;
+            AnnualOm = 250_000d;
+            AnnualBenefits = 2_500_000d;
+
+            FutureCosts.Add(new FutureCostEntry
+            {
+                Cost = 1_100_000d,
+                Year = BaseYear + 25,
+                Timing = "midpoint"
+            });
+
+            IdcEntries.Add(new FutureCostEntry
+            {
+                Cost = 15_000_000d,
+                Year = 1,
+                Timing = "beginning"
+            });
+
+            IdcEntries.Add(new FutureCostEntry
+            {
+                Cost = 30_000_000d,
+                Year = 12,
+                Timing = "end"
+            });
+
+            UpdatePvFactors();
+            Compute();
         }
 
         private void RewireFutureCostEntries(ObservableCollection<FutureCostEntry>? oldCollection,
@@ -466,14 +503,20 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 oldCollection.CollectionChanged -= EntriesChanged;
                 foreach (var entry in oldCollection)
-                    entry.PropertyChanged -= EntryOnPropertyChanged;
+                {
+                    if (entry != null)
+                        entry.PropertyChanged -= EntryOnPropertyChanged;
+                }
             }
 
             if (newCollection != null)
             {
                 newCollection.CollectionChanged -= EntriesChanged;
                 foreach (var entry in newCollection)
-                    entry.PropertyChanged -= EntryOnPropertyChanged;
+                {
+                    if (entry != null)
+                        entry.PropertyChanged -= EntryOnPropertyChanged;
+                }
             }
         }
 
@@ -481,7 +524,10 @@ namespace EconToolbox.Desktop.ViewModels
         {
             collection.CollectionChanged += EntriesChanged;
             foreach (var entry in collection)
-                entry.PropertyChanged += EntryOnPropertyChanged;
+            {
+                if (entry != null)
+                    entry.PropertyChanged += EntryOnPropertyChanged;
+            }
         }
 
         private void RewireScrbCostEntries(ObservableCollection<ScrbCostEntry>? collection)
@@ -630,6 +676,8 @@ namespace EconToolbox.Desktop.ViewModels
             double r = Rate / 100.0;
             foreach (var entry in FutureCosts)
             {
+                if (entry == null)
+                    continue;
                 double offset = GetTimingOffset(entry.Timing);
                 double yearOffset = entry.Year - BaseYear;
                 entry.PvFactor = Math.Pow(1.0 + r, -(yearOffset + offset));
@@ -637,6 +685,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             foreach (var entry in IdcEntries)
             {
+                if (entry == null)
+                    continue;
                 double offsetMonths = GetTimingOffset(entry.Timing);
                 int monthIndex = entry.Year <= 0 ? 0 : entry.Year - 1;
                 double eventMonth = monthIndex + offsetMonths;
@@ -1003,6 +1053,7 @@ namespace EconToolbox.Desktop.ViewModels
         private AnnualizerComputationInputs BuildComputationInputs()
         {
             var future = FutureCosts
+                .Where(f => f != null)
                 .Select(f => (f.Cost, (double)(f.Year - BaseYear), GetTimingOffset(f.Timing)))
                 .ToList();
 
@@ -1013,6 +1064,7 @@ namespace EconToolbox.Desktop.ViewModels
             if (IdcEntries.Count > 0)
             {
                 var schedule = IdcEntries
+                    .Where(e => e != null)
                     .Select(e => new { e.Cost, Timing = string.IsNullOrWhiteSpace(e.Timing) ? "midpoint" : e.Timing, e.Year })
                     .OrderBy(e => e.Year)
                     .ToList();
