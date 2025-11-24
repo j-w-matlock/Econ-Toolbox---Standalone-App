@@ -114,6 +114,16 @@ namespace EconToolbox.Desktop.Services
             return sanitizedHeaders;
         }
 
+        private static string JoinOrEmpty(string separator, IEnumerable<string>? values)
+        {
+            if (values == null)
+            {
+                return string.Empty;
+            }
+
+            return string.Join(separator, values.Where(v => v != null));
+        }
+
         private static void RunOnSta(Action action)
         {
             if (Application.Current?.Dispatcher?.CheckAccess() == true)
@@ -477,7 +487,7 @@ namespace EconToolbox.Desktop.Services
             }
             eadSheet.Cell(rowIdx + 1, 1).Value = "Result";
             eadSheet.Cell(rowIdx + 1, 1).Style.Font.SetBold();
-            eadSheet.Cell(rowIdx + 1, 2).Value = string.Join(" | ", ead.Results);
+            eadSheet.Cell(rowIdx + 1, 2).Value = JoinOrEmpty(" | ", ead.Results);
             eadSheet.Range(rowIdx + 1, 1, rowIdx + 1, Math.Max(2, eadColumnCount)).Merge();
             eadSheet.Range(1, 1, 1, eadColumnCount).Style.Font.SetBold();
             eadSheet.Columns(1, eadColumnCount).AdjustToContents();
@@ -1023,13 +1033,13 @@ namespace EconToolbox.Desktop.Services
                 mindMapSheet.Cell(mindMapRow,1).Value = path.Count - 1;
                 mindMapSheet.Cell(mindMapRow,2).Value = node.IconGlyph;
                 mindMapSheet.Cell(mindMapRow,3).Value = node.Title;
-                mindMapSheet.Cell(mindMapRow,4).Value = string.Join(" > ", path.Select(p => p.Title));
+                mindMapSheet.Cell(mindMapRow,4).Value = JoinOrEmpty(" > ", path.Select(p => p.Title));
                 mindMapSheet.Cell(mindMapRow,5).Value = node.Parent?.Title ?? string.Empty;
                 string siblingTitles = node.Parent == null
                     ? string.Empty
-                    : string.Join(", ", node.Parent.Children.Where(n => n != node).Select(n => n.Title));
+                    : JoinOrEmpty(", ", node.Parent.Children.Where(n => n != node).Select(n => n.Title));
                 mindMapSheet.Cell(mindMapRow,6).Value = siblingTitles;
-                string childTitles = string.Join(", ", node.Children.Select(c => c.Title));
+                string childTitles = JoinOrEmpty(", ", node.Children.Select(c => c.Title));
                 mindMapSheet.Cell(mindMapRow,7).Value = childTitles;
                 mindMapSheet.Cell(mindMapRow,8).Value = node.Notes;
                 mindMapSheet.Cell(mindMapRow,9).Value = node.RelationshipNotes;
@@ -1097,7 +1107,7 @@ namespace EconToolbox.Desktop.Services
                 foreach (var stroke in strokes)
                 {
                     sketchSheet.Cell(sketchRow, 1).Value = $"Stroke {strokeIndex}";
-                    sketchSheet.Cell(sketchRow, 2).Value = string.Join("; ", stroke.Select(p => $"({p.X:0.##},{p.Y:0.##})"));
+                    sketchSheet.Cell(sketchRow, 2).Value = JoinOrEmpty("; ", stroke.Select(p => $"({p.X:0.##},{p.Y:0.##})"));
                     sketchRow++;
                     strokeIndex++;
                 }
@@ -1210,7 +1220,7 @@ namespace EconToolbox.Desktop.Services
                         primaryEadValue = eadValue;
                     eadRows.Add(($"{ead.DamageColumns[i].Name} EAD", eadValue, "$#,##0.00", "Expected annual damage for this damage column.", i == 0));
                 }
-                eadRows.Add(("Summary", string.Join(" | ", ead.Results), null, "Combined textual output from the calculator.", false));
+                eadRows.Add(("Summary", JoinOrEmpty(" | ", ead.Results), null, "Combined textual output from the calculator.", false));
             }
             else
             {
@@ -1285,7 +1295,7 @@ namespace EconToolbox.Desktop.Services
             var mindMapNodes = mindMap.Flatten().ToList();
             int notedIdeas = mindMapNodes.Count(n => !string.IsNullOrWhiteSpace(n.Notes));
             string primaryThemes = mindMap.Nodes.Count > 0
-                ? string.Join(" | ", mindMap.Nodes.Select(n => n.Title))
+                ? JoinOrEmpty(" | ", mindMap.Nodes.Select(n => n.Title))
                 : "Add ideas to build the map";
 
             double recreationBenefit = UdvModel.ComputeBenefit(udv.UnitDayValue, udv.TotalUserDays);

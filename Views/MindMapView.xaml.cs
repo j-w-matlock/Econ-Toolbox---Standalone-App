@@ -400,7 +400,7 @@ namespace EconToolbox.Desktop.Views
         {
             if (sender is MenuItem menuItem &&
                 TryGetMenuItemPlacementTarget(menuItem, out var element) &&
-                element.DataContext is MindMapConnectionViewModel connection)
+                element is { DataContext: MindMapConnectionViewModel connection })
             {
                 connection.AddManualVertex(_connectionContextPoint);
             }
@@ -410,7 +410,7 @@ namespace EconToolbox.Desktop.Views
         {
             if (sender is MenuItem menuItem &&
                 TryGetMenuItemPlacementTarget(menuItem, out var element) &&
-                element.DataContext is MindMapConnectionViewModel connection)
+                element is { DataContext: MindMapConnectionViewModel connection })
             {
                 connection.RemoveNearestVertex(_connectionContextPoint, 20 * 20);
             }
@@ -420,16 +420,22 @@ namespace EconToolbox.Desktop.Views
         {
             if (sender is MenuItem menuItem &&
                 TryGetMenuItemPlacementTarget(menuItem, out var element) &&
-                element.DataContext is MindMapConnectionViewModel connection)
+                element is { DataContext: MindMapConnectionViewModel connection })
             {
                 connection.ResetManualVertices();
             }
         }
 
-        private static bool TryGetMenuItemPlacementTarget(MenuItem menuItem, out FrameworkElement element)
+        private static bool TryGetMenuItemPlacementTarget(MenuItem menuItem, out FrameworkElement? element)
         {
-            element = (FrameworkElement?)ContextMenuService.GetPlacementTarget(menuItem);
-            return element is not null;
+            if (ContextMenuService.GetPlacementTarget(menuItem) is FrameworkElement frameworkElement)
+            {
+                element = frameworkElement;
+                return true;
+            }
+
+            element = null;
+            return false;
         }
 
         private enum ConnectionHandle
