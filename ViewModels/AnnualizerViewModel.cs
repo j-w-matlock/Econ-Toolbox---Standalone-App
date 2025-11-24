@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -251,8 +252,20 @@ namespace EconToolbox.Desktop.ViewModels
             AttachFutureCostHandlers(_futureCosts);
             AttachFutureCostHandlers(_idcEntries);
 
-            InitializeExampleAnnualizerData();
-            AddScenarioComparison();
+            TryInitializeExampleAnnualizerData();
+            TryAddScenarioComparison();
+        }
+
+        private void TryInitializeExampleAnnualizerData()
+        {
+            try
+            {
+                InitializeExampleAnnualizerData();
+            }
+            catch (Exception ex)
+            {
+                HandleComputationException(ex, "Error seeding default Annualizer inputs");
+            }
         }
 
         private void InitializeExampleAnnualizerData()
@@ -276,19 +289,31 @@ namespace EconToolbox.Desktop.ViewModels
             IdcEntries.Add(new FutureCostEntry
             {
                 Cost = 15_000_000d,
-                Year = 1,
+                Month = 1,
                 Timing = "beginning"
             });
 
             IdcEntries.Add(new FutureCostEntry
             {
                 Cost = 30_000_000d,
-                Year = 12,
+                Month = 12,
                 Timing = "end"
             });
 
             UpdatePvFactors();
             Compute();
+        }
+
+        private void TryAddScenarioComparison()
+        {
+            try
+            {
+                AddScenarioComparison();
+            }
+            catch (Exception ex)
+            {
+                HandleComputationException(ex, "Error initializing default scenario comparison");
+            }
         }
 
         private void RewireFutureCostEntries(ObservableCollection<FutureCostEntry>? oldCollection,
@@ -351,6 +376,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void EntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(FutureCostEntry.Year) ||
+                e.PropertyName == nameof(FutureCostEntry.Month) ||
                 e.PropertyName == nameof(FutureCostEntry.Timing) ||
                 e.PropertyName == nameof(FutureCostEntry.Cost))
             {
@@ -390,7 +416,7 @@ namespace EconToolbox.Desktop.ViewModels
                 if (entry == null)
                     continue;
                 double offsetMonths = GetTimingOffset(entry.Timing);
-                int monthIndex = entry.Year <= 0 ? 0 : entry.Year - 1;
+                int monthIndex = entry.Month <= 0 ? 0 : entry.Month - 1;
                 double eventMonth = monthIndex + offsetMonths;
                 entry.PvFactor = Math.Pow(1.0 + r, -(eventMonth / 12.0));
             }
@@ -404,11 +430,19 @@ namespace EconToolbox.Desktop.ViewModels
                 var result = RunAnnualizer(FirstCost, inputs);
                 ApplyResult(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Idc = TotalInvestment = Crf = AnnualCost = Bcr = double.NaN;
-                Results = new ObservableCollection<string> { "Error computing results" };
+                Results = new ObservableCollection<string> { $"Error computing results: {ex.Message}" };
+                HandleComputationException(ex, "Annualizer computation failed");
             }
+        }
+
+        private static void HandleComputationException(Exception ex, string context)
+        {
+            var details = $"{context}: {ex}";
+            Debug.WriteLine(details);
+            Console.Error.WriteLine(details);
         }
 
         private AnnualizerComputationInputs BuildComputationInputs()
@@ -426,8 +460,8 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 var schedule = IdcEntries
                     .Where(e => e != null)
-                    .Select(e => new { e.Cost, Timing = string.IsNullOrWhiteSpace(e.Timing) ? "midpoint" : e.Timing, e.Year })
-                    .OrderBy(e => e.Year)
+                    .Select(e => new { e.Cost, Timing = string.IsNullOrWhiteSpace(e.Timing) ? "midpoint" : e.Timing, e.Month })
+                    .OrderBy(e => e.Month)
                     .ToList();
 
                 if (schedule.Count > 0)
@@ -440,7 +474,7 @@ namespace EconToolbox.Desktop.ViewModels
                     {
                         costArr[i] = schedule[i].Cost;
                         timingArr[i] = schedule[i].Timing;
-                        int monthValue = schedule[i].Year;
+                        int monthValue = schedule[i].Month;
                         monthArr[i] = monthValue <= 0 ? 0 : monthValue - 1;
                     }
                 }
