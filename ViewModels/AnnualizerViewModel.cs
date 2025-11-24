@@ -113,13 +113,29 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<FutureCostEntry> FutureCosts
         {
             get => _futureCosts;
-            set { _futureCosts = value; OnPropertyChanged(); }
+            set
+            {
+                RewireFutureCostEntries(_futureCosts, value);
+                _futureCosts = value ?? new ObservableCollection<FutureCostEntry>();
+                AttachFutureCostHandlers(_futureCosts);
+                OnPropertyChanged();
+                UpdatePvFactors();
+                Compute();
+            }
         }
 
         public ObservableCollection<FutureCostEntry> IdcEntries
         {
             get => _idcEntries;
-            set { _idcEntries = value; OnPropertyChanged(); }
+            set
+            {
+                RewireFutureCostEntries(_idcEntries, value);
+                _idcEntries = value ?? new ObservableCollection<FutureCostEntry>();
+                AttachFutureCostHandlers(_idcEntries);
+                OnPropertyChanged();
+                UpdatePvFactors();
+                Compute();
+            }
         }
 
         public ObservableCollection<ScrbCostEntry> ScrbCostEntries
@@ -127,26 +143,10 @@ namespace EconToolbox.Desktop.ViewModels
             get => _scrbCostEntries;
             set
             {
-                if (_scrbCostEntries == value)
-                    return;
-
-                if (_scrbCostEntries != null)
-                {
-                    _scrbCostEntries.CollectionChanged -= ScrbCostEntriesChanged;
-                    foreach (var entry in _scrbCostEntries)
-                        entry.PropertyChanged -= ScrbCostEntryOnPropertyChanged;
-                }
-
-                _scrbCostEntries = value;
+                RewireScrbCostEntries(_scrbCostEntries);
+                _scrbCostEntries = value ?? new ObservableCollection<ScrbCostEntry>();
+                AttachScrbCostHandlers(_scrbCostEntries);
                 OnPropertyChanged();
-
-                if (_scrbCostEntries != null)
-                {
-                    _scrbCostEntries.CollectionChanged += ScrbCostEntriesChanged;
-                    foreach (var entry in _scrbCostEntries)
-                        entry.PropertyChanged += ScrbCostEntryOnPropertyChanged;
-                }
-
                 RecalculateScrb();
             }
         }
@@ -156,26 +156,10 @@ namespace EconToolbox.Desktop.ViewModels
             get => _scrbBenefitEntries;
             set
             {
-                if (_scrbBenefitEntries == value)
-                    return;
-
-                if (_scrbBenefitEntries != null)
-                {
-                    _scrbBenefitEntries.CollectionChanged -= ScrbBenefitEntriesChanged;
-                    foreach (var entry in _scrbBenefitEntries)
-                        entry.PropertyChanged -= ScrbBenefitEntryOnPropertyChanged;
-                }
-
-                _scrbBenefitEntries = value;
+                RewireScrbBenefitEntries(_scrbBenefitEntries);
+                _scrbBenefitEntries = value ?? new ObservableCollection<ScrbBenefitEntry>();
+                AttachScrbBenefitHandlers(_scrbBenefitEntries);
                 OnPropertyChanged();
-
-                if (_scrbBenefitEntries != null)
-                {
-                    _scrbBenefitEntries.CollectionChanged += ScrbBenefitEntriesChanged;
-                    foreach (var entry in _scrbBenefitEntries)
-                        entry.PropertyChanged += ScrbBenefitEntryOnPropertyChanged;
-                }
-
                 RecalculateScrb();
             }
         }
@@ -462,10 +446,10 @@ namespace EconToolbox.Desktop.ViewModels
             AddScenarioComparisonCommand = new RelayCommand(AddScenarioComparison);
             EvaluateScenarioComparisonsCommand = new RelayCommand(EvaluateScenarioComparisons);
 
-            FutureCosts.CollectionChanged += EntriesChanged;
-            IdcEntries.CollectionChanged += EntriesChanged;
-            ScrbCostEntries.CollectionChanged += ScrbCostEntriesChanged;
-            ScrbBenefitEntries.CollectionChanged += ScrbBenefitEntriesChanged;
+            AttachFutureCostHandlers(_futureCosts);
+            AttachFutureCostHandlers(_idcEntries);
+            AttachScrbCostHandlers(_scrbCostEntries);
+            AttachScrbBenefitHandlers(_scrbBenefitEntries);
 
             ScrbEvaluationYear = BaseYear;
             ScrbDiscountRate = Rate;
@@ -473,6 +457,65 @@ namespace EconToolbox.Desktop.ViewModels
             RecalculateScrb();
 
             AddScenarioComparison();
+        }
+
+        private void RewireFutureCostEntries(ObservableCollection<FutureCostEntry>? oldCollection,
+            ObservableCollection<FutureCostEntry>? newCollection)
+        {
+            if (oldCollection != null)
+            {
+                oldCollection.CollectionChanged -= EntriesChanged;
+                foreach (var entry in oldCollection)
+                    entry.PropertyChanged -= EntryOnPropertyChanged;
+            }
+
+            if (newCollection != null)
+            {
+                newCollection.CollectionChanged -= EntriesChanged;
+                foreach (var entry in newCollection)
+                    entry.PropertyChanged -= EntryOnPropertyChanged;
+            }
+        }
+
+        private void AttachFutureCostHandlers(ObservableCollection<FutureCostEntry> collection)
+        {
+            collection.CollectionChanged += EntriesChanged;
+            foreach (var entry in collection)
+                entry.PropertyChanged += EntryOnPropertyChanged;
+        }
+
+        private void RewireScrbCostEntries(ObservableCollection<ScrbCostEntry>? collection)
+        {
+            if (collection == null)
+                return;
+
+            collection.CollectionChanged -= ScrbCostEntriesChanged;
+            foreach (var entry in collection)
+                entry.PropertyChanged -= ScrbCostEntryOnPropertyChanged;
+        }
+
+        private void AttachScrbCostHandlers(ObservableCollection<ScrbCostEntry> collection)
+        {
+            collection.CollectionChanged += ScrbCostEntriesChanged;
+            foreach (var entry in collection)
+                entry.PropertyChanged += ScrbCostEntryOnPropertyChanged;
+        }
+
+        private void RewireScrbBenefitEntries(ObservableCollection<ScrbBenefitEntry>? collection)
+        {
+            if (collection == null)
+                return;
+
+            collection.CollectionChanged -= ScrbBenefitEntriesChanged;
+            foreach (var entry in collection)
+                entry.PropertyChanged -= ScrbBenefitEntryOnPropertyChanged;
+        }
+
+        private void AttachScrbBenefitHandlers(ObservableCollection<ScrbBenefitEntry> collection)
+        {
+            collection.CollectionChanged += ScrbBenefitEntriesChanged;
+            foreach (var entry in collection)
+                entry.PropertyChanged += ScrbBenefitEntryOnPropertyChanged;
         }
 
         private void EntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
