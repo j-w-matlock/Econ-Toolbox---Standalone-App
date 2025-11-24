@@ -1,5 +1,8 @@
 using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EconToolbox.Desktop.Services;
@@ -13,6 +16,8 @@ namespace EconToolbox.Desktop
 
         public App()
         {
+            SetupGlobalExceptionHandlers();
+
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((_, services) =>
                 {
@@ -34,6 +39,44 @@ namespace EconToolbox.Desktop
                     services.AddSingleton<MainWindow>();
                 })
                 .Build();
+        }
+
+        private static void SetupGlobalExceptionHandlers()
+        {
+            AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+            {
+                if (args.ExceptionObject is Exception ex)
+                {
+                    LogUnhandledException(ex, "AppDomain");
+                }
+            };
+
+            TaskScheduler.UnobservedTaskException += (_, args) =>
+            {
+                LogUnhandledException(args.Exception, "TaskScheduler");
+                args.SetObserved();
+            };
+
+            if (Current != null)
+            {
+                Current.DispatcherUnhandledException += (_, args) =>
+                {
+                    LogUnhandledException(args.Exception, "Dispatcher");
+                    args.Handled = true;
+                    MessageBox.Show(
+                        "An unexpected error occurred. The app will continue running, but some results may be unavailable. Check the logs for details.",
+                        "Unexpected Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                };
+            }
+        }
+
+        private static void LogUnhandledException(Exception ex, string source)
+        {
+            var details = $"[{source}] {ex}";
+            Debug.WriteLine(details);
+            Console.Error.WriteLine(details);
         }
 
         protected override async void OnStartup(StartupEventArgs e)
