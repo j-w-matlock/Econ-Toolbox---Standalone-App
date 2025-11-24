@@ -568,12 +568,21 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.OldItems != null)
             {
-                foreach (FutureCostEntry entry in e.OldItems)
-                    entry.PropertyChanged -= EntryOnPropertyChanged;
+                foreach (var item in e.OldItems)
+                {
+                    if (item is FutureCostEntry entry)
+                        entry.PropertyChanged -= EntryOnPropertyChanged;
+                }
             }
+
             if (e.NewItems != null)
-                foreach (FutureCostEntry entry in e.NewItems)
-                    entry.PropertyChanged += EntryOnPropertyChanged;
+            {
+                foreach (var item in e.NewItems)
+                {
+                    if (item is FutureCostEntry entry)
+                        entry.PropertyChanged += EntryOnPropertyChanged;
+                }
+            }
             UpdatePvFactors();
             Compute();
         }
@@ -593,14 +602,20 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.OldItems != null)
             {
-                foreach (ScrbCostEntry entry in e.OldItems)
-                    entry.PropertyChanged -= ScrbCostEntryOnPropertyChanged;
+                foreach (var item in e.OldItems)
+                {
+                    if (item is ScrbCostEntry entry)
+                        entry.PropertyChanged -= ScrbCostEntryOnPropertyChanged;
+                }
             }
 
             if (e.NewItems != null)
             {
-                foreach (ScrbCostEntry entry in e.NewItems)
-                    entry.PropertyChanged += ScrbCostEntryOnPropertyChanged;
+                foreach (var item in e.NewItems)
+                {
+                    if (item is ScrbCostEntry entry)
+                        entry.PropertyChanged += ScrbCostEntryOnPropertyChanged;
+                }
             }
 
             if (e.Action == NotifyCollectionChangedAction.Reset)
@@ -627,14 +642,20 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.OldItems != null)
             {
-                foreach (ScrbBenefitEntry entry in e.OldItems)
-                    entry.PropertyChanged -= ScrbBenefitEntryOnPropertyChanged;
+                foreach (var item in e.OldItems)
+                {
+                    if (item is ScrbBenefitEntry entry)
+                        entry.PropertyChanged -= ScrbBenefitEntryOnPropertyChanged;
+                }
             }
 
             if (e.NewItems != null)
             {
-                foreach (ScrbBenefitEntry entry in e.NewItems)
-                    entry.PropertyChanged += ScrbBenefitEntryOnPropertyChanged;
+                foreach (var item in e.NewItems)
+                {
+                    if (item is ScrbBenefitEntry entry)
+                        entry.PropertyChanged += ScrbBenefitEntryOnPropertyChanged;
+                }
             }
 
             if (e.Action == NotifyCollectionChangedAction.Reset)
