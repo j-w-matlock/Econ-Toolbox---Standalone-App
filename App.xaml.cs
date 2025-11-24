@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -13,6 +14,7 @@ namespace EconToolbox.Desktop
     public partial class App : Application
     {
         private readonly IHost _host;
+        private static int _dispatcherErrorShown;
 
         public App()
         {
@@ -63,6 +65,22 @@ namespace EconToolbox.Desktop
                 {
                     LogUnhandledException(args.Exception, "Dispatcher");
                     args.Handled = true;
+                    if (Interlocked.CompareExchange(ref _dispatcherErrorShown, 1, 0) == 0)
+                    {
+                        try
+                        {
+                            MessageBox.Show(
+                                "An unexpected error occurred. The app will continue running, but some results may be unavailable. Check the logs for details.",
+                                "Unexpected Error",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+                        }
+                        catch (Exception dialogEx)
+                        {
+                            // Avoid crashing the app if the error dialog fails; just log the attempt.
+                            LogUnhandledException(dialogEx, "DispatcherDialog");
+                        }
+                    }
                     MessageBox.Show(
                         "An unexpected error occurred. The app will continue running, but some results may be unavailable. Check the logs for details.",
                         "Unexpected Error",
