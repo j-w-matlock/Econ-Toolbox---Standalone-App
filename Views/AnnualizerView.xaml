@@ -481,7 +481,7 @@
                           <RowDefinition Height="Auto"/>
                       </Grid.RowDefinitions>
                       <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
-                          <DataGrid x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All" Error="DataGrid_OnError">
+                          <DataGrid x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All" Validation.Error="DataGrid_OnError">
                               <DataGrid.Columns>
                                   <DataGridTextColumn>
                                       <DataGridTextColumn.Binding>
@@ -568,7 +568,7 @@
                           <RowDefinition Height="Auto"/>
                       </Grid.RowDefinitions>
                       <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
-                          <DataGrid x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Error="DataGrid_OnError">
+                          <DataGrid x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError">
                               <DataGrid.Columns>
                                   <DataGridTextColumn>
                                       <DataGridTextColumn.Binding>
