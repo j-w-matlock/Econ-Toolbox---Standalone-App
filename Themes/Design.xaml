@@ -171,6 +171,15 @@
         </Setter>
     </Style>
 
+    <Style x:Key="Button.Filled" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"/>
+
+    <Style x:Key="Button.Outline" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource Brush.Primary}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Primary}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
     <Style TargetType="TextBox">
         <Setter Property="Margin" Value="{StaticResource Margin.Stack}"/>
         <Setter Property="Padding" Value="8,6"/>
