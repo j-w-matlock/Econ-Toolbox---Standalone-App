@@ -4,6 +4,7 @@ namespace EconToolbox.Desktop.Models
     {
         private double _cost;
         private int _year;
+        private int _month = 1;
         private double _pvFactor;
         private string _timing = "end";
 
@@ -17,6 +18,12 @@ namespace EconToolbox.Desktop.Models
         {
             get => _year;
             set { _year = value; OnPropertyChanged(); }
+        }
+
+        public int Month
+        {
+            get => _month;
+            set { _month = value; OnPropertyChanged(); }
         }
 
         /// <summary>
