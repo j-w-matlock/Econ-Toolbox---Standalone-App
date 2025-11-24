@@ -50,6 +50,8 @@ namespace EconToolbox.Desktop.ViewModels
         private bool _scrbHasBelowUnity;
         private bool _scrbHasDataIssues;
         private readonly ObservableCollection<string> _scrbComplianceFindings = new();
+        private readonly ObservableCollection<AnnualizerScenario> _scenarioComparisons = new();
+        private int _scenarioCounter = 1;
 
         private readonly record struct AnnualizerComputationInputs(
             List<(double cost, double yearOffset, double timingOffset)> FutureCosts,
@@ -430,6 +432,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<string> ScrbComplianceFindings => _scrbComplianceFindings;
 
+        public ObservableCollection<AnnualizerScenario> ScenarioComparisons => _scenarioComparisons;
+
         public string? UnityFirstCostMessage
         {
             get => _unityFirstCostMessage;
@@ -441,6 +445,8 @@ namespace EconToolbox.Desktop.ViewModels
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ResetIdcCommand { get; }
         public IRelayCommand ResetFutureCostsCommand { get; }
+        public IRelayCommand AddScenarioComparisonCommand { get; }
+        public IRelayCommand EvaluateScenarioComparisonsCommand { get; }
 
         private readonly IExcelExportService _excelExportService;
 
@@ -453,6 +459,8 @@ namespace EconToolbox.Desktop.ViewModels
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ResetIdcCommand = new RelayCommand(ResetIdcEntries);
             ResetFutureCostsCommand = new RelayCommand(ResetFutureCostEntries);
+            AddScenarioComparisonCommand = new RelayCommand(AddScenarioComparison);
+            EvaluateScenarioComparisonsCommand = new RelayCommand(EvaluateScenarioComparisons);
 
             FutureCosts.CollectionChanged += EntriesChanged;
             IdcEntries.CollectionChanged += EntriesChanged;
@@ -463,6 +471,8 @@ namespace EconToolbox.Desktop.ViewModels
             ScrbDiscountRate = Rate;
 
             RecalculateScrb();
+
+            AddScenarioComparison();
         }
 
         private void EntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -985,7 +995,13 @@ namespace EconToolbox.Desktop.ViewModels
 
         private AnnualizerModel.Result RunAnnualizer(double firstCost, AnnualizerComputationInputs inputs)
         {
-            return AnnualizerModel.Compute(firstCost, Rate / 100.0, AnnualOm, AnnualBenefits, inputs.FutureCosts,
+            return RunAnnualizer(firstCost, Rate, AnnualOm, AnnualBenefits, inputs);
+        }
+
+        private AnnualizerModel.Result RunAnnualizer(double firstCost, double rate, double annualOm, double annualBenefits,
+            AnnualizerComputationInputs inputs)
+        {
+            return AnnualizerModel.Compute(firstCost, rate / 100.0, annualOm, annualBenefits, inputs.FutureCosts,
                 AnalysisPeriod, BaseYear, ConstructionMonths, inputs.IdcCosts, inputs.IdcTimings, inputs.IdcMonths,
                 NormalizeTimingChoice(IdcTimingBasis), CalculateInterestAtPeriod,
                 NormalizeFirstPaymentChoice(IdcFirstPaymentTiming), NormalizeLastPaymentChoice(IdcLastPaymentTiming));
@@ -1028,82 +1044,86 @@ namespace EconToolbox.Desktop.ViewModels
                 var currentResult = RunAnnualizer(FirstCost, inputs);
                 ApplyResult(currentResult);
 
-                if (AnnualBenefits <= 0)
-                {
-                    AppendResultMessage("Unity BCR First Cost: Requires positive annual benefits.");
-                    return;
-                }
-
-                double targetAnnual = AnnualBenefits;
-                double lowerCost = 0.0;
-                double lowerAnnual = RunAnnualizer(lowerCost, inputs).AnnualCost;
-
-                if (double.IsNaN(lowerAnnual) || lowerAnnual > targetAnnual)
-                {
-                    AppendResultMessage("Unity BCR First Cost: Not attainable with current benefits.");
-                    return;
-                }
-
-                double upperCost = Math.Max(Math.Max(FirstCost, 1.0), lowerCost + 1.0);
-                double upperAnnual = RunAnnualizer(upperCost, inputs).AnnualCost;
-                int expandAttempts = 0;
-                while (!double.IsNaN(upperAnnual) && upperAnnual <= targetAnnual && expandAttempts < 60)
-                {
-                    upperCost = upperCost <= 0 ? 1.0 : upperCost * 2.0;
-                    upperAnnual = RunAnnualizer(upperCost, inputs).AnnualCost;
-                    expandAttempts++;
-                    if (upperCost > 1_000_000_000_000d)
-                        break;
-                }
-
-                if (double.IsNaN(upperAnnual) || upperAnnual <= targetAnnual)
-                {
-                    AppendResultMessage("Unity BCR First Cost: Unable to locate a solution with the current benefits.");
-                    return;
-                }
-
-                double solvedCost = upperCost;
-                for (int i = 0; i < 80; i++)
-                {
-                    double midCost = (lowerCost + upperCost) / 2.0;
-                    double midAnnual = RunAnnualizer(midCost, inputs).AnnualCost;
-
-                    if (double.IsNaN(midAnnual))
-                    {
-                        upperCost = midCost;
-                        continue;
-                    }
-
-                    if (Math.Abs(midAnnual - targetAnnual) < 0.01 || Math.Abs(upperCost - lowerCost) < 0.01)
-                    {
-                        solvedCost = midCost;
-                        break;
-                    }
-
-                    if (midAnnual > targetAnnual)
-                    {
-                        upperCost = midCost;
-                        upperAnnual = midAnnual;
-                    }
-                    else
-                    {
-                        lowerCost = midCost;
-                        lowerAnnual = midAnnual;
-                    }
-
-                    solvedCost = midCost;
-                }
-
-                double finalCost = Math.Max(0.0, (lowerCost + upperCost) / 2.0);
-                if (!double.IsNaN(solvedCost))
-                    finalCost = Math.Max(0.0, solvedCost);
-
-                AppendResultMessage($"Unity BCR First Cost: {finalCost.ToString("C2", CultureInfo.CurrentCulture)}");
+                var message = TrySolveUnityFirstCost(FirstCost, Rate, AnnualOm, AnnualBenefits, inputs, out var unityCost);
+                if (unityCost.HasValue)
+                    AppendResultMessage($"Unity BCR First Cost: {unityCost.Value.ToString("C2", CultureInfo.CurrentCulture)}");
+                else
+                    AppendResultMessage($"Unity BCR First Cost: {message}");
             }
             catch (Exception)
             {
                 AppendResultMessage("Unity BCR First Cost: Error calculating.");
             }
+        }
+
+        private string TrySolveUnityFirstCost(double startingFirstCost, double rate, double annualOm, double annualBenefits,
+            AnnualizerComputationInputs inputs, out double? unityCost)
+        {
+            unityCost = null;
+
+            if (annualBenefits <= 0)
+                return "Requires positive annual benefits.";
+
+            double targetAnnual = annualBenefits;
+            double lowerCost = 0.0;
+            double lowerAnnual = RunAnnualizer(lowerCost, rate, annualOm, annualBenefits, inputs).AnnualCost;
+
+            if (double.IsNaN(lowerAnnual) || lowerAnnual > targetAnnual)
+                return "Not attainable with current benefits.";
+
+            double upperCost = Math.Max(Math.Max(startingFirstCost, 1.0), lowerCost + 1.0);
+            double upperAnnual = RunAnnualizer(upperCost, rate, annualOm, annualBenefits, inputs).AnnualCost;
+            int expandAttempts = 0;
+            while (!double.IsNaN(upperAnnual) && upperAnnual <= targetAnnual && expandAttempts < 60)
+            {
+                upperCost = upperCost <= 0 ? 1.0 : upperCost * 2.0;
+                upperAnnual = RunAnnualizer(upperCost, rate, annualOm, annualBenefits, inputs).AnnualCost;
+                expandAttempts++;
+                if (upperCost > 1_000_000_000_000d)
+                    break;
+            }
+
+            if (double.IsNaN(upperAnnual) || upperAnnual <= targetAnnual)
+                return "Unable to locate a solution with the current benefits.";
+
+            double solvedCost = upperCost;
+            for (int i = 0; i < 80; i++)
+            {
+                double midCost = (lowerCost + upperCost) / 2.0;
+                double midAnnual = RunAnnualizer(midCost, rate, annualOm, annualBenefits, inputs).AnnualCost;
+
+                if (double.IsNaN(midAnnual))
+                {
+                    upperCost = midCost;
+                    continue;
+                }
+
+                if (Math.Abs(midAnnual - targetAnnual) < 0.01 || Math.Abs(upperCost - lowerCost) < 0.01)
+                {
+                    solvedCost = midCost;
+                    break;
+                }
+
+                if (midAnnual > targetAnnual)
+                {
+                    upperCost = midCost;
+                    upperAnnual = midAnnual;
+                }
+                else
+                {
+                    lowerCost = midCost;
+                    lowerAnnual = midAnnual;
+                }
+
+                solvedCost = midCost;
+            }
+
+            double finalCost = Math.Max(0.0, (lowerCost + upperCost) / 2.0);
+            if (!double.IsNaN(solvedCost))
+                finalCost = Math.Max(0.0, solvedCost);
+
+            unityCost = finalCost;
+            return "Calculated";
         }
 
         private async Task ExportAsync()
@@ -1148,6 +1168,50 @@ namespace EconToolbox.Desktop.ViewModels
             foreach (var entry in FutureCosts.ToList())
                 entry.PropertyChanged -= EntryOnPropertyChanged;
             FutureCosts.Clear();
+        }
+
+        private void AddScenarioComparison()
+        {
+            var scenario = new AnnualizerScenario
+            {
+                Name = $"Scenario {_scenarioCounter}",
+                FirstCost = FirstCost,
+                AnnualOm = AnnualOm,
+                AnnualBenefits = AnnualBenefits,
+                Rate = Rate
+            };
+
+            _scenarioCounter++;
+            ScenarioComparisons.Add(scenario);
+        }
+
+        private void EvaluateScenarioComparisons()
+        {
+            if (ScenarioComparisons.Count == 0)
+                return;
+
+            var inputs = BuildComputationInputs();
+
+            foreach (var scenario in ScenarioComparisons)
+            {
+                var result = RunAnnualizer(scenario.FirstCost, scenario.Rate, scenario.AnnualOm, scenario.AnnualBenefits, inputs);
+
+                scenario.Idc = result.Idc;
+                scenario.TotalInvestment = result.TotalInvestment;
+                scenario.Crf = result.Crf;
+                scenario.AnnualCost = result.AnnualCost;
+                scenario.Bcr = result.Bcr;
+                scenario.Notes = null;
+                scenario.UnityBcrFirstCost = null;
+
+                var unityMessage = TrySolveUnityFirstCost(scenario.FirstCost, scenario.Rate, scenario.AnnualOm,
+                    scenario.AnnualBenefits, inputs, out var unityCost);
+
+                if (unityCost.HasValue)
+                    scenario.UnityBcrFirstCost = unityCost;
+                else
+                    scenario.Notes = unityMessage;
+            }
         }
 
         private static string NormalizeTimingChoice(string? choice)

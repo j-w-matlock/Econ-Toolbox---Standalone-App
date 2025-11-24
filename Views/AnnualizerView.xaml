@@ -36,6 +36,7 @@
                       <RowDefinition Height="Auto"/>
                       <RowDefinition Height="Auto"/>
                       <RowDefinition Height="Auto"/>
+                      <RowDefinition Height="Auto"/>
                   </Grid.RowDefinitions>
                   <Grid.ColumnDefinitions>
                       <ColumnDefinition Width="Auto" MinWidth="160"/>
@@ -672,7 +673,77 @@
                           </StackPanel>
                       </Border>
                   </UniformGrid>
-                  <StackPanel Grid.Row="20"
+                  <Border Grid.Row="20" Grid.ColumnSpan="2" Style="{StaticResource Border.Surface}" Margin="0,16,0,0">
+                      <StackPanel>
+                          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                              <TextBlock FontFamily="Segoe MDL2 Assets"
+                                         Text=""
+                                         FontSize="18"
+                                         Foreground="{StaticResource Brush.Primary}"
+                                         Margin="0,0,8,0"/>
+                              <TextBlock Text="Scenario Comparisons"
+                                         FontWeight="Bold"
+                                         Foreground="{StaticResource Brush.Primary}"/>
+                          </StackPanel>
+                          <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,8,0,12">
+                              Compare multiple combinations of discount rates, benefits, and costs using the same IDC and
+                              future cost assumptions. Use Calculate Scenarios to refresh the table and include Unity BCR
+                              first cost results for each scenario.
+                          </TextBlock>
+                          <StackPanel Orientation="Horizontal" Margin="0,0,0,12" HorizontalAlignment="Left">
+                              <Button Content="Add Scenario from Current Inputs"
+                                      Command="{Binding AddScenarioComparisonCommand}"
+                                      Style="{StaticResource Button.Filled}"
+                                      Margin="0,0,8,0"/>
+                              <Button Content="Calculate Scenarios"
+                                      Command="{Binding EvaluateScenarioComparisonsCommand}"
+                                      Style="{StaticResource Button.Outline}"/>
+                          </StackPanel>
+                          <DataGrid ItemsSource="{Binding ScenarioComparisons}"
+                                    AutoGenerateColumns="False"
+                                    CanUserAddRows="False"
+                                    HeadersVisibility="Column"
+                                    GridLinesVisibility="Horizontal"
+                                    Margin="0,0,0,8"
+                                    RowHeaderWidth="0"
+                                    AlternatingRowBackground="{StaticResource Brush.TableStripe}">
+                              <DataGrid.Columns>
+                                  <DataGridTextColumn Header="Scenario"
+                                                      Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      Width="120"/>
+                                  <DataGridTextColumn Header="Rate (%)"
+                                                      Binding="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F2}"
+                                                      Width="85"/>
+                                  <DataGridTextColumn Header="Annual Benefits"
+                                                      Binding="{Binding AnnualBenefits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=C0}"
+                                                      Width="150"/>
+                                  <DataGridTextColumn Header="First Cost"
+                                                      Binding="{Binding FirstCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=C0}"
+                                                      Width="140"/>
+                                  <DataGridTextColumn Header="Annual O&amp;M"
+                                                      Binding="{Binding AnnualOm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=C0}"
+                                                      Width="140"/>
+                                  <DataGridTextColumn Header="Annual Cost"
+                                                      Binding="{Binding AnnualCost, StringFormat=C0}"
+                                                      IsReadOnly="True"
+                                                      Width="140"/>
+                                  <DataGridTextColumn Header="BCR"
+                                                      Binding="{Binding Bcr, StringFormat=F2}"
+                                                      IsReadOnly="True"
+                                                      Width="80"/>
+                                  <DataGridTextColumn Header="Unity BCR First Cost"
+                                                      Binding="{Binding UnityBcrFirstCost, StringFormat=C0}"
+                                                      IsReadOnly="True"
+                                                      Width="160"/>
+                                  <DataGridTextColumn Header="Notes"
+                                                      Binding="{Binding Notes}"
+                                                      IsReadOnly="True"
+                                                      Width="200"/>
+                              </DataGrid.Columns>
+                          </DataGrid>
+                      </StackPanel>
+                  </Border>
+                  <StackPanel Grid.Row="21"
                               Grid.ColumnSpan="2"
                               Margin="{StaticResource Margin.StackLarge}">
                       <Border Style="{StaticResource Border.ResultInfo}">
