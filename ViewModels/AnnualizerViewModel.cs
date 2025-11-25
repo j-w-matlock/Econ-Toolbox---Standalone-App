@@ -37,6 +37,8 @@ namespace EconToolbox.Desktop.ViewModels
         private double _bcr;
         private readonly ObservableCollection<AnnualizerScenario> _scenarioComparisons = new();
         private int _scenarioCounter = 1;
+        private AnnualizerScenario? _selectedScenario;
+        private bool _suppressScenarioSync;
 
         private readonly record struct AnnualizerComputationInputs(
             List<(double cost, double yearOffset, double timingOffset)> FutureCosts,
@@ -221,6 +223,26 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<AnnualizerScenario> ScenarioComparisons => _scenarioComparisons;
 
+        public AnnualizerScenario? SelectedScenario
+        {
+            get => _selectedScenario;
+            set
+            {
+                if (_selectedScenario == value)
+                    return;
+
+                if (_selectedScenario != null)
+                    _selectedScenario.PropertyChanged -= SelectedScenarioOnPropertyChanged;
+
+                _selectedScenario = value;
+                if (_selectedScenario != null)
+                    _selectedScenario.PropertyChanged += SelectedScenarioOnPropertyChanged;
+
+                SyncScenarioToInputs(_selectedScenario);
+                OnPropertyChanged();
+            }
+        }
+
         public string? UnityFirstCostMessage
         {
             get => _unityFirstCostMessage;
@@ -314,6 +336,33 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 HandleComputationException(ex, "Error initializing default scenario comparison");
             }
+        }
+
+        private void SelectedScenarioOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (_suppressScenarioSync)
+                return;
+
+            if (sender is not AnnualizerScenario scenario)
+                return;
+
+            if (!ReferenceEquals(scenario, SelectedScenario))
+                return;
+
+            SyncScenarioToInputs(scenario);
+        }
+
+        private void SyncScenarioToInputs(AnnualizerScenario? scenario)
+        {
+            if (scenario == null)
+                return;
+
+            FirstCost = scenario.FirstCost;
+            AnnualOm = scenario.AnnualOm;
+            AnnualBenefits = scenario.AnnualBenefits;
+            Rate = scenario.Rate;
+            UnityFirstCostMessage = null;
+            Compute();
         }
 
         private void RewireFutureCostEntries(ObservableCollection<FutureCostEntry>? oldCollection,
@@ -429,6 +478,24 @@ namespace EconToolbox.Desktop.ViewModels
                 var inputs = BuildComputationInputs();
                 var result = RunAnnualizer(FirstCost, inputs);
                 ApplyResult(result);
+
+                if (SelectedScenario != null)
+                {
+                    _suppressScenarioSync = true;
+                    try
+                    {
+                        SelectedScenario.Idc = result.Idc;
+                        SelectedScenario.TotalInvestment = result.TotalInvestment;
+                        SelectedScenario.Crf = result.Crf;
+                        SelectedScenario.AnnualCost = result.AnnualCost;
+                        SelectedScenario.Bcr = result.Bcr;
+                        SelectedScenario.Notes = null;
+                    }
+                    finally
+                    {
+                        _suppressScenarioSync = false;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -673,6 +740,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             _scenarioCounter++;
             ScenarioComparisons.Add(scenario);
+            SelectedScenario = scenario;
         }
 
         private void EvaluateScenarioComparisons()
@@ -682,26 +750,36 @@ namespace EconToolbox.Desktop.ViewModels
 
             var inputs = BuildComputationInputs();
 
-            foreach (var scenario in ScenarioComparisons)
+            _suppressScenarioSync = true;
+            try
             {
-                var result = RunAnnualizer(scenario.FirstCost, scenario.Rate, scenario.AnnualOm, scenario.AnnualBenefits, inputs);
+                foreach (var scenario in ScenarioComparisons)
+                {
+                    var result = RunAnnualizer(scenario.FirstCost, scenario.Rate, scenario.AnnualOm, scenario.AnnualBenefits, inputs);
 
-                scenario.Idc = result.Idc;
-                scenario.TotalInvestment = result.TotalInvestment;
-                scenario.Crf = result.Crf;
-                scenario.AnnualCost = result.AnnualCost;
-                scenario.Bcr = result.Bcr;
-                scenario.Notes = null;
-                scenario.UnityBcrFirstCost = null;
+                    scenario.Idc = result.Idc;
+                    scenario.TotalInvestment = result.TotalInvestment;
+                    scenario.Crf = result.Crf;
+                    scenario.AnnualCost = result.AnnualCost;
+                    scenario.Bcr = result.Bcr;
+                    scenario.Notes = null;
+                    scenario.UnityBcrFirstCost = null;
 
-                var unityMessage = TrySolveUnityFirstCost(scenario.FirstCost, scenario.Rate, scenario.AnnualOm,
-                    scenario.AnnualBenefits, inputs, out var unityCost);
+                    var unityMessage = TrySolveUnityFirstCost(scenario.FirstCost, scenario.Rate, scenario.AnnualOm,
+                        scenario.AnnualBenefits, inputs, out var unityCost);
 
-                if (unityCost.HasValue)
-                    scenario.UnityBcrFirstCost = unityCost;
-                else
-                    scenario.Notes = unityMessage;
+                    if (unityCost.HasValue)
+                        scenario.UnityBcrFirstCost = unityCost;
+                    else
+                        scenario.Notes = unityMessage;
+                }
             }
+            finally
+            {
+                _suppressScenarioSync = false;
+            }
+
+            SyncScenarioToInputs(SelectedScenario);
         }
 
         private static string NormalizeTimingChoice(string? choice)
