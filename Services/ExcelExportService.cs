@@ -311,7 +311,7 @@ namespace EconToolbox.Desktop.Services
             var summaryRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
                 ("First Cost", firstCost, "$#,##0.00", "Initial investment entered in the calculator.", false),
-                ("Discount Rate", rate, "0.00%", "Interest rate applied to the annualization.", false),
+                ("Discount Rate", rate / 100d, "0.00%", "Interest rate applied to the annualization.", false),
                 ("Annual O&M", annualOm, "$#,##0.00", "Recurring operations and maintenance costs.", false),
                 ("Annual Benefits", annualBenefits, "$#,##0.00", "Benefits used in the benefit-cost ratio.", false),
                 ("Interest During Construction", idc, "$#,##0.00", "Calculated from first cost, rate, and IDC schedule.", false),
