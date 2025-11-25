@@ -50,7 +50,103 @@
                                 BorderThickness="1"
                                 Margin="0,16,0,0">
                             <StackPanel>
-                                <TextBlock Text="Financial Inputs"
+                                <DockPanel>
+                                    <TextBlock Text="Scenario Inputs"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               DockPanel.Dock="Left"/>
+                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                                        <Button Command="{Binding AddScenarioComparisonCommand}"
+                                                Margin="0,0,8,0">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                                <TextBlock Text="Add Scenario"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Command="{Binding ComputeCommand}"
+                                                Margin="0,0,8,0">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                                <TextBlock Text="Calculate Selected"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Command="{Binding EvaluateScenarioComparisonsCommand}">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                                <TextBlock Text="Calculate All"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </DockPanel>
+                                <TextBlock Style="{StaticResource Text.Body}" Margin="0,4,0,8" TextWrapping="Wrap">
+                                    Enter all annualization inputs in one table. Add rows for alternative scenarios and select a row to update the rest of the worksheet.
+                                </TextBlock>
+                                <DataGrid ItemsSource="{Binding ScenarioComparisons}"
+                                          SelectedItem="{Binding SelectedScenario, Mode=TwoWay}"
+                                          AutoGenerateColumns="False"
+                                          CanUserResizeColumns="True"
+                                          HeadersVisibility="All"
+                                          Margin="0,8,0,0">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Scenario Name"
+                                                            Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                            Width="160"/>
+                                        <DataGridTextColumn Header="First Cost"
+                                                            Binding="{Binding FirstCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
+                                                            Width="140"/>
+                                        <DataGridTextColumn Header="Rate (%)"
+                                                            Binding="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource SafeNumberConverter}, StringFormat=F2}"
+                                                            Width="95"/>
+                                        <DataGridTextColumn Header="Annual O&amp;M"
+                                                            Binding="{Binding AnnualOm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
+                                                            Width="140"/>
+                                        <DataGridTextColumn Header="Annual Benefits"
+                                                            Binding="{Binding AnnualBenefits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
+                                                            Width="150"/>
+                                        <DataGridTextColumn Header="Annual Cost"
+                                                            Binding="{Binding AnnualCost, StringFormat=C0}"
+                                                            IsReadOnly="True"
+                                                            Width="140"/>
+                                        <DataGridTextColumn Header="BCR"
+                                                            Binding="{Binding Bcr, StringFormat=F2}"
+                                                            IsReadOnly="True"
+                                                            Width="80"/>
+                                        <DataGridTextColumn Header="Unity BCR First Cost"
+                                                            Binding="{Binding UnityBcrFirstCost, StringFormat=C0}"
+                                                            IsReadOnly="True"
+                                                            Width="160"/>
+                                        <DataGridTextColumn Header="Notes"
+                                                            Binding="{Binding Notes}"
+                                                            IsReadOnly="True"
+                                                            Width="200"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <StackPanel Orientation="Vertical" Margin="0,12,0,0">
+                                    <Button Padding="12,6"
+                                            HorizontalAlignment="Left"
+                                            Content="Calculate Unity Level Project First Cost"
+                                            Command="{Binding CalculateUnityFirstCostCommand}"
+                                            ToolTip="Estimate the unity-level first cost using the selected scenario's annual benefits value."/>
+                                    <TextBox Margin="0,8,0,0"
+                                             MinWidth="180"
+                                             Padding="12,6"
+                                             IsReadOnly="True"
+                                             Text="{Binding UnityFirstCostMessage}"
+                                             TextWrapping="Wrap"
+                                             VerticalContentAlignment="Center"
+                                             HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{StaticResource Brush.Surface}"
+                                CornerRadius="10"
+                                Padding="{StaticResource Padding.Card}"
+                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderThickness="1"
+                                Margin="0,16,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Shared Timing &amp; Discounting"
                                            FontSize="15"
                                            FontWeight="SemiBold"
                                            Margin="0,0,0,12"/>
@@ -64,26 +160,9 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                                        <StackPanel Margin="0,0,0,12">
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Initial project cost."/>
-                                                <TextBlock Text="First Cost" Style="{StaticResource AnnualizerLabelStyle}" Margin="4,0,0,0"/>
-                                            </StackPanel>
-                                            <TextBox Text="{Binding FirstCost, Converter={StaticResource CurrencyConverter}}"
-                                                     HorizontalContentAlignment="Right"/>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,0,0,12">
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Discount rate in percent."/>
-                                                <TextBlock Text="Rate (%)" Style="{StaticResource AnnualizerLabelStyle}" Margin="4,0,0,0"/>
-                                            </StackPanel>
-                                            <TextBox Text="{Binding Rate, Converter={StaticResource SafeNumberConverter}}"
-                                                     HorizontalContentAlignment="Right"/>
-                                        </StackPanel>
                                         <StackPanel Margin="0,0,0,12">
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                 <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Reference year that anchors discounting for future costs and benefits."/>
@@ -102,42 +181,7 @@
                                         </StackPanel>
                                     </StackPanel>
 
-                                    <StackPanel Grid.Column="1" Margin="0,0,12,0">
-                                        <StackPanel Margin="0,0,0,12">
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Annual operations and maintenance cost."/>
-                                                <TextBlock Text="Annual O&amp;M" Style="{StaticResource AnnualizerLabelStyle}" Margin="4,0,0,0"/>
-                                            </StackPanel>
-                                            <TextBox Text="{Binding AnnualOm, Converter={StaticResource CurrencyConverter}}"
-                                                     HorizontalContentAlignment="Right"/>
-                                        </StackPanel>
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Expected annual benefits."/>
-                                                <TextBlock Text="Annual Benefits" Style="{StaticResource AnnualizerLabelStyle}" Margin="4,0,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Vertical" Margin="0,4,0,0">
-                                                <TextBox Text="{Binding AnnualBenefits, Converter={StaticResource CurrencyConverter}}"
-                                                         VerticalContentAlignment="Center"
-                                                         HorizontalContentAlignment="Stretch"/>
-                                                <Button Margin="0,8,0,0"
-                                                        Padding="12,6"
-                                                        Content="Calculate Unity Level Project First Cost"
-                                                        Command="{Binding CalculateUnityFirstCostCommand}"
-                                                        ToolTip="Estimate the unity-level first cost using the current annual benefits value."/>
-                                                <TextBox Margin="0,8,0,0"
-                                                         MinWidth="180"
-                                                         Padding="12,6"
-                                                         IsReadOnly="True"
-                                                         Text="{Binding UnityFirstCostMessage}"
-                                                         TextWrapping="Wrap"
-                                                         VerticalContentAlignment="Center"
-                                                         HorizontalAlignment="Stretch"/>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="2">
+                                    <StackPanel Grid.Column="1">
                                         <StackPanel Margin="0,0,0,12">
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                 <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Total construction duration in months used to accumulate IDC."/>
@@ -398,93 +442,6 @@
                                 </StackPanel>
                             </Border>
                         </UniformGrid>
-
-                        <Border Background="{StaticResource Brush.Surface}"
-                                CornerRadius="10"
-                                BorderBrush="{StaticResource Brush.Border}"
-                                BorderThickness="1"
-                                Margin="0,24,0,0"
-                                Padding="{StaticResource Padding.Card}">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets"
-                                               Text=""
-                                               FontSize="18"
-                                               Foreground="{StaticResource Brush.Primary}"
-                                               Margin="0,0,8,0"/>
-                                    <TextBlock Text="Multiple Alternatives" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
-                                </StackPanel>
-                                <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                                    Add different scenarios and compute IDC/annualized costs for each to compare project alternatives.
-                                </TextBlock>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-                                    <Button Command="{Binding AddScenarioCommand}"
-                                            HorizontalAlignment="Right"
-                                            Margin="0,0,8,0">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                                            <TextBlock Text="Add"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Command="{Binding CalculateAllAnnualizationItemsCommand}"
-                                            HorizontalAlignment="Right"
-                                            Margin="0,0,8,0">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                                            <TextBlock Text="Calculate"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Command="{Binding ResetAnnualizationItemsCommand}"
-                                            HorizontalAlignment="Right">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                                            <TextBlock Text="Reset"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                                <StackPanel Margin="0,12,0,0">
-                                    <DataGrid ItemsSource="{Binding AnnualizationItems}"
-                                              AutoGenerateColumns="False"
-                                              Margin="0,8,0,0"
-                                              CanUserResizeColumns="True"
-                                              HeadersVisibility="All">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name"
-                                                                Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                Width="120"/>
-                                            <DataGridTextColumn Header="Rate (%)"
-                                                                Binding="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F2, Converter={StaticResource SafeNumberConverter}}"
-                                                                Width="85"/>
-                                            <DataGridTextColumn Header="Annual Benefits"
-                                                                Binding="{Binding AnnualBenefits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=C0, Converter={StaticResource SafeNumberConverter}}"
-                                                                Width="150"/>
-                                            <DataGridTextColumn Header="First Cost"
-                                                                Binding="{Binding FirstCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=C0, Converter={StaticResource SafeNumberConverter}}"
-                                                                Width="140"/>
-                                            <DataGridTextColumn Header="Annual O&amp;M"
-                                                                Binding="{Binding AnnualOm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=C0, Converter={StaticResource SafeNumberConverter}}"
-                                                                Width="140"/>
-                                            <DataGridTextColumn Header="Annual Cost"
-                                                                Binding="{Binding AnnualCost, StringFormat=C0}"
-                                                                IsReadOnly="True"
-                                                                Width="140"/>
-                                            <DataGridTextColumn Header="BCR"
-                                                                Binding="{Binding Bcr, StringFormat=F2}"
-                                                                IsReadOnly="True"
-                                                                Width="80"/>
-                                            <DataGridTextColumn Header="Unity BCR First Cost"
-                                                                Binding="{Binding UnityBcrFirstCost, StringFormat=C0}"
-                                                                IsReadOnly="True"
-                                                                Width="160"/>
-                                            <DataGridTextColumn Header="Notes"
-                                                                Binding="{Binding Notes}"
-                                                                IsReadOnly="True"
-                                                                Width="200"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
 
                         <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <Border Style="{StaticResource Border.ResultInfo}">
