@@ -250,12 +250,11 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public IRelayCommand ComputeCommand { get; }
-        public IRelayCommand CalculateUnityFirstCostCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ResetIdcCommand { get; }
         public IRelayCommand ResetFutureCostsCommand { get; }
         public IRelayCommand AddScenarioComparisonCommand { get; }
-        public IRelayCommand EvaluateScenarioComparisonsCommand { get; }
+        public IRelayCommand ResetScenarioComparisonsCommand { get; }
 
         private readonly IExcelExportService _excelExportService;
 
@@ -264,12 +263,11 @@ namespace EconToolbox.Desktop.ViewModels
             _excelExportService = excelExportService;
 
             ComputeCommand = new RelayCommand(Compute);
-            CalculateUnityFirstCostCommand = new RelayCommand(CalculateUnityFirstCost);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ResetIdcCommand = new RelayCommand(ResetIdcEntries);
             ResetFutureCostsCommand = new RelayCommand(ResetFutureCostEntries);
             AddScenarioComparisonCommand = new RelayCommand(AddScenarioComparison);
-            EvaluateScenarioComparisonsCommand = new RelayCommand(EvaluateScenarioComparisons);
+            ResetScenarioComparisonsCommand = new RelayCommand(ResetScenarioComparisons);
 
             AttachFutureCostHandlers(_futureCosts);
             AttachFutureCostHandlers(_idcEntries);
@@ -478,24 +476,7 @@ namespace EconToolbox.Desktop.ViewModels
                 var inputs = BuildComputationInputs();
                 var result = RunAnnualizer(FirstCost, inputs);
                 ApplyResult(result);
-
-                if (SelectedScenario != null)
-                {
-                    _suppressScenarioSync = true;
-                    try
-                    {
-                        SelectedScenario.Idc = result.Idc;
-                        SelectedScenario.TotalInvestment = result.TotalInvestment;
-                        SelectedScenario.Crf = result.Crf;
-                        SelectedScenario.AnnualCost = result.AnnualCost;
-                        SelectedScenario.Bcr = result.Bcr;
-                        SelectedScenario.Notes = null;
-                    }
-                    finally
-                    {
-                        _suppressScenarioSync = false;
-                    }
-                }
+                UpdateScenarioComparisons(inputs, result);
             }
             catch (Exception ex)
             {
@@ -582,35 +563,6 @@ namespace EconToolbox.Desktop.ViewModels
                 $"Annual Cost: {AnnualCost.ToString("C2", culture)}",
                 $"BCR: {Bcr:F2}"
             };
-        }
-
-        private void AppendResultMessage(string message)
-        {
-            UnityFirstCostMessage = message;
-
-            var updated = Results != null ? new ObservableCollection<string>(Results) : new ObservableCollection<string>();
-            updated.Add(message);
-            Results = updated;
-        }
-
-        private void CalculateUnityFirstCost()
-        {
-            try
-            {
-                var inputs = BuildComputationInputs();
-                var currentResult = RunAnnualizer(FirstCost, inputs);
-                ApplyResult(currentResult);
-
-                var message = TrySolveUnityFirstCost(FirstCost, Rate, AnnualOm, AnnualBenefits, inputs, out var unityCost);
-                if (unityCost.HasValue)
-                    AppendResultMessage($"Unity BCR First Cost: {unityCost.Value.ToString("C2", CultureInfo.CurrentCulture)}");
-                else
-                    AppendResultMessage($"Unity BCR First Cost: {message}");
-            }
-            catch (Exception)
-            {
-                AppendResultMessage("Unity BCR First Cost: Error calculating.");
-            }
         }
 
         private string TrySolveUnityFirstCost(double startingFirstCost, double rate, double annualOm, double annualBenefits,
@@ -727,6 +679,23 @@ namespace EconToolbox.Desktop.ViewModels
             FutureCosts.Clear();
         }
 
+        private void ResetScenarioComparisons()
+        {
+            _suppressScenarioSync = true;
+            try
+            {
+                ScenarioComparisons.Clear();
+                _scenarioCounter = 1;
+                SelectedScenario = null;
+            }
+            finally
+            {
+                _suppressScenarioSync = false;
+            }
+
+            AddScenarioComparison();
+        }
+
         private void AddScenarioComparison()
         {
             var scenario = new AnnualizerScenario
@@ -743,19 +712,19 @@ namespace EconToolbox.Desktop.ViewModels
             SelectedScenario = scenario;
         }
 
-        private void EvaluateScenarioComparisons()
+        private void UpdateScenarioComparisons(AnnualizerComputationInputs inputs, AnnualizerModel.Result selectedResult)
         {
             if (ScenarioComparisons.Count == 0)
                 return;
-
-            var inputs = BuildComputationInputs();
 
             _suppressScenarioSync = true;
             try
             {
                 foreach (var scenario in ScenarioComparisons)
                 {
-                    var result = RunAnnualizer(scenario.FirstCost, scenario.Rate, scenario.AnnualOm, scenario.AnnualBenefits, inputs);
+                    var result = ReferenceEquals(scenario, SelectedScenario)
+                        ? selectedResult
+                        : RunAnnualizer(scenario.FirstCost, scenario.Rate, scenario.AnnualOm, scenario.AnnualBenefits, inputs);
 
                     scenario.Idc = result.Idc;
                     scenario.TotalInvestment = result.TotalInvestment;
@@ -772,14 +741,15 @@ namespace EconToolbox.Desktop.ViewModels
                         scenario.UnityBcrFirstCost = unityCost;
                     else
                         scenario.Notes = unityMessage;
+
+                    if (ReferenceEquals(scenario, SelectedScenario))
+                        UnityFirstCostMessage = unityCost.HasValue ? null : unityMessage;
                 }
             }
             finally
             {
                 _suppressScenarioSync = false;
             }
-
-            SyncScenarioToInputs(SelectedScenario);
         }
 
         private static string NormalizeTimingChoice(string? choice)

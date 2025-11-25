@@ -57,23 +57,26 @@
                                                DockPanel.Dock="Left"/>
                                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                                         <Button Command="{Binding AddScenarioComparisonCommand}"
-                                                Margin="0,0,8,0">
+                                                Margin="0,0,8,0"
+                                                MinWidth="140">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
                                                 <TextBlock Text="Add Scenario"/>
                                             </StackPanel>
                                         </Button>
                                         <Button Command="{Binding ComputeCommand}"
-                                                Margin="0,0,8,0">
+                                                Margin="0,0,8,0"
+                                                MinWidth="140">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                                                <TextBlock Text="Calculate Selected"/>
+                                                <TextBlock Text="Calculate"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Command="{Binding EvaluateScenarioComparisonsCommand}">
+                                        <Button Command="{Binding ResetScenarioComparisonsCommand}"
+                                                MinWidth="140">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                                                <TextBlock Text="Calculate All"/>
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                                <TextBlock Text="Reset Table"/>
                                             </StackPanel>
                                         </Button>
                                     </StackPanel>
@@ -121,21 +124,6 @@
                                                             Width="200"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
-                                <StackPanel Orientation="Vertical" Margin="0,12,0,0">
-                                    <Button Padding="12,6"
-                                            HorizontalAlignment="Left"
-                                            Content="Calculate Unity Level Project First Cost"
-                                            Command="{Binding CalculateUnityFirstCostCommand}"
-                                            ToolTip="Estimate the unity-level first cost using the selected scenario's annual benefits value."/>
-                                    <TextBox Margin="0,8,0,0"
-                                             MinWidth="180"
-                                             Padding="12,6"
-                                             IsReadOnly="True"
-                                             Text="{Binding UnityFirstCostMessage}"
-                                             TextWrapping="Wrap"
-                                             VerticalContentAlignment="Center"
-                                             HorizontalAlignment="Stretch"/>
-                                </StackPanel>
                             </StackPanel>
                         </Border>
 
