@@ -18,6 +18,7 @@ public interface IExcelExportService
         double annualOm,
         double annualBenefits,
         IEnumerable<FutureCostEntry> future,
+        double futureCostPv,
         double idc,
         double totalInvestment,
         double crf,

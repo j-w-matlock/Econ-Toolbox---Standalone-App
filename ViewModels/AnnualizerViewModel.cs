@@ -31,6 +31,7 @@ namespace EconToolbox.Desktop.ViewModels
         private string _idcLastPaymentTiming = "Middle";
 
         private double _idc;
+        private double _futureCostPv;
         private double _totalInvestment;
         private double _crf;
         private double _annualCost;
@@ -195,6 +196,12 @@ namespace EconToolbox.Desktop.ViewModels
         {
             get => _totalInvestment;
             set { _totalInvestment = value; OnPropertyChanged(); }
+        }
+
+        public double FutureCostPv
+        {
+            get => _futureCostPv;
+            set { _futureCostPv = value; OnPropertyChanged(); }
         }
 
         public double Crf
@@ -548,6 +555,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void ApplyResult(AnnualizerModel.Result result)
         {
             Idc = result.Idc;
+            FutureCostPv = result.FutureCostPv;
             TotalInvestment = result.TotalInvestment;
             Crf = result.Crf;
             AnnualCost = result.AnnualCost;
@@ -558,6 +566,7 @@ namespace EconToolbox.Desktop.ViewModels
             Results = new ObservableCollection<string>
             {
                 $"IDC: {Idc.ToString("C2", culture)}",
+                $"PV of Future Costs: {FutureCostPv.ToString("C2", culture)}",
                 $"Total Investment: {TotalInvestment.ToString("C2", culture)}",
                 $"CRF: {Crf:F4}",
                 $"Annual Cost: {AnnualCost.ToString("C2", culture)}",
@@ -652,6 +661,7 @@ namespace EconToolbox.Desktop.ViewModels
                         AnnualOm,
                         AnnualBenefits,
                         FutureCosts,
+                        FutureCostPv,
                         Idc,
                         TotalInvestment,
                         Crf,
@@ -727,6 +737,7 @@ namespace EconToolbox.Desktop.ViewModels
                         : RunAnnualizer(scenario.FirstCost, scenario.Rate, scenario.AnnualOm, scenario.AnnualBenefits, inputs);
 
                     scenario.Idc = result.Idc;
+                    scenario.FutureCostPv = result.FutureCostPv;
                     scenario.TotalInvestment = result.TotalInvestment;
                     scenario.Crf = result.Crf;
                     scenario.AnnualCost = result.AnnualCost;

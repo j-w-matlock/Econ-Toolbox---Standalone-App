@@ -81,6 +81,19 @@ namespace EconToolbox.Desktop.Models
             }
         }
 
+        private double _futureCostPv;
+        public double FutureCostPv
+        {
+            get => _futureCostPv;
+            set
+            {
+                if (value.Equals(_futureCostPv))
+                    return;
+                _futureCostPv = value;
+                OnPropertyChanged();
+            }
+        }
+
         private double _totalInvestment;
         public double TotalInvestment
         {

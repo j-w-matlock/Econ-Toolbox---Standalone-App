@@ -5,7 +5,7 @@ namespace EconToolbox.Desktop.Models
 {
     public static class AnnualizerModel
     {
-        public record Result(double Idc, double TotalInvestment, double Crf, double AnnualCost, double Bcr);
+        public record Result(double Idc, double FutureCostPv, double TotalInvestment, double Crf, double AnnualCost, double Bcr);
 
         public static Result Compute(
             double firstCost,
@@ -45,7 +45,7 @@ namespace EconToolbox.Desktop.Models
             double annualCost = annualConstruction + annualOm;
             double bcr = annualCost == 0 ? double.NaN : annualBenefits / annualCost;
 
-            return new Result(idc, totalInvestment, crf, annualCost, bcr);
+            return new Result(idc, pvFuture, totalInvestment, crf, annualCost, bcr);
         }
 
         private static double ComputeIdc(
