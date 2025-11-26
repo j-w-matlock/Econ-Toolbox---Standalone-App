@@ -178,10 +178,16 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1"
+                    <ScrollViewer x:Name="CanvasScrollViewer"
+                                  Grid.Row="1"
                                   Margin="0,12,0,0"
-                                  HorizontalScrollBarVisibility="Auto"
-                                  VerticalScrollBarVisibility="Auto">
+                                  HorizontalScrollBarVisibility="Hidden"
+                                  VerticalScrollBarVisibility="Hidden"
+                                  Background="Transparent"
+                                  PreviewMouseLeftButtonDown="OnCanvasMouseDown"
+                                  PreviewMouseLeftButtonUp="OnCanvasMouseUp"
+                                  PreviewMouseMove="OnCanvasMouseMove"
+                                  MouseLeave="OnCanvasMouseLeave">
                         <Grid Background="#F8FBFF">
                             <Grid.LayoutTransform>
                                 <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}"/>
@@ -298,11 +304,11 @@
                                 </ItemsControl.ContextMenu>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type vm:MindMapNodeViewModel}">
-                                        <Border Padding="12"
+                                        <Border Padding="14"
                                                 Background="White"
-                                                CornerRadius="18"
+                                                CornerRadius="10"
                                                 BorderBrush="#CFDAED"
-                                                BorderThickness="1.2"
+                                                BorderThickness="1.4"
                                                 MouseLeftButtonDown="Node_MouseLeftButtonDown"
                                                 MouseLeftButtonUp="Node_MouseLeftButtonUp"
                                                 MouseMove="Node_MouseMove"
@@ -322,7 +328,7 @@
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
                                                             <Setter Property="Opacity" Value="1"/>
                                                             <Setter Property="BorderBrush" Value="#2B6CB0"/>
-                                                            <Setter Property="BorderThickness" Value="2.2"/>
+                                                            <Setter Property="BorderThickness" Value="2"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -340,7 +346,7 @@
                                                 </ContextMenu>
                                             </Border.ContextMenu>
                                             <Border.ToolTip>
-                                                <StackPanel MaxWidth="240">
+                                                <StackPanel MaxWidth="260">
                                                     <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
                                                     <TextBlock Text="{Binding ParentTitle}"
                                                                Margin="0,2,0,0"
@@ -353,111 +359,57 @@
                                                     <Separator Margin="0,6,0,6"/>
                                                     <TextBlock Text="Notes" FontWeight="SemiBold"/>
                                                     <TextBlock Text="{Binding Notes}" TextWrapping="Wrap"/>
+                                                    <Separator Margin="0,6,0,6"/>
+                                                    <TextBlock Text="{Binding Children.Count, StringFormat=Children: {0}}"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"/>
+                                                    <TextBlock Text="{Binding SiblingCount, StringFormat=Siblings: {0}}"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"/>
                                                 </StackPanel>
                                             </Border.ToolTip>
-                                            <Grid Width="210">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <StackPanel Grid.Row="0" HorizontalAlignment="Center">
-                                                    <Grid Width="72" Height="72">
-                                                        <Ellipse Fill="#E5ECFF"
-                                                                 Stroke="#94ACD6"
-                                                                 StrokeThickness="1.6"/>
-                                                        <Path Data="M 8,36 L 64,36"
-                                                              Stroke="#CCD8F7"
-                                                              StrokeThickness="3"
-                                                              StrokeDashArray="1 7"
-                                                              StrokeDashCap="Round"
-                                                              SnapsToDevicePixels="True"/>
-                                                        <TextBlock Text="{Binding IconGlyph}"
-                                                                   FontSize="34"
-                                                                   FontFamily="Segoe UI Emoji"
+                                            <Grid Width="220">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Rectangle Grid.Column="0" RadiusX="3" RadiusY="3" Fill="#D9E3F9"/>
+                                                <StackPanel Grid.Column="1" Margin="12,4,4,0">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,6">
+                                                        <Border Width="34" Height="34" CornerRadius="6" Background="#EEF2FF" BorderBrush="#CDD7F3" BorderThickness="1">
+                                                            <TextBlock Text="{Binding IconGlyph}"
+                                                                       FontSize="18"
+                                                                       VerticalAlignment="Center"
+                                                                       HorizontalAlignment="Center"/>
+                                                        </Border>
+                                                        <TextBlock Text="{Binding Title}"
+                                                                   Margin="10,0,0,0"
+                                                                   FontWeight="SemiBold"
+                                                                   FontSize="14"
                                                                    VerticalAlignment="Center"
-                                                                   HorizontalAlignment="Center"/>
-                                                    </Grid>
-                                                    <TextBlock Text="{Binding Title}"
-                                                               Margin="0,8,0,0"
-                                                               FontWeight="SemiBold"
-                                                               FontSize="14"
-                                                               TextAlignment="Center"
-                                                               Foreground="{StaticResource Brush.Primary}"
-                                                               TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <TextBlock Grid.Row="1"
-                                                           Text="{Binding Notes}"
-                                                           Margin="0,6,0,0"
-                                                           FontSize="12"
-                                                           Foreground="{StaticResource Brush.TextSecondary}"
-                                                           TextAlignment="Center"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           TextWrapping="Wrap"
-                                                           MaxHeight="50"/>
-                                                <TextBlock Grid.Row="2"
-                                                           Text="{Binding RelationshipNotes}"
-                                                           Margin="0,6,0,0"
-                                                           FontSize="11"
-                                                           FontStyle="Italic"
-                                                           Foreground="{StaticResource Brush.TextSecondary}"
-                                                           TextAlignment="Center"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           TextWrapping="Wrap"
-                                                           MaxHeight="44"/>
-                                                <StackPanel Grid.Row="3"
-                                                            Margin="0,10,0,0"
-                                                            HorizontalAlignment="Center">
-                                                    <StackPanel Orientation="Horizontal"
-                                                                HorizontalAlignment="Center">
-                                                        <Border Margin="0,0,6,0"
-                                                                Padding="6,4"
-                                                                Background="#F3F6FF"
-                                                                BorderBrush="#C0D2F7"
-                                                                BorderThickness="1"
-                                                                CornerRadius="10">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Text="P"
-                                                                           FontWeight="Bold"
-                                                                           Foreground="{StaticResource Brush.Primary}"/>
-                                                                <TextBlock Text="{Binding ParentTitle}"
-                                                                           Margin="4,0,0,0"
-                                                                           Foreground="{StaticResource Brush.TextSecondary}"
-                                                                           TextTrimming="CharacterEllipsis"
-                                                                           MaxWidth="100"/>
-                                                            </StackPanel>
-                                                        </Border>
-                                                        <Border Margin="0,0,6,0"
-                                                                Padding="6,4"
-                                                                Background="#F9F3FF"
-                                                                BorderBrush="#D7C5FF"
-                                                                BorderThickness="1"
-                                                                CornerRadius="10">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Text="C"
-                                                                           FontWeight="Bold"
-                                                                           Foreground="#7F56D9"/>
-                                                                <TextBlock Text="{Binding Children.Count, StringFormat=Children: {0}}"
-                                                                           Margin="4,0,0,0"
-                                                                           Foreground="{StaticResource Brush.TextSecondary}"/>
-                                                            </StackPanel>
-                                                        </Border>
-                                                        <Border Padding="6,4"
-                                                                Background="#F0FCFB"
-                                                                BorderBrush="#A7E0DA"
-                                                                BorderThickness="1"
-                                                                CornerRadius="10">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Text="S"
-                                                                           FontWeight="Bold"
-                                                                           Foreground="#15998E"/>
-                                                                <TextBlock Text="{Binding SiblingCount, StringFormat=Siblings: {0}}"
-                                                                           Margin="4,0,0,0"
-                                                                           Foreground="{StaticResource Brush.TextSecondary}"/>
-                                                            </StackPanel>
-                                                        </Border>
+                                                                   Foreground="{StaticResource Brush.Primary}"
+                                                                   TextWrapping="Wrap"/>
                                                     </StackPanel>
+                                                    <TextBlock Text="{Binding Notes}"
+                                                               Margin="0,2,0,0"
+                                                               FontSize="12"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                                               TextAlignment="Left"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               TextWrapping="Wrap"
+                                                               MaxHeight="48"/>
+                                                    <Separator Margin="0,6,0,6"/>
+                                                    <TextBlock Text="{Binding RelationshipNotes}"
+                                                               FontSize="11"
+                                                               FontStyle="Italic"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                                               TextAlignment="Left"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               TextWrapping="Wrap"
+                                                               MaxHeight="42"/>
+                                                    <TextBlock Text="{Binding ParentTitle, StringFormat=Parent: {0}}"
+                                                               Margin="0,8,0,0"
+                                                               FontSize="11"
+                                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                                               TextWrapping="Wrap"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>

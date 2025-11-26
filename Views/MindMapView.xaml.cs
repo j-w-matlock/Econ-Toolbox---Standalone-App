@@ -15,6 +15,10 @@ namespace EconToolbox.Desktop.Views
         private MindMapNodeViewModel? _draggingNode;
         private FrameworkElement? _draggingElement;
         private Point _dragOffset;
+        private ScrollViewer? _canvasScrollViewer;
+        private bool _isPanning;
+        private Point _panStart;
+        private Point _scrollStart;
 
         public MindMapView()
         {
@@ -77,6 +81,68 @@ namespace EconToolbox.Desktop.Views
             }
         }
 
+        private void OnCanvasMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed)
+                return;
+
+            if (IsInteractiveMindMapElement(e.OriginalSource))
+                return;
+
+            _canvasScrollViewer ??= CanvasScrollViewer;
+
+            if (_canvasScrollViewer == null)
+                return;
+
+            _isPanning = true;
+            _panStart = e.GetPosition(_canvasScrollViewer);
+            _scrollStart = new Point(_canvasScrollViewer.HorizontalOffset, _canvasScrollViewer.VerticalOffset);
+
+            _canvasScrollViewer.CaptureMouse();
+            Mouse.OverrideCursor = Cursors.SizeAll;
+            e.Handled = true;
+        }
+
+        private void OnCanvasMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isPanning || _canvasScrollViewer == null)
+                return;
+
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                EndPan();
+                return;
+            }
+
+            var current = e.GetPosition(_canvasScrollViewer);
+            var delta = current - _panStart;
+
+            _canvasScrollViewer.ScrollToHorizontalOffset(_scrollStart.X - delta.X);
+            _canvasScrollViewer.ScrollToVerticalOffset(_scrollStart.Y - delta.Y);
+            e.Handled = true;
+        }
+
+        private void OnCanvasMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            EndPan();
+        }
+
+        private void OnCanvasMouseLeave(object sender, MouseEventArgs e)
+        {
+            EndPan();
+        }
+
+        private void EndPan()
+        {
+            if (_canvasScrollViewer != null && _canvasScrollViewer.IsMouseCaptured)
+            {
+                _canvasScrollViewer.ReleaseMouseCapture();
+            }
+
+            _isPanning = false;
+            Mouse.OverrideCursor = null;
+        }
+
         private static Canvas? FindItemsPanelCanvas(ItemsControl itemsControl)
         {
             // In WPF, ItemsControl does not expose the instantiated items panel directly.
@@ -96,6 +162,29 @@ namespace EconToolbox.Desktop.Views
                 var descendant = FindVisualChild<T>(child);
                 if (descendant != null)
                     return descendant;
+            }
+
+            return null;
+        }
+
+        private static bool IsInteractiveMindMapElement(object? source)
+        {
+            if (source is not DependencyObject dependencyObject)
+                return false;
+
+            return FindAncestorWithDataContext<MindMapNodeViewModel>(dependencyObject) != null ||
+                   FindAncestorWithDataContext<MindMapConnectionViewModel>(dependencyObject) != null;
+        }
+
+        private static TContext? FindAncestorWithDataContext<TContext>(DependencyObject element) where TContext : class
+        {
+            var current = element;
+            while (current != null)
+            {
+                if (current is FrameworkElement { DataContext: TContext match })
+                    return match;
+
+                current = VisualTreeHelper.GetParent(current);
             }
 
             return null;
