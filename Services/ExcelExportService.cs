@@ -299,7 +299,7 @@ namespace EconToolbox.Desktop.Services
             });
         }
 
-        public void ExportAnnualizer(double firstCost, double rate, double annualOm, double annualBenefits, IEnumerable<FutureCostEntry> future, double idc, double totalInvestment, double crf, double annualCost, double bcr, string filePath)
+        public void ExportAnnualizer(double firstCost, double rate, double annualOm, double annualBenefits, IEnumerable<FutureCostEntry> future, double futureCostPv, double idc, double totalInvestment, double crf, double annualCost, double bcr, string filePath)
         {
             RunOnSta(() =>
             {
@@ -314,6 +314,7 @@ namespace EconToolbox.Desktop.Services
                 ("Discount Rate", rate / 100d, "0.00%", "Interest rate applied to the annualization.", false),
                 ("Annual O&M", annualOm, "$#,##0.00", "Recurring operations and maintenance costs.", false),
                 ("Annual Benefits", annualBenefits, "$#,##0.00", "Benefits used in the benefit-cost ratio.", false),
+                ("PV of Future Costs", futureCostPv, "$#,##0.00", "Present value of scheduled future capital spending.", false),
                 ("Interest During Construction", idc, "$#,##0.00", "Calculated from first cost, rate, and IDC schedule.", false),
                 ("Total Investment", totalInvestment, "$#,##0.00", "First Cost + IDC + PV of Future Costs.", true),
                 ("Capital Recovery Factor", crf, "0.000000", "r(1+r)^n / ((1+r)^n - 1)", false),
