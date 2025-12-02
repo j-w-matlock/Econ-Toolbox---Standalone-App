@@ -64,11 +64,25 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _xAxisMinLabel = value; OnPropertyChanged(); }
         }
 
+        private string _xAxisMidLabel = string.Empty;
+        public string XAxisMidLabel
+        {
+            get => _xAxisMidLabel;
+            private set { _xAxisMidLabel = value; OnPropertyChanged(); }
+        }
+
         private string _xAxisMaxLabel = string.Empty;
         public string XAxisMaxLabel
         {
             get => _xAxisMaxLabel;
             private set { _xAxisMaxLabel = value; OnPropertyChanged(); }
+        }
+
+        private string _xAxisTitle = string.Empty;
+        public string XAxisTitle
+        {
+            get => _xAxisTitle;
+            private set { _xAxisTitle = value; OnPropertyChanged(); }
         }
 
         private string _yAxisMinLabel = string.Empty;
@@ -78,11 +92,25 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _yAxisMinLabel = value; OnPropertyChanged(); }
         }
 
+        private string _yAxisMidLabel = string.Empty;
+        public string YAxisMidLabel
+        {
+            get => _yAxisMidLabel;
+            private set { _yAxisMidLabel = value; OnPropertyChanged(); }
+        }
+
         private string _yAxisMaxLabel = string.Empty;
         public string YAxisMaxLabel
         {
             get => _yAxisMaxLabel;
             private set { _yAxisMaxLabel = value; OnPropertyChanged(); }
+        }
+
+        private string _yAxisTitle = string.Empty;
+        public string YAxisTitle
+        {
+            get => _yAxisTitle;
+            private set { _yAxisTitle = value; OnPropertyChanged(); }
         }
 
         private const double ChartWidth = 300;
@@ -332,16 +360,24 @@ namespace EconToolbox.Desktop.ViewModels
             if (range == null)
             {
                 XAxisMinLabel = string.Empty;
+                XAxisMidLabel = string.Empty;
                 XAxisMaxLabel = string.Empty;
+                XAxisTitle = string.Empty;
                 YAxisMinLabel = string.Empty;
+                YAxisMidLabel = string.Empty;
                 YAxisMaxLabel = string.Empty;
+                YAxisTitle = string.Empty;
                 return;
             }
 
             XAxisMinLabel = FormatXAxisValue(range.Value.MinX, hasStageData);
+            XAxisMidLabel = FormatXAxisValue((range.Value.MinX + range.Value.MaxX) / 2, hasStageData);
             XAxisMaxLabel = FormatXAxisValue(range.Value.MaxX, hasStageData);
+            XAxisTitle = hasStageData ? "Stage" : "Exceedance Probability";
             YAxisMinLabel = FormatYAxisValue(range.Value.MinY);
+            YAxisMidLabel = FormatYAxisValue((range.Value.MinY + range.Value.MaxY) / 2);
             YAxisMaxLabel = FormatYAxisValue(range.Value.MaxY);
+            YAxisTitle = "Damage ($)";
         }
 
         private string FormatXAxisValue(double value, bool hasStageData)
@@ -353,9 +389,17 @@ namespace EconToolbox.Desktop.ViewModels
 
         private string FormatYAxisValue(double value)
         {
-            return Math.Abs(value) >= 1_000
-                ? value.ToString("N0")
-                : value.ToString("N2");
+            if (Math.Abs(value) >= 1_000_000)
+            {
+                return $"${value / 1_000_000d:0.##}M";
+            }
+
+            if (Math.Abs(value) >= 1_000)
+            {
+                return $"${value / 1_000d:0.##}K";
+            }
+
+            return value.ToString("C2");
         }
 
         private Brush GetSeriesBrush(int index)
