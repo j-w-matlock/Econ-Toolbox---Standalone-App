@@ -85,6 +85,18 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _xAxisTitle = value; OnPropertyChanged(); }
         }
 
+        private string _customXAxisTitle = string.Empty;
+        public string CustomXAxisTitle
+        {
+            get => _customXAxisTitle;
+            set
+            {
+                _customXAxisTitle = value;
+                OnPropertyChanged();
+                RefreshAxisTitles();
+            }
+        }
+
         private string _yAxisMinLabel = string.Empty;
         public string YAxisMinLabel
         {
@@ -113,8 +125,34 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _yAxisTitle = value; OnPropertyChanged(); }
         }
 
+        private string _customYAxisTitle = string.Empty;
+        public string CustomYAxisTitle
+        {
+            get => _customYAxisTitle;
+            set
+            {
+                _customYAxisTitle = value;
+                OnPropertyChanged();
+                RefreshAxisTitles();
+            }
+        }
+
+        private string _chartTitle = "Expected Annual Damage";
+        public string ChartTitle
+        {
+            get => _chartTitle;
+            set
+            {
+                _chartTitle = value;
+                OnPropertyChanged();
+            }
+        }
+
         private const double ChartWidth = 420;
         private const double ChartHeight = 220;
+
+        private string _defaultXAxisTitle = string.Empty;
+        private string _defaultYAxisTitle = string.Empty;
 
         public IRelayCommand AddDamageColumnCommand { get; }
         public IRelayCommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
@@ -382,22 +420,34 @@ namespace EconToolbox.Desktop.ViewModels
                 XAxisMinLabel = string.Empty;
                 XAxisMidLabel = string.Empty;
                 XAxisMaxLabel = string.Empty;
-                XAxisTitle = string.Empty;
+                _defaultXAxisTitle = string.Empty;
                 YAxisMinLabel = string.Empty;
                 YAxisMidLabel = string.Empty;
                 YAxisMaxLabel = string.Empty;
-                YAxisTitle = string.Empty;
+                _defaultYAxisTitle = string.Empty;
+                RefreshAxisTitles();
                 return;
             }
 
             XAxisMinLabel = FormatXAxisValue(range.Value.MinX, hasStageData);
             XAxisMidLabel = FormatXAxisValue((range.Value.MinX + range.Value.MaxX) / 2, hasStageData);
             XAxisMaxLabel = FormatXAxisValue(range.Value.MaxX, hasStageData);
-            XAxisTitle = hasStageData ? "Stage / Water Surface" : "Exceedance Probability (annual)";
+            _defaultXAxisTitle = hasStageData ? "Stage / Water Surface" : "Exceedance Probability (annual)";
             YAxisMinLabel = FormatYAxisValue(range.Value.MinY);
             YAxisMidLabel = FormatYAxisValue((range.Value.MinY + range.Value.MaxY) / 2);
             YAxisMaxLabel = FormatYAxisValue(range.Value.MaxY);
-            YAxisTitle = "Damage (USD)";
+            _defaultYAxisTitle = "Damage (USD)";
+            RefreshAxisTitles();
+        }
+
+        private void RefreshAxisTitles()
+        {
+            XAxisTitle = string.IsNullOrWhiteSpace(CustomXAxisTitle)
+                ? _defaultXAxisTitle
+                : CustomXAxisTitle;
+            YAxisTitle = string.IsNullOrWhiteSpace(CustomYAxisTitle)
+                ? _defaultYAxisTitle
+                : CustomYAxisTitle;
         }
 
         private string FormatXAxisValue(double value, bool hasStageData)

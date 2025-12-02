@@ -153,6 +153,31 @@
                             <TextBlock Text="Visualize Your Curve"
                                        FontWeight="SemiBold"
                                        Margin="{StaticResource Margin.Stack}"/>
+                            <StackPanel Margin="{StaticResource Margin.Stack}">
+                                <TextBlock Text="Customize chart labels"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="Update the chart title or override the axis labels shown on the visualization."
+                                           Style="{StaticResource Text.Caption}"
+                                           Margin="0,4,0,8"/>
+                                <TextBox Text="{Binding ChartTitle, UpdateSourceTrigger=PropertyChanged}"
+                                         MinWidth="200"
+                                         Margin="0,0,0,6"
+                                         ToolTip="Title shown above the EAD chart."/>
+                                <UniformGrid Columns="2" Rows="1" Margin="0,0,0,0">
+                                    <StackPanel Margin="0,0,8,0">
+                                        <TextBlock Text="X-axis label" Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding CustomXAxisTitle, UpdateSourceTrigger=PropertyChanged}"
+                                                 MinWidth="160"
+                                                 ToolTip="Leave blank to use the suggested axis title."/>
+                                    </StackPanel>
+                                    <StackPanel Margin="8,0,0,0">
+                                        <TextBlock Text="Y-axis label" Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding CustomYAxisTitle, UpdateSourceTrigger=PropertyChanged}"
+                                                 MinWidth="160"
+                                                 ToolTip="Leave blank to use the suggested axis title."/>
+                                    </StackPanel>
+                                </UniformGrid>
+                            </StackPanel>
                             <Border Background="{StaticResource Brush.ChartFill}"
                                     BorderBrush="{StaticResource Brush.Border}"
                                     BorderThickness="1"
@@ -160,96 +185,108 @@
                                     Padding="16"
                                     Margin="{StaticResource Margin.Stack}">
                                 <Grid ClipToBounds="False">
-                                    <Canvas x:Name="CurveCanvas" Width="420" Height="220" SnapsToDevicePixels="True">
-                                        <Rectangle Width="420"
-                                                   Height="220"
-                                                   Fill="Transparent"
-                                                   StrokeThickness="0"/>
-                                        <Line X1="0" Y1="220" X2="420" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
-                                        <Line X1="0" Y1="0" X2="0" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
-                                        <Line X1="0" Y1="220" X2="0" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
-                                        <Line X1="210" Y1="220" X2="210" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
-                                        <Line X1="420" Y1="220" X2="420" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
-                                        <Line X1="0" Y1="220" X2="6" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
-                                        <Line X1="0" Y1="110" X2="6" Y2="110" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
-                                        <Line X1="0" Y1="0" X2="6" Y2="0" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
-                                        <Line X1="0" Y1="165" X2="420" Y2="165" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
-                                        <Line X1="0" Y1="110" X2="420" Y2="110" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
-                                        <Line X1="0" Y1="55" X2="420" Y2="55" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
-                                        <Line X1="105" Y1="0" X2="105" Y2="220" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
-                                        <Line X1="210" Y1="0" X2="210" Y2="220" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
-                                        <Line X1="315" Y1="0" X2="315" Y2="220" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
-                                    </Canvas>
-                                    <ItemsControl ItemsSource="{Binding DamageSeries}" IsHitTestVisible="False">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <Canvas Width="420" Height="220"/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Polyline Points="{Binding Points}"
-                                                          Stroke="{Binding Stroke}"
-                                                          StrokeThickness="3"
-                                                          StrokeEndLineCap="Round"
-                                                          StrokeStartLineCap="Round"/>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                    <TextBlock Text="{Binding XAxisMinLabel}"
-                                               HorizontalAlignment="Left"
-                                               VerticalAlignment="Bottom"
-                                               Margin="12,0,0,10"
-                                               FontSize="11"
-                                               Foreground="{StaticResource Brush.TextSecondary}"/>
-                                    <TextBlock Text="{Binding XAxisMidLabel}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Bottom"
-                                               Margin="0,0,0,10"
-                                               FontSize="11"
-                                               Foreground="{StaticResource Brush.TextSecondary}"/>
-                                    <TextBlock Text="{Binding XAxisMaxLabel}"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Bottom"
-                                               Margin="0,0,12,10"
-                                               FontSize="11"
-                                               Foreground="{StaticResource Brush.TextSecondary}"/>
-                                    <TextBlock Text="{Binding YAxisMinLabel}"
-                                               HorizontalAlignment="Left"
-                                               VerticalAlignment="Bottom"
-                                               Margin="14,0,0,34"
-                                               FontSize="11"
-                                               Foreground="{StaticResource Brush.TextSecondary}"/>
-                                    <TextBlock Text="{Binding YAxisMidLabel}"
-                                               HorizontalAlignment="Left"
-                                               VerticalAlignment="Center"
-                                               Margin="14,0,0,0"
-                                               FontSize="11"
-                                               Foreground="{StaticResource Brush.TextSecondary}"/>
-                                    <TextBlock Text="{Binding YAxisMaxLabel}"
-                                               HorizontalAlignment="Left"
-                                               VerticalAlignment="Top"
-                                               Margin="14,12,0,0"
-                                               FontSize="11"
-                                               Foreground="{StaticResource Brush.TextSecondary}"/>
-                                    <TextBlock Text="{Binding XAxisTitle}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Bottom"
-                                               Margin="0,0,0,-6"
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{Binding ChartTitle}"
+                                               Grid.Row="0"
                                                FontWeight="SemiBold"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Brush.TextPrimary}"/>
-                                    <TextBlock Text="{Binding YAxisTitle}"
-                                               HorizontalAlignment="Left"
-                                               VerticalAlignment="Center"
-                                               Margin="-14,0,0,0"
-                                               FontWeight="SemiBold"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Brush.TextPrimary}">
-                                        <TextBlock.RenderTransform>
-                                            <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
-                                        </TextBlock.RenderTransform>
-                                    </TextBlock>
+                                               FontSize="14"
+                                               TextAlignment="Center"
+                                               Margin="0,0,0,8"/>
+                                    <Grid Grid.Row="1">
+                                        <Canvas x:Name="CurveCanvas" Width="420" Height="220" SnapsToDevicePixels="True">
+                                            <Rectangle Width="420"
+                                                       Height="220"
+                                                       Fill="Transparent"
+                                                       StrokeThickness="0"/>
+                                            <Line X1="0" Y1="220" X2="420" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                            <Line X1="0" Y1="0" X2="0" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                            <Line X1="0" Y1="220" X2="0" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                            <Line X1="210" Y1="220" X2="210" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                            <Line X1="420" Y1="220" X2="420" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                            <Line X1="0" Y1="220" X2="6" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                            <Line X1="0" Y1="110" X2="6" Y2="110" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                            <Line X1="0" Y1="0" X2="6" Y2="0" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                            <Line X1="0" Y1="165" X2="420" Y2="165" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                            <Line X1="0" Y1="110" X2="420" Y2="110" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                            <Line X1="0" Y1="55" X2="420" Y2="55" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                            <Line X1="105" Y1="0" X2="105" Y2="220" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                            <Line X1="210" Y1="0" X2="210" Y2="220" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                            <Line X1="315" Y1="0" X2="315" Y2="220" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                        </Canvas>
+                                        <ItemsControl ItemsSource="{Binding DamageSeries}" IsHitTestVisible="False">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Canvas Width="420" Height="220"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Polyline Points="{Binding Points}"
+                                                              Stroke="{Binding Stroke}"
+                                                              StrokeThickness="3"
+                                                              StrokeEndLineCap="Round"
+                                                              StrokeStartLineCap="Round"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <TextBlock Text="{Binding XAxisMinLabel}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Bottom"
+                                                   Margin="12,0,0,10"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                        <TextBlock Text="{Binding XAxisMidLabel}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Bottom"
+                                                   Margin="0,0,0,10"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                        <TextBlock Text="{Binding XAxisMaxLabel}"
+                                                   HorizontalAlignment="Right"
+                                                   VerticalAlignment="Bottom"
+                                                   Margin="0,0,12,10"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                        <TextBlock Text="{Binding YAxisMinLabel}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Bottom"
+                                                   Margin="14,0,0,34"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                        <TextBlock Text="{Binding YAxisMidLabel}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   Margin="14,0,0,0"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                        <TextBlock Text="{Binding YAxisMaxLabel}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Top"
+                                                   Margin="14,12,0,0"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                        <TextBlock Text="{Binding XAxisTitle}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Bottom"
+                                                   Margin="0,0,0,-6"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource Brush.TextPrimary}"/>
+                                        <TextBlock Text="{Binding YAxisTitle}"
+                                                   HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   Margin="-14,0,0,0"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource Brush.TextPrimary}">
+                                            <TextBlock.RenderTransform>
+                                                <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
+                                    </Grid>
                                 </Grid>
                             </Border>
                             <ItemsControl ItemsSource="{Binding DamageSeries}" Margin="{StaticResource Margin.Stack}">
