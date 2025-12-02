@@ -169,12 +169,7 @@
                                         <Line X1="0" Y1="0" X2="0" Y2="150" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
                                         <Line X1="0" Y1="100" X2="300" Y2="100" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
                                         <Line X1="0" Y1="50" X2="300" Y2="50" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
-                                        <Polyline Points="{Binding FrequencyDamagePoints}"
-                                                  Stroke="{StaticResource Brush.Accent}"
-                                                  StrokeThickness="3"
-                                                  StrokeEndLineCap="Round"
-                                                  StrokeStartLineCap="Round"/>
-                                        <Polyline Points="{Binding StageDamagePoints}"
+                                        <Polyline Points="{Binding DamageCurvePoints}"
                                                   Stroke="{StaticResource Brush.Primary}"
                                                   StrokeThickness="3"
                                                   StrokeEndLineCap="Round"
@@ -183,7 +178,7 @@
                                 </Grid>
                             </Border>
                             <TextBlock Style="{StaticResource Text.Caption}" TextWrapping="Wrap">
-                                The aqua line plots damages against exceedance probability. When stage values are provided, the navy line displays the paired stage-damage curve so you can verify consistency between datasets.
+                                Damages are plotted against stage when stage values are supplied; otherwise, the curve uses exceedance probability on the x-axis.
                             </TextBlock>
                         </StackPanel>
                     </Border>

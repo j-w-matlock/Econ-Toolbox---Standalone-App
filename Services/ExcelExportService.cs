@@ -366,7 +366,7 @@ namespace EconToolbox.Desktop.Services
             });
         }
 
-        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, IReadOnlyList<Point> stagePoints, IReadOnlyList<Point> frequencyPoints, string filePath)
+        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, IReadOnlyList<Point> damagePoints, string filePath)
         {
             RunOnSta(() =>
             {
@@ -418,7 +418,7 @@ namespace EconToolbox.Desktop.Services
             inputSheet.Columns(1, headers.Count).AdjustToContents();
 
             int chartRow = dataRowCount + 3;
-            AddEadChart(inputSheet, stagePoints, frequencyPoints, chartRow, 1);
+            AddEadChart(inputSheet, damagePoints, chartRow, 1);
 
             var summary = CreateWorksheet(wb, "Summary");
 
@@ -445,13 +445,13 @@ namespace EconToolbox.Desktop.Services
             }
 
             int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, tableNames);
-            AddEadChart(summary, stagePoints, frequencyPoints, summaryNextRow, 1);
+            AddEadChart(summary, damagePoints, summaryNextRow, 1);
 
                 wb.SaveAs(filePath);
             });
         }
 
-        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, IReadOnlyList<Point> eadStagePoints, IReadOnlyList<Point> eadFrequencyPoints, string filePath)
+        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, IReadOnlyList<Point> eadDamagePoints, string filePath)
         {
             RunOnSta(() =>
             {
@@ -492,7 +492,7 @@ namespace EconToolbox.Desktop.Services
             eadSheet.Range(rowIdx + 1, 1, rowIdx + 1, Math.Max(2, eadColumnCount)).Merge();
             eadSheet.Range(1, 1, 1, eadColumnCount).Style.Font.SetBold();
             eadSheet.Columns(1, eadColumnCount).AdjustToContents();
-            AddEadChart(eadSheet, eadStagePoints, eadFrequencyPoints, rowIdx + 3, 1);
+            AddEadChart(eadSheet, eadDamagePoints, rowIdx + 3, 1);
 
             // Agriculture Depth-Damage Sheet
             var agSheet = CreateWorksheet(wb, "Agriculture");
@@ -2561,17 +2561,17 @@ namespace EconToolbox.Desktop.Services
             };
         }
 
-        private static void AddEadChart(IXLWorksheet ws, IReadOnlyList<Point>? stagePoints, IReadOnlyList<Point>? frequencyPoints, int row, int column)
+        private static void AddEadChart(IXLWorksheet ws, IReadOnlyList<Point>? damagePoints, int row, int column)
         {
-            if ((stagePoints == null || stagePoints.Count == 0) && (frequencyPoints == null || frequencyPoints.Count == 0))
+            if (damagePoints == null || damagePoints.Count == 0)
                 return;
-            byte[] img = CreateEadChartImage(stagePoints, frequencyPoints);
+            byte[] img = CreateEadChartImage(damagePoints);
             using var stream = new MemoryStream(img);
             var pic = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("EADChart_"));
             pic.MoveTo(ws.Cell(row, column));
         }
 
-        private static byte[] CreateEadChartImage(IReadOnlyList<Point>? stagePoints, IReadOnlyList<Point>? frequencyPoints)
+        private static byte[] CreateEadChartImage(IReadOnlyList<Point>? damagePoints)
         {
             double width = 300;
             double height = 150;
@@ -2579,10 +2579,8 @@ namespace EconToolbox.Desktop.Services
             using (var dc = dv.RenderOpen())
             {
                 dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
-                if (frequencyPoints is { Count: > 0 } freqPoints)
-                    DrawPolyline(dc, freqPoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1ABC9C")), 2));
-                if (stagePoints is { Count: > 0 } stagePts)
-                    DrawPolyline(dc, stagePts, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D6A8E")), 2));
+                if (damagePoints is { Count: > 0 } curvePoints)
+                    DrawPolyline(dc, curvePoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D6A8E")), 2));
             }
             RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
             rtb.Render(dv);
