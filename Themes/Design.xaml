@@ -110,6 +110,13 @@
         <Setter Property="Foreground" Value="White"/>
     </Style>
 
+    <Style x:Key="Text.Title.Small" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI Semibold"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
     <!-- Control styles -->
     <Style TargetType="Window">
         <Setter Property="FontFamily" Value="Segoe UI"/>
