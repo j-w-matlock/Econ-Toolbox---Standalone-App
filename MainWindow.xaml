@@ -175,7 +175,8 @@
                                                 BorderBrush="{StaticResource Brush.Border}"
                                                 BorderThickness="1"
                                                 Padding="12"
-                                                CornerRadius="8">
+                                                CornerRadius="8"
+                                                TextElement.Foreground="{StaticResource Brush.TextPrimary}">
                                             <StackPanel>
                                                 <TextBlock Text="{Binding Title}"
                                                            FontWeight="SemiBold"
