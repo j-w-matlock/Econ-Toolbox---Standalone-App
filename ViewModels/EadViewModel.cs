@@ -113,8 +113,8 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _yAxisTitle = value; OnPropertyChanged(); }
         }
 
-        private const double ChartWidth = 300;
-        private const double ChartHeight = 150;
+        private const double ChartWidth = 420;
+        private const double ChartHeight = 220;
 
         public IRelayCommand AddDamageColumnCommand { get; }
         public IRelayCommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
@@ -319,10 +319,30 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            var range = new ChartRange(minX.Value, maxX.Value, minY.Value, maxY.Value);
+            var baselineMinY = Math.Min(0, minY.Value);
+            var range = new ChartRange(minX.Value, maxX.Value, baselineMinY, maxY.Value);
+
+            double xPadding = (range.MaxX - range.MinX) * 0.05;
+            if (xPadding <= 0)
+            {
+                xPadding = hasStageData ? Math.Max(Math.Abs(range.MaxX) * 0.05, 1) : 0.05;
+            }
+
+            double paddedMinX = hasStageData ? range.MinX - xPadding : Math.Max(0, range.MinX - xPadding);
+            double paddedMaxX = hasStageData ? range.MaxX + xPadding : Math.Min(1, range.MaxX + xPadding);
+
+            double yPadding = (range.MaxY - range.MinY) * 0.15;
+            if (yPadding <= 0)
+            {
+                yPadding = Math.Max(Math.Abs(range.MaxY) * 0.15, 1);
+            }
+
+            double paddedMinY = range.MinY - yPadding;
+            double paddedMaxY = range.MaxY + yPadding;
+            var paddedRange = new ChartRange(paddedMinX, paddedMaxX, paddedMinY, paddedMaxY);
             for (int i = 0; i < seriesData.Count; i++)
             {
-                var scaledPoints = CreatePointCollection(seriesData[i].Points, range);
+                var scaledPoints = CreatePointCollection(seriesData[i].Points, paddedRange);
                 var series = new ChartSeries(seriesData[i].Name, scaledPoints, GetSeriesBrush(i));
                 DamageSeries.Add(series);
 
@@ -373,11 +393,11 @@ namespace EconToolbox.Desktop.ViewModels
             XAxisMinLabel = FormatXAxisValue(range.Value.MinX, hasStageData);
             XAxisMidLabel = FormatXAxisValue((range.Value.MinX + range.Value.MaxX) / 2, hasStageData);
             XAxisMaxLabel = FormatXAxisValue(range.Value.MaxX, hasStageData);
-            XAxisTitle = hasStageData ? "Stage" : "Exceedance Probability";
+            XAxisTitle = hasStageData ? "Stage / Water Surface" : "Exceedance Probability (annual)";
             YAxisMinLabel = FormatYAxisValue(range.Value.MinY);
             YAxisMidLabel = FormatYAxisValue((range.Value.MinY + range.Value.MaxY) / 2);
             YAxisMaxLabel = FormatYAxisValue(range.Value.MaxY);
-            YAxisTitle = "Damage ($)";
+            YAxisTitle = "Damage (USD)";
         }
 
         private string FormatXAxisValue(double value, bool hasStageData)
