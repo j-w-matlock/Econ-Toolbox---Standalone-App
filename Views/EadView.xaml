@@ -167,6 +167,12 @@
                                                    StrokeThickness="0"/>
                                         <Line X1="0" Y1="220" X2="420" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
                                         <Line X1="0" Y1="0" X2="0" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                        <Line X1="0" Y1="220" X2="0" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                        <Line X1="210" Y1="220" X2="210" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                        <Line X1="420" Y1="220" X2="420" Y2="214" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                        <Line X1="0" Y1="220" X2="6" Y2="220" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                        <Line X1="0" Y1="110" X2="6" Y2="110" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
+                                        <Line X1="0" Y1="0" X2="6" Y2="0" Stroke="{StaticResource Brush.Border}" StrokeThickness="1"/>
                                         <Line X1="0" Y1="165" X2="420" Y2="165" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
                                         <Line X1="0" Y1="110" X2="420" Y2="110" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
                                         <Line X1="0" Y1="55" X2="420" Y2="55" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
