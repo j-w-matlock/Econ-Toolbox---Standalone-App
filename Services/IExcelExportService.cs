@@ -31,8 +31,7 @@ public interface IExcelExportService
         IEnumerable<string> damageColumns,
         bool useStage,
         string result,
-        IReadOnlyList<Point> stagePoints,
-        IReadOnlyList<Point> frequencyPoints,
+        IReadOnlyList<Point> damagePoints,
         string filePath);
 
     void ExportAll(
@@ -46,7 +45,6 @@ public interface IExcelExportService
         MindMapViewModel mindMap,
         GanttViewModel gantt,
         DrawingViewModel drawing,
-        IReadOnlyList<Point> eadStagePoints,
-        IReadOnlyList<Point> eadFrequencyPoints,
+        IReadOnlyList<Point> eadDamagePoints,
         string filePath);
 }

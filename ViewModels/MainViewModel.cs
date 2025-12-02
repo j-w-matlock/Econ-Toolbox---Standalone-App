@@ -323,8 +323,6 @@ namespace EconToolbox.Desktop.ViewModels
 
             if (dlg.ShowDialog() == true)
             {
-                var stagePointsCopy = Ead.StageDamagePoints.Select(p => new Point(p.X, p.Y)).ToList();
-                var frequencyPointsCopy = Ead.FrequencyDamagePoints.Select(p => new Point(p.X, p.Y)).ToList();
                 await Task.Run(() => _excelExportService.ExportAll(
                     Ead,
                     AgricultureDepthDamage,
@@ -336,8 +334,7 @@ namespace EconToolbox.Desktop.ViewModels
                     MindMap,
                     Gantt,
                     Drawing,
-                    stagePointsCopy,
-                    frequencyPointsCopy,
+                    Ead.DamageCurvePoints.Select(p => new Point(p.X, p.Y)).ToList(),
                     dlg.FileName));
             }
         }

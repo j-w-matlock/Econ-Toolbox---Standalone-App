@@ -48,18 +48,11 @@ namespace EconToolbox.Desktop.ViewModels
             set { _results = value; OnPropertyChanged(); }
         }
 
-        private PointCollection _stageDamagePoints = new();
-        public PointCollection StageDamagePoints
+        private PointCollection _damageCurvePoints = new();
+        public PointCollection DamageCurvePoints
         {
-            get => _stageDamagePoints;
-            set { _stageDamagePoints = value; OnPropertyChanged(); }
-        }
-
-        private PointCollection _frequencyDamagePoints = new();
-        public PointCollection FrequencyDamagePoints
-        {
-            get => _frequencyDamagePoints;
-            set { _frequencyDamagePoints = value; OnPropertyChanged(); }
+            get => _damageCurvePoints;
+            set { _damageCurvePoints = value; OnPropertyChanged(); }
         }
 
         public IRelayCommand AddDamageColumnCommand { get; }
@@ -188,8 +181,7 @@ namespace EconToolbox.Desktop.ViewModels
                 if (Rows.Count == 0 || DamageColumns.Count == 0)
                 {
                     Results = new ObservableCollection<string> { "No data" };
-                    StageDamagePoints = new PointCollection();
-                    FrequencyDamagePoints = new PointCollection();
+                    DamageCurvePoints = new PointCollection();
                     return;
                 }
 
@@ -216,8 +208,7 @@ namespace EconToolbox.Desktop.ViewModels
             catch (Exception ex)
             {
                 Results = new ObservableCollection<string> { $"Error: {ex.Message}" };
-                StageDamagePoints = new PointCollection();
-                FrequencyDamagePoints = new PointCollection();
+                DamageCurvePoints = new PointCollection();
             }
         }
 
@@ -225,24 +216,19 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (Rows.Count == 0) return;
 
-            var freqData = Rows
-                .Where(r => r.Damages.Count > 0)
-                .Select(r => (X: r.Probability, Y: r.Damages[0]))
-                .ToList();
-            FrequencyDamagePoints = CreatePointCollection(freqData);
+            bool hasStageData = UseStage && Rows.Any(r => r.Stage.HasValue && r.Damages.Count > 0);
 
-            if (UseStage)
-            {
-                var stageData = Rows
-                    .Where(r => r.Stage.HasValue && r.Damages.Count > 0)
-                    .Select(r => (X: r.Stage!.Value, Y: r.Damages[0]))
-                    .ToList();
-                StageDamagePoints = CreatePointCollection(stageData);
-            }
-            else
-            {
-                StageDamagePoints = new PointCollection();
-            }
+            var curveData = hasStageData
+                ? Rows.Where(r => r.Stage.HasValue && r.Damages.Count > 0)
+                      .OrderBy(r => r.Stage!.Value)
+                      .Select(r => (X: r.Stage!.Value, Y: r.Damages[0]))
+                      .ToList()
+                : Rows.Where(r => r.Damages.Count > 0)
+                      .OrderBy(r => r.Probability)
+                      .Select(r => (X: r.Probability, Y: r.Damages[0]))
+                      .ToList();
+
+            DamageCurvePoints = CreatePointCollection(curveData);
         }
 
         private static PointCollection CreatePointCollection(System.Collections.Generic.List<(double X, double Y)> data)
@@ -283,15 +269,12 @@ namespace EconToolbox.Desktop.ViewModels
             if (dlg.ShowDialog() == true)
             {
                 string combined = string.Join(" | ", Results);
-                var stagePointsCopy = StageDamagePoints.Select(p => new Point(p.X, p.Y)).ToList();
-                var frequencyPointsCopy = FrequencyDamagePoints.Select(p => new Point(p.X, p.Y)).ToList();
                 await Task.Run(() => _excelExportService.ExportEad(
                     Rows,
                     DamageColumns.Select(c => c.Name),
                     UseStage,
                     combined,
-                    stagePointsCopy,
-                    frequencyPointsCopy,
+                    DamageCurvePoints.Select(p => new Point(p.X, p.Y)).ToList(),
                     dlg.FileName));
             }
         }
