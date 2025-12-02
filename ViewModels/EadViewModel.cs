@@ -55,6 +55,39 @@ namespace EconToolbox.Desktop.ViewModels
             set { _damageCurvePoints = value; OnPropertyChanged(); }
         }
 
+        public ObservableCollection<ChartSeries> DamageSeries { get; } = new();
+
+        private string _xAxisMinLabel = string.Empty;
+        public string XAxisMinLabel
+        {
+            get => _xAxisMinLabel;
+            private set { _xAxisMinLabel = value; OnPropertyChanged(); }
+        }
+
+        private string _xAxisMaxLabel = string.Empty;
+        public string XAxisMaxLabel
+        {
+            get => _xAxisMaxLabel;
+            private set { _xAxisMaxLabel = value; OnPropertyChanged(); }
+        }
+
+        private string _yAxisMinLabel = string.Empty;
+        public string YAxisMinLabel
+        {
+            get => _yAxisMinLabel;
+            private set { _yAxisMinLabel = value; OnPropertyChanged(); }
+        }
+
+        private string _yAxisMaxLabel = string.Empty;
+        public string YAxisMaxLabel
+        {
+            get => _yAxisMaxLabel;
+            private set { _yAxisMaxLabel = value; OnPropertyChanged(); }
+        }
+
+        private const double ChartWidth = 300;
+        private const double ChartHeight = 150;
+
         public IRelayCommand AddDamageColumnCommand { get; }
         public IRelayCommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
         public IRelayCommand ComputeCommand { get; }
@@ -181,7 +214,9 @@ namespace EconToolbox.Desktop.ViewModels
                 if (Rows.Count == 0 || DamageColumns.Count == 0)
                 {
                     Results = new ObservableCollection<string> { "No data" };
+                    DamageSeries.Clear();
                     DamageCurvePoints = new PointCollection();
+                    SetAxisLabels(null, false);
                     return;
                 }
 
@@ -209,6 +244,8 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 Results = new ObservableCollection<string> { $"Error: {ex.Message}" };
                 DamageCurvePoints = new PointCollection();
+                DamageSeries.Clear();
+                SetAxisLabels(null, false);
             }
         }
 
@@ -218,44 +255,122 @@ namespace EconToolbox.Desktop.ViewModels
 
             bool hasStageData = UseStage && Rows.Any(r => r.Stage.HasValue && r.Damages.Count > 0);
 
-            var curveData = hasStageData
-                ? Rows.Where(r => r.Stage.HasValue && r.Damages.Count > 0)
-                      .OrderBy(r => r.Stage!.Value)
-                      .Select(r => (X: r.Stage!.Value, Y: r.Damages[0]))
-                      .ToList()
-                : Rows.Where(r => r.Damages.Count > 0)
-                      .OrderBy(r => r.Probability)
-                      .Select(r => (X: r.Probability, Y: r.Damages[0]))
-                      .ToList();
+            var seriesData = new System.Collections.Generic.List<(string Name, System.Collections.Generic.List<(double X, double Y)> Points)>();
+            double? minX = null, maxX = null, minY = null, maxY = null;
 
-            DamageCurvePoints = CreatePointCollection(curveData);
+            for (int i = 0; i < DamageColumns.Count; i++)
+            {
+                var data = hasStageData
+                    ? Rows.Where(r => r.Stage.HasValue && r.Damages.Count > i)
+                          .OrderBy(r => r.Stage!.Value)
+                          .Select(r => (X: r.Stage!.Value, Y: r.Damages[i]))
+                          .ToList()
+                    : Rows.Where(r => r.Damages.Count > i)
+                          .OrderBy(r => r.Probability)
+                          .Select(r => (X: r.Probability, Y: r.Damages[i]))
+                          .ToList();
+
+                if (data.Count == 0)
+                {
+                    continue;
+                }
+
+                minX = minX.HasValue ? Math.Min(minX.Value, data.Min(p => p.X)) : data.Min(p => p.X);
+                maxX = maxX.HasValue ? Math.Max(maxX.Value, data.Max(p => p.X)) : data.Max(p => p.X);
+                minY = minY.HasValue ? Math.Min(minY.Value, data.Min(p => p.Y)) : data.Min(p => p.Y);
+                maxY = maxY.HasValue ? Math.Max(maxY.Value, data.Max(p => p.Y)) : data.Max(p => p.Y);
+
+                seriesData.Add((DamageColumns[i].Name, data));
+            }
+
+            DamageSeries.Clear();
+            if (seriesData.Count == 0 || !minX.HasValue || !maxX.HasValue || !minY.HasValue || !maxY.HasValue)
+            {
+                DamageCurvePoints = new PointCollection();
+                SetAxisLabels(null, hasStageData);
+                return;
+            }
+
+            var range = new ChartRange(minX.Value, maxX.Value, minY.Value, maxY.Value);
+            for (int i = 0; i < seriesData.Count; i++)
+            {
+                var scaledPoints = CreatePointCollection(seriesData[i].Points, range);
+                var series = new ChartSeries(seriesData[i].Name, scaledPoints, GetSeriesBrush(i));
+                DamageSeries.Add(series);
+
+                if (i == 0)
+                {
+                    DamageCurvePoints = new PointCollection(scaledPoints);
+                }
+            }
+
+            SetAxisLabels(range, hasStageData);
         }
 
-        private static PointCollection CreatePointCollection(System.Collections.Generic.List<(double X, double Y)> data)
+        private static PointCollection CreatePointCollection(System.Collections.Generic.List<(double X, double Y)> data, ChartRange range)
         {
             PointCollection points = new();
             if (data.Count == 0) return points;
 
-            double minX = data.Min(p => p.X);
-            double maxX = data.Max(p => p.X);
-            double minY = data.Min(p => p.Y);
-            double maxY = data.Max(p => p.Y);
-
-            double width = 300;
-            double height = 150;
-            double xRange = maxX - minX;
+            double xRange = range.MaxX - range.MinX;
             if (xRange == 0) xRange = 1;
-            double yRange = maxY - minY;
+            double yRange = range.MaxY - range.MinY;
             if (yRange == 0) yRange = 1;
 
             foreach (var p in data)
             {
-                double x = (p.X - minX) / xRange * width;
-                double y = height - (p.Y - minY) / yRange * height;
+                double x = (p.X - range.MinX) / xRange * ChartWidth;
+                double y = ChartHeight - (p.Y - range.MinY) / yRange * ChartHeight;
                 points.Add(new System.Windows.Point(x, y));
             }
 
             return points;
+        }
+
+        private void SetAxisLabels(ChartRange? range, bool hasStageData)
+        {
+            if (range == null)
+            {
+                XAxisMinLabel = string.Empty;
+                XAxisMaxLabel = string.Empty;
+                YAxisMinLabel = string.Empty;
+                YAxisMaxLabel = string.Empty;
+                return;
+            }
+
+            XAxisMinLabel = FormatXAxisValue(range.Value.MinX, hasStageData);
+            XAxisMaxLabel = FormatXAxisValue(range.Value.MaxX, hasStageData);
+            YAxisMinLabel = FormatYAxisValue(range.Value.MinY);
+            YAxisMaxLabel = FormatYAxisValue(range.Value.MaxY);
+        }
+
+        private string FormatXAxisValue(double value, bool hasStageData)
+        {
+            return hasStageData
+                ? value.ToString("N2")
+                : value.ToString("P1");
+        }
+
+        private string FormatYAxisValue(double value)
+        {
+            return Math.Abs(value) >= 1_000
+                ? value.ToString("N0")
+                : value.ToString("N2");
+        }
+
+        private Brush GetSeriesBrush(int index)
+        {
+            Brush[] palette =
+            {
+                Brushes.SteelBlue,
+                Brushes.OrangeRed,
+                Brushes.SeaGreen,
+                Brushes.MediumPurple,
+                Brushes.Goldenrod,
+                Brushes.Firebrick
+            };
+
+            return palette[index % palette.Length];
         }
 
         private async Task ExportAsync()
@@ -359,6 +474,36 @@ namespace EconToolbox.Desktop.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public readonly struct ChartRange
+        {
+            public ChartRange(double minX, double maxX, double minY, double maxY)
+            {
+                MinX = minX;
+                MaxX = maxX;
+                MinY = minY;
+                MaxY = maxY;
+            }
+
+            public double MinX { get; }
+            public double MaxX { get; }
+            public double MinY { get; }
+            public double MaxY { get; }
+        }
+
+        public class ChartSeries
+        {
+            public ChartSeries(string name, PointCollection points, Brush stroke)
+            {
+                Name = name;
+                Points = points;
+                Stroke = stroke;
+            }
+
+            public string Name { get; }
+            public PointCollection Points { get; }
+            public Brush Stroke { get; }
         }
     }
 }
