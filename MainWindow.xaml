@@ -377,15 +377,39 @@
                             Background="{StaticResource Brush.Surface}">
                     <TabControl.Resources>
                         <Style TargetType="TabItem">
-                            <Setter Property="Margin" Value="{StaticResource Margin.TopSmall}"/>
-                            <Setter Property="Padding" Value="{StaticResource Padding.Content}"/>
+                            <Setter Property="Margin" Value="0,6,0,0"/>
+                            <Setter Property="Padding" Value="10,4"/>
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="FontSize" Value="12"/>
                         </Style>
                     </TabControl.Resources>
                     <TabControl.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Title}" TextAlignment="Center"/>
+                            <Border Padding="4,0">
+                                <TextBlock Text="{Binding Title}"
+                                           TextAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTipService.InitialShowDelay="200"
+                                           ToolTipService.ShowDuration="20000">
+                                    <TextBlock.ToolTip>
+                                        <Border Background="{StaticResource Brush.Surface}"
+                                                BorderBrush="{StaticResource Brush.Border}"
+                                                BorderThickness="1"
+                                                Padding="12"
+                                                CornerRadius="8">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Title}"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="14"/>
+                                                <TextBlock Text="{Binding Description}"
+                                                           TextWrapping="Wrap"
+                                                           MaxWidth="320"
+                                                           Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </Border>
                         </DataTemplate>
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
