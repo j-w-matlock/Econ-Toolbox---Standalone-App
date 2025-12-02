@@ -84,7 +84,29 @@
                                    FontWeight="SemiBold"
                                    FontSize="14"/>
                         <TextBlock Text="{Binding SelectedModule.Title}"
-                                   Style="{StaticResource Text.Title}"/>
+                                   Style="{StaticResource Text.Title.Small}"
+                                   ToolTipService.InitialShowDelay="200"
+                                   ToolTipService.ShowDuration="20000">
+                            <TextBlock.ToolTip>
+                                <Border Background="{StaticResource Brush.Surface}"
+                                        BorderBrush="{StaticResource Brush.Border}"
+                                        BorderThickness="1"
+                                        Padding="14"
+                                        CornerRadius="8"
+                                        MaxWidth="420">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding SelectedModule.Title}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="18"
+                                                   Foreground="{StaticResource Brush.TextPrimary}"/>
+                                        <TextBlock Text="{Binding SelectedModule.Description}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,8,0,0"
+                                                   FontSize="14"/>
+                                    </StackPanel>
+                                </Border>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
                         <TextBlock Text="{Binding SelectedModule.Description}"
                                    Style="{StaticResource Text.Body}"
                                    Foreground="White"
@@ -184,8 +206,30 @@
                                    FontWeight="SemiBold"
                                    FontSize="14"/>
                         <TextBlock Text="{Binding SelectedModule.Title}"
-                                   Style="{StaticResource Text.Title}"
-                                   TextAlignment="Center"/>
+                                   Style="{StaticResource Text.Title.Small}"
+                                   TextAlignment="Center"
+                                   ToolTipService.InitialShowDelay="200"
+                                   ToolTipService.ShowDuration="20000">
+                            <TextBlock.ToolTip>
+                                <Border Background="{StaticResource Brush.Surface}"
+                                        BorderBrush="{StaticResource Brush.Border}"
+                                        BorderThickness="1"
+                                        Padding="14"
+                                        CornerRadius="8"
+                                        MaxWidth="420">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding SelectedModule.Title}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="18"
+                                                   Foreground="{StaticResource Brush.TextPrimary}"/>
+                                        <TextBlock Text="{Binding SelectedModule.Description}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,8,0,0"
+                                                   FontSize="14"/>
+                                    </StackPanel>
+                                </Border>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                Foreground="White"
@@ -404,6 +448,11 @@
                                                 <TextBlock Text="{Binding Description}"
                                                            TextWrapping="Wrap"
                                                            MaxWidth="320"
+                                                           Margin="0,6,0,0"/>
+                                                <TextBlock Text="{Binding FunctionSummary}"
+                                                           TextWrapping="Wrap"
+                                                           MaxWidth="320"
+                                                           FontStyle="Italic"
                                                            Margin="0,6,0,0"/>
                                             </StackPanel>
                                         </Border>

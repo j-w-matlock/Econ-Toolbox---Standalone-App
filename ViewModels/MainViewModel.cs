@@ -91,6 +91,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Project README",
                     "Review onboarding tips, module descriptions, and build instructions without leaving the toolbox.",
+                    "Centralizes documentation and onboarding guidance inside the desktop shell.",
                     new[]
                     {
                         "Browse the introduction to understand the toolkit's purpose and architecture.",
@@ -109,6 +110,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Expected Annual Damage (EAD)",
                     "Quantify how frequently damages occur by pairing exceedance probabilities with damage estimates.",
+                    "Calculates frequency-damage relationships, curves, and EAD exports for comparison.",
                     new[]
                     {
                         "List probabilities between 0 and 1 in descending order so the curve integrates correctly.",
@@ -127,6 +129,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Agriculture Depth-Damage",
                     "Calibrate crop and structure damages for agricultural assets using custom depth-damage relationships.",
+                    "Simulates agricultural depth-damage relationships with Monte Carlo-driven results.",
                     new[]
                     {
                         "Enter annual exceedance probabilities as decimal values between 0 and 1 for each point on the curve.",
@@ -145,6 +148,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Updated Cost of Storage",
                     "Update historical costs and allocate joint expenses based on storage recommendations.",
+                    "Allocates joint reservoir costs and escalates historical expenditures for comparisons.",
                     new[]
                     {
                         "Confirm the total usable storage and the recommendation for your plan to establish the allocation percent.",
@@ -163,6 +167,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Cost Annualization",
                     "Translate capital outlays and future costs into comparable annual values.",
+                    "Transforms capital, O&M, and benefits into comparable annualized values.",
                     new[]
                     {
                         "Enter first cost, discount rate, analysis period, and base year that frame the recovery analysis.",
@@ -181,6 +186,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Water Demand Forecasting",
                     "Project future water demand scenarios from historical data and planning assumptions.",
+                    "Forecasts sector demand scenarios with configurable growth and efficiency levers.",
                     new[]
                     {
                         "Load historical demand records so baseline year and trend information can auto-populate.",
@@ -199,6 +205,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Unit Day Value",
                     "Calibrate recreational benefits and visitation patterns to compute annual unit day values.",
+                    "Values recreation experiences to compute composite unit day benefits and visitation splits.",
                     new[]
                     {
                         "Describe the project setting, visitation characteristics, and facility quality inputs.",
@@ -217,6 +224,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Recreation Capacity Study",
                     "Evaluate camping, shoreline fishing, and boating capacity using USACE design day standards.",
+                    "Estimates design day and seasonal capacities for recreation assets using USACE standards.",
                     new[]
                     {
                         "Document the campsite inventory, managed shoreline, and usable water surface from the master plan.",
@@ -235,6 +243,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Mind Map Workspace",
                     "Capture qualitative insights, organize themes, and track next steps collaboratively.",
+                    "Organizes qualitative themes, owners, and follow-ups on a flexible canvas.",
                     new[]
                     {
                         "Start with the seeded central idea or add a new root topic to frame your analysis.",
@@ -253,6 +262,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Standard Gantt Planner",
                     "Organize project activities, dependencies, and milestones in a timeline consistent with industry schedules.",
+                    "Plans dependencies and milestones with auto-sequenced Gantt timelines and exports.",
                     new[]
                     {
                         "List each task with a start date, duration, and responsible workstream.",
@@ -271,6 +281,7 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Sketch Pad",
                     "Capture freehand notes, diagrams, or signatures directly in the toolbox.",
+                    "Provides a lightweight canvas for quick sketches, notes, and exports.",
                     new[]
                     {
                         "Pick a pen color and thickness that complements your drawing style.",

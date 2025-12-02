@@ -10,6 +10,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ModuleDefinition(
             string title,
             string description,
+            string functionSummary,
             IEnumerable<string> inputSteps,
             IEnumerable<string> outputHighlights,
             string example,
@@ -18,6 +19,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             Title = title;
             Description = description;
+            FunctionSummary = functionSummary;
             InputSteps = new ReadOnlyCollection<string>(inputSteps.ToList());
             OutputHighlights = new ReadOnlyCollection<string>(outputHighlights.ToList());
             Example = example;
@@ -28,6 +30,8 @@ namespace EconToolbox.Desktop.ViewModels
         public string Title { get; }
 
         public string Description { get; }
+
+        public string FunctionSummary { get; }
 
         public IReadOnlyList<string> InputSteps { get; }
 
