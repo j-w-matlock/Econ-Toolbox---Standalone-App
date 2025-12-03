@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
+using System.Windows;
 
 namespace EconToolbox.Desktop.ViewModels
 {

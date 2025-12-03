@@ -73,6 +73,7 @@ namespace EconToolbox.Desktop.Models
 
             var areaList = areas.ToList();
             totalAcres = areaList.Sum(area => area.Acres);
+            double total = totalAcres;
 
             return areaList
                 .Select(area => new CropScapeAcreageSummary(
@@ -80,7 +81,7 @@ namespace EconToolbox.Desktop.Models
                     area.Name,
                     area.PixelCount,
                     area.Acres,
-                    totalAcres > 0 ? area.Acres / totalAcres : 0))
+                    total > 0 ? area.Acres / total : 0))
                 .ToList();
         }
     }

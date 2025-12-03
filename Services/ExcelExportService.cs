@@ -1580,6 +1580,150 @@ namespace EconToolbox.Desktop.Services
             var picture = ws.AddPicture(stream, XLPictureFormat.Png, context.GetPictureName("WaterDemandChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
+
+        private static byte[] CreateAnnualizerBarChartImage(double annualBenefits, double annualCost, double bcr)
+        {
+            const double width = 360;
+            const double height = 200;
+
+            if (annualBenefits <= 0 && annualCost <= 0)
+                return Array.Empty<byte>();
+
+            double maxValue = Math.Max(annualBenefits, annualCost);
+            double barAreaHeight = height - 60;
+            double barWidth = 80;
+            double spacing = 40;
+            double originX = 60;
+            double originY = height - 40;
+
+            DrawingVisual visual = new();
+            using (DrawingContext dc = visual.RenderOpen())
+            {
+                dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+
+                // Axis
+                Pen axisPen = new(new SolidColorBrush(Color.FromRgb(80, 80, 80)), 1);
+                dc.DrawLine(axisPen, new Point(originX, 20), new Point(originX, originY));
+                dc.DrawLine(axisPen, new Point(originX, originY), new Point(width - 20, originY));
+
+                // Bars
+                double benefitsHeight = maxValue > 0 ? (annualBenefits / maxValue) * barAreaHeight : 0;
+                double costHeight = maxValue > 0 ? (annualCost / maxValue) * barAreaHeight : 0;
+
+                Rect benefitsRect = new(originX + spacing, originY - benefitsHeight, barWidth, benefitsHeight);
+                dc.DrawRectangle(new SolidColorBrush(ChartBlue), null, benefitsRect);
+
+                Rect costRect = new(originX + spacing + barWidth + spacing, originY - costHeight, barWidth, costHeight);
+                dc.DrawRectangle(new SolidColorBrush(ChartOrange), null, costRect);
+
+                // Labels
+                FormattedText benefitsLabel = new($"Benefits: {annualBenefits:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI", FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                dc.DrawText(benefitsLabel, new Point(benefitsRect.X, originY + 5));
+
+                FormattedText costLabel = new($"Costs: {annualCost:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI", FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                dc.DrawText(costLabel, new Point(costRect.X, originY + 5));
+
+                FormattedText bcrLabel = new($"BCR: {bcr:0.00}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI Semibold", FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 14, Brushes.Black, 1.0);
+                dc.DrawText(bcrLabel, new Point(width - 120, 25));
+            }
+
+            return RenderVisualToPng(visual, width, height);
+        }
+
+        private static byte[] CreateEadDashboardChartImage(IReadOnlyList<(double Probability, double? Stage, double Damage)> data, string curveName, double? eadValue)
+        {
+            const double width = 360;
+            const double height = 200;
+            if (data.Count == 0)
+                return Array.Empty<byte>();
+
+            double maxDamage = data.Max(p => p.Damage);
+            if (maxDamage <= 0)
+                return Array.Empty<byte>();
+
+            double margin = 40;
+            double plotWidth = width - (margin * 2);
+            double plotHeight = height - (margin * 2);
+            DrawingVisual visual = new();
+            using (DrawingContext dc = visual.RenderOpen())
+            {
+                dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+
+                Pen axisPen = new(new SolidColorBrush(Color.FromRgb(80, 80, 80)), 1);
+                Point origin = new(margin, height - margin);
+                dc.DrawLine(axisPen, origin, new Point(width - margin, origin.Y));
+                dc.DrawLine(axisPen, origin, new Point(origin.X, margin));
+
+                Point[] points = data
+                    .OrderBy(p => p.Probability)
+                    .Select(p => new Point(
+                        origin.X + Math.Clamp(p.Probability, 0.0, 1.0) * plotWidth,
+                        origin.Y - (p.Damage / maxDamage) * plotHeight))
+                    .ToArray();
+                DrawPolyline(dc, points, new Pen(new SolidColorBrush(ChartBlue), 2));
+
+                if (eadValue.HasValue)
+                {
+                    double y = origin.Y - (eadValue.Value / maxDamage) * plotHeight;
+                    Pen dashed = new(new SolidColorBrush(ChartOrange), 1) { DashStyle = DashStyles.Dash };
+                    dc.DrawLine(dashed, new Point(origin.X, y), new Point(width - margin, y));
+                    FormattedText eadLabel = new($"EAD: {eadValue.Value:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI", FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                    dc.DrawText(eadLabel, new Point(origin.X + 5, y - 18));
+                }
+
+                FormattedText title = new(curveName ?? "Damage Curve", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI", FontStyles.Normal, FontWeights.Bold, FontStretches.Normal), 13, Brushes.Black, 1.0);
+                dc.DrawText(title, new Point(margin, 10));
+            }
+
+            return RenderVisualToPng(visual, width, height);
+        }
+
+        private static byte[] CreateWaterDemandChartImage(IReadOnlyList<(string Name, IReadOnlyList<(double Year, double Demand)> Points, Color Color)> series)
+        {
+            const double width = 420;
+            const double height = 240;
+            if (series.Count == 0)
+                return Array.Empty<byte>();
+
+            var allPoints = series.SelectMany(s => s.Points).ToList();
+            double minYear = allPoints.Min(p => p.Year);
+            double maxYear = allPoints.Max(p => p.Year);
+            double maxDemand = allPoints.Max(p => p.Demand);
+            if (maxYear <= minYear || maxDemand <= 0)
+                return Array.Empty<byte>();
+
+            double margin = 50;
+            double plotWidth = width - (margin * 2);
+            double plotHeight = height - (margin * 2);
+
+            DrawingVisual visual = new();
+            using (DrawingContext dc = visual.RenderOpen())
+            {
+                dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+                Pen axisPen = new(new SolidColorBrush(Color.FromRgb(80, 80, 80)), 1);
+                Point origin = new(margin, height - margin);
+                dc.DrawLine(axisPen, origin, new Point(width - margin, origin.Y));
+                dc.DrawLine(axisPen, origin, new Point(origin.X, margin));
+
+                foreach (var seriesItem in series)
+                {
+                    if (seriesItem.Points.Count < 2)
+                        continue;
+
+                    Point[] points = seriesItem.Points
+                        .OrderBy(p => p.Year)
+                        .Select(p => new Point(
+                            origin.X + ((p.Year - minYear) / (maxYear - minYear)) * plotWidth,
+                            origin.Y - (p.Demand / maxDemand) * plotHeight))
+                        .ToArray();
+
+                    Pen pen = new(new SolidColorBrush(seriesItem.Color), 2);
+                    DrawPolyline(dc, points, pen);
+                }
+            }
+
+            return RenderVisualToPng(visual, width, height);
+        }
         private static void AddUdvChart(IXLWorksheet ws, UdvViewModel udv, int row, int column, ExportContext context)
         {
             byte[] bytes = CreateUdvChartImage(udv);
@@ -1590,7 +1734,16 @@ namespace EconToolbox.Desktop.Services
             picture.MoveTo(ws.Cell(row, column));
         }
 
-
+        private static byte[] RenderVisualToPng(DrawingVisual visual, double width, double height)
+        {
+            RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(visual);
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            using MemoryStream ms = new();
+            encoder.Save(ms);
+            return ms.ToArray();
+        }
 
         private static byte[] CreateUdvChartImage(UdvViewModel udv)
         {
