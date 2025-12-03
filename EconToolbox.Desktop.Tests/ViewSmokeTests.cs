@@ -1,4 +1,3 @@
-using System.Threading;
 using System.Windows;
 using EconToolbox.Desktop.Services;
 using EconToolbox.Desktop.ViewModels;
@@ -10,8 +9,7 @@ namespace EconToolbox.Desktop.Tests;
 [TestClass]
 public class ViewSmokeTests
 {
-    [TestMethod]
-    [Apartment(ApartmentState.STA)]
+    [STATestMethod]
     public void EadView_Renders_WithStubbedViewModel()
     {
         var view = new EadView
@@ -23,8 +21,7 @@ public class ViewSmokeTests
         Assert.IsNotNull(view.Content);
     }
 
-    [TestMethod]
-    [Apartment(ApartmentState.STA)]
+    [STATestMethod]
     public void UpdatedCostView_Renders()
     {
         var view = new UpdatedCostView
@@ -36,8 +33,7 @@ public class ViewSmokeTests
         Assert.IsNotNull(view.Content);
     }
 
-    [TestMethod]
-    [Apartment(ApartmentState.STA)]
+    [STATestMethod]
     public void WaterDemandView_Renders_WithStubbedViewModel()
     {
         var view = new WaterDemandView
@@ -49,8 +45,7 @@ public class ViewSmokeTests
         Assert.IsNotNull(view.Content);
     }
 
-    [TestMethod]
-    [Apartment(ApartmentState.STA)]
+    [STATestMethod]
     public void GanttView_Renders()
     {
         var view = new GanttView
