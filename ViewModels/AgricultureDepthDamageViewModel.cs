@@ -541,21 +541,20 @@ namespace EconToolbox.Desktop.ViewModels
 
                 var areas = await Task.Run(() => _cropScapeRasterService.ReadClassAreas(filePath));
 
+                var summaries = CropScapeAcreageSummary.FromAreas(areas, out double totalAcres);
+
                 CropScapeSummaries.Clear();
 
-                if (areas.Count == 0)
+                if (summaries.Count == 0)
                 {
                     CropScapeTotalAcreage = 0;
                     CropScapeImportStatus = $"No crop classes found in \"{Path.GetFileName(filePath)}\".";
                     return;
                 }
 
-                double totalAcres = areas.Sum(area => area.Acres);
-
-                foreach (var area in areas)
+                foreach (var summary in summaries)
                 {
-                    double share = totalAcres > 0 ? area.Acres / totalAcres : 0;
-                    CropScapeSummaries.Add(new CropScapeAcreageSummary(area.Code, area.Name, area.PixelCount, area.Acres, share));
+                    CropScapeSummaries.Add(summary);
                 }
 
                 CropScapeTotalAcreage = totalAcres;

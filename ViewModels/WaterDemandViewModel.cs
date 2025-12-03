@@ -158,7 +158,17 @@ namespace EconToolbox.Desktop.ViewModels
         public int ForecastYears
         {
             get => _forecastYears;
-            set { _forecastYears = value; OnPropertyChanged(); }
+            set
+            {
+                int bounded = Math.Clamp(value, 1, 100);
+                if (_forecastYears == bounded)
+                {
+                    return;
+                }
+
+                _forecastYears = bounded;
+                OnPropertyChanged();
+            }
         }
 
         public ObservableCollection<DemandEntry> Results

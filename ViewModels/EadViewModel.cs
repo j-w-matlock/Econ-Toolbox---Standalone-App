@@ -286,6 +286,15 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
+                if (Rows.Any(r => double.IsNaN(r.Probability) || r.Probability < 0 || r.Probability > 1))
+                {
+                    Results = new ObservableCollection<string> { "Probabilities must be between 0 and 1." };
+                    DamageSeries.Clear();
+                    DamageCurvePoints = new PointCollection();
+                    SetAxisLabels(null, false);
+                    return;
+                }
+
                 // Sort rows by probability in descending order to enforce monotonicity
                 var sortedRows = Rows.OrderByDescending(r => r.Probability).ToList();
                 if (!sortedRows.SequenceEqual(Rows))
