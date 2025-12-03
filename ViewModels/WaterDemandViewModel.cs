@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using System.IO.Compression;
@@ -812,7 +813,15 @@ namespace EconToolbox.Desktop.ViewModels
 
             if (dlg.ShowDialog() == true)
             {
-                await Task.Run(() => _excelExportService.ExportWaterDemand(Scenarios, dlg.FileName));
+                try
+                {
+                    await Task.Run(() => _excelExportService.ExportWaterDemand(Scenarios, dlg.FileName));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                    MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -290,21 +291,29 @@ namespace EconToolbox.Desktop.ViewModels
 
             if (dlg.ShowDialog() == true)
             {
-                var eadDamagePoints = Ead.DamageCurvePoints
-                    .Select(p => new Point(p.X, p.Y))
-                    .ToList();
+                try
+                {
+                    var eadDamagePoints = Ead.DamageCurvePoints
+                        .Select(p => new Point(p.X, p.Y))
+                        .ToList();
 
-                await Task.Run(() => _excelExportService.ExportAll(
-                    Ead,
-                    AgricultureDepthDamage,
-                    UpdatedCost,
-                    Annualizer,
-                    WaterDemand,
-                    Udv,
-                    RecreationCapacity,
-                    Gantt,
-                    eadDamagePoints,
-                    dlg.FileName));
+                    await Task.Run(() => _excelExportService.ExportAll(
+                        Ead,
+                        AgricultureDepthDamage,
+                        UpdatedCost,
+                        Annualizer,
+                        WaterDemand,
+                        Udv,
+                        RecreationCapacity,
+                        Gantt,
+                        eadDamagePoints,
+                        dlg.FileName));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                    MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

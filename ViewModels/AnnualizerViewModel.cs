@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using EconToolbox.Desktop.Models;
@@ -654,20 +655,28 @@ namespace EconToolbox.Desktop.ViewModels
 
             if (dlg.ShowDialog() == true)
             {
-                await Task.Run(() =>
-                    _excelExportService.ExportAnnualizer(
-                        FirstCost,
-                        Rate,
-                        AnnualOm,
-                        AnnualBenefits,
-                        FutureCosts,
-                        FutureCostPv,
-                        Idc,
-                        TotalInvestment,
-                        Crf,
-                        AnnualCost,
-                        Bcr,
-                        dlg.FileName));
+                try
+                {
+                    await Task.Run(() =>
+                        _excelExportService.ExportAnnualizer(
+                            FirstCost,
+                            Rate,
+                            AnnualOm,
+                            AnnualBenefits,
+                            FutureCosts,
+                            FutureCostPv,
+                            Idc,
+                            TotalInvestment,
+                            Crf,
+                            AnnualCost,
+                            Bcr,
+                            dlg.FileName));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                    MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
