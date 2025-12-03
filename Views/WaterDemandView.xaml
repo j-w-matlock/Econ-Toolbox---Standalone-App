@@ -76,7 +76,7 @@
                                         <TextBlock Text="Historical Demand"
                                                    FontWeight="SemiBold"
                                                    Margin="0,0,0,12"/>
-                                        <DataGrid ItemsSource="{Binding DataContext.HistoricalData, ElementName=Root}"
+                                        <DataGrid ItemsSource="{Binding DataContext.HistoricalData, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                   AutoGenerateColumns="False"
                                                   HorizontalAlignment="Stretch"
                                                   VerticalAlignment="Stretch"
@@ -139,7 +139,7 @@
                                         </InlineUIContainer>
                                         <Run Text="Forecast Years"/>
                                     </TextBlock>
-                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DataContext.ForecastYears, ElementName=Root}"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DataContext.ForecastYears, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                                     <TextBlock Text="years" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
 
                                     <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
@@ -287,20 +287,20 @@
                                             <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}" Text="Alternative Forecast 2" HorizontalAlignment="Left"/>
 
                                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Population growth"/>
-                                            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative1PopulationAdjustment, ElementName=Root}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 1."/>
-                                            <TextBox Grid.Row="2" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative2PopulationAdjustment, ElementName=Root}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 2."/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative1PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 1."/>
+                                            <TextBox Grid.Row="2" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative2PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 2."/>
 
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="Per capita demand change"/>
-                                            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1PerCapitaAdjustment, ElementName=Root}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 1."/>
-                                            <TextBox Grid.Row="3" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2PerCapitaAdjustment, ElementName=Root}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 2."/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 1."/>
+                                            <TextBox Grid.Row="3" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 2."/>
 
                                             <TextBlock Grid.Row="4" Grid.Column="0" Text="System improvements"/>
-                                            <TextBox Grid.Row="4" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1ImprovementsAdjustment, ElementName=Root}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 1."/>
-                                            <TextBox Grid.Row="4" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2ImprovementsAdjustment, ElementName=Root}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 2."/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 1."/>
+                                            <TextBox Grid.Row="4" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 2."/>
 
                                             <TextBlock Grid.Row="5" Grid.Column="0" Text="System losses"/>
-                                            <TextBox Grid.Row="5" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, ElementName=Root}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1."/>
-                                            <TextBox Grid.Row="5" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, ElementName=Root}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2."/>
+                                            <TextBox Grid.Row="5" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1."/>
+                                            <TextBox Grid.Row="5" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2."/>
 
                                             <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}" TextWrapping="Wrap">
                                                 Adjust the percentage change applied to each baseline rate to craft two alternative forecasts. Positive values increase the rate, while negative values decrease it. Baseline inputs remain unchanged.
@@ -409,7 +409,7 @@
                                                 <Line X1="220" Y1="20" X2="220" Y2="200" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="2 4"/>
                                             </Canvas>
                                             <ItemsControl Margin="36,20,20,32"
-                                                          ItemsSource="{Binding DataContext.Scenarios, ElementName=Root}"
+                                                          ItemsSource="{Binding DataContext.Scenarios, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                           HorizontalAlignment="Stretch"
                                                           VerticalAlignment="Stretch"
                                                           ClipToBounds="True">

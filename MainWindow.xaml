@@ -47,14 +47,8 @@
             <DataTemplate DataType="{x:Type vm:RecreationCapacityViewModel}">
                 <views:RecreationCapacityView/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:MindMapViewModel}">
-                <views:MindMapView/>
-            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:GanttViewModel}">
                 <views:GanttView/>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type vm:DrawingViewModel}">
-                <views:DrawingView/>
             </DataTemplate>
             <DataTemplate x:Key="ActionsWideTemplate">
                 <Grid HorizontalAlignment="Stretch">

@@ -4,6 +4,8 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EconToolbox.Desktop", "EconToolbox.Desktop.csproj", "{654356C5-22CC-5648-E49F-4E8CD156F183}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EconToolbox.Desktop.Tests", "EconToolbox.Desktop.Tests\EconToolbox.Desktop.Tests.csproj", "{36FB397E-93E9-4D64-9ACA-270F00B77A98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -11,10 +13,14 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{654356C5-22CC-5648-E49F-4E8CD156F183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{654356C5-22CC-5648-E49F-4E8CD156F183}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{654356C5-22CC-5648-E49F-4E8CD156F183}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{654356C5-22CC-5648-E49F-4E8CD156F183}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
+                {654356C5-22CC-5648-E49F-4E8CD156F183}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {654356C5-22CC-5648-E49F-4E8CD156F183}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {654356C5-22CC-5648-E49F-4E8CD156F183}.Release|Any CPU.Build.0 = Release|Any CPU
+                {36FB397E-93E9-4D64-9ACA-270F00B77A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+                {36FB397E-93E9-4D64-9ACA-270F00B77A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {36FB397E-93E9-4D64-9ACA-270F00B77A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {36FB397E-93E9-4D64-9ACA-270F00B77A98}.Release|Any CPU.Build.0 = Release|Any CPU
+        EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
