@@ -5,9 +5,6 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
-    <UserControl.Resources>
-        <converters:SafeNumberConverter x:Key="SafeNumberConverter" />
-    </UserControl.Resources>
     <Grid>
         <ScrollViewer Focusable="False"
                       HorizontalScrollBarVisibility="Disabled"

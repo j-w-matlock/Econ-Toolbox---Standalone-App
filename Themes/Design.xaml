@@ -36,6 +36,8 @@
     <converters:DayToPixelConverter x:Key="RowToPixelConverter" Scale="44"/>
     <converters:PercentToOpacityConverter x:Key="PercentToOpacityConverter" MinimumOpacity="0.45"/>
     <converters:CurrencyConverter x:Key="CurrencyConverter"/>
+    <converters:SafeNumberConverter x:Key="SafeNumberConverter"/>
+    <converters:NullOrEmptyToValueConverter x:Key="NullOrEmptyToValueConverter"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <!-- Spacing tokens -->
