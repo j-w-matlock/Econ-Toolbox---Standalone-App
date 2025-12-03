@@ -17,9 +17,7 @@ namespace EconToolbox.Desktop.ViewModels
         public UdvViewModel Udv { get; }
         public WaterDemandViewModel WaterDemand { get; }
         public RecreationCapacityViewModel RecreationCapacity { get; }
-        public MindMapViewModel MindMap { get; }
         public GanttViewModel Gantt { get; }
-        public DrawingViewModel Drawing { get; }
 
         public IReadOnlyList<ModuleDefinition> Modules { get; }
 
@@ -65,9 +63,7 @@ namespace EconToolbox.Desktop.ViewModels
             UdvViewModel udv,
             WaterDemandViewModel waterDemand,
             RecreationCapacityViewModel recreationCapacity,
-            MindMapViewModel mindMap,
             GanttViewModel gantt,
-            DrawingViewModel drawing,
             IExcelExportService excelExportService)
         {
             ReadMe = readMe;
@@ -78,9 +74,7 @@ namespace EconToolbox.Desktop.ViewModels
             Udv = udv;
             WaterDemand = waterDemand;
             RecreationCapacity = recreationCapacity;
-            MindMap = mindMap;
             Gantt = gantt;
-            Drawing = drawing;
             _excelExportService = excelExportService;
 
             CalculateCommand = new RelayCommand(Calculate);
@@ -241,25 +235,6 @@ namespace EconToolbox.Desktop.ViewModels
                     RecreationCapacity,
                     RecreationCapacity.ComputeCommand),
                 new ModuleDefinition(
-                    "Mind Map Workspace",
-                    "Capture qualitative insights, organize themes, and track next steps collaboratively.",
-                    "Organizes qualitative themes, owners, and follow-ups on a flexible canvas.",
-                    new[]
-                    {
-                        "Start with the seeded central idea or add a new root topic to frame your analysis.",
-                        "Use the toolbar to add child and sibling nodes, recording notes and owners as you go.",
-                        "Arrange nodes on the canvas and adjust zoom to communicate the story effectively."
-                    },
-                    new[]
-                    {
-                        "Maintains a navigable mind map with connection lines and breadcrumb paths.",
-                        "Supports quick export alongside other modules for project documentation.",
-                        "Provides an always-on workspace to summarize qualitative findings."
-                    },
-                    "Example: Mapping insights from a coastal storm resilience workshop organizes nodes for risk drivers, mitigation concepts, funding leads, and assigned follow-up tasks.",
-                    MindMap,
-                    null),
-                new ModuleDefinition(
                     "Standard Gantt Planner",
                     "Organize project activities, dependencies, and milestones in a timeline consistent with industry schedules.",
                     "Plans dependencies and milestones with auto-sequenced Gantt timelines and exports.",
@@ -277,26 +252,7 @@ namespace EconToolbox.Desktop.ViewModels
                     },
                     "Example: A feasibility study includes kickoff, stakeholder workshops, baseline analysis, and a design milestone with finish-to-start dependencies.",
                     Gantt,
-                    Gantt.ComputeCommand),
-                new ModuleDefinition(
-                    "Sketch Pad",
-                    "Capture freehand notes, diagrams, or signatures directly in the toolbox.",
-                    "Provides a lightweight canvas for quick sketches, notes, and exports.",
-                    new[]
-                    {
-                        "Pick a pen color and thickness that complements your drawing style.",
-                        "Draw directly on the canvas using the mouse or stylus.",
-                        "Use undo or clear to refine the canvas before exporting."
-                    },
-                    new[]
-                    {
-                        "Maintains stroke data for export to Excel as an image.",
-                        "Supports multiple pen widths and color palettes for rapid sketching.",
-                        "Provides an always-available space to annotate workshop takeaways."
-                    },
-                    "Example: Sketching a reservoir layout with notes about control structures during a design charrette.",
-                    Drawing,
-                    null)
+                    Gantt.ComputeCommand)
             };
 
             foreach (var module in Modules)
@@ -346,9 +302,7 @@ namespace EconToolbox.Desktop.ViewModels
                     WaterDemand,
                     Udv,
                     RecreationCapacity,
-                    MindMap,
                     Gantt,
-                    Drawing,
                     eadDamagePoints,
                     dlg.FileName));
             }

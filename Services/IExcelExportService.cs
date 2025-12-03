@@ -42,9 +42,7 @@ public interface IExcelExportService
         WaterDemandViewModel waterDemand,
         UdvViewModel udv,
         RecreationCapacityViewModel recreationCapacity,
-        MindMapViewModel mindMap,
         GanttViewModel gantt,
-        DrawingViewModel drawing,
         IReadOnlyList<Point> eadDamagePoints,
         string filePath);
 }
