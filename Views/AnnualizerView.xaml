@@ -208,6 +208,14 @@
                                                             Binding="{Binding UnityBcrFirstCost, StringFormat=C0}"
                                                             IsReadOnly="True"
                                                             Width="160"/>
+                                        <DataGridTextColumn Header="IDC"
+                                                            Binding="{Binding Idc, StringFormat=C0}"
+                                                            IsReadOnly="True"
+                                                            Width="140"/>
+                                        <DataGridTextColumn Header="CRF"
+                                                            Binding="{Binding Crf, StringFormat=F5}"
+                                                            IsReadOnly="True"
+                                                            Width="120"/>
                                         <DataGridTextColumn Header="Notes"
                                                             Binding="{Binding Notes}"
                                                             IsReadOnly="True"
@@ -355,82 +363,7 @@
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
-                        </StackPanel>
-
-                        <UniformGrid Columns="1" Margin="{StaticResource Margin.TopLarge}">
-                            <UniformGrid.Style>
-                                <Style TargetType="UniformGrid">
-                                    <Setter Property="Columns" Value="1"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                                     Value="Wide">
-                                            <Setter Property="Columns" Value="2"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </UniformGrid.Style>
-                            <Border Style="{StaticResource Border.ResultInfo}" Margin="0,0,8,0">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text=""
-                                                   FontSize="18"
-                                                   Foreground="{StaticResource Brush.Primary}"
-                                                   Margin="0,0,8,0"/>
-                                        <TextBlock Text="Totals"
-                                                   FontWeight="Bold"
-                                                   Foreground="{StaticResource Brush.Primary}"/>
-                                    </StackPanel>
-                                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                                        <Run Text="IDC: "/>
-                                        <Run Text="{Binding Idc, Mode=OneWay, StringFormat={}{0:C2}}"/>
-                                        <LineBreak/>
-                                        <Run Text="Total Investment: "/>
-                                        <Run Text="{Binding TotalInvestment, Mode=OneWay, StringFormat={}{0:C2}}"/>
-                                    </TextBlock>
-                                </StackPanel>
-                            </Border>
-
-                            <Border Style="{StaticResource Border.ResultInfo}" Margin="0,0,0,8">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text=""
-                                                   FontSize="18"
-                                                   Foreground="{StaticResource Brush.Primary}"
-                                                   Margin="0,0,8,0"/>
-                                        <TextBlock Text="Annualization" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
-                                    </StackPanel>
-                                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                                        <Run Text="CRF: "/>
-                                        <Run Text="{Binding Crf, Mode=OneWay, StringFormat={}{0:N5}}"/>
-                                        <LineBreak/>
-                                        <Run Text="Annual Cost: "/>
-                                        <Run Text="{Binding AnnualCost, Mode=OneWay, StringFormat={}{0:C2}}"/>
-                                    </TextBlock>
-                                </StackPanel>
-                            </Border>
-
-                            <Border Style="{StaticResource Border.ResultInfo}">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text=""
-                                                   FontSize="18"
-                                                   Foreground="{StaticResource Brush.Primary}"
-                                                   Margin="0,0,8,0"/>
-                                        <TextBlock Text="Benefit-Cost Ratio" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
-                                    </StackPanel>
-                                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                                        <Run Text="Annual Benefits: "/>
-                                        <Run Text="{Binding AnnualBenefits, Mode=OneWay, StringFormat={}{0:C2}}"/>
-                                        <LineBreak/>
-                                        <Run Text="BCR: "/>
-                                        <Run Text="{Binding Bcr, Mode=OneWay, StringFormat={}{0:N2}}"/>
-                                    </TextBlock>
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
+                            </StackPanel>
 
                         <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <Border Style="{StaticResource Border.ResultInfo}">
