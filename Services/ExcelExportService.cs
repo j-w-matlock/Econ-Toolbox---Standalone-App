@@ -18,6 +18,7 @@ namespace EconToolbox.Desktop.Services
     {
         private const int ExcelMaxPictureNameLength = 31;
         private const int ExcelMaxWorksheetNameLength = 31;
+        private const int ExcelMaxTableNameLength = 255;
         private const int ExcelMaxHeaderLength = 255;
 
         private static readonly Color ChartBlue = (Color)ColorConverter.ConvertFromString("#2D6A8E");
@@ -35,11 +36,44 @@ namespace EconToolbox.Desktop.Services
         private static readonly XLColor DashboardAccentText = XLColor.FromHtml("#2D6A8E");
         private static readonly XLColor DashboardPrimaryText = XLColor.FromHtml("#1F2937");
 
-        private static IXLWorksheet CreateWorksheet(XLWorkbook workbook, string name)
+        private sealed class ExportContext : IDisposable
         {
-            var worksheet = workbook.Worksheets.Add(CreateWorksheetName(workbook, name));
-            worksheet.Style.Font.SetFontName("Segoe UI");
-            return worksheet;
+            private readonly HashSet<string> _tableNames = new(StringComparer.OrdinalIgnoreCase);
+            private readonly HashSet<string> _pictureNames = new(StringComparer.OrdinalIgnoreCase);
+
+            public ExportContext()
+            {
+                Workbook = new XLWorkbook();
+            }
+
+            public XLWorkbook Workbook { get; }
+
+            public IXLWorksheet CreateWorksheet(string name)
+            {
+                var worksheet = Workbook.Worksheets.Add(CreateWorksheetName(Workbook, name));
+                worksheet.Style.Font.SetFontName("Segoe UI");
+                return worksheet;
+            }
+
+            public string GetTableName(string baseName)
+            {
+                return CreateUniqueName(baseName, _tableNames, ExcelMaxTableNameLength, "Tbl", true);
+            }
+
+            public string GetPictureName(string prefix)
+            {
+                return CreateUniqueName(prefix, _pictureNames, ExcelMaxPictureNameLength, "Picture", false);
+            }
+
+            public void Save(string filePath)
+            {
+                Workbook.SaveAs(filePath);
+            }
+
+            public void Dispose()
+            {
+                Workbook.Dispose();
+            }
         }
 
         private static string NormalizeWhitespace(string input)
@@ -60,6 +94,33 @@ namespace EconToolbox.Desktop.Services
                 return value;
 
             return value.Substring(0, maxLength);
+        }
+
+        private static string CreateUniqueName(string baseName, HashSet<string> usedNames, int maxLength, string defaultPrefix, bool requireLetterStart)
+        {
+            string sanitized = NormalizeWhitespace(baseName ?? string.Empty);
+            sanitized = new string(sanitized.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-').ToArray());
+            sanitized = sanitized.Replace('-', '_');
+
+            if (string.IsNullOrWhiteSpace(sanitized))
+                sanitized = defaultPrefix;
+            if (requireLetterStart && !char.IsLetter(sanitized[0]))
+                sanitized = $"{defaultPrefix}_{sanitized}";
+
+            sanitized = TruncateWithSuffix(sanitized, maxLength);
+
+            string candidate = sanitized;
+            int suffix = 1;
+            while (!usedNames.Add(candidate))
+            {
+                string suffixText = $"_{suffix}";
+                int prefixLength = Math.Max(1, maxLength - suffixText.Length);
+                string prefix = candidate.Length > prefixLength ? candidate[..prefixLength] : candidate;
+                candidate = prefix + suffixText;
+                suffix++;
+            }
+
+            return candidate;
         }
 
         private static List<string> SanitizeHeaders(IEnumerable<string> headers, string fallbackPrefix)
@@ -159,9 +220,8 @@ namespace EconToolbox.Desktop.Services
         {
             RunOnSta(() =>
             {
-                using var wb = new XLWorkbook();
-                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                var ws = CreateWorksheet(wb, "CapitalRecovery");
+                using var context = new ExportContext();
+                var ws = context.CreateWorksheet("CapitalRecovery");
 
                 var entries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
                 {
@@ -170,7 +230,7 @@ namespace EconToolbox.Desktop.Services
                     ("Capital Recovery Factor", factor, "0.000000", "r(1+r)^n / ((1+r)^n - 1)", true)
                 };
 
-                int nextRow = WriteKeyValueTable(ws, 1, 1, "Capital Recovery Factor", entries, tableNames);
+                int nextRow = WriteKeyValueTable(ws, 1, 1, "Capital Recovery Factor", entries, context);
                 var noteRange = ws.Range(nextRow, 1, nextRow, 2);
                 noteRange.Merge();
                 noteRange.Value = "Use this sheet to document standalone capital recovery calculations for audit packages.";
@@ -180,7 +240,7 @@ namespace EconToolbox.Desktop.Services
                 noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
 
                 ws.Columns(1, 2).AdjustToContents();
-                wb.SaveAs(filePath);
+                context.Save(filePath);
             });
         }
 
@@ -188,14 +248,13 @@ namespace EconToolbox.Desktop.Services
         {
             RunOnSta(() =>
             {
-                using var wb = new XLWorkbook();
-                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                using var context = new ExportContext();
                 int scenarioIndex = 1;
 
                 foreach (var scenario in scenarios)
                 {
                     string baseName = string.IsNullOrWhiteSpace(scenario.Name) ? $"Scenario {scenarioIndex}" : scenario.Name;
-                    var ws = CreateWorksheet(wb, CreateWorksheetName(wb, baseName));
+                    var ws = context.CreateWorksheet(baseName);
 
                     var headers = new List<string>
                     {
@@ -270,20 +329,20 @@ namespace EconToolbox.Desktop.Services
 
                     int dataEndRow = Math.Max(2, scenario.Results.Count + 1);
                     var dataRange = ws.Range(1, 1, dataEndRow, headers.Count);
-                    var table = dataRange.CreateTable(GetTableName($"WaterDemand_{baseName}", tableNames));
+                    var table = dataRange.CreateTable(context.GetTableName($"WaterDemand_{baseName}"));
                     table.Theme = XLTableTheme.TableStyleMedium4;
 
                     ws.Columns(1, headers.Count).AdjustToContents();
 
                     if (scenario.Results.Count >= 2)
                     {
-                        AddWaterDemandChart(ws, new[] { scenario }, row + 1, 1);
+                        AddWaterDemandChart(ws, new[] { scenario }, row + 1, 1, context);
                     }
 
                     scenarioIndex++;
                 }
 
-                wb.SaveAs(filePath);
+                context.Save(filePath);
             });
         }
 
@@ -291,10 +350,9 @@ namespace EconToolbox.Desktop.Services
         {
             RunOnSta(() =>
             {
-                using var wb = new XLWorkbook();
-                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                using var context = new ExportContext();
 
-                var summary = CreateWorksheet(wb, "Summary");
+                var summary = context.CreateWorksheet("Summary");
 
             var summaryRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
@@ -310,8 +368,8 @@ namespace EconToolbox.Desktop.Services
                 ("Benefit-Cost Ratio", bcr, "0.00", "Annual Benefits ÷ Annual Cost.", true)
             };
 
-            int nextRow = WriteKeyValueTable(summary, 1, 1, "Annualization Summary", summaryRows, tableNames);
-            AddAnnualizerComparisonChart(summary, annualBenefits, annualCost, bcr, 1, 5);
+            int nextRow = WriteKeyValueTable(summary, 1, 1, "Annualization Summary", summaryRows, context);
+            AddAnnualizerComparisonChart(summary, annualBenefits, annualCost, bcr, 1, 5, context);
 
             var noteRange = summary.Range(nextRow, 1, nextRow, 2);
             noteRange.Merge();
@@ -321,7 +379,7 @@ namespace EconToolbox.Desktop.Services
             noteRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
             noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
 
-            var futureSheet = CreateWorksheet(wb, "FutureCosts");
+            var futureSheet = context.CreateWorksheet("FutureCosts");
 
             var futureHeaders = new List<string> { "Nominal Cost", "Year", "Timing", "PV Factor" };
             WriteHeaderRow(futureSheet, 1, 1, futureHeaders);
@@ -346,11 +404,11 @@ namespace EconToolbox.Desktop.Services
 
             int futureEndRow = Math.Max(2, futureRow - 1);
             var futureRange = futureSheet.Range(1, 1, futureEndRow, futureHeaders.Count);
-            var futureTable = futureRange.CreateTable(GetTableName("AnnualizerFuture", tableNames));
+            var futureTable = futureRange.CreateTable(context.GetTableName("AnnualizerFuture"));
             futureTable.Theme = XLTableTheme.TableStyleLight11;
             futureSheet.Columns(1, futureHeaders.Count).AdjustToContents();
 
-                wb.SaveAs(filePath);
+                context.Save(filePath);
             });
         }
 
@@ -358,10 +416,9 @@ namespace EconToolbox.Desktop.Services
         {
             RunOnSta(() =>
             {
-                using var wb = new XLWorkbook();
-                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                using var context = new ExportContext();
 
-            var inputSheet = CreateWorksheet(wb, "EAD Inputs");
+            var inputSheet = context.CreateWorksheet("EAD Inputs");
 
             var damageList = damageColumns.ToList();
             var sanitizedDamageList = SanitizeHeaders(damageList, "Damage");
@@ -401,14 +458,14 @@ namespace EconToolbox.Desktop.Services
 
             int dataRowCount = Math.Max(2, rowIndex - 1);
             var dataRange = inputSheet.Range(1, 1, dataRowCount, headers.Count);
-            var table = dataRange.CreateTable(GetTableName("EadInputs", tableNames));
+            var table = dataRange.CreateTable(context.GetTableName("EadInputs"));
             table.Theme = XLTableTheme.TableStyleMedium9;
             inputSheet.Columns(1, headers.Count).AdjustToContents();
 
             int chartRow = dataRowCount + 3;
-            AddEadChart(inputSheet, damagePoints, chartRow, 1);
+            AddEadChart(inputSheet, damagePoints, chartRow, 1, context);
 
-            var summary = CreateWorksheet(wb, "Summary");
+            var summary = context.CreateWorksheet("Summary");
 
             var summaryEntries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
@@ -432,10 +489,10 @@ namespace EconToolbox.Desktop.Services
                 summaryEntries.Add(("Narrative", result, null, "Summary text generated by the module.", false));
             }
 
-            int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, tableNames);
-            AddEadChart(summary, damagePoints, summaryNextRow, 1);
+            int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, context);
+            AddEadChart(summary, damagePoints, summaryNextRow, 1, context);
 
-                wb.SaveAs(filePath);
+                context.Save(filePath);
             });
         }
 
@@ -443,11 +500,10 @@ namespace EconToolbox.Desktop.Services
         {
             RunOnSta(() =>
             {
-                using var wb = new XLWorkbook();
-                var tableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                using var context = new ExportContext();
 
             // EAD Sheet
-            var eadSheet = CreateWorksheet(wb, "EAD");
+            var eadSheet = context.CreateWorksheet("EAD");
             int col = 1;
             eadSheet.Cell(1, col++).Value = "Probability";
             if (ead.UseStage)
@@ -471,7 +527,7 @@ namespace EconToolbox.Desktop.Services
             if (rowIdx > 2)
             {
                 var eadRange = eadSheet.Range(1, 1, rowIdx - 1, eadColumnCount);
-                var eadTable = eadRange.CreateTable(GetTableName("EadInputs", tableNames));
+                var eadTable = eadRange.CreateTable(context.GetTableName("EadInputs"));
                 eadTable.Theme = XLTableTheme.TableStyleMedium9;
             }
             eadSheet.Cell(rowIdx + 1, 1).Value = "Result";
@@ -480,10 +536,10 @@ namespace EconToolbox.Desktop.Services
             eadSheet.Range(rowIdx + 1, 1, rowIdx + 1, Math.Max(2, eadColumnCount)).Merge();
             eadSheet.Range(1, 1, 1, eadColumnCount).Style.Font.SetBold();
             eadSheet.Columns(1, eadColumnCount).AdjustToContents();
-            AddEadChart(eadSheet, eadDamagePoints, rowIdx + 3, 1);
+            AddEadChart(eadSheet, eadDamagePoints, rowIdx + 3, 1, context);
 
             // Agriculture Depth-Damage Sheet
-            var agSheet = CreateWorksheet(wb, "Agriculture");
+            var agSheet = context.CreateWorksheet("Agriculture");
             agSheet.Cell(1, 1).Value = "Agriculture Depth-Damage";
             agSheet.Range(1, 1, 1, 6).Merge();
             agSheet.Cell(1, 1).Style.Font.SetBold();
@@ -562,7 +618,7 @@ namespace EconToolbox.Desktop.Services
                     agRow++;
                 }
                 var stageRange = agSheet.Range(stageStart, 1, agRow - 1, stageHeaders.Count);
-                var stageTable = stageRange.CreateTable(GetTableName("AgricultureStages", tableNames));
+                var stageTable = stageRange.CreateTable(context.GetTableName("AgricultureStages"));
                 stageTable.Theme = XLTableTheme.TableStyleMedium2;
                 agRow += 1;
             }
@@ -612,7 +668,7 @@ namespace EconToolbox.Desktop.Services
             if (agRow > damageRowStart + 1)
             {
                 var agRange = agSheet.Range(damageRowStart, 1, agRow - 1, agDamageHeaders.Count);
-                var agTable = agRange.CreateTable(GetTableName("AgricultureDamage", tableNames));
+                var agTable = agRange.CreateTable(context.GetTableName("AgricultureDamage"));
                 agTable.Theme = XLTableTheme.TableStyleMedium9;
             }
 
@@ -647,14 +703,14 @@ namespace EconToolbox.Desktop.Services
                 }
 
                 var summaryRange = agSheet.Range(summaryStart, 1, agRow - 1, 5);
-                var summaryTable = summaryRange.CreateTable(GetTableName("CropScapeSummary", tableNames));
+                var summaryTable = summaryRange.CreateTable(context.GetTableName("CropScapeSummary"));
                 summaryTable.Theme = XLTableTheme.TableStyleLight11;
             }
 
             agSheet.Columns().AdjustToContents();
 
             // Annualizer Sheets
-            var annSummary = CreateWorksheet(wb, "Annualizer");
+            var annSummary = context.CreateWorksheet("Annualizer");
             var annData = new Dictionary<string, double>
             {
                 {"First Cost", annualizer.FirstCost},
@@ -690,11 +746,11 @@ namespace EconToolbox.Desktop.Services
             if (rowIdx > 1)
             {
                 var annRange = annSummary.Range(1, 1, rowIdx - 1, 2);
-                var annTable = annRange.CreateTable(GetTableName("AnnualizerSummary", tableNames));
+                var annTable = annRange.CreateTable(context.GetTableName("AnnualizerSummary"));
                 annTable.Theme = XLTableTheme.TableStyleLight11;
                 annSummary.Columns(1, 2).AdjustToContents();
             }
-            var annFc = CreateWorksheet(wb, "FutureCosts");
+            var annFc = context.CreateWorksheet("FutureCosts");
             annFc.Cell(1,1).Value = "Cost";
             annFc.Cell(1,2).Value = "Year";
             rowIdx = 2;
@@ -707,7 +763,7 @@ namespace EconToolbox.Desktop.Services
             if (rowIdx > 2)
             {
                 var fcRange = annFc.Range(1, 1, rowIdx - 1, 2);
-                var fcTable = fcRange.CreateTable(GetTableName("AnnualizerFuture", tableNames));
+                var fcTable = fcRange.CreateTable(context.GetTableName("AnnualizerFuture"));
                 fcTable.Theme = XLTableTheme.TableStyleLight11;
                 annFc.Columns(1, 2).AdjustToContents();
             }
@@ -715,8 +771,7 @@ namespace EconToolbox.Desktop.Services
             // Water Demand Sheet
             foreach (var scenario in waterDemand.Scenarios)
             {
-                string wdSheetName = CreateWorksheetName(wb, $"WaterDemand_{scenario.Name}");
-                var wdSheet = CreateWorksheet(wb, wdSheetName);
+                var wdSheet = context.CreateWorksheet($"WaterDemand_{scenario.Name}");
                 wdSheet.Cell(1,1).Value = "Year";
                 wdSheet.Cell(1,2).Value = "Growth Rate";
                 wdSheet.Cell(1,3).Value = "Demand (MGD)";
@@ -755,14 +810,14 @@ namespace EconToolbox.Desktop.Services
                 if (rowIdx > 2)
                 {
                     var wdRange = wdSheet.Range(1, 1, rowIdx - 1, 9);
-                    var wdTable = wdRange.CreateTable(GetTableName($"WaterDemand_{scenario.Name}", tableNames));
+                    var wdTable = wdRange.CreateTable(context.GetTableName($"WaterDemand_{scenario.Name}"));
                     wdTable.Theme = XLTableTheme.TableStyleMedium4;
                 }
                 wdSheet.Columns(1, 9).AdjustToContents();
             }
 
             // Updated Cost Sheets
-            var ucItems = CreateWorksheet(wb, "UpdatedCost");
+            var ucItems = context.CreateWorksheet("UpdatedCost");
             var ucHeaders = new[]
             {
                 "Category",
@@ -803,11 +858,11 @@ namespace EconToolbox.Desktop.Services
             if (rowIdx > 2)
             {
                 var ucRange = ucItems.Range(1, 1, rowIdx - 1, 14);
-                var ucTable = ucRange.CreateTable(GetTableName("UpdatedCostItems", tableNames));
+                var ucTable = ucRange.CreateTable(context.GetTableName("UpdatedCostItems"));
                 ucTable.Theme = XLTableTheme.TableStyleMedium9;
                 ucItems.Columns(1, 14).AdjustToContents();
             }
-            var ucRrr = CreateWorksheet(wb, "RRR");
+            var ucRrr = context.CreateWorksheet("RRR");
             ucRrr.Cell(1,1).Value = "Item";
             ucRrr.Cell(1,2).Value = "Future Cost";
             ucRrr.Cell(1,3).Value = "Year";
@@ -826,11 +881,11 @@ namespace EconToolbox.Desktop.Services
             if (rowIdx > 2)
             {
                 var rrrRange = ucRrr.Range(1, 1, rowIdx - 1, 5);
-                var rrrTable = rrrRange.CreateTable(GetTableName("UpdatedCostRrr", tableNames));
+                var rrrTable = rrrRange.CreateTable(context.GetTableName("UpdatedCostRrr"));
                 rrrTable.Theme = XLTableTheme.TableStyleMedium6;
                 ucRrr.Columns(1, 5).AdjustToContents();
             }
-            var ucSummary = CreateWorksheet(wb, "UpdatedCostSummary");
+            var ucSummary = context.CreateWorksheet("UpdatedCostSummary");
             var ucData = new Dictionary<string, double>
             {
                 {"Percent", updated.Percent},
@@ -883,13 +938,13 @@ namespace EconToolbox.Desktop.Services
             if (rowIdx > 1)
             {
                 var summaryRange = ucSummary.Range(1, 1, rowIdx - 1, 2);
-                var summaryTable = summaryRange.CreateTable(GetTableName("UpdatedCostSummary", tableNames));
+                var summaryTable = summaryRange.CreateTable(context.GetTableName("UpdatedCostSummary"));
                 summaryTable.Theme = XLTableTheme.TableStyleLight11;
                 ucSummary.Columns(1, 2).AdjustToContents();
             }
 
             // Unit Day Value Sheet
-            var udvSheet = CreateWorksheet(wb, "Udv");
+            var udvSheet = context.CreateWorksheet("Udv");
             var udvData = new Dictionary<string, object>
             {
                 {"Recreation Type", udv.RecreationType},
@@ -914,13 +969,13 @@ namespace EconToolbox.Desktop.Services
             if (rowIdx > 1)
             {
                 var udvRange = udvSheet.Range(1, 1, rowIdx - 1, 2);
-                var udvTable = udvRange.CreateTable(GetTableName("UnitDayValue", tableNames));
+                var udvTable = udvRange.CreateTable(context.GetTableName("UnitDayValue"));
                 udvTable.Theme = XLTableTheme.TableStyleLight9;
                 udvSheet.Columns(1, 2).AdjustToContents();
             }
 
             // Recreation Capacity Sheet
-            var recreationSheet = CreateWorksheet(wb, "RecreationCapacity");
+            var recreationSheet = context.CreateWorksheet("RecreationCapacity");
 
             var capacityHeaders = new[]
             {
@@ -975,7 +1030,7 @@ namespace EconToolbox.Desktop.Services
             if (capacityRow > 2)
             {
                 var capacityRange = recreationSheet.Range(1, 1, capacityRow - 1, capacityHeaders.Length);
-                var capacityTable = capacityRange.CreateTable(GetTableName("RecreationCapacity", tableNames));
+                var capacityTable = capacityRange.CreateTable(context.GetTableName("RecreationCapacity"));
                 capacityTable.Theme = XLTableTheme.TableStyleMedium4;
             }
 
@@ -998,7 +1053,7 @@ namespace EconToolbox.Desktop.Services
             recreationSheet.Columns(1, capacityHeaders.Length).AdjustToContents();
 
             // Mind Map Sheet
-            var mindMapSheet = CreateWorksheet(wb, "MindMap");
+            var mindMapSheet = context.CreateWorksheet("MindMap");
             var mindMapHeaders = new[]
             {
                 "Depth",
@@ -1037,7 +1092,7 @@ namespace EconToolbox.Desktop.Services
             if (mindMapRow > 2)
             {
                 var mindMapRange = mindMapSheet.Range(1, 1, mindMapRow - 1, mindMapHeaders.Length);
-                var mindMapTable = mindMapRange.CreateTable(GetTableName("MindMapNodes", tableNames));
+                var mindMapTable = mindMapRange.CreateTable(context.GetTableName("MindMapNodes"));
                 mindMapTable.Theme = XLTableTheme.TableStyleLight11;
                 mindMapSheet.Columns(1, mindMapHeaders.Length).AdjustToContents();
             }
@@ -1045,10 +1100,10 @@ namespace EconToolbox.Desktop.Services
             mindMapSheet.Cell(mindMapRow + 1, 1).Value = "Visual Snapshot";
             mindMapSheet.Cell(mindMapRow + 1, 1).Style.Font.SetBold();
             mindMapSheet.Range(mindMapRow + 1, 1, mindMapRow + 1, Math.Max(1, mindMapHeaders.Length)).Merge();
-            AddMindMapImage(mindMapSheet, mindMap, mindMapRow + 2, 1);
+            AddMindMapImage(mindMapSheet, mindMap, mindMapRow + 2, 1, context);
 
             // Gantt Sheet
-            var ganttSheet = CreateWorksheet(wb, "Gantt");
+            var ganttSheet = context.CreateWorksheet("Gantt");
             ganttSheet.Cell(1, 1).Value = "Task";
             ganttSheet.Cell(1, 2).Value = "Workstream";
             ganttSheet.Cell(1, 3).Value = "Start";
@@ -1080,12 +1135,12 @@ namespace EconToolbox.Desktop.Services
             if (rowIdx > 2)
             {
                 var ganttRange = ganttSheet.Range(1, 1, rowIdx - 1, 10);
-                var ganttTable = ganttRange.CreateTable(GetTableName("GanttTasks", tableNames));
+                var ganttTable = ganttRange.CreateTable(context.GetTableName("GanttTasks"));
                 ganttTable.Theme = XLTableTheme.TableStyleMedium2;
             }
 
             // Drawing Sheet
-            var sketchSheet = CreateWorksheet(wb, "Sketch");
+            var sketchSheet = context.CreateWorksheet("Sketch");
             sketchSheet.Cell(1, 1).Value = "Sketch Notes";
             sketchSheet.Cell(2, 1).Value = "Strokes";
             var strokes = drawing.ExportStrokes().ToList();
@@ -1101,7 +1156,7 @@ namespace EconToolbox.Desktop.Services
                     strokeIndex++;
                 }
                 var sketchRange = sketchSheet.Range(2, 1, sketchRow - 1, 2);
-                var sketchTable = sketchRange.CreateTable(GetTableName("SketchStrokes", tableNames));
+                var sketchTable = sketchRange.CreateTable(context.GetTableName("SketchStrokes"));
                 sketchTable.Theme = XLTableTheme.TableStyleLight11;
             }
 
@@ -1109,19 +1164,19 @@ namespace EconToolbox.Desktop.Services
             if (sketchImage.Length > 0)
             {
                 using var imageStream = new MemoryStream(sketchImage);
-                var sketchPicture = sketchSheet.AddPicture(imageStream, XLPictureFormat.Png, CreatePictureName("SketchCanvas_"));
+                var sketchPicture = sketchSheet.AddPicture(imageStream, XLPictureFormat.Png, context.GetPictureName("SketchCanvas_"));
                 sketchPicture.MoveTo(sketchSheet.Cell(2, 4));
             }
 
-            BuildDashboard(wb, ead, agriculture, annualizer, updated, waterDemand, udv, recreationCapacity, mindMap, gantt, drawing, tableNames);
+            BuildDashboard(context, ead, agriculture, annualizer, updated, waterDemand, udv, recreationCapacity, mindMap, gantt, drawing);
 
-            wb.SaveAs(filePath);
+            context.Save(filePath);
             });
         }
 
-        private static void BuildDashboard(XLWorkbook wb, EadViewModel ead, AgricultureDepthDamageViewModel agriculture, AnnualizerViewModel annualizer, UpdatedCostViewModel updated, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing, HashSet<string> tableNames)
+        private static void BuildDashboard(ExportContext context, EadViewModel ead, AgricultureDepthDamageViewModel agriculture, AnnualizerViewModel annualizer, UpdatedCostViewModel updated, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, MindMapViewModel mindMap, GanttViewModel gantt, DrawingViewModel drawing)
         {
-            var ws = CreateWorksheet(wb, "Dashboard");
+            var ws = context.CreateWorksheet("Dashboard");
             ws.Position = 1;
             ws.Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
 
@@ -1187,8 +1242,8 @@ namespace EconToolbox.Desktop.Services
             };
 
             int capitalStart = currentRow;
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Capital Investment Metrics", financialRows, tableNames);
-            AddAnnualizerComparisonChart(ws, annualizer.AnnualBenefits, annualizer.AnnualCost, annualizer.Bcr, capitalStart, 5);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Capital Investment Metrics", financialRows, context);
+            AddAnnualizerComparisonChart(ws, annualizer.AnnualBenefits, annualizer.AnnualCost, annualizer.Bcr, capitalStart, 5, context);
 
             double? primaryEadValue = null;
             string primaryDamageColumn = ead.DamageColumns.Count > 0 ? ead.DamageColumns[0].Name : "Damage";
@@ -1217,8 +1272,8 @@ namespace EconToolbox.Desktop.Services
             }
 
             int eadStart = currentRow;
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Expected Annual Damage", eadRows, tableNames);
-            AddEadDashboardChart(ws, ead, primaryDamageColumn, primaryEadValue, eadStart, 5);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Expected Annual Damage", eadRows, context);
+            AddEadDashboardChart(ws, ead, primaryDamageColumn, primaryEadValue, eadStart, 5, context);
 
             var agricultureRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
             {
@@ -1230,7 +1285,7 @@ namespace EconToolbox.Desktop.Services
                 ("CropScape Acreage", agriculture.CropScapeTotalAcreage, "#,##0.0", agriculture.CropScapeTotalAcreage > 0 ? "Total acreage imported from CropScape rasters." : null, agriculture.CropScapeTotalAcreage > 0)
             };
 
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Agriculture Depth-Damage", agricultureRows, tableNames);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Agriculture Depth-Damage", agricultureRows, context);
 
             if (!string.IsNullOrWhiteSpace(agriculture.ImpactSummary))
             {
@@ -1278,8 +1333,8 @@ namespace EconToolbox.Desktop.Services
             }
 
             int waterStart = currentRow;
-            currentRow = WriteWaterDemandTable(ws, currentRow, 1, "Water Demand Outlook", waterEntries, tableNames);
-            AddWaterDemandChart(ws, waterDemand.Scenarios, waterStart, 5);
+            currentRow = WriteWaterDemandTable(ws, currentRow, 1, "Water Demand Outlook", waterEntries, context);
+            AddWaterDemandChart(ws, waterDemand.Scenarios, waterStart, 5, context);
 
             var mindMapNodes = mindMap.Flatten().ToList();
             int notedIdeas = mindMapNodes.Count(n => !string.IsNullOrWhiteSpace(n.Notes));
@@ -1317,13 +1372,13 @@ namespace EconToolbox.Desktop.Services
                 ("Primary Themes", primaryThemes, null, "Top-level branches currently defined.", false)
             };
 
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation Capacity", recreationRows, tableNames);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation Capacity", recreationRows, context);
 
             int udvStart = currentRow;
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation Highlights", udvRows, tableNames);
-            AddUdvChart(ws, udv, udvStart, 5);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Recreation Highlights", udvRows, context);
+            AddUdvChart(ws, udv, udvStart, 5, context);
 
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Mind Map Highlights", mindMapRows, tableNames);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Mind Map Highlights", mindMapRows, context);
 
             var ganttTaskCount = gantt.Tasks.Count;
             DateTime? ganttStart = ganttTaskCount > 0 ? gantt.Tasks.Min(t => t.StartDate) : null;
@@ -1342,7 +1397,7 @@ namespace EconToolbox.Desktop.Services
                 ("Average % Complete", ganttTaskCount > 0 ? averagePercent / 100.0 : 0, "0.0%", "Mean percent complete across all tasks.", false)
             };
 
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Gantt Highlights", ganttRows, tableNames);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Gantt Highlights", ganttRows, context);
 
             bool hasStrokes = drawing.Strokes.Count > 0;
             var drawingRows = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
@@ -1352,10 +1407,10 @@ namespace EconToolbox.Desktop.Services
                 ("Ready for Export", hasStrokes ? "Yes" : "No", null, hasStrokes ? "Sketch will be embedded in the Excel workbook." : "Add strokes to include the sketch in the export.", hasStrokes)
             };
 
-            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Sketch Summary", drawingRows, tableNames);
+            currentRow = WriteKeyValueTable(ws, currentRow, 1, "Sketch Summary", drawingRows, context);
         }
 
-        private static int WriteKeyValueTable(IXLWorksheet ws, int startRow, int startColumn, string title, List<(string Label, object Value, string? Format, string? Comment, bool Highlight)> entries, HashSet<string> tableNames)
+        private static int WriteKeyValueTable(IXLWorksheet ws, int startRow, int startColumn, string title, List<(string Label, object Value, string? Format, string? Comment, bool Highlight)> entries, ExportContext context)
         {
             if (entries.Count == 0)
                 return startRow;
@@ -1441,7 +1496,7 @@ namespace EconToolbox.Desktop.Services
             ws.Range(startRow, startColumn, row - 1, startColumn + 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
             var tableRange = ws.Range(startRow + 1, startColumn, row - 1, startColumn + 1);
-            var table = tableRange.CreateTable(GetTableName(title, tableNames));
+            var table = tableRange.CreateTable(context.GetTableName(title));
             table.ShowAutoFilter = false;
             table.Theme = XLTableTheme.TableStyleMedium9;
 
@@ -1506,7 +1561,7 @@ namespace EconToolbox.Desktop.Services
             }
         }
 
-        private static int WriteWaterDemandTable(IXLWorksheet ws, int startRow, int startColumn, string title, List<(string Scenario, int Year, double Adjusted, string? Description, double? ChangePercent, bool Highlight, bool HasResults)> entries, HashSet<string> tableNames)
+        private static int WriteWaterDemandTable(IXLWorksheet ws, int startRow, int startColumn, string title, List<(string Scenario, int Year, double Adjusted, string? Description, double? ChangePercent, bool Highlight, bool HasResults)> entries, ExportContext context)
         {
             var headerRange = ws.Range(startRow, startColumn, startRow, startColumn + 2);
             headerRange.Merge();
@@ -1578,32 +1633,10 @@ namespace EconToolbox.Desktop.Services
 
             ws.Range(startRow, startColumn, row - 1, startColumn + 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
             var tableRange = ws.Range(startRow + 1, startColumn, row - 1, startColumn + 2);
-            var table = tableRange.CreateTable(GetTableName(title, tableNames));
+            var table = tableRange.CreateTable(context.GetTableName(title));
             table.ShowAutoFilter = false;
             table.Theme = XLTableTheme.TableStyleLight11;
             return row + 2;
-        }
-
-        private static string GetTableName(string baseName, HashSet<string> usedNames)
-        {
-            if (string.IsNullOrWhiteSpace(baseName))
-                baseName = "Tbl";
-
-            var sanitized = new string(baseName.Where(char.IsLetterOrDigit).ToArray());
-            if (string.IsNullOrWhiteSpace(sanitized))
-                sanitized = "Tbl";
-            if (char.IsDigit(sanitized[0]))
-                sanitized = "T" + sanitized;
-
-            string candidate = sanitized;
-            int suffix = 1;
-            while (!usedNames.Add(candidate))
-            {
-                candidate = sanitized + suffix.ToString();
-                suffix++;
-            }
-
-            return candidate.Length > 31 ? candidate.Substring(0, 31) : candidate;
         }
 
         private static string CreateWorksheetName(XLWorkbook workbook, string baseName)
@@ -1636,31 +1669,15 @@ namespace EconToolbox.Desktop.Services
             return candidate;
         }
 
-        private static string CreatePictureName(string prefix)
-        {
-            if (string.IsNullOrWhiteSpace(prefix))
-                prefix = "Picture";
-
-            if (prefix.Length > ExcelMaxPictureNameLength)
-                prefix = prefix.Substring(0, ExcelMaxPictureNameLength);
-
-            var uniquePart = Guid.NewGuid().ToString("N");
-            int maxUniqueLength = ExcelMaxPictureNameLength - prefix.Length;
-            if (maxUniqueLength <= 0)
-                return prefix;
-
-            return prefix + uniquePart.Substring(0, Math.Min(maxUniqueLength, uniquePart.Length));
-        }
-
-        private static void AddAnnualizerComparisonChart(IXLWorksheet ws, double annualBenefits, double annualCost, double bcr, int row, int column)
+        private static void AddAnnualizerComparisonChart(IXLWorksheet ws, double annualBenefits, double annualCost, double bcr, int row, int column, ExportContext context)
         {
             byte[] bytes = CreateAnnualizerBarChartImage(annualBenefits, annualCost, bcr);
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("AnnualizerChart_"));
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, context.GetPictureName("AnnualizerChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
 
-        private static void AddEadDashboardChart(IXLWorksheet ws, EadViewModel ead, string curveName, double? eadValue, int row, int column)
+        private static void AddEadDashboardChart(IXLWorksheet ws, EadViewModel ead, string curveName, double? eadValue, int row, int column, ExportContext context)
         {
             var data = ead.Rows
                 .Where(r => r.Damages.Count > 0)
@@ -1672,11 +1689,11 @@ namespace EconToolbox.Desktop.Services
 
             byte[] bytes = CreateEadDashboardChartImage(data, curveName, eadValue);
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("EadDashboardChart_"));
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, context.GetPictureName("EadDashboardChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
 
-        private static void AddWaterDemandChart(IXLWorksheet ws, IEnumerable<Scenario> scenarios, int row, int column)
+        private static void AddWaterDemandChart(IXLWorksheet ws, IEnumerable<Scenario> scenarios, int row, int column, ExportContext context)
         {
             var series = scenarios
                 .Select(s => new
@@ -1693,18 +1710,18 @@ namespace EconToolbox.Desktop.Services
             var data = series.Select(s => (s.Name, s.Points, s.Color)).ToList();
             byte[] bytes = CreateWaterDemandChartImage(data);
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("WaterDemandChart_"));
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, context.GetPictureName("WaterDemandChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
 
-        private static void AddMindMapImage(IXLWorksheet ws, MindMapViewModel mindMap, int row, int column)
+        private static void AddMindMapImage(IXLWorksheet ws, MindMapViewModel mindMap, int row, int column, ExportContext context)
         {
             byte[] bytes = CreateMindMapImage(mindMap);
             if (bytes.Length == 0)
                 return;
 
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("MindMapCanvas_"));
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, context.GetPictureName("MindMapCanvas_"));
             picture.MoveTo(ws.Cell(row, column));
             double widthLimit = 900;
             double heightLimit = 520;
@@ -1713,13 +1730,13 @@ namespace EconToolbox.Desktop.Services
                 picture.Scale(scale);
         }
 
-        private static void AddUdvChart(IXLWorksheet ws, UdvViewModel udv, int row, int column)
+        private static void AddUdvChart(IXLWorksheet ws, UdvViewModel udv, int row, int column, ExportContext context)
         {
             byte[] bytes = CreateUdvChartImage(udv);
             if (bytes.Length == 0)
                 return;
             using var stream = new MemoryStream(bytes);
-            var picture = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("UdvChart_"));
+            var picture = ws.AddPicture(stream, XLPictureFormat.Png, context.GetPictureName("UdvChart_"));
             picture.MoveTo(ws.Cell(row, column));
         }
 
@@ -2549,13 +2566,13 @@ namespace EconToolbox.Desktop.Services
             };
         }
 
-        private static void AddEadChart(IXLWorksheet ws, IReadOnlyList<Point>? damagePoints, int row, int column)
+        private static void AddEadChart(IXLWorksheet ws, IReadOnlyList<Point>? damagePoints, int row, int column, ExportContext context)
         {
             if (damagePoints == null || damagePoints.Count == 0)
                 return;
             byte[] img = CreateEadChartImage(damagePoints);
             using var stream = new MemoryStream(img);
-            var pic = ws.AddPicture(stream, XLPictureFormat.Png, CreatePictureName("EADChart_"));
+            var pic = ws.AddPicture(stream, XLPictureFormat.Png, context.GetPictureName("EADChart_"));
             pic.MoveTo(ws.Cell(row, column));
         }
 
