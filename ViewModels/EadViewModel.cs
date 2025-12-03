@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -506,14 +507,22 @@ namespace EconToolbox.Desktop.ViewModels
 
             if (dlg.ShowDialog() == true)
             {
-                string combined = string.Join(" | ", Results);
-                await Task.Run(() => _excelExportService.ExportEad(
-                    Rows,
-                    DamageColumns.Select(c => c.Name),
-                    UseStage,
-                    combined,
-                    DamageCurvePoints.Select(p => new Point(p.X, p.Y)).ToList(),
-                    dlg.FileName));
+                try
+                {
+                    string combined = string.Join(" | ", Results);
+                    await Task.Run(() => _excelExportService.ExportEad(
+                        Rows,
+                        DamageColumns.Select(c => c.Name),
+                        UseStage,
+                        combined,
+                        DamageCurvePoints.Select(p => new Point(p.X, p.Y)).ToList(),
+                        dlg.FileName));
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                    MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

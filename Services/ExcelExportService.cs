@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ClosedXML.Excel;
 using ClosedXML.Excel.Drawings;
 using EconToolbox.Desktop.Models;
@@ -11,15 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Globalization;
 using System.Threading;
+using static EconToolbox.Desktop.Services.ExcelNamingPolicy;
 
 namespace EconToolbox.Desktop.Services
 {
     public sealed class ExcelExportService : IExcelExportService
     {
-        private const int ExcelMaxPictureNameLength = 31;
-        private const int ExcelMaxWorksheetNameLength = 31;
-        private const int ExcelMaxTableNameLength = 255;
-        private const int ExcelMaxHeaderLength = 255;
 
         private static readonly Color ChartBlue = (Color)ColorConverter.ConvertFromString("#2D6A8E");
         private static readonly Color ChartTeal = (Color)ColorConverter.ConvertFromString("#1ABC9C");
@@ -36,6 +34,16 @@ namespace EconToolbox.Desktop.Services
         private static readonly XLColor DashboardAccentText = XLColor.FromHtml("#2D6A8E");
         private static readonly XLColor DashboardPrimaryText = XLColor.FromHtml("#1F2937");
 
+        private static void LogWarning(string message)
+        {
+            Debug.WriteLine($"[ExcelExport] {message}");
+        }
+
+        private static void LogError(string message, Exception ex)
+        {
+            Debug.WriteLine($"[ExcelExport] ERROR: {message}\n{ex}");
+        }
+
         private sealed class ExportContext : IDisposable
         {
             private readonly HashSet<string> _tableNames = new(StringComparer.OrdinalIgnoreCase);
@@ -43,26 +51,34 @@ namespace EconToolbox.Desktop.Services
 
             public ExportContext()
             {
-                Workbook = new XLWorkbook();
+                try
+                {
+                    Workbook = new XLWorkbook();
+                }
+                catch (Exception ex)
+                {
+                    LogError("Failed to create Excel workbook instance.", ex);
+                    throw new InvalidOperationException("Unable to create an Excel workbook for export.", ex);
+                }
             }
 
             public XLWorkbook Workbook { get; }
 
             public IXLWorksheet CreateWorksheet(string name)
             {
-                var worksheet = Workbook.Worksheets.Add(CreateWorksheetName(Workbook, name));
+                var worksheet = Workbook.Worksheets.Add(ExcelNamingPolicy.CreateWorksheetName(Workbook, name, LogWarning));
                 worksheet.Style.Font.SetFontName("Segoe UI");
                 return worksheet;
             }
 
             public string GetTableName(string baseName)
             {
-                return CreateUniqueName(baseName, _tableNames, ExcelMaxTableNameLength, "Tbl", true);
+                return CreateUniqueName(baseName, _tableNames, ExcelMaxTableNameLength, "Tbl", true, LogWarning);
             }
 
             public string GetPictureName(string prefix)
             {
-                return CreateUniqueName(prefix, _pictureNames, ExcelMaxPictureNameLength, "Picture", false);
+                return CreateUniqueName(prefix, _pictureNames, ExcelMaxPictureNameLength, "Picture", false, LogWarning);
             }
 
             public void Save(string filePath)
@@ -74,81 +90,6 @@ namespace EconToolbox.Desktop.Services
             {
                 Workbook.Dispose();
             }
-        }
-
-        private static string NormalizeWhitespace(string input)
-        {
-            var chars = input.Select(c => char.IsWhiteSpace(c) ? ' ' : c).ToArray();
-            var normalized = new string(chars).Trim();
-            while (normalized.Contains("  "))
-            {
-                normalized = normalized.Replace("  ", " ");
-            }
-
-            return normalized;
-        }
-
-        private static string TruncateWithSuffix(string value, int maxLength)
-        {
-            if (value.Length <= maxLength)
-                return value;
-
-            return value.Substring(0, maxLength);
-        }
-
-        private static string CreateUniqueName(string baseName, HashSet<string> usedNames, int maxLength, string defaultPrefix, bool requireLetterStart)
-        {
-            string sanitized = NormalizeWhitespace(baseName ?? string.Empty);
-            sanitized = new string(sanitized.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-').ToArray());
-            sanitized = sanitized.Replace('-', '_');
-
-            if (string.IsNullOrWhiteSpace(sanitized))
-                sanitized = defaultPrefix;
-            if (requireLetterStart && !char.IsLetter(sanitized[0]))
-                sanitized = $"{defaultPrefix}_{sanitized}";
-
-            sanitized = TruncateWithSuffix(sanitized, maxLength);
-
-            string candidate = sanitized;
-            int suffix = 1;
-            while (!usedNames.Add(candidate))
-            {
-                string suffixText = $"_{suffix}";
-                int prefixLength = Math.Max(1, maxLength - suffixText.Length);
-                string prefix = candidate.Length > prefixLength ? candidate[..prefixLength] : candidate;
-                candidate = prefix + suffixText;
-                suffix++;
-            }
-
-            return candidate;
-        }
-
-        private static List<string> SanitizeHeaders(IEnumerable<string> headers, string fallbackPrefix)
-        {
-            var sanitizedHeaders = new List<string>();
-            var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            int index = 1;
-
-            foreach (var header in headers)
-            {
-                string value = string.IsNullOrWhiteSpace(header) ? $"{fallbackPrefix} {index}" : NormalizeWhitespace(header);
-                value = TruncateWithSuffix(value, ExcelMaxHeaderLength);
-
-                string candidate = value;
-                int suffix = 2;
-                while (!used.Add(candidate))
-                {
-                    string suffixText = $" ({suffix})";
-                    int maxLength = ExcelMaxHeaderLength - suffixText.Length;
-                    candidate = TruncateWithSuffix(value, Math.Max(1, maxLength)) + suffixText;
-                    suffix++;
-                }
-
-                sanitizedHeaders.Add(candidate);
-                index++;
-            }
-
-            return sanitizedHeaders;
         }
 
         private static void WriteHeaderRow(IXLWorksheet ws, int row, int startColumn, IReadOnlyList<string> headers, bool center = true, bool includeBorder = true)
@@ -170,7 +111,7 @@ namespace EconToolbox.Desktop.Services
 
         private static IReadOnlyList<string> WriteSanitizedHeaders(IXLWorksheet ws, int row, int startColumn, IEnumerable<string> headers, string fallbackPrefix, bool center = true, bool includeBorder = true)
         {
-            var sanitizedHeaders = SanitizeHeaders(headers, fallbackPrefix);
+            var sanitizedHeaders = ExcelNamingPolicy.SanitizeHeaders(headers, fallbackPrefix, LogWarning);
             WriteHeaderRow(ws, row, startColumn, sanitizedHeaders, center, includeBorder);
             return sanitizedHeaders;
         }
@@ -216,39 +157,57 @@ namespace EconToolbox.Desktop.Services
             }
         }
 
+        private static void ExecuteExport(string operation, Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                LogError(operation, ex);
+                throw new InvalidOperationException($"Failed to {operation}. {ex.Message}", ex);
+            }
+        }
+
         public void ExportCapitalRecovery(double rate, int periods, double factor, string filePath)
         {
-            RunOnSta(() =>
+            ExecuteExport("export the capital recovery worksheet", () =>
             {
-                using var context = new ExportContext();
-                var ws = context.CreateWorksheet("CapitalRecovery");
-
-                var entries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+                RunOnSta(() =>
                 {
-                    ("Interest Rate", rate, "0.00%", "Input discount rate used to compute the capital recovery factor.", false),
-                    ("Number of Periods", periods, "0", "Total compounding periods used in the schedule.", false),
-                    ("Capital Recovery Factor", factor, "0.000000", "r(1+r)^n / ((1+r)^n - 1)", true)
-                };
+                    using var context = new ExportContext();
+                    var ws = context.CreateWorksheet("CapitalRecovery");
 
-                int nextRow = WriteKeyValueTable(ws, 1, 1, "Capital Recovery Factor", entries, context);
-                var noteRange = ws.Range(nextRow, 1, nextRow, 2);
-                noteRange.Merge();
-                noteRange.Value = "Use this sheet to document standalone capital recovery calculations for audit packages.";
-                noteRange.Style.Alignment.WrapText = true;
-                noteRange.Style.Fill.BackgroundColor = DashboardRowLight;
-                noteRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
-                noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
+                    var entries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+                    {
+                        ("Interest Rate", rate, "0.00%", "Input discount rate used to compute the capital recovery factor.", false),
+                        ("Number of Periods", periods, "0", "Total compounding periods used in the schedule.", false),
+                        ("Capital Recovery Factor", factor, "0.000000", "r(1+r)^n / ((1+r)^n - 1)", true)
+                    };
 
-                ws.Columns(1, 2).AdjustToContents();
-                context.Save(filePath);
+                    int nextRow = WriteKeyValueTable(ws, 1, 1, "Capital Recovery Factor", entries, context);
+                    var noteRange = ws.Range(nextRow, 1, nextRow, 2);
+                    noteRange.Merge();
+                    noteRange.Value = "Use this sheet to document standalone capital recovery calculations for audit packages.";
+                    noteRange.Style.Alignment.WrapText = true;
+                    noteRange.Style.Fill.BackgroundColor = DashboardRowLight;
+                    noteRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                    noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+                    ws.Columns(1, 2).AdjustToContents();
+                    context.Save(filePath);
+                });
             });
         }
 
         public void ExportWaterDemand(IEnumerable<Scenario> scenarios, string filePath)
         {
-            RunOnSta(() =>
+            ExecuteExport("export the water demand workbooks", () =>
             {
-                using var context = new ExportContext();
+                RunOnSta(() =>
+                {
+                    using var context = new ExportContext();
                 int scenarioIndex = 1;
 
                 foreach (var scenario in scenarios)
@@ -344,13 +303,16 @@ namespace EconToolbox.Desktop.Services
 
                 context.Save(filePath);
             });
+            });
         }
 
         public void ExportAnnualizer(double firstCost, double rate, double annualOm, double annualBenefits, IEnumerable<FutureCostEntry> future, double futureCostPv, double idc, double totalInvestment, double crf, double annualCost, double bcr, string filePath)
         {
-            RunOnSta(() =>
+            ExecuteExport("export the annualizer workbook", () =>
             {
-                using var context = new ExportContext();
+                RunOnSta(() =>
+                {
+                    using var context = new ExportContext();
 
                 var summary = context.CreateWorksheet("Summary");
 
@@ -410,13 +372,16 @@ namespace EconToolbox.Desktop.Services
 
                 context.Save(filePath);
             });
+            });
         }
 
         public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, IReadOnlyList<Point> damagePoints, string filePath)
         {
-            RunOnSta(() =>
+            ExecuteExport("export the expected annual damage workbook", () =>
             {
-                using var context = new ExportContext();
+                RunOnSta(() =>
+                {
+                    using var context = new ExportContext();
 
             var inputSheet = context.CreateWorksheet("EAD Inputs");
 
@@ -467,40 +432,43 @@ namespace EconToolbox.Desktop.Services
 
             var summary = context.CreateWorksheet("Summary");
 
-            var summaryEntries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
-            {
-                ("Frequency-Damage Points", rowList.Count, "0", "Number of rows exported from the calculator.", false),
-                ("Includes Stage Data", useStage ? "Yes" : "No", null, useStage ? "Stage values were captured alongside each probability." : "Stage values were not provided.", false)
-            };
+                    var summaryEntries = new List<(string Label, object Value, string? Format, string? Comment, bool Highlight)>
+                    {
+                        ("Frequency-Damage Points", rowList.Count, "0", "Number of rows exported from the calculator.", false),
+                        ("Includes Stage Data", useStage ? "Yes" : "No", null, useStage ? "Stage values were captured alongside each probability." : "Stage values were not provided.", false)
+                    };
 
-            if (rowList.Count > 0 && sanitizedDamageList.Count > 0)
-            {
-                var probabilities = rowList.Select(r => r.Probability).ToArray();
-                for (int i = 0; i < sanitizedDamageList.Count; i++)
-                {
-                    var damages = rowList.Select(r => r.Damages.Count > i ? r.Damages[i] : 0.0).ToArray();
-                    double eadValue = EadModel.Compute(probabilities, damages);
-                    summaryEntries.Add(($"{sanitizedDamageList[i]} EAD", eadValue, "$#,##0.00", "Expected annual damage for this column.", i == 0));
-                }
-            }
+                    if (rowList.Count > 0 && sanitizedDamageList.Count > 0)
+                    {
+                        var probabilities = rowList.Select(r => r.Probability).ToArray();
+                        for (int i = 0; i < sanitizedDamageList.Count; i++)
+                        {
+                            var damages = rowList.Select(r => r.Damages.Count > i ? r.Damages[i] : 0.0).ToArray();
+                            double eadValue = EadModel.Compute(probabilities, damages);
+                            summaryEntries.Add(($"{sanitizedDamageList[i]} EAD", eadValue, "$#,##0.00", "Expected annual damage for this column.", i == 0));
+                        }
+                    }
 
-            if (!string.IsNullOrWhiteSpace(result))
-            {
-                summaryEntries.Add(("Narrative", result, null, "Summary text generated by the module.", false));
-            }
+                    if (!string.IsNullOrWhiteSpace(result))
+                    {
+                        summaryEntries.Add(("Narrative", result, null, "Summary text generated by the module.", false));
+                    }
 
-            int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, context);
-            AddEadChart(summary, damagePoints, summaryNextRow, 1, context);
+                    int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, context);
+                    AddEadChart(summary, damagePoints, summaryNextRow, 1, context);
 
-                context.Save(filePath);
+                    context.Save(filePath);
+                });
             });
         }
 
         public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, GanttViewModel gantt, IReadOnlyList<Point> eadDamagePoints, string filePath)
         {
-            RunOnSta(() =>
+            ExecuteExport("export the combined workbook", () =>
             {
-                using var context = new ExportContext();
+                RunOnSta(() =>
+                {
+                    using var context = new ExportContext();
 
             // EAD Sheet
             var eadSheet = context.CreateWorksheet("EAD");
@@ -1092,6 +1060,7 @@ namespace EconToolbox.Desktop.Services
             BuildDashboard(context, ead, agriculture, annualizer, updated, waterDemand, udv, recreationCapacity, gantt);
 
             context.Save(filePath);
+            });
             });
         }
 
