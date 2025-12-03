@@ -1574,7 +1574,9 @@ namespace EconToolbox.Desktop.Services
             if (series.Count == 0)
                 return;
 
-            var data = series.Select(s => (s.Name, s.Points, s.Color)).ToList();
+            var data = series
+                .Select(s => (s.Name, Points: (IReadOnlyList<(double Year, double Demand)>)s.Points, s.Color))
+                .ToList();
             byte[] bytes = CreateWaterDemandChartImage(data);
             using var stream = new MemoryStream(bytes);
             var picture = ws.AddPicture(stream, XLPictureFormat.Png, context.GetPictureName("WaterDemandChart_"));
@@ -1860,7 +1862,7 @@ namespace EconToolbox.Desktop.Services
             highlightBrush.Freeze();
             dc.DrawEllipse(highlightBrush, null, new Point(highlightX, highlightY), 5.0, 5.0);
 
-            var typeface = new Typeface(new FontFamily("Segoe UI"));
+            var typeface = new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
             var axisBrush = new SolidColorBrush(ChartGray);
             axisBrush.Freeze();
 
