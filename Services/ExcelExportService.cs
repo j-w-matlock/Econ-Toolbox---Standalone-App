@@ -1566,7 +1566,7 @@ namespace EconToolbox.Desktop.Services
                 .Select(s => new
                 {
                     s.Name,
-                    Points = s.Results.Select(r => ((double)r.Year, r.AdjustedDemand)).ToList(),
+                    Points = s.Results.Select(r => (Year: (double)r.Year, Demand: r.AdjustedDemand)).ToList(),
                     Color = GetColorFromBrush(s.LineBrush, ChartBlue)
                 })
                 .Where(s => s.Points.Count >= 2)
@@ -1617,13 +1617,13 @@ namespace EconToolbox.Desktop.Services
                 dc.DrawRectangle(new SolidColorBrush(ChartOrange), null, costRect);
 
                 // Labels
-                FormattedText benefitsLabel = new($"Benefits: {annualBenefits:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI", FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                FormattedText benefitsLabel = new($"Benefits: {annualBenefits:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, Brushes.Black, 1.0);
                 dc.DrawText(benefitsLabel, new Point(benefitsRect.X, originY + 5));
 
-                FormattedText costLabel = new($"Costs: {annualCost:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI", FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                FormattedText costLabel = new($"Costs: {annualCost:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, Brushes.Black, 1.0);
                 dc.DrawText(costLabel, new Point(costRect.X, originY + 5));
 
-                FormattedText bcrLabel = new($"BCR: {bcr:0.00}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI Semibold", FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 14, Brushes.Black, 1.0);
+                FormattedText bcrLabel = new($"BCR: {bcr:0.00}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 14, Brushes.Black, 1.0);
                 dc.DrawText(bcrLabel, new Point(width - 120, 25));
             }
 
@@ -1667,11 +1667,11 @@ namespace EconToolbox.Desktop.Services
                     double y = origin.Y - (eadValue.Value / maxDamage) * plotHeight;
                     Pen dashed = new(new SolidColorBrush(ChartOrange), 1) { DashStyle = DashStyles.Dash };
                     dc.DrawLine(dashed, new Point(origin.X, y), new Point(width - margin, y));
-                    FormattedText eadLabel = new($"EAD: {eadValue.Value:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI", FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                    FormattedText eadLabel = new($"EAD: {eadValue.Value:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 12, Brushes.Black, 1.0);
                     dc.DrawText(eadLabel, new Point(origin.X + 5, y - 18));
                 }
 
-                FormattedText title = new(curveName ?? "Damage Curve", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Segoe UI", FontStyles.Normal, FontWeights.Bold, FontStretches.Normal), 13, Brushes.Black, 1.0);
+                FormattedText title = new(curveName ?? "Damage Curve", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal), 13, Brushes.Black, 1.0);
                 dc.DrawText(title, new Point(margin, 10));
             }
 
@@ -1860,7 +1860,7 @@ namespace EconToolbox.Desktop.Services
             highlightBrush.Freeze();
             dc.DrawEllipse(highlightBrush, null, new Point(highlightX, highlightY), 5.0, 5.0);
 
-            var typeface = new Typeface("Segoe UI");
+            var typeface = new Typeface(new FontFamily("Segoe UI"));
             var axisBrush = new SolidColorBrush(ChartGray);
             axisBrush.Freeze();
 
