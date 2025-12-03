@@ -8,6 +8,7 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Windows.Media;
+using System.Windows;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using EconToolbox.Desktop.Models;
