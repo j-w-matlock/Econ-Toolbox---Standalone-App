@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using EconToolbox.Desktop.ViewModels;
 
 namespace EconToolbox.Desktop.Models
@@ -9,6 +11,16 @@ namespace EconToolbox.Desktop.Models
 
         public CropScapeAcreageSummary(int code, string name, long pixelCount, double acres, double percentOfTotal)
         {
+            if (pixelCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(pixelCount), "Pixel count cannot be negative.");
+            }
+
+            if (!double.IsFinite(acres) || acres < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(acres), "Acreage must be a finite, non-negative value.");
+            }
+
             Code = code;
             Name = name;
             PixelCount = pixelCount;
@@ -48,6 +60,28 @@ namespace EconToolbox.Desktop.Models
         {
             double updated = totalAcres > 0 ? Acres / totalAcres : 0;
             PercentOfTotal = updated;
+        }
+
+        public static IReadOnlyList<CropScapeAcreageSummary> FromAreas(
+            IEnumerable<CropScapeClassArea> areas,
+            out double totalAcres)
+        {
+            if (areas == null)
+            {
+                throw new ArgumentNullException(nameof(areas));
+            }
+
+            var areaList = areas.ToList();
+            totalAcres = areaList.Sum(area => area.Acres);
+
+            return areaList
+                .Select(area => new CropScapeAcreageSummary(
+                    area.Code,
+                    area.Name,
+                    area.PixelCount,
+                    area.Acres,
+                    totalAcres > 0 ? area.Acres / totalAcres : 0))
+                .ToList();
         }
     }
 }

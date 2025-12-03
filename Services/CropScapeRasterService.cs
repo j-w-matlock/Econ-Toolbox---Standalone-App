@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BitMiracle.LibTiff.Classic;
+using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.Services
 {
@@ -14,6 +15,7 @@ namespace EconToolbox.Desktop.Services
         private const int GeoDoubleParamsTag = 34736;
         private const ushort ProjLinearUnitsGeoKey = 2052;
         private const ushort ProjLinearUnitSizeGeoKey = 2053;
+        private const long MaxSupportedPixelCount = 100_000_000;
 
         public IReadOnlyList<CropScapeClassArea> ReadClassAreas(string path)
         {
@@ -36,6 +38,17 @@ namespace EconToolbox.Desktop.Services
             int width = tiff.GetField(TiffTag.IMAGEWIDTH)?[0].ToInt() ?? throw new InvalidOperationException("The raster does not specify an image width.");
             int height = tiff.GetField(TiffTag.IMAGELENGTH)?[0].ToInt() ?? throw new InvalidOperationException("The raster does not specify an image height.");
 
+            if (width <= 0 || height <= 0)
+            {
+                throw new InvalidOperationException("The raster reported non-positive dimensions.");
+            }
+
+            long pixelBudget = (long)width * height;
+            if (pixelBudget <= 0 || pixelBudget > MaxSupportedPixelCount)
+            {
+                throw new InvalidOperationException($"The raster dimensions exceed the supported size of {MaxSupportedPixelCount:N0} pixels.");
+            }
+
             int bitsPerSample = tiff.GetField(TiffTag.BITSPERSAMPLE)?[0].ToInt() ?? 8;
             int samplesPerPixel = tiff.GetField(TiffTag.SAMPLESPERPIXEL)?[0].ToInt() ?? 1;
 
@@ -50,6 +63,11 @@ namespace EconToolbox.Desktop.Services
             }
 
             (double pixelWidthMeters, double pixelHeightMeters) = ReadPixelSizeInMeters(tiff);
+
+            if (!double.IsFinite(pixelWidthMeters) || !double.IsFinite(pixelHeightMeters) || pixelWidthMeters <= 0 || pixelHeightMeters <= 0)
+            {
+                throw new InvalidOperationException("The raster reported invalid pixel dimensions.");
+            }
 
             double acresPerPixel = (pixelWidthMeters * pixelHeightMeters) / SquareMetersPerAcre;
 
@@ -219,5 +237,4 @@ namespace EconToolbox.Desktop.Services
         }
     }
 
-    public record CropScapeClassArea(int Code, string Name, long PixelCount, double Acres);
 }
