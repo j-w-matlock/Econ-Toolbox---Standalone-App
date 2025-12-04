@@ -188,7 +188,7 @@
                                                             Binding="{Binding FirstCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
                                                             Width="140"/>
                                         <DataGridTextColumn Header="Rate (%)"
-                                                            Binding="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource SafeNumberConverter}, StringFormat=F2}"
+                                                            Binding="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource SafeNumberConverter}}"
                                                             Width="95"/>
                                         <DataGridTextColumn Header="Annual O&amp;M"
                                                             Binding="{Binding AnnualOm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
@@ -217,8 +217,7 @@
                                                             IsReadOnly="True"
                                                             Width="120"/>
                                         <DataGridTextColumn Header="Notes"
-                                                            Binding="{Binding Notes}"
-                                                            IsReadOnly="True"
+                                                            Binding="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                             Width="200"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
