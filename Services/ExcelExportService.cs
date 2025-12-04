@@ -500,7 +500,7 @@ namespace EconToolbox.Desktop.Services
             }
             eadSheet.Cell(rowIdx + 1, 1).Value = "Result";
             eadSheet.Cell(rowIdx + 1, 1).Style.Font.SetBold();
-            eadSheet.Cell(rowIdx + 1, 2).Value = JoinOrEmpty(" | ", ead.Results);
+            eadSheet.Cell(rowIdx + 1, 2).Value = JoinOrEmpty(" | ", ead.Results.Select(r => $"{r.Label}: {r.Result}"));
             eadSheet.Range(rowIdx + 1, 1, rowIdx + 1, Math.Max(2, eadColumnCount)).Merge();
             eadSheet.Range(1, 1, 1, eadColumnCount).Style.Font.SetBold();
             eadSheet.Columns(1, eadColumnCount).AdjustToContents();
@@ -1154,7 +1154,7 @@ namespace EconToolbox.Desktop.Services
                         primaryEadValue = eadValue;
                     eadRows.Add(($"{ead.DamageColumns[i].Name} EAD", eadValue, "$#,##0.00", "Expected annual damage for this damage column.", i == 0));
                 }
-                eadRows.Add(("Summary", JoinOrEmpty(" | ", ead.Results), null, "Combined textual output from the calculator.", false));
+                eadRows.Add(("Summary", JoinOrEmpty(" | ", ead.Results.Select(r => $"{r.Label}: {r.Result}")), null, "Combined textual output from the calculator.", false));
             }
             else
             {
