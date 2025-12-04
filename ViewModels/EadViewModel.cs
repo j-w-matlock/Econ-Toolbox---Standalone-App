@@ -42,8 +42,8 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private ObservableCollection<string> _results = new();
-        public ObservableCollection<string> Results
+        private ObservableCollection<EadResultRow> _results = new();
+        public ObservableCollection<EadResultRow> Results
         {
             get => _results;
             set { _results = value; OnPropertyChanged(); }
@@ -280,7 +280,10 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 if (Rows.Count == 0 || DamageColumns.Count == 0)
                 {
-                    Results = new ObservableCollection<string> { "No data" };
+                    Results = new ObservableCollection<EadResultRow>
+                    {
+                        new() { Label = "Status", Result = "No data" }
+                    };
                     DamageSeries.Clear();
                     DamageCurvePoints = new PointCollection();
                     SetAxisLabels(null, false);
@@ -289,7 +292,10 @@ namespace EconToolbox.Desktop.ViewModels
 
                 if (Rows.Any(r => double.IsNaN(r.Probability) || r.Probability < 0 || r.Probability > 1))
                 {
-                    Results = new ObservableCollection<string> { "Probabilities must be between 0 and 1." };
+                    Results = new ObservableCollection<EadResultRow>
+                    {
+                        new() { Label = "Status", Result = "Probabilities must be between 0 and 1." }
+                    };
                     DamageSeries.Clear();
                     DamageCurvePoints = new PointCollection();
                     SetAxisLabels(null, false);
@@ -306,19 +312,26 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 var probabilities = Rows.Select(r => r.Probability).ToArray();
-                var results = new System.Collections.Generic.List<string>();
+                var results = new System.Collections.Generic.List<EadResultRow>();
                 for (int i = 0; i < DamageColumns.Count; i++)
                 {
                     var damages = Rows.Select(r => r.Damages[i]).ToArray();
                     double ead = EadModel.Compute(probabilities, damages);
-                    results.Add($"{DamageColumns[i].Name}: {ead:F2}");
+                    results.Add(new EadResultRow
+                    {
+                        Label = DamageColumns[i].Name,
+                        Result = ead.ToString("C2")
+                    });
                 }
-                Results = new ObservableCollection<string>(results);
+                Results = new ObservableCollection<EadResultRow>(results);
                 UpdateCharts();
             }
             catch (Exception ex)
             {
-                Results = new ObservableCollection<string> { $"Error: {ex.Message}" };
+                Results = new ObservableCollection<EadResultRow>
+                {
+                    new() { Label = "Error", Result = ex.Message }
+                };
                 DamageCurvePoints = new PointCollection();
                 DamageSeries.Clear();
                 SetAxisLabels(null, false);
@@ -509,7 +522,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 try
                 {
-                    string combined = string.Join(" | ", Results);
+                    string combined = string.Join(" | ", Results.Select(r => $"{r.Label}: {r.Result}"));
                     await Task.Run(() => _excelExportService.ExportEad(
                         Rows,
                         DamageColumns.Select(c => c.Name),

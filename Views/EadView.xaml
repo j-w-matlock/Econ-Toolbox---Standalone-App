@@ -319,32 +319,35 @@
                     </Border>
                 </UniformGrid>
 
-                <ItemsControl ItemsSource="{Binding Results}" Grid.Row="3" Margin="{StaticResource Margin.StackLarge}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel/> 
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="{StaticResource Brush.Surface}"
-                                    BorderBrush="{StaticResource Brush.Border}"
-                                    BorderThickness="1"
-                                    CornerRadius="6"
-                                    Padding="{StaticResource Padding.Content}"
-                                    Margin="{StaticResource Margin.Inline}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets"
-                                               Text=""
-                                               FontSize="16"
-                                               Foreground="{StaticResource Brush.Primary}"
-                                               Margin="{StaticResource Margin.Inline}"/>
-                                    <TextBlock Text="{Binding}" Style="{StaticResource Text.Body}"/>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <Border Grid.Row="3"
+                        Margin="{StaticResource Margin.StackLarge}"
+                        Background="{StaticResource Brush.Surface}"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="{StaticResource Padding.Card}">
+                    <StackPanel>
+                        <TextBlock Text="Expected Annual Damage Results"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,8"/>
+                        <DataGrid ItemsSource="{Binding Results}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  HeadersVisibility="Column"
+                                  IsReadOnly="True"
+                                  Margin="0,4,0,0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Damage Column"
+                                                    Binding="{Binding Label}"
+                                                    Width="*"/>
+                                <DataGridTextColumn Header="Expected Annual Damage"
+                                                    Binding="{Binding Result}"
+                                                    Width="220"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
 
                 <StackPanel Grid.Row="4" Margin="{StaticResource Margin.StackLarge}">
                     <Border Style="{StaticResource Border.ResultInfo}">
