@@ -375,7 +375,7 @@ namespace EconToolbox.Desktop.Services
             });
         }
 
-        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, IReadOnlyList<Point> damagePoints, string filePath)
+        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, string filePath)
         {
             ExecuteExport("export the expected annual damage workbook", () =>
             {
@@ -428,7 +428,7 @@ namespace EconToolbox.Desktop.Services
             inputSheet.Columns(1, headers.Count).AdjustToContents();
 
             int chartRow = dataRowCount + 3;
-            AddEadChart(inputSheet, damagePoints, chartRow, 1, context);
+            AddEadChart(inputSheet, BuildEadPlotPoints(rowList, useStage), chartRow, 1, context);
 
             var summary = context.CreateWorksheet("Summary");
 
@@ -455,14 +455,14 @@ namespace EconToolbox.Desktop.Services
                     }
 
                     int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, context);
-                    AddEadChart(summary, damagePoints, summaryNextRow, 1, context);
+                    AddEadChart(summary, BuildEadPlotPoints(rowList, useStage), summaryNextRow, 1, context);
 
                     context.Save(filePath);
                 });
             });
         }
 
-        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, GanttViewModel gantt, IReadOnlyList<Point> eadDamagePoints, string filePath)
+        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, GanttViewModel gantt, string filePath)
         {
             ExecuteExport("export the combined workbook", () =>
             {
@@ -504,7 +504,7 @@ namespace EconToolbox.Desktop.Services
             eadSheet.Range(rowIdx + 1, 1, rowIdx + 1, Math.Max(2, eadColumnCount)).Merge();
             eadSheet.Range(1, 1, 1, eadColumnCount).Style.Font.SetBold();
             eadSheet.Columns(1, eadColumnCount).AdjustToContents();
-            AddEadChart(eadSheet, eadDamagePoints, rowIdx + 3, 1, context);
+            AddEadChart(eadSheet, BuildEadPlotPoints(ead.Rows, ead.UseStage), rowIdx + 3, 1, context);
 
             // Agriculture Depth-Damage Sheet
             var agSheet = context.CreateWorksheet("Agriculture");
@@ -1970,6 +1970,19 @@ namespace EconToolbox.Desktop.Services
             };
         }
 
+        private static IReadOnlyList<Point> BuildEadPlotPoints(IEnumerable<EadViewModel.EadRow> rows, bool useStage)
+        {
+            var ordered = useStage
+                ? rows.Where(r => r.Stage.HasValue && r.Damages.Count > 0)
+                      .OrderBy(r => r.Stage!.Value)
+                      .Select(r => new Point(r.Stage!.Value, r.Damages.FirstOrDefault()))
+                : rows.Where(r => r.Damages.Count > 0)
+                      .OrderBy(r => r.Probability)
+                      .Select(r => new Point(r.Probability, r.Damages.FirstOrDefault()));
+
+            return ordered.ToList();
+        }
+
         private static void AddEadChart(IXLWorksheet ws, IReadOnlyList<Point>? damagePoints, int row, int column, ExportContext context)
         {
             if (damagePoints == null || damagePoints.Count == 0)
@@ -1982,14 +1995,39 @@ namespace EconToolbox.Desktop.Services
 
         private static byte[] CreateEadChartImage(IReadOnlyList<Point>? damagePoints)
         {
-            double width = 300;
-            double height = 150;
+            const double width = 300;
+            const double height = 150;
+            if (damagePoints == null || damagePoints.Count < 2)
+                return Array.Empty<byte>();
+
+            double minX = damagePoints.Min(p => p.X);
+            double maxX = damagePoints.Max(p => p.X);
+            double minY = damagePoints.Min(p => p.Y);
+            double maxY = damagePoints.Max(p => p.Y);
+
+            if (Math.Abs(maxX - minX) < double.Epsilon || Math.Abs(maxY - minY) < double.Epsilon)
+                return Array.Empty<byte>();
+
+            double xPadding = (maxX - minX) * 0.05;
+            double yPadding = (maxY - minY) * 0.1;
+
+            double paddedMinX = minX - xPadding;
+            double paddedMaxX = maxX + xPadding;
+            double paddedMinY = minY - yPadding;
+            double paddedMaxY = maxY + yPadding;
+
+            var scaledPoints = damagePoints
+                .OrderBy(p => p.X)
+                .Select(p => new Point(
+                    (p.X - paddedMinX) / (paddedMaxX - paddedMinX) * width,
+                    height - (p.Y - paddedMinY) / (paddedMaxY - paddedMinY) * height))
+                .ToArray();
+
             DrawingVisual dv = new();
             using (var dc = dv.RenderOpen())
             {
                 dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
-                if (damagePoints is { Count: > 0 } curvePoints)
-                    DrawPolyline(dc, curvePoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D6A8E")), 2));
+                DrawPolyline(dc, scaledPoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D6A8E")), 2));
             }
             RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
             rtb.Render(dv);

@@ -31,7 +31,6 @@ public interface IExcelExportService
         IEnumerable<string> damageColumns,
         bool useStage,
         string result,
-        IReadOnlyList<Point> damagePoints,
         string filePath);
 
     void ExportAll(
@@ -43,6 +42,5 @@ public interface IExcelExportService
         UdvViewModel udv,
         RecreationCapacityViewModel recreationCapacity,
         GanttViewModel gantt,
-        IReadOnlyList<Point> eadDamagePoints,
         string filePath);
 }

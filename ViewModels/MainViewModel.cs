@@ -294,10 +294,6 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 try
                 {
-                    var eadDamagePoints = Ead.DamageCurvePoints
-                        .Select(p => new Point(p.X, p.Y))
-                        .ToList();
-
                     await Task.Run(() => _excelExportService.ExportAll(
                         Ead,
                         AgricultureDepthDamage,
@@ -307,7 +303,6 @@ namespace EconToolbox.Desktop.ViewModels
                         Udv,
                         RecreationCapacity,
                         Gantt,
-                        eadDamagePoints,
                         dlg.FileName));
                 }
                 catch (Exception ex)
