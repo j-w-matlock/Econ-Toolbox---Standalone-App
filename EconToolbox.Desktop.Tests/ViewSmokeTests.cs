@@ -59,7 +59,7 @@ public class ViewSmokeTests
 
     private sealed class StubExcelExportService : IExcelExportService
     {
-        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, GanttViewModel gantt, System.Collections.Generic.IReadOnlyList<Point> eadDamagePoints, string filePath)
+        public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, GanttViewModel gantt, string filePath)
         {
         }
 
@@ -71,7 +71,7 @@ public class ViewSmokeTests
         {
         }
 
-        public void ExportEad(System.Collections.Generic.IEnumerable<EadViewModel.EadRow> rows, System.Collections.Generic.IEnumerable<string> damageColumns, bool useStage, string result, System.Collections.Generic.IReadOnlyList<Point> damagePoints, string filePath)
+        public void ExportEad(System.Collections.Generic.IEnumerable<EadViewModel.EadRow> rows, System.Collections.Generic.IEnumerable<string> damageColumns, bool useStage, string result, string filePath)
         {
         }
 

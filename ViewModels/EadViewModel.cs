@@ -515,7 +515,6 @@ namespace EconToolbox.Desktop.ViewModels
                         DamageColumns.Select(c => c.Name),
                         UseStage,
                         combined,
-                        DamageCurvePoints.Select(p => new Point(p.X, p.Y)).ToList(),
                         dlg.FileName));
                 }
                 catch (Exception ex)
