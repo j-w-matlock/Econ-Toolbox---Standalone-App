@@ -126,6 +126,48 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _yAxisTitle = value; OnPropertyChanged(); }
         }
 
+        private double _axisLabelFontSize = 11;
+        public double AxisLabelFontSize
+        {
+            get => _axisLabelFontSize;
+            set { _axisLabelFontSize = value; OnPropertyChanged(); }
+        }
+
+        private double _axisTitleFontSize = 12;
+        public double AxisTitleFontSize
+        {
+            get => _axisTitleFontSize;
+            set { _axisTitleFontSize = value; OnPropertyChanged(); }
+        }
+
+        private double _axisLabelOffsetX;
+        public double AxisLabelOffsetX
+        {
+            get => _axisLabelOffsetX;
+            set { _axisLabelOffsetX = value; OnPropertyChanged(); }
+        }
+
+        private double _axisLabelOffsetY;
+        public double AxisLabelOffsetY
+        {
+            get => _axisLabelOffsetY;
+            set { _axisLabelOffsetY = value; OnPropertyChanged(); }
+        }
+
+        private double _axisTitleOffsetX;
+        public double AxisTitleOffsetX
+        {
+            get => _axisTitleOffsetX;
+            set { _axisTitleOffsetX = value; OnPropertyChanged(); }
+        }
+
+        private double _axisTitleOffsetY;
+        public double AxisTitleOffsetY
+        {
+            get => _axisTitleOffsetY;
+            set { _axisTitleOffsetY = value; OnPropertyChanged(); }
+        }
+
         private string _customYAxisTitle = string.Empty;
         public string CustomYAxisTitle
         {
