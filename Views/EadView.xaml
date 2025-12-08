@@ -177,7 +177,7 @@
                                                  ToolTip="Leave blank to use the suggested axis title."/>
                                     </StackPanel>
                                 </UniformGrid>
-                                <UniformGrid Columns="2" Rows="2" Margin="0,8,0,0" HorizontalAlignment="Left">
+                                <UniformGrid Columns="2" Margin="0,8,0,0" HorizontalAlignment="Left">
                                     <StackPanel Margin="0,0,8,8">
                                         <TextBlock Text="Axis label size" Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding AxisLabelFontSize, UpdateSourceTrigger=PropertyChanged}"
@@ -190,28 +190,40 @@
                                                  MinWidth="160"
                                                  ToolTip="Adjust the font size for the X and Y axis titles."/>
                                     </StackPanel>
-                                    <StackPanel Margin="0,0,8,0">
+                                    <StackPanel Margin="0,0,8,8">
                                         <TextBlock Text="Axis label offset (X,Y)" Style="{StaticResource Text.Caption}"/>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBox Text="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="76"
+                                                     Width="88"
                                                      Margin="0,0,8,0"
                                                      ToolTip="Horizontal offset applied to all axis labels."/>
                                             <TextBox Text="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="76"
+                                                     Width="88"
                                                      ToolTip="Vertical offset applied to all axis labels."/>
                                         </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Margin="8,0,0,0">
-                                        <TextBlock Text="Axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
+                                    <StackPanel Margin="8,0,0,8">
+                                        <TextBlock Text="X-axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBox Text="{Binding AxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="76"
+                                            <TextBox Text="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="88"
                                                      Margin="0,0,8,0"
-                                                     ToolTip="Horizontal offset applied to the X and Y axis titles."/>
-                                            <TextBox Text="{Binding AxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="76"
-                                                     ToolTip="Vertical offset applied to the X and Y axis titles."/>
+                                                     ToolTip="Horizontal offset applied to the X-axis title."/>
+                                            <TextBox Text="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="88"
+                                                     ToolTip="Vertical offset applied to the X-axis title."/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,8,0">
+                                        <TextBlock Text="Y-axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox Text="{Binding YAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="88"
+                                                     Margin="0,0,8,0"
+                                                     ToolTip="Horizontal offset applied to the Y-axis title."/>
+                                            <TextBox Text="{Binding YAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="88"
+                                                     ToolTip="Vertical offset applied to the Y-axis title."/>
                                         </StackPanel>
                                     </StackPanel>
                                 </UniformGrid>
@@ -338,7 +350,7 @@
                                                    FontSize="{Binding AxisTitleFontSize}"
                                                    Foreground="{StaticResource Brush.TextPrimary}">
                                             <TextBlock.RenderTransform>
-                                                <TranslateTransform X="{Binding AxisTitleOffsetX}" Y="{Binding AxisTitleOffsetY}"/>
+                                                <TranslateTransform X="{Binding XAxisTitleOffsetX}" Y="{Binding XAxisTitleOffsetY}"/>
                                             </TextBlock.RenderTransform>
                                         </TextBlock>
                                         <TextBlock Text="{Binding YAxisTitle}"
@@ -350,7 +362,7 @@
                                             <TextBlock.RenderTransform>
                                                 <TransformGroup>
                                                     <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
-                                                    <TranslateTransform X="{Binding AxisTitleOffsetX}" Y="{Binding AxisTitleOffsetY}"/>
+                                                    <TranslateTransform X="{Binding YAxisTitleOffsetX}" Y="{Binding YAxisTitleOffsetY}"/>
                                                 </TransformGroup>
                                             </TextBlock.RenderTransform>
                                             <TextBlock.FontSize>
