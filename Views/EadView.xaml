@@ -201,7 +201,11 @@
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,8">
                                         <TextBlock Text="Axis label offset (X,Y)" Style="{StaticResource Text.Caption}"/>
-                                        <UniformGrid Columns="2" Rows="1" ColumnSpacing="8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
                                             <StackPanel>
                                                 <TextBox Text="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
                                                          Width="92"
@@ -212,7 +216,7 @@
                                                         Value="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
                                                         Margin="0,4,0,0"/>
                                             </StackPanel>
-                                            <StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                                 <TextBox Text="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
                                                          Width="92"
                                                          ToolTip="Vertical offset applied to all axis labels."/>
@@ -222,11 +226,15 @@
                                                         Value="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
                                                         Margin="0,4,0,0"/>
                                             </StackPanel>
-                                        </UniformGrid>
+                                        </Grid>
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,8">
                                         <TextBlock Text="X-axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
-                                        <UniformGrid Columns="2" Rows="1" ColumnSpacing="8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
                                             <StackPanel>
                                                 <TextBox Text="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
                                                          Width="92"
@@ -237,7 +245,7 @@
                                                         Value="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
                                                         Margin="0,4,0,0"/>
                                             </StackPanel>
-                                            <StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                                 <TextBox Text="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
                                                          Width="92"
                                                          ToolTip="Vertical offset applied to the X-axis title."/>
@@ -247,7 +255,7 @@
                                                         Value="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
                                                         Margin="0,4,0,0"/>
                                             </StackPanel>
-                                        </UniformGrid>
+                                        </Grid>
                                     </StackPanel>
                                     <StackPanel Grid.Row="2" Grid.Column="1" Margin="8,0,0,0">
                                         <TextBlock Text="Y-axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
