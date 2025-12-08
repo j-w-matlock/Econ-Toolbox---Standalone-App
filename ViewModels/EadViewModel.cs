@@ -154,18 +154,32 @@ namespace EconToolbox.Desktop.ViewModels
             set { _axisLabelOffsetY = value; OnPropertyChanged(); }
         }
 
-        private double _axisTitleOffsetX;
-        public double AxisTitleOffsetX
+        private double _xAxisTitleOffsetX;
+        public double XAxisTitleOffsetX
         {
-            get => _axisTitleOffsetX;
-            set { _axisTitleOffsetX = value; OnPropertyChanged(); }
+            get => _xAxisTitleOffsetX;
+            set { _xAxisTitleOffsetX = value; OnPropertyChanged(); }
         }
 
-        private double _axisTitleOffsetY;
-        public double AxisTitleOffsetY
+        private double _xAxisTitleOffsetY;
+        public double XAxisTitleOffsetY
         {
-            get => _axisTitleOffsetY;
-            set { _axisTitleOffsetY = value; OnPropertyChanged(); }
+            get => _xAxisTitleOffsetY;
+            set { _xAxisTitleOffsetY = value; OnPropertyChanged(); }
+        }
+
+        private double _yAxisTitleOffsetX;
+        public double YAxisTitleOffsetX
+        {
+            get => _yAxisTitleOffsetX;
+            set { _yAxisTitleOffsetX = value; OnPropertyChanged(); }
+        }
+
+        private double _yAxisTitleOffsetY;
+        public double YAxisTitleOffsetY
+        {
+            get => _yAxisTitleOffsetY;
+            set { _yAxisTitleOffsetY = value; OnPropertyChanged(); }
         }
 
         private string _customYAxisTitle = string.Empty;
