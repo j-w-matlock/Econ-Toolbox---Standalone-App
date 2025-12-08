@@ -177,6 +177,44 @@
                                                  ToolTip="Leave blank to use the suggested axis title."/>
                                     </StackPanel>
                                 </UniformGrid>
+                                <UniformGrid Columns="2" Rows="2" Margin="0,8,0,0" HorizontalAlignment="Left">
+                                    <StackPanel Margin="0,0,8,8">
+                                        <TextBlock Text="Axis label size" Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding AxisLabelFontSize, UpdateSourceTrigger=PropertyChanged}"
+                                                 MinWidth="160"
+                                                 ToolTip="Adjust the font size for tick mark labels on both axes."/>
+                                    </StackPanel>
+                                    <StackPanel Margin="8,0,0,8">
+                                        <TextBlock Text="Axis title size" Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding AxisTitleFontSize, UpdateSourceTrigger=PropertyChanged}"
+                                                 MinWidth="160"
+                                                 ToolTip="Adjust the font size for the X and Y axis titles."/>
+                                    </StackPanel>
+                                    <StackPanel Margin="0,0,8,0">
+                                        <TextBlock Text="Axis label offset (X,Y)" Style="{StaticResource Text.Caption}"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox Text="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="76"
+                                                     Margin="0,0,8,0"
+                                                     ToolTip="Horizontal offset applied to all axis labels."/>
+                                            <TextBox Text="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="76"
+                                                     ToolTip="Vertical offset applied to all axis labels."/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Margin="8,0,0,0">
+                                        <TextBlock Text="Axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox Text="{Binding AxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="76"
+                                                     Margin="0,0,8,0"
+                                                     ToolTip="Horizontal offset applied to the X and Y axis titles."/>
+                                            <TextBox Text="{Binding AxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                     Width="76"
+                                                     ToolTip="Vertical offset applied to the X and Y axis titles."/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </UniformGrid>
                             </StackPanel>
                             <Border Background="{StaticResource Brush.ChartFill}"
                                     BorderBrush="{StaticResource Brush.Border}"
@@ -236,55 +274,88 @@
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Bottom"
                                                    Margin="12,0,0,10"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
                                         <TextBlock Text="{Binding XAxisMidLabel}"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Bottom"
                                                    Margin="0,0,0,10"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
                                         <TextBlock Text="{Binding XAxisMaxLabel}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
                                                    Margin="0,0,12,10"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
                                         <TextBlock Text="{Binding YAxisMinLabel}"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Bottom"
                                                    Margin="14,0,0,34"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
                                         <TextBlock Text="{Binding YAxisMidLabel}"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    Margin="14,0,0,0"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
                                         <TextBlock Text="{Binding YAxisMaxLabel}"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Top"
                                                    Margin="14,12,0,0"
-                                                   FontSize="11"
-                                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
                                         <TextBlock Text="{Binding XAxisTitle}"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Bottom"
                                                    Margin="0,0,0,-6"
                                                    FontWeight="SemiBold"
-                                                   FontSize="12"
-                                                   Foreground="{StaticResource Brush.TextPrimary}"/>
+                                                   FontSize="{Binding AxisTitleFontSize}"
+                                                   Foreground="{StaticResource Brush.TextPrimary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisTitleOffsetX}" Y="{Binding AxisTitleOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
                                         <TextBlock Text="{Binding YAxisTitle}"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    Margin="-14,0,0,0"
                                                    FontWeight="SemiBold"
-                                                   FontSize="12"
                                                    Foreground="{StaticResource Brush.TextPrimary}">
                                             <TextBlock.RenderTransform>
-                                                <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
+                                                <TransformGroup>
+                                                    <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
+                                                    <TranslateTransform X="{Binding AxisTitleOffsetX}" Y="{Binding AxisTitleOffsetY}"/>
+                                                </TransformGroup>
                                             </TextBlock.RenderTransform>
+                                            <TextBlock.FontSize>
+                                                <Binding Path="AxisTitleFontSize"/>
+                                            </TextBlock.FontSize>
                                         </TextBlock>
                                     </Grid>
                                 </Grid>
