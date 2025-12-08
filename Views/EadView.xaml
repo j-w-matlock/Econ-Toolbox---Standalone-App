@@ -177,56 +177,104 @@
                                                  ToolTip="Leave blank to use the suggested axis title."/>
                                     </StackPanel>
                                 </UniformGrid>
-                                <UniformGrid Columns="2" Margin="0,8,0,0" HorizontalAlignment="Left">
-                                    <StackPanel Margin="0,0,8,8">
+                                <Grid Margin="0,8,0,0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,8">
                                         <TextBlock Text="Axis label size" Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding AxisLabelFontSize, UpdateSourceTrigger=PropertyChanged}"
                                                  MinWidth="160"
                                                  ToolTip="Adjust the font size for tick mark labels on both axes."/>
                                     </StackPanel>
-                                    <StackPanel Margin="8,0,0,8">
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,8">
                                         <TextBlock Text="Axis title size" Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding AxisTitleFontSize, UpdateSourceTrigger=PropertyChanged}"
                                                  MinWidth="160"
                                                  ToolTip="Adjust the font size for the X and Y axis titles."/>
                                     </StackPanel>
-                                    <StackPanel Margin="0,0,8,8">
+                                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,8">
                                         <TextBlock Text="Axis label offset (X,Y)" Style="{StaticResource Text.Caption}"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBox Text="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="88"
-                                                     Margin="0,0,8,0"
-                                                     ToolTip="Horizontal offset applied to all axis labels."/>
-                                            <TextBox Text="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="88"
-                                                     ToolTip="Vertical offset applied to all axis labels."/>
-                                        </StackPanel>
+                                        <UniformGrid Columns="2" Rows="1" ColumnSpacing="8">
+                                            <StackPanel>
+                                                <TextBox Text="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="92"
+                                                         ToolTip="Horizontal offset applied to all axis labels."/>
+                                                <Slider Minimum="-50"
+                                                        Maximum="50"
+                                                        SmallChange="1"
+                                                        Value="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                        Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBox Text="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="92"
+                                                         ToolTip="Vertical offset applied to all axis labels."/>
+                                                <Slider Minimum="-50"
+                                                        Maximum="50"
+                                                        SmallChange="1"
+                                                        Value="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                        Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                        </UniformGrid>
                                     </StackPanel>
-                                    <StackPanel Margin="8,0,0,8">
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,8">
                                         <TextBlock Text="X-axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBox Text="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="88"
-                                                     Margin="0,0,8,0"
-                                                     ToolTip="Horizontal offset applied to the X-axis title."/>
-                                            <TextBox Text="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="88"
-                                                     ToolTip="Vertical offset applied to the X-axis title."/>
-                                        </StackPanel>
+                                        <UniformGrid Columns="2" Rows="1" ColumnSpacing="8">
+                                            <StackPanel>
+                                                <TextBox Text="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="92"
+                                                         ToolTip="Horizontal offset applied to the X-axis title."/>
+                                                <Slider Minimum="-50"
+                                                        Maximum="50"
+                                                        SmallChange="1"
+                                                        Value="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                        Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBox Text="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="92"
+                                                         ToolTip="Vertical offset applied to the X-axis title."/>
+                                                <Slider Minimum="-50"
+                                                        Maximum="50"
+                                                        SmallChange="1"
+                                                        Value="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                        Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                        </UniformGrid>
                                     </StackPanel>
-                                    <StackPanel Margin="0,0,8,0">
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="8,0,0,0">
                                         <TextBlock Text="Y-axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBox Text="{Binding YAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="88"
-                                                     Margin="0,0,8,0"
-                                                     ToolTip="Horizontal offset applied to the Y-axis title."/>
-                                            <TextBox Text="{Binding YAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                     Width="88"
-                                                     ToolTip="Vertical offset applied to the Y-axis title."/>
-                                        </StackPanel>
+                                        <UniformGrid Columns="2" Rows="1" ColumnSpacing="8">
+                                            <StackPanel>
+                                                <TextBox Text="{Binding YAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="92"
+                                                         ToolTip="Horizontal offset applied to the Y-axis title."/>
+                                                <Slider Minimum="-50"
+                                                        Maximum="50"
+                                                        SmallChange="1"
+                                                        Value="{Binding YAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
+                                                        Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBox Text="{Binding YAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="92"
+                                                         ToolTip="Vertical offset applied to the Y-axis title."/>
+                                                <Slider Minimum="-50"
+                                                        Maximum="50"
+                                                        SmallChange="1"
+                                                        Value="{Binding YAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
+                                                        Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                        </UniformGrid>
                                     </StackPanel>
-                                </UniformGrid>
+                                </Grid>
                             </StackPanel>
                             <Border Background="{StaticResource Brush.ChartFill}"
                                     BorderBrush="{StaticResource Brush.Border}"
