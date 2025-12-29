@@ -194,6 +194,26 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        public string EditableXAxisTitle
+        {
+            get => string.IsNullOrWhiteSpace(CustomXAxisTitle) ? _defaultXAxisTitle : CustomXAxisTitle;
+            set
+            {
+                CustomXAxisTitle = string.IsNullOrWhiteSpace(value) ? string.Empty : value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string EditableYAxisTitle
+        {
+            get => string.IsNullOrWhiteSpace(CustomYAxisTitle) ? _defaultYAxisTitle : CustomYAxisTitle;
+            set
+            {
+                CustomYAxisTitle = string.IsNullOrWhiteSpace(value) ? string.Empty : value;
+                OnPropertyChanged();
+            }
+        }
+
         private string _chartTitle = "Expected Annual Damage";
         public string ChartTitle
         {
@@ -205,8 +225,11 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private const double ChartWidth = 420;
-        private const double ChartHeight = 220;
+        private const double ChartWidth = 480;
+        private const double ChartHeight = 186.67;
+
+        private ChartRange? _plotRange;
+        private bool _chartHasStageData;
 
         private string _defaultXAxisTitle = string.Empty;
         private string _defaultYAxisTitle = string.Empty;
@@ -342,6 +365,7 @@ namespace EconToolbox.Desktop.ViewModels
                     };
                     DamageSeries.Clear();
                     DamageCurvePoints = new PointCollection();
+                    _plotRange = null;
                     SetAxisLabels(null, false);
                     return;
                 }
@@ -354,6 +378,7 @@ namespace EconToolbox.Desktop.ViewModels
                     };
                     DamageSeries.Clear();
                     DamageCurvePoints = new PointCollection();
+                    _plotRange = null;
                     SetAxisLabels(null, false);
                     return;
                 }
@@ -390,6 +415,7 @@ namespace EconToolbox.Desktop.ViewModels
                 };
                 DamageCurvePoints = new PointCollection();
                 DamageSeries.Clear();
+                _plotRange = null;
                 SetAxisLabels(null, false);
             }
         }
@@ -432,6 +458,7 @@ namespace EconToolbox.Desktop.ViewModels
             if (seriesData.Count == 0 || !minX.HasValue || !maxX.HasValue || !minY.HasValue || !maxY.HasValue)
             {
                 DamageCurvePoints = new PointCollection();
+                _plotRange = null;
                 SetAxisLabels(null, hasStageData);
                 return;
             }
@@ -469,7 +496,9 @@ namespace EconToolbox.Desktop.ViewModels
                 }
             }
 
-            SetAxisLabels(range, hasStageData);
+            _plotRange = paddedRange;
+            _chartHasStageData = hasStageData;
+            UpdateAxisForTransform(Matrix.Identity);
         }
 
         private ChartPoints CreateChartPoints(System.Collections.Generic.List<(double X, double Y)> data, ChartRange range, bool hasStageData)
@@ -498,6 +527,45 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             return new ChartPoints(points, markers);
+        }
+
+        public void UpdateAxisForTransform(Matrix transform)
+        {
+            if (_plotRange == null || !transform.HasInverse)
+            {
+                return;
+            }
+
+            var inverse = transform;
+            inverse.Invert();
+
+            var corners = new[]
+            {
+                inverse.Transform(new System.Windows.Point(0, 0)),
+                inverse.Transform(new System.Windows.Point(ChartWidth, 0)),
+                inverse.Transform(new System.Windows.Point(0, ChartHeight)),
+                inverse.Transform(new System.Windows.Point(ChartWidth, ChartHeight))
+            };
+
+            double minContentX = corners.Min(p => p.X);
+            double maxContentX = corners.Max(p => p.X);
+            double minContentY = corners.Min(p => p.Y);
+            double maxContentY = corners.Max(p => p.Y);
+
+            minContentX = Math.Clamp(minContentX, 0, ChartWidth);
+            maxContentX = Math.Clamp(maxContentX, 0, ChartWidth);
+            minContentY = Math.Clamp(minContentY, 0, ChartHeight);
+            maxContentY = Math.Clamp(maxContentY, 0, ChartHeight);
+
+            double xRange = _plotRange.Value.MaxX - _plotRange.Value.MinX;
+            double yRange = _plotRange.Value.MaxY - _plotRange.Value.MinY;
+
+            double visibleMinX = _plotRange.Value.MinX + (minContentX / ChartWidth) * xRange;
+            double visibleMaxX = _plotRange.Value.MinX + (maxContentX / ChartWidth) * xRange;
+            double visibleMaxY = _plotRange.Value.MaxY - (minContentY / ChartHeight) * yRange;
+            double visibleMinY = _plotRange.Value.MaxY - (maxContentY / ChartHeight) * yRange;
+
+            SetAxisLabels(new ChartRange(visibleMinX, visibleMaxX, visibleMinY, visibleMaxY), _chartHasStageData);
         }
 
         private void SetAxisLabels(ChartRange? range, bool hasStageData)
@@ -535,6 +603,8 @@ namespace EconToolbox.Desktop.ViewModels
             YAxisTitle = string.IsNullOrWhiteSpace(CustomYAxisTitle)
                 ? _defaultYAxisTitle
                 : CustomYAxisTitle;
+            OnPropertyChanged(nameof(EditableXAxisTitle));
+            OnPropertyChanged(nameof(EditableYAxisTitle));
         }
 
         private string FormatXAxisValue(double value, bool hasStageData)

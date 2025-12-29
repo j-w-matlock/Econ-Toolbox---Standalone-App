@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using EconToolbox.Desktop.ViewModels;
 
 namespace EconToolbox.Desktop.Views
 {
@@ -12,16 +14,39 @@ namespace EconToolbox.Desktop.Views
         private Point _lastPanPoint;
         private const double MinZoom = 0.5;
         private const double MaxZoom = 3.0;
+        private EadViewModel? _viewModel;
 
         public EadView()
         {
             InitializeComponent();
             Loaded += OnLoaded;
+            DataContextChanged += OnDataContextChanged;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             ChartTransform.Matrix = Matrix.Identity;
+            UpdateAxisFromTransform();
+        }
+
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue is EadViewModel oldViewModel)
+            {
+                oldViewModel.DamageSeries.CollectionChanged -= DamageSeries_CollectionChanged;
+            }
+
+            if (e.NewValue is EadViewModel newViewModel)
+            {
+                _viewModel = newViewModel;
+                newViewModel.DamageSeries.CollectionChanged += DamageSeries_CollectionChanged;
+            }
+            else
+            {
+                _viewModel = null;
+            }
+
+            UpdateAxisFromTransform();
         }
 
         private void ChartInteractionLayer_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -64,6 +89,7 @@ namespace EconToolbox.Desktop.Views
         {
             _isPanning = false;
             ChartInteractionLayer.ReleaseMouseCapture();
+            UpdateAxisFromTransform();
         }
 
         private void ChartInteractionLayer_OnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -79,6 +105,7 @@ namespace EconToolbox.Desktop.Views
             var matrix = ChartTransform.Matrix;
             matrix.Translate(delta.X, delta.Y);
             ChartTransform.Matrix = matrix;
+            UpdateAxisFromTransform();
         }
 
         private void Zoom(double zoomFactor, Point center)
@@ -90,6 +117,17 @@ namespace EconToolbox.Desktop.Views
 
             matrix.ScaleAt(zoomFactor, zoomFactor, center.X, center.Y);
             ChartTransform.Matrix = matrix;
+            UpdateAxisFromTransform();
+        }
+
+        private void DamageSeries_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            Dispatcher.Invoke(UpdateAxisFromTransform);
+        }
+
+        private void UpdateAxisFromTransform()
+        {
+            _viewModel?.UpdateAxisForTransform(ChartTransform.Matrix);
         }
     }
 }
