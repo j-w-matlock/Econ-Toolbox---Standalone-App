@@ -24,9 +24,8 @@
                         BorderThickness="1"
                         Padding="{StaticResource Padding.Content}"
                         Margin="0,0,0,12">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
                         <Button Command="{Binding AddDamageColumnCommand}"
-                                Margin="0,0,12,0"
                                 Padding="12,6"
                                 ToolTip="Append a new damage column for an additional category or scenario.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -35,7 +34,6 @@
                             </StackPanel>
                         </Button>
                         <Button Command="{Binding RemoveDamageColumnCommand}"
-                                Margin="0,0,12,0"
                                 Padding="12,6"
                                 ToolTip="Remove the most recently added damage column.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
