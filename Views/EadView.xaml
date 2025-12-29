@@ -10,542 +10,300 @@
                       HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto"
                       Padding="{StaticResource Padding.Card}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <StackPanel>
+                <TextBlock Text="Expected Annual Damage"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource Brush.Primary}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,12"/>
 
-                <Border Grid.Row="0"
-                        Style="{StaticResource Border.Explainer}">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       FontSize="20"
-                                       Foreground="{StaticResource Brush.Primary}"
-                                       Margin="{StaticResource Margin.Inline}"/>
-                            <TextBlock Text="Expected Annual Damage Instructions"
-                                       FontWeight="Bold"
-                                       FontSize="16"
-                                       Foreground="{StaticResource Brush.Primary}"/>
-                        </StackPanel>
-                        <TextBlock Style="{StaticResource Text.Body}">
-                            <Run Text="• List probability and damage values for each category. The curve automatically includes 0% and 100% anchors using trapezoidal interpolation."/>
-                            <LineBreak/>
-                            <Run Text="• Toggle Include Stage to capture paired stage values that align with the same probabilities."/>
-                            <LineBreak/>
-                            <Run Text="• Select Calculate after making edits so the charts, summary results, and exports refresh with your latest data."/>
-                        </TextBlock>
+                <Border Background="{StaticResource Brush.Surface}"
+                        CornerRadius="8"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="1"
+                        Padding="{StaticResource Padding.Content}"
+                        Margin="0,0,0,12">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+                        <Button Command="{Binding AddDamageColumnCommand}"
+                                Padding="12,6"
+                                ToolTip="Append a new damage column for an additional category or scenario.">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                <TextBlock Text="Add Damage Column"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding RemoveDamageColumnCommand}"
+                                Padding="12,6"
+                                ToolTip="Remove the most recently added damage column.">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                <TextBlock Text="Remove Damage Column"/>
+                            </StackPanel>
+                        </Button>
+                        <CheckBox IsChecked="{Binding UseStage}"
+                                  VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                ToolTip="Toggle to add a stage column so you can enter paired stage values."/>
+                                <TextBlock Text="Include Stage" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </CheckBox>
                     </StackPanel>
                 </Border>
 
-                <WrapPanel Grid.Row="1"
-                           Margin="{StaticResource Margin.StackLarge}"
-                           ItemHeight="36"
-                           ItemWidth="220"
-                           MinWidth="200">
-                    <WrapPanel.Style>
-                        <Style TargetType="WrapPanel">
-                            <Setter Property="ItemWidth" Value="220"/>
-                            <Setter Property="ItemHeight" Value="36"/>
-                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                             Value="Narrow">
-                                    <Setter Property="ItemWidth" Value="{x:Static sys:Double.NaN}"/>
-                                    <Setter Property="ItemHeight" Value="{x:Static sys:Double.NaN}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </WrapPanel.Style>
-                    <Button Command="{Binding AddDamageColumnCommand}"
-                            Margin="{StaticResource Margin.Inline}"
-                            ToolTip="Append a new damage column for an additional category or scenario.">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                            <TextBlock Text="Add Damage Column"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{Binding RemoveDamageColumnCommand}"
-                            Margin="{StaticResource Margin.Inline}"
-                            ToolTip="Remove the most recently added damage column.">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
-                            <TextBlock Text="Remove Damage Column"/>
-                        </StackPanel>
-                    </Button>
-                    <CheckBox IsChecked="{Binding UseStage}"
-                              VerticalAlignment="Center"
-                              Margin="{StaticResource Margin.Inline}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Toggle to add a stage column so you can enter paired stage values."/>
-                            <TextBlock Text="Include Stage" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </CheckBox>
-                </WrapPanel>
-
-                <UniformGrid Grid.Row="2"
-                             Margin="{StaticResource Margin.StackLarge}">
-                    <UniformGrid.Style>
-                        <Style TargetType="UniformGrid">
-                            <Setter Property="Columns" Value="1"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                             Value="Wide">
-                                    <Setter Property="Columns" Value="2"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </UniformGrid.Style>
-
-                    <Border Background="{StaticResource Brush.Surface}"
-                            CornerRadius="10"
-                            Padding="{StaticResource Padding.Content}"
-                            BorderBrush="{StaticResource Brush.Border}"
-                            BorderThickness="1">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Margin" Value="0,0,0,16"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                                 Value="Wide">
-                                        <Setter Property="Margin" Value="0,0,16,0"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <StackPanel>
-                            <TextBlock Text="Probability and Damage Inputs"
-                                       FontWeight="SemiBold"
-                                       Margin="0,0,0,12"/>
-                            <DataGrid ItemsSource="{Binding Rows}"
-                                      AutoGenerateColumns="False"
-                                      CanUserAddRows="True"
-                                      CanUserDeleteRows="True"
-                                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                      Margin="0"
-                                      behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
-                        </StackPanel>
-                    </Border>
-
-                    <Border Background="{StaticResource Brush.Surface}"
-                            CornerRadius="10"
-                            Padding="{StaticResource Padding.Content}"
-                            BorderBrush="{StaticResource Brush.Border}"
-                            BorderThickness="1">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Margin" Value="0"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                                 Value="Wide">
-                                        <Setter Property="Margin" Value="{StaticResource Margin.InlineLarge}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <StackPanel>
-                            <TextBlock Text="Visualize Your Curve"
-                                       FontWeight="SemiBold"
-                                       Margin="0,0,0,12"/>
-                            <StackPanel Margin="{StaticResource Margin.Stack}">
-                                <TextBlock Text="Customize chart labels"
-                                           FontWeight="SemiBold"/>
-                                <TextBlock Text="Update the chart title or override the axis labels shown on the visualization."
-                                           Style="{StaticResource Text.Caption}"
-                                           Margin="0,4,0,8"/>
-                                <TextBox Text="{Binding ChartTitle, UpdateSourceTrigger=PropertyChanged}"
-                                         MinWidth="260"
-                                         HorizontalAlignment="Stretch"
-                                         Margin="0,0,0,10"
-                                         ToolTip="Title shown above the EAD chart."/>
-                                <UniformGrid Columns="2" Rows="1" Margin="0,0,0,10">
-                                    <StackPanel Margin="0,0,8,0">
-                                        <TextBlock Text="X-axis label" Style="{StaticResource Text.Caption}"/>
-                                        <TextBox Text="{Binding CustomXAxisTitle, UpdateSourceTrigger=PropertyChanged}"
-                                                 MinWidth="160"
-                                                 ToolTip="Leave blank to use the suggested axis title."/>
-                                    </StackPanel>
-                                    <StackPanel Margin="8,0,0,0">
-                                        <TextBlock Text="Y-axis label" Style="{StaticResource Text.Caption}"/>
-                                        <TextBox Text="{Binding CustomYAxisTitle, UpdateSourceTrigger=PropertyChanged}"
-                                                 MinWidth="160"
-                                                 ToolTip="Leave blank to use the suggested axis title."/>
-                                    </StackPanel>
-                                </UniformGrid>
-                                <Grid Margin="0,8,0,0" HorizontalAlignment="Stretch">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,8">
-                                        <TextBlock Text="Axis label size" Style="{StaticResource Text.Caption}"/>
-                                        <TextBox Text="{Binding AxisLabelFontSize, UpdateSourceTrigger=PropertyChanged}"
-                                                 MinWidth="160"
-                                                 HorizontalAlignment="Stretch"
-                                                 ToolTip="Adjust the font size for tick mark labels on both axes."/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,8">
-                                        <TextBlock Text="Axis title size" Style="{StaticResource Text.Caption}"/>
-                                        <TextBox Text="{Binding AxisTitleFontSize, UpdateSourceTrigger=PropertyChanged}"
-                                                 MinWidth="160"
-                                                 HorizontalAlignment="Stretch"
-                                                 ToolTip="Adjust the font size for the X and Y axis titles."/>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
-                                        <TextBlock Text="Axis label offset (X,Y)" Style="{StaticResource Text.Caption}"/>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel>
-                                                <TextBox Text="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                         Width="92"
-                                                         ToolTip="Horizontal offset applied to all axis labels."/>
-                                                <Slider Minimum="-50"
-                                                        Maximum="50"
-                                                        SmallChange="1"
-                                                        Value="{Binding AxisLabelOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                        Margin="0,4,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                                <TextBox Text="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                         Width="92"
-                                                         ToolTip="Vertical offset applied to all axis labels."/>
-                                                <Slider Minimum="-50"
-                                                        Maximum="50"
-                                                        SmallChange="1"
-                                                        Value="{Binding AxisLabelOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                        Margin="0,4,0,0"/>
-                                            </StackPanel>
-                                        </Grid>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,0">
-                                        <TextBlock Text="Axis title offsets" Style="{StaticResource Text.Caption}"/>
-                                        <UniformGrid Columns="2" Rows="2" Margin="0,4,0,0">
-                                            <StackPanel Margin="0,0,8,8">
-                                                <TextBlock Text="X title offset (X)" Style="{StaticResource Text.Caption}"/>
-                                                <TextBox Text="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                         Width="92"
-                                                         ToolTip="Horizontal offset applied to the X-axis title."/>
-                                                <Slider Minimum="-50"
-                                                        Maximum="50"
-                                                        SmallChange="1"
-                                                        Value="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                        Margin="0,4,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Margin="8,0,0,8">
-                                                <TextBlock Text="X title offset (Y)" Style="{StaticResource Text.Caption}"/>
-                                                <TextBox Text="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                         Width="92"
-                                                         ToolTip="Vertical offset applied to the X-axis title."/>
-                                                <Slider Minimum="-50"
-                                                        Maximum="50"
-                                                        SmallChange="1"
-                                                        Value="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                        Margin="0,4,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Margin="0,0,8,0">
-                                                <TextBlock Text="Y title offset (X)" Style="{StaticResource Text.Caption}"/>
-                                                <TextBox Text="{Binding YAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                         Width="92"
-                                                         ToolTip="Horizontal offset applied to the Y-axis title."/>
-                                                <Slider Minimum="-50"
-                                                        Maximum="50"
-                                                        SmallChange="1"
-                                                        Value="{Binding YAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
-                                                        Margin="0,4,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Margin="8,0,0,0">
-                                                <TextBlock Text="Y title offset (Y)" Style="{StaticResource Text.Caption}"/>
-                                                <TextBox Text="{Binding YAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                         Width="92"
-                                                         ToolTip="Vertical offset applied to the Y-axis title."/>
-                                                <Slider Minimum="-50"
-                                                        Maximum="50"
-                                                        SmallChange="1"
-                                                        Value="{Binding YAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
-                                                        Margin="0,4,0,0"/>
-                                            </StackPanel>
-                                        </UniformGrid>
-                                    </StackPanel>
-                                </Grid>
-                            </StackPanel>
-                            <Border Background="{StaticResource Brush.ChartFill}"
-                                    BorderBrush="{StaticResource Brush.Border}"
-                                    BorderThickness="1"
-                                    CornerRadius="12"
-                                    Padding="16"
-                                    Margin="{StaticResource Margin.Stack}">
-                                <Grid ClipToBounds="False">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Text="{Binding ChartTitle}"
-                                               Grid.Row="0"
-                                               FontWeight="SemiBold"
-                                               FontSize="14"
-                                               TextAlignment="Center"
-                                               HorizontalAlignment="Center"
-                                               Margin="0,0,0,10"/>
-                                    <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="Both">
-                                        <Grid Width="560"
-                                              Height="340"
-                                              SnapsToDevicePixels="True">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="20"/>
-                                                <RowDefinition Height="220"/>
-                                                <RowDefinition Height="34"/>
-                                                <RowDefinition Height="26"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="90"/>
-                                                <ColumnDefinition Width="420"/>
-                                                <ColumnDefinition Width="20"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <Grid Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="28"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding YAxisTitle}"
-                                                           Grid.Column="0"
-                                                           FontWeight="SemiBold"
-                                                           FontSize="{Binding AxisTitleFontSize}"
-                                                           Foreground="{StaticResource Brush.TextPrimary}"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center">
-                                                    <TextBlock.RenderTransform>
-                                                        <TransformGroup>
-                                                            <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
-                                                            <TranslateTransform X="{Binding YAxisTitleOffsetX}" Y="{Binding YAxisTitleOffsetY}"/>
-                                                        </TransformGroup>
-                                                    </TextBlock.RenderTransform>
-                                                </TextBlock>
-                                                <Grid Grid.Column="1">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="*"/>
-                                                    </Grid.RowDefinitions>
-                                                    <TextBlock Text="{Binding YAxisMaxLabel}"
-                                                               Grid.Row="0"
-                                                               VerticalAlignment="Top"
-                                                               HorizontalAlignment="Right"
-                                                               FontSize="{Binding AxisLabelFontSize}"
-                                                               Foreground="{StaticResource Brush.TextSecondary}">
-                                                        <TextBlock.RenderTransform>
-                                                            <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
-                                                        </TextBlock.RenderTransform>
-                                                    </TextBlock>
-                                                    <TextBlock Text="{Binding YAxisMidLabel}"
-                                                               Grid.Row="1"
-                                                               VerticalAlignment="Center"
-                                                               HorizontalAlignment="Right"
-                                                               FontSize="{Binding AxisLabelFontSize}"
-                                                               Foreground="{StaticResource Brush.TextSecondary}">
-                                                        <TextBlock.RenderTransform>
-                                                            <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
-                                                        </TextBlock.RenderTransform>
-                                                    </TextBlock>
-                                                    <TextBlock Text="{Binding YAxisMinLabel}"
-                                                               Grid.Row="2"
-                                                               VerticalAlignment="Bottom"
-                                                               HorizontalAlignment="Right"
-                                                               FontSize="{Binding AxisLabelFontSize}"
-                                                               Foreground="{StaticResource Brush.TextSecondary}">
-                                                        <TextBlock.RenderTransform>
-                                                            <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
-                                                        </TextBlock.RenderTransform>
-                                                    </TextBlock>
-                                                </Grid>
-                                            </Grid>
-
-                                            <Border Grid.Row="1"
-                                                    Grid.Column="1"
-                                                    Background="{StaticResource Brush.ChartFill}"
-                                                    CornerRadius="8"
-                                                    BorderBrush="{StaticResource Brush.Border}"
-                                                    BorderThickness="1">
-                                                <Grid Width="420"
-                                                      Height="220"
-                                                      SnapsToDevicePixels="True"
-                                                      ClipToBounds="True">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="*"/>
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="1" Grid.ColumnSpan="4" VerticalAlignment="Top"/>
-                                                    <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="2" Grid.ColumnSpan="4" VerticalAlignment="Top"/>
-                                                    <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="3" Grid.ColumnSpan="4" VerticalAlignment="Top"/>
-
-                                                    <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="1" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-                                                    <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="2" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-                                                    <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="3" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-
-                                                    <ItemsControl Grid.RowSpan="4"
-                                                                  Grid.ColumnSpan="4"
-                                                                  ItemsSource="{Binding DamageSeries}"
-                                                                  IsHitTestVisible="True">
-                                                        <ItemsControl.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <Canvas Width="420" Height="220"/>
-                                                            </ItemsPanelTemplate>
-                                                        </ItemsControl.ItemsPanel>
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Canvas Width="420" Height="220">
-                                                                    <Polyline Points="{Binding Points}"
-                                                                              Stroke="{Binding Stroke}"
-                                                                              StrokeThickness="3"
-                                                                              StrokeEndLineCap="Round"
-                                                                              StrokeStartLineCap="Round"/>
-                                                                    <ItemsControl ItemsSource="{Binding Markers}">
-                                                                        <ItemsControl.ItemsPanel>
-                                                                            <ItemsPanelTemplate>
-                                                                                <Canvas Width="420" Height="220"/>
-                                                                            </ItemsPanelTemplate>
-                                                                        </ItemsControl.ItemsPanel>
-                                                                        <ItemsControl.ItemTemplate>
-                                                                            <DataTemplate>
-                                                                                <StackPanel Canvas.Left="{Binding PlotPoint.X}"
-                                                                                            Canvas.Top="{Binding PlotPoint.Y}"
-                                                                                            Margin="-4,-4,0,0"
-                                                                                            HorizontalAlignment="Center"
-                                                                                            ToolTip="{Binding Tooltip}">
-                                                                                    <Ellipse Width="8"
-                                                                                             Height="8"
-                                                                                             Fill="{Binding DataContext.Stroke, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                                                             StrokeThickness="0.5"
-                                                                                             Stroke="{StaticResource Brush.Border}"/>
-                                                                                    <TextBlock Text="{Binding Label}"
-                                                                                               Visibility="{Binding ShowLabel, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                                                               Style="{StaticResource Text.Caption}"
-                                                                                               Margin="-8,6,-8,0"
-                                                                                               TextAlignment="Center"/>
-                                                                                </StackPanel>
-                                                                            </DataTemplate>
-                                                                        </ItemsControl.ItemTemplate>
-                                                                    </ItemsControl>
-                                                                </Canvas>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
-                                                </Grid>
-                                            </Border>
-
-                                            <Grid Grid.Row="2" Grid.Column="1" Margin="4,0,4,4">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding XAxisMinLabel}"
-                                                           Grid.Column="0"
-                                                           HorizontalAlignment="Left"
-                                                           VerticalAlignment="Center"
-                                                           FontSize="{Binding AxisLabelFontSize}"
-                                                           Foreground="{StaticResource Brush.TextSecondary}">
-                                                    <TextBlock.RenderTransform>
-                                                        <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
-                                                    </TextBlock.RenderTransform>
-                                                </TextBlock>
-                                                <TextBlock Text="{Binding XAxisMidLabel}"
-                                                           Grid.Column="1"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           FontSize="{Binding AxisLabelFontSize}"
-                                                           Foreground="{StaticResource Brush.TextSecondary}">
-                                                    <TextBlock.RenderTransform>
-                                                        <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
-                                                    </TextBlock.RenderTransform>
-                                                </TextBlock>
-                                                <TextBlock Text="{Binding XAxisMaxLabel}"
-                                                           Grid.Column="2"
-                                                           HorizontalAlignment="Right"
-                                                           VerticalAlignment="Center"
-                                                           FontSize="{Binding AxisLabelFontSize}"
-                                                           Foreground="{StaticResource Brush.TextSecondary}">
-                                                    <TextBlock.RenderTransform>
-                                                        <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
-                                                    </TextBlock.RenderTransform>
-                                                </TextBlock>
-                                            </Grid>
-
-                                            <TextBlock Grid.Row="3"
-                                                       Grid.Column="1"
-                                                       Text="{Binding XAxisTitle}"
-                                                       FontWeight="SemiBold"
-                                                       FontSize="{Binding AxisTitleFontSize}"
-                                                       Foreground="{StaticResource Brush.TextPrimary}"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center">
-                                                <TextBlock.RenderTransform>
-                                                    <TranslateTransform X="{Binding XAxisTitleOffsetX}" Y="{Binding XAxisTitleOffsetY}"/>
-                                                </TextBlock.RenderTransform>
-                                            </TextBlock>
-                                        </Grid>
-                                    </Viewbox>
-                                </Grid>
-                            </Border>
-                            <ItemsControl ItemsSource="{Binding DamageSeries}" Margin="{StaticResource Margin.Stack}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel IsItemsHost="True" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,12,6">
-                                            <Rectangle Width="12"
-                                                       Height="12"
-                                                       RadiusX="2"
-                                                       RadiusY="2"
-                                                       Fill="{Binding Stroke}"
-                                                       StrokeThickness="0.5"
-                                                       Stroke="{StaticResource Brush.Border}"/>
-                                            <TextBlock Text="{Binding Name}"
-                                                       Margin="6,0,0,0"
-                                                       Style="{StaticResource Text.Caption}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <TextBlock Style="{StaticResource Text.Caption}" TextWrapping="Wrap">
-                                Damages are plotted against stage when stage values are supplied, with stage labels shown on each plotted point; otherwise, the curve uses exceedance probability on the x-axis.
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-                </UniformGrid>
-
-                <Border Grid.Row="3"
-                        Margin="{StaticResource Margin.StackLarge}"
-                        Background="{StaticResource Brush.Surface}"
+                <Border Background="{StaticResource Brush.Surface}"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
                         CornerRadius="10"
-                        Padding="{StaticResource Padding.Card}">
+                        Padding="{StaticResource Padding.Content}"
+                        Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="{Binding ChartTitle}"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,12"/>
+                        <Viewbox Stretch="Uniform" StretchDirection="Both">
+                            <Grid Width="640"
+                                  Height="420"
+                                  SnapsToDevicePixels="True">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="24"/>
+                                    <RowDefinition Height="280"/>
+                                    <RowDefinition Height="44"/>
+                                    <RowDefinition Height="32"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="110"/>
+                                    <ColumnDefinition Width="480"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="1" Grid.Column="0" Margin="0,0,14,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="34"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding YAxisTitle}"
+                                               Grid.Column="0"
+                                               FontWeight="SemiBold"
+                                               FontSize="{Binding AxisTitleFontSize}"
+                                               Foreground="{StaticResource Brush.TextPrimary}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center">
+                                        <TextBlock.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
+                                                <TranslateTransform X="{Binding YAxisTitleOffsetX}" Y="{Binding YAxisTitleOffsetY}"/>
+                                            </TransformGroup>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                    <Grid Grid.Column="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="{Binding YAxisMaxLabel}"
+                                                   Grid.Row="0"
+                                                   VerticalAlignment="Top"
+                                                   HorizontalAlignment="Right"
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding YAxisMidLabel}"
+                                                   Grid.Row="1"
+                                                   VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right"
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding YAxisMinLabel}"
+                                                   Grid.Row="2"
+                                                   VerticalAlignment="Bottom"
+                                                   HorizontalAlignment="Right"
+                                                   FontSize="{Binding AxisLabelFontSize}"
+                                                   Foreground="{StaticResource Brush.TextSecondary}">
+                                            <TextBlock.RenderTransform>
+                                                <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
+                                    </Grid>
+                                </Grid>
+
+                                <Border Grid.Row="1"
+                                        Grid.Column="1"
+                                        Background="{StaticResource Brush.ChartFill}"
+                                        CornerRadius="8"
+                                        BorderBrush="{StaticResource Brush.Border}"
+                                        BorderThickness="1">
+                                    <Grid Width="480"
+                                          Height="280"
+                                          SnapsToDevicePixels="True"
+                                          ClipToBounds="True">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="1" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
+                                        <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="2" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
+                                        <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="3" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
+
+                                        <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="1" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+                                        <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="2" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+                                        <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="3" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+                                        <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="4" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+
+                                        <ItemsControl Grid.RowSpan="4"
+                                                      Grid.ColumnSpan="5"
+                                                      ItemsSource="{Binding DamageSeries}"
+                                                      IsHitTestVisible="True">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Canvas Width="480" Height="280"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Canvas Width="480" Height="280">
+                                                        <Polyline Points="{Binding Points}"
+                                                                  Stroke="{Binding Stroke}"
+                                                                  StrokeThickness="3"
+                                                                  StrokeEndLineCap="Round"
+                                                                  StrokeStartLineCap="Round"/>
+                                                        <ItemsControl ItemsSource="{Binding Markers}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <Canvas Width="480" Height="280"/>
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Canvas.Left="{Binding PlotPoint.X}"
+                                                                                Canvas.Top="{Binding PlotPoint.Y}"
+                                                                                Margin="-4,-4,0,0"
+                                                                                HorizontalAlignment="Center"
+                                                                                ToolTip="{Binding Tooltip}">
+                                                                        <Ellipse Width="8"
+                                                                                 Height="8"
+                                                                                 Fill="{Binding DataContext.Stroke, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                                 StrokeThickness="0.5"
+                                                                                 Stroke="{StaticResource Brush.Border}"/>
+                                                                        <TextBlock Text="{Binding Label}"
+                                                                                   Visibility="{Binding ShowLabel, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                                                   Style="{StaticResource Text.Caption}"
+                                                                                   Margin="-8,6,-8,0"
+                                                                                   TextAlignment="Center"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </Canvas>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
+                                </Border>
+
+                                <Grid Grid.Row="2" Grid.Column="1" Margin="6,4,6,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding XAxisMinLabel}"
+                                               Grid.Column="0"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               FontSize="{Binding AxisLabelFontSize}"
+                                               Foreground="{StaticResource Brush.TextSecondary}">
+                                        <TextBlock.RenderTransform>
+                                            <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding XAxisMidLabel}"
+                                               Grid.Column="2"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontSize="{Binding AxisLabelFontSize}"
+                                               Foreground="{StaticResource Brush.TextSecondary}">
+                                        <TextBlock.RenderTransform>
+                                            <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding XAxisMaxLabel}"
+                                               Grid.Column="3"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center"
+                                               FontSize="{Binding AxisLabelFontSize}"
+                                               Foreground="{StaticResource Brush.TextSecondary}">
+                                        <TextBlock.RenderTransform>
+                                            <TranslateTransform X="{Binding AxisLabelOffsetX}" Y="{Binding AxisLabelOffsetY}"/>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                </Grid>
+
+                                <TextBlock Grid.Row="3"
+                                           Grid.Column="1"
+                                           Text="{Binding XAxisTitle}"
+                                           FontWeight="SemiBold"
+                                           FontSize="{Binding AxisTitleFontSize}"
+                                           Foreground="{StaticResource Brush.TextPrimary}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center">
+                                    <TextBlock.RenderTransform>
+                                        <TranslateTransform X="{Binding XAxisTitleOffsetX}" Y="{Binding XAxisTitleOffsetY}"/>
+                                    </TextBlock.RenderTransform>
+                                </TextBlock>
+                            </Grid>
+                        </Viewbox>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{StaticResource Brush.Surface}"
+                        CornerRadius="10"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="1"
+                        Padding="{StaticResource Padding.Content}"
+                        Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Stage / Frequency / Damage Inputs"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,8"/>
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="True"
+                                  CanUserDeleteRows="True"
+                                  HeadersVisibility="Column"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  Margin="0"
+                                  behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{StaticResource Brush.Surface}"
+                        CornerRadius="10"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="1"
+                        Padding="{StaticResource Padding.Content}">
                     <StackPanel>
                         <TextBlock Text="Expected Annual Damage Results"
                                    FontWeight="SemiBold"
@@ -555,8 +313,7 @@
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
                                   HeadersVisibility="Column"
-                                  IsReadOnly="True"
-                                  Margin="0,4,0,0">
+                                  IsReadOnly="True">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Damage Column"
                                                     Binding="{Binding Label}"
@@ -568,69 +325,7 @@
                         </DataGrid>
                     </StackPanel>
                 </Border>
-
-                <StackPanel Grid.Row="4" Margin="{StaticResource Margin.StackLarge}">
-                    <Border Style="{StaticResource Border.ResultInfo}">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock FontFamily="Segoe MDL2 Assets"
-                                           Text=""
-                                           FontSize="18"
-                                           Foreground="{StaticResource Brush.Primary}"
-                                           Margin="0,0,8,0"/>
-                                <TextBlock Text="How to Read the Results"
-                                           FontWeight="Bold"
-                                           Foreground="{StaticResource Brush.Primary}"/>
-                            </StackPanel>
-                            <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0">
-                                Each Expected Annual Damage value averages the damage column across the entire probability curve you supplied. Higher damages at frequent events raise the EAD most dramatically. The plotted curves update with every calculation, helping you confirm the shape of the frequency and stage relationships before exporting your Excel summary.
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock FontFamily="Segoe MDL2 Assets"
-                                           Text=""
-                                           FontSize="18"
-                                           Foreground="{StaticResource Brush.Primary}"
-                                           Margin="0,0,8,0"/>
-                                <TextBlock Text="Policy Notes"
-                                           FontWeight="Bold"
-                                           Foreground="{StaticResource Brush.Primary}"/>
-                            </StackPanel>
-                            <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0">
-                                <Run Text="• Document sources for stage-frequency and damage data in accordance with ER 1105-2-100, Chapter 2 (Section 2-3, pp. 2-14–2-20) economic evaluation requirements."/>
-                                <LineBreak/>
-                                <Run Text="• Coordinate curve assumptions with hydraulics and economics PDT leads before releasing EAD figures for decision documents (ER 1105-2-100, Appendix D, pp. D-14–D-22)."/>
-                                <LineBreak/>
-                                <Run Text="• Archive exported tables and charts within the district quality management system (ER 5-1-11, Appendix C, pp. C-3–C-5) so reviewers can trace updates."/>
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock FontFamily="Segoe MDL2 Assets"
-                                           Text=""
-                                           FontSize="18"
-                                           Foreground="{StaticResource Brush.Primary}"
-                                           Margin="0,0,8,0"/>
-                                <TextBlock Text="Formula Reference"
-                                           FontWeight="Bold"
-                                           Foreground="{StaticResource Brush.Primary}"/>
-                            </StackPanel>
-                            <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="0,6,0,0">
-                                <Run Text="• Input rows are ordered by exceedance probability p, then the tool inserts anchors at p = 1 with damage = 0 and at p = 0 with damage equal to the maximum entered value."/>
-                                <LineBreak/>
-                                <Run Text="• Expected Annual Damage is integrated with the trapezoidal rule: EAD = Σ 0.5 × (dᵢ + dᵢ₊₁) × (pᵢ − pᵢ₊₁)."/>
-                                <LineBreak/>
-                                <Run Text="• Stage and frequency curves plot the same damage values against their paired probabilities or stages for visual QA/QC."/>
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
-            </Grid>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </UserControl>
