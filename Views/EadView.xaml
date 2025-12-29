@@ -24,9 +24,10 @@
                         BorderThickness="1"
                         Padding="{StaticResource Padding.Content}"
                         Margin="0,0,0,12">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Command="{Binding AddDamageColumnCommand}"
                                 Padding="12,6"
+                                Margin="0,0,12,0"
                                 ToolTip="Append a new damage column for an additional category or scenario.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
@@ -35,6 +36,7 @@
                         </Button>
                         <Button Command="{Binding RemoveDamageColumnCommand}"
                                 Padding="12,6"
+                                Margin="0,0,12,0"
                                 ToolTip="Remove the most recently added damage column.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
@@ -49,6 +51,27 @@
                                 <TextBlock Text="Include Stage" Margin="4,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </CheckBox>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{StaticResource Brush.Surface}"
+                        CornerRadius="10"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="1"
+                        Padding="{StaticResource Padding.Content}"
+                        Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Stage / Frequency / Damage Inputs"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,8"/>
+                        <DataGrid ItemsSource="{Binding Rows}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="True"
+                                  CanUserDeleteRows="True"
+                                  HeadersVisibility="Column"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  Margin="0"
+                                  behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
                     </StackPanel>
                 </Border>
 
@@ -275,27 +298,6 @@
                                 </TextBlock>
                             </Grid>
                         </Viewbox>
-                    </StackPanel>
-                </Border>
-
-                <Border Background="{StaticResource Brush.Surface}"
-                        CornerRadius="10"
-                        BorderBrush="{StaticResource Brush.Border}"
-                        BorderThickness="1"
-                        Padding="{StaticResource Padding.Content}"
-                        Margin="0,0,0,12">
-                    <StackPanel>
-                        <TextBlock Text="Stage / Frequency / Damage Inputs"
-                                   FontWeight="SemiBold"
-                                   Margin="0,0,0,8"/>
-                        <DataGrid ItemsSource="{Binding Rows}"
-                                  AutoGenerateColumns="False"
-                                  CanUserAddRows="True"
-                                  CanUserDeleteRows="True"
-                                  HeadersVisibility="Column"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                  Margin="0"
-                                  behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
                     </StackPanel>
                 </Border>
 
