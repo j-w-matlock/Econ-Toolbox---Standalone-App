@@ -459,23 +459,24 @@ namespace EconToolbox.Desktop.ViewModels
             var paddedRange = new ChartRange(paddedMinX, paddedMaxX, paddedMinY, paddedMaxY);
             for (int i = 0; i < seriesData.Count; i++)
             {
-                var scaledPoints = CreatePointCollection(seriesData[i].Points, paddedRange);
-                var series = new ChartSeries(seriesData[i].Name, scaledPoints, GetSeriesBrush(i));
+                var chartPoints = CreateChartPoints(seriesData[i].Points, paddedRange, hasStageData);
+                var series = new ChartSeries(seriesData[i].Name, chartPoints.Points, chartPoints.Markers, GetSeriesBrush(i));
                 DamageSeries.Add(series);
 
                 if (i == 0)
                 {
-                    DamageCurvePoints = new PointCollection(scaledPoints);
+                    DamageCurvePoints = new PointCollection(chartPoints.Points);
                 }
             }
 
             SetAxisLabels(range, hasStageData);
         }
 
-        private static PointCollection CreatePointCollection(System.Collections.Generic.List<(double X, double Y)> data, ChartRange range)
+        private ChartPoints CreateChartPoints(System.Collections.Generic.List<(double X, double Y)> data, ChartRange range, bool hasStageData)
         {
             PointCollection points = new();
-            if (data.Count == 0) return points;
+            System.Collections.Generic.List<ChartPoint> markers = new();
+            if (data.Count == 0) return new ChartPoints(points, markers);
 
             double xRange = range.MaxX - range.MinX;
             if (xRange == 0) xRange = 1;
@@ -486,10 +487,17 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 double x = (p.X - range.MinX) / xRange * ChartWidth;
                 double y = ChartHeight - (p.Y - range.MinY) / yRange * ChartHeight;
-                points.Add(new System.Windows.Point(x, y));
+                var plotPoint = new System.Windows.Point(x, y);
+                points.Add(plotPoint);
+
+                string label = hasStageData ? p.X.ToString("N2") : string.Empty;
+                string tooltip = hasStageData
+                    ? $"Stage: {p.X:N2}\nDamage: {p.Y:C0}"
+                    : $"Probability: {p.X:P2}\nDamage: {p.Y:C0}";
+                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip));
             }
 
-            return points;
+            return new ChartPoints(points, markers);
         }
 
         private void SetAxisLabels(ChartRange? range, bool hasStageData)
@@ -694,16 +702,46 @@ namespace EconToolbox.Desktop.ViewModels
 
         public class ChartSeries
         {
-            public ChartSeries(string name, PointCollection points, Brush stroke)
+            public ChartSeries(string name, PointCollection points, System.Collections.Generic.IReadOnlyList<ChartPoint> markers, Brush stroke)
             {
                 Name = name;
                 Points = points;
+                Markers = markers;
                 Stroke = stroke;
             }
 
             public string Name { get; }
             public PointCollection Points { get; }
+            public System.Collections.Generic.IReadOnlyList<ChartPoint> Markers { get; }
             public Brush Stroke { get; }
+        }
+
+        public readonly struct ChartPoints
+        {
+            public ChartPoints(PointCollection points, System.Collections.Generic.IReadOnlyList<ChartPoint> markers)
+            {
+                Points = points;
+                Markers = markers;
+            }
+
+            public PointCollection Points { get; }
+            public System.Collections.Generic.IReadOnlyList<ChartPoint> Markers { get; }
+        }
+
+        public class ChartPoint
+        {
+            public ChartPoint(System.Windows.Point plotPoint, string label, bool showLabel, string tooltip)
+            {
+                PlotPoint = plotPoint;
+                Label = label;
+                ShowLabel = showLabel;
+                Tooltip = tooltip;
+            }
+
+            public System.Windows.Point PlotPoint { get; }
+            public string Label { get; }
+            public bool ShowLabel { get; }
+            public string Tooltip { get; }
         }
     }
 }
