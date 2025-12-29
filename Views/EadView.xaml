@@ -102,14 +102,14 @@
                                     <RowDefinition Height="40"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="128"/>
+                                    <ColumnDefinition Width="160"/>
                                     <ColumnDefinition Width="480"/>
                                     <ColumnDefinition Width="20"/>
                                 </Grid.ColumnDefinitions>
 
                                 <Grid Grid.Row="1" Grid.Column="0" Margin="0,0,14,0">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="52"/>
+                                        <ColumnDefinition Width="84"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBox Text="{Binding EditableYAxisTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -123,7 +123,7 @@
                                              BorderThickness="0"
                                              TextAlignment="Center"
                                              TextWrapping="Wrap"
-                                             MinWidth="52">
+                                             MinWidth="84">
                                         <TextBox.RenderTransform>
                                             <TransformGroup>
                                                 <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>

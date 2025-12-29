@@ -486,7 +486,7 @@ namespace EconToolbox.Desktop.ViewModels
             var paddedRange = new ChartRange(paddedMinX, paddedMaxX, paddedMinY, paddedMaxY);
             for (int i = 0; i < seriesData.Count; i++)
             {
-                var chartPoints = CreateChartPoints(seriesData[i].Points, paddedRange, hasStageData);
+                var chartPoints = CreateChartPoints(seriesData[i].Points, paddedRange, hasStageData, i);
                 var series = new ChartSeries(seriesData[i].Name, chartPoints.Points, chartPoints.Markers, GetSeriesBrush(i));
                 DamageSeries.Add(series);
 
@@ -501,7 +501,7 @@ namespace EconToolbox.Desktop.ViewModels
             UpdateAxisForTransform(Matrix.Identity);
         }
 
-        private ChartPoints CreateChartPoints(System.Collections.Generic.List<(double X, double Y)> data, ChartRange range, bool hasStageData)
+        private ChartPoints CreateChartPoints(System.Collections.Generic.List<(double X, double Y)> data, ChartRange range, bool hasStageData, int seriesIndex)
         {
             PointCollection points = new();
             System.Collections.Generic.List<ChartPoint> markers = new();
@@ -523,27 +523,28 @@ namespace EconToolbox.Desktop.ViewModels
                 string tooltip = hasStageData
                     ? $"Stage: {p.X:N2}\nDamage: {p.Y:C0}"
                     : $"Probability: {p.X:P2}\nDamage: {p.Y:C0}";
-                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip, GetLabelMargin(plotPoint)));
+                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip, GetLabelMargin(plotPoint, seriesIndex)));
             }
 
             return new ChartPoints(points, markers);
         }
 
-        private Thickness GetLabelMargin(System.Windows.Point plotPoint)
+        private Thickness GetLabelMargin(System.Windows.Point plotPoint, int seriesIndex)
         {
             const double leftRight = -8;
+            double stackedOffset = 6 + (seriesIndex * 14);
 
             if (plotPoint.Y >= ChartHeight - 28)
             {
-                return new Thickness(leftRight, -20, leftRight, 0);
+                return new Thickness(leftRight, -20 - (seriesIndex * 10), leftRight, 0);
             }
 
             if (plotPoint.Y <= 12)
             {
-                return new Thickness(leftRight, 6, leftRight, 0);
+                return new Thickness(leftRight, stackedOffset + 4, leftRight, 0);
             }
 
-            return new Thickness(leftRight, 6, leftRight, 0);
+            return new Thickness(leftRight, stackedOffset, leftRight, 0);
         }
 
         public void UpdateAxisForTransform(Matrix transform)
