@@ -96,20 +96,20 @@
                                   Height="320"
                                   SnapsToDevicePixels="True">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="24"/>
+                                    <RowDefinition Height="28"/>
                                     <RowDefinition Height="186.67"/>
-                                    <RowDefinition Height="44"/>
-                                    <RowDefinition Height="32"/>
+                                    <RowDefinition Height="48"/>
+                                    <RowDefinition Height="40"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="110"/>
+                                    <ColumnDefinition Width="128"/>
                                     <ColumnDefinition Width="480"/>
                                     <ColumnDefinition Width="20"/>
                                 </Grid.ColumnDefinitions>
 
                                 <Grid Grid.Row="1" Grid.Column="0" Margin="0,0,14,0">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="34"/>
+                                        <ColumnDefinition Width="52"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBox Text="{Binding EditableYAxisTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -121,7 +121,9 @@
                                              VerticalAlignment="Center"
                                              Background="Transparent"
                                              BorderThickness="0"
-                                             TextAlignment="Center">
+                                             TextAlignment="Center"
+                                             TextWrapping="Wrap"
+                                             MinWidth="52">
                                         <TextBox.RenderTransform>
                                             <TransformGroup>
                                                 <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
@@ -244,7 +246,7 @@
                                                                                 <TextBlock Text="{Binding Label}"
                                                                                            Visibility="{Binding ShowLabel, Converter={StaticResource BoolToVisibilityConverter}}"
                                                                                            Style="{StaticResource Text.Caption}"
-                                                                                           Margin="-8,6,-8,0"
+                                                                                           Margin="{Binding LabelMargin}"
                                                                                            TextAlignment="Center"/>
                                                                             </StackPanel>
                                                                         </DataTemplate>
@@ -316,7 +318,9 @@
                                          Background="Transparent"
                                          BorderThickness="0"
                                          TextAlignment="Center"
-                                         HorizontalContentAlignment="Center">
+                                         HorizontalContentAlignment="Center"
+                                         TextWrapping="Wrap"
+                                         MinHeight="40">
                                     <TextBox.RenderTransform>
                                         <TranslateTransform X="{Binding XAxisTitleOffsetX}" Y="{Binding XAxisTitleOffsetY}"/>
                                     </TextBox.RenderTransform>

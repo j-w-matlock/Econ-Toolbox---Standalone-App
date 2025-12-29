@@ -523,10 +523,27 @@ namespace EconToolbox.Desktop.ViewModels
                 string tooltip = hasStageData
                     ? $"Stage: {p.X:N2}\nDamage: {p.Y:C0}"
                     : $"Probability: {p.X:P2}\nDamage: {p.Y:C0}";
-                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip));
+                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip, GetLabelMargin(plotPoint)));
             }
 
             return new ChartPoints(points, markers);
+        }
+
+        private Thickness GetLabelMargin(System.Windows.Point plotPoint)
+        {
+            const double leftRight = -8;
+
+            if (plotPoint.Y >= ChartHeight - 28)
+            {
+                return new Thickness(leftRight, -20, leftRight, 0);
+            }
+
+            if (plotPoint.Y <= 12)
+            {
+                return new Thickness(leftRight, 6, leftRight, 0);
+            }
+
+            return new Thickness(leftRight, 6, leftRight, 0);
         }
 
         public void UpdateAxisForTransform(Matrix transform)
@@ -800,18 +817,20 @@ namespace EconToolbox.Desktop.ViewModels
 
         public class ChartPoint
         {
-            public ChartPoint(System.Windows.Point plotPoint, string label, bool showLabel, string tooltip)
+            public ChartPoint(System.Windows.Point plotPoint, string label, bool showLabel, string tooltip, Thickness labelMargin)
             {
                 PlotPoint = plotPoint;
                 Label = label;
                 ShowLabel = showLabel;
                 Tooltip = tooltip;
+                LabelMargin = labelMargin;
             }
 
             public System.Windows.Point PlotPoint { get; }
             public string Label { get; }
             public bool ShowLabel { get; }
             public string Tooltip { get; }
+            public Thickness LabelMargin { get; }
         }
     }
 }
