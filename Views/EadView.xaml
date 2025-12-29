@@ -185,28 +185,43 @@
                                                 <Grid.RenderTransform>
                                                     <MatrixTransform x:Name="ChartTransform"/>
                                                 </Grid.RenderTransform>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*"/>
-                                                    <RowDefinition Height="*"/>
-                                                    <RowDefinition Height="*"/>
-                                                    <RowDefinition Height="*"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
+                                                <ItemsControl ItemsSource="{Binding HorizontalGridlines}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <Canvas Width="480" Height="186.67"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Line X1="0"
+                                                                  X2="480"
+                                                                  Y1="{Binding}"
+                                                                  Y2="{Binding}"
+                                                                  Stroke="{StaticResource Brush.ChartGrid}"
+                                                                  StrokeThickness="1"
+                                                                  StrokeDashArray="4 6"/>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
 
-                                                <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="1" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
-                                                <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="2" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
-                                                <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="3" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
-
-                                                <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="1" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-                                                <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="2" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-                                                <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="3" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-                                                <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="4" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+                                                <ItemsControl ItemsSource="{Binding VerticalGridlines}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <Canvas Width="480" Height="186.67"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Line Y1="0"
+                                                                  Y2="186.67"
+                                                                  X1="{Binding}"
+                                                                  X2="{Binding}"
+                                                                  Stroke="{StaticResource Brush.ChartGrid}"
+                                                                  StrokeThickness="1"
+                                                                  StrokeDashArray="4 6"/>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
 
                                                 <ItemsControl Grid.RowSpan="4"
                                                               Grid.ColumnSpan="5"
@@ -246,8 +261,12 @@
                                                                                 <TextBlock Text="{Binding Label}"
                                                                                            Visibility="{Binding ShowLabel, Converter={StaticResource BoolToVisibilityConverter}}"
                                                                                            Style="{StaticResource Text.Caption}"
-                                                                                           Margin="{Binding LabelMargin}"
-                                                                                           TextAlignment="Center"/>
+                                                                                           Margin="-8,-8,0,0"
+                                                                                           TextAlignment="Center">
+                                                                                    <TextBlock.RenderTransform>
+                                                                                        <TranslateTransform X="{Binding LabelOffsetX}" Y="{Binding LabelOffsetY}"/>
+                                                                                    </TextBlock.RenderTransform>
+                                                                                </TextBlock>
                                                                             </StackPanel>
                                                                         </DataTemplate>
                                                                     </ItemsControl.ItemTemplate>
@@ -259,6 +278,7 @@
                                             </Grid>
                                             <Rectangle x:Name="ChartInteractionLayer"
                                                        Fill="Transparent"
+                                                       PreviewMouseWheel="ChartInteractionLayer_OnMouseWheel"
                                                        MouseWheel="ChartInteractionLayer_OnMouseWheel"
                                                        MouseDown="ChartInteractionLayer_OnMouseDown"
                                                        MouseMove="ChartInteractionLayer_OnMouseMove"

@@ -58,6 +58,8 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public ObservableCollection<ChartSeries> DamageSeries { get; } = new();
+        public ObservableCollection<double> VerticalGridlines { get; } = new();
+        public ObservableCollection<double> HorizontalGridlines { get; } = new();
 
         private string _xAxisMinLabel = string.Empty;
         public string XAxisMinLabel
@@ -526,21 +528,21 @@ namespace EconToolbox.Desktop.ViewModels
                 string tooltip = hasStageData
                     ? $"Stage: {p.X:N2}\nDamage: {p.Y:C0}"
                     : $"Probability: {p.X:P2}\nDamage: {p.Y:C0}";
-                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip, GetLabelMargin(plotPoint, seriesIndex, labelAnchors)));
+                var labelOffset = GetLabelOffset(plotPoint, seriesIndex, labelAnchors);
+                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip, labelOffset.X, labelOffset.Y));
             }
 
             return new ChartPoints(points, markers);
         }
 
-        private Thickness GetLabelMargin(System.Windows.Point plotPoint, int seriesIndex, IList<double> labelAnchors)
+        private System.Windows.Point GetLabelOffset(System.Windows.Point plotPoint, int seriesIndex, IList<double> labelAnchors)
         {
-            const double leftRight = -8;
             const double labelHeight = 14;
             const double markerHeight = 8;
             const double minimumSeparation = 16;
 
-            double marginTop = GetBaseLabelOffset(plotPoint, seriesIndex);
-            double labelTop = EstimateLabelTop(plotPoint, marginTop, markerHeight);
+            double offsetY = GetBaseLabelOffset(plotPoint, seriesIndex);
+            double labelTop = EstimateLabelTop(plotPoint, offsetY, markerHeight);
             bool adjusted;
             int safety = 0;
 
@@ -552,7 +554,7 @@ namespace EconToolbox.Desktop.ViewModels
                     if (Math.Abs(labelTop - anchor) < minimumSeparation)
                     {
                         double pushDown = (anchor + minimumSeparation) - labelTop;
-                        marginTop += pushDown;
+                        offsetY += pushDown;
                         labelTop += pushDown;
                         adjusted = true;
                     }
@@ -561,21 +563,21 @@ namespace EconToolbox.Desktop.ViewModels
                 if (labelTop + labelHeight > ChartHeight)
                 {
                     double overflow = (labelTop + labelHeight) - ChartHeight;
-                    marginTop -= overflow;
+                    offsetY -= overflow;
                     labelTop -= overflow;
                     adjusted = true;
                 }
 
                 if (labelTop < 0)
                 {
-                    marginTop += -labelTop;
+                    offsetY += -labelTop;
                     labelTop = 0;
                     adjusted = true;
                 }
             } while (adjusted && ++safety < 6);
 
             labelAnchors.Add(labelTop);
-            return new Thickness(leftRight, marginTop, leftRight, 0);
+            return new System.Windows.Point(0, offsetY);
         }
 
         private double GetBaseLabelOffset(System.Windows.Point plotPoint, int seriesIndex)
@@ -652,6 +654,8 @@ namespace EconToolbox.Desktop.ViewModels
                 YAxisMaxLabel = string.Empty;
                 _defaultYAxisTitle = string.Empty;
                 RefreshAxisTitles();
+                VerticalGridlines.Clear();
+                HorizontalGridlines.Clear();
                 return;
             }
 
@@ -664,6 +668,7 @@ namespace EconToolbox.Desktop.ViewModels
             YAxisMaxLabel = FormatYAxisValue(range.Value.MaxY);
             _defaultYAxisTitle = "Damage (USD)";
             RefreshAxisTitles();
+            UpdateGridlines(range.Value);
         }
 
         private void RefreshAxisTitles()
@@ -713,6 +718,103 @@ namespace EconToolbox.Desktop.ViewModels
             };
 
             return palette[index % palette.Length];
+        }
+
+        private void UpdateGridlines(ChartRange visibleRange)
+        {
+            if (_plotRange == null)
+            {
+                VerticalGridlines.Clear();
+                HorizontalGridlines.Clear();
+                return;
+            }
+
+            var xTicks = GenerateTicks(visibleRange.MinX, visibleRange.MaxX);
+            var yTicks = GenerateTicks(visibleRange.MinY, visibleRange.MaxY);
+
+            double plotWidth = _plotRange.Value.MaxX - _plotRange.Value.MinX;
+            double plotHeight = _plotRange.Value.MaxY - _plotRange.Value.MinY;
+
+            VerticalGridlines.Clear();
+            foreach (double tick in xTicks)
+            {
+                if (tick < _plotRange.Value.MinX || tick > _plotRange.Value.MaxX)
+                {
+                    continue;
+                }
+
+                double normalized = (tick - _plotRange.Value.MinX) / plotWidth;
+                VerticalGridlines.Add(normalized * ChartWidth);
+            }
+
+            HorizontalGridlines.Clear();
+            foreach (double tick in yTicks)
+            {
+                if (tick < _plotRange.Value.MinY || tick > _plotRange.Value.MaxY)
+                {
+                    continue;
+                }
+
+                double normalized = (tick - _plotRange.Value.MinY) / plotHeight;
+                double pixelY = ChartHeight - (normalized * ChartHeight);
+                HorizontalGridlines.Add(pixelY);
+            }
+        }
+
+        private static IEnumerable<double> GenerateTicks(double min, double max)
+        {
+            if (Math.Abs(max - min) < double.Epsilon)
+            {
+                yield return min;
+                yield break;
+            }
+
+            double range = NiceNumber(max - min, false);
+            double spacing = NiceNumber(range / 4, true);
+
+            if (spacing == 0)
+            {
+                yield return min;
+                yield return max;
+                yield break;
+            }
+
+            double start = Math.Floor(min / spacing) * spacing;
+            double end = Math.Ceiling(max / spacing) * spacing;
+
+            for (double tick = start; tick <= end + (spacing / 2); tick += spacing)
+            {
+                yield return Math.Round(tick, 6);
+            }
+        }
+
+        private static double NiceNumber(double value, bool round)
+        {
+            if (value == 0)
+            {
+                return 0;
+            }
+
+            double exponent = Math.Floor(Math.Log10(Math.Abs(value)));
+            double fraction = value / Math.Pow(10, exponent);
+            double niceFraction;
+
+            if (round)
+            {
+                if (fraction < 1.5) niceFraction = 1;
+                else if (fraction < 3) niceFraction = 2;
+                else if (fraction < 7) niceFraction = 5;
+                else niceFraction = 10;
+            }
+            else
+            {
+                if (fraction <= 1) niceFraction = 1;
+                else if (fraction <= 2) niceFraction = 2;
+                else if (fraction <= 5) niceFraction = 5;
+                else niceFraction = 10;
+            }
+
+            return niceFraction * Math.Pow(10, exponent);
         }
 
         private async Task ExportAsync()
@@ -871,20 +973,22 @@ namespace EconToolbox.Desktop.ViewModels
 
         public class ChartPoint
         {
-            public ChartPoint(System.Windows.Point plotPoint, string label, bool showLabel, string tooltip, Thickness labelMargin)
+            public ChartPoint(System.Windows.Point plotPoint, string label, bool showLabel, string tooltip, double labelOffsetX, double labelOffsetY)
             {
                 PlotPoint = plotPoint;
                 Label = label;
                 ShowLabel = showLabel;
                 Tooltip = tooltip;
-                LabelMargin = labelMargin;
+                LabelOffsetX = labelOffsetX;
+                LabelOffsetY = labelOffsetY;
             }
 
             public System.Windows.Point PlotPoint { get; }
             public string Label { get; }
             public bool ShowLabel { get; }
             public string Tooltip { get; }
-            public Thickness LabelMargin { get; }
+            public double LabelOffsetX { get; }
+            public double LabelOffsetY { get; }
         }
     }
 }
