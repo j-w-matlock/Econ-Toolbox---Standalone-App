@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -512,6 +513,8 @@ namespace EconToolbox.Desktop.ViewModels
             double yRange = range.MaxY - range.MinY;
             if (yRange == 0) yRange = 1;
 
+            List<double> labelAnchors = new();
+
             foreach (var p in data)
             {
                 double x = (p.X - range.MinX) / xRange * ChartWidth;
@@ -523,28 +526,78 @@ namespace EconToolbox.Desktop.ViewModels
                 string tooltip = hasStageData
                     ? $"Stage: {p.X:N2}\nDamage: {p.Y:C0}"
                     : $"Probability: {p.X:P2}\nDamage: {p.Y:C0}";
-                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip, GetLabelMargin(plotPoint, seriesIndex)));
+                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip, GetLabelMargin(plotPoint, seriesIndex, labelAnchors)));
             }
 
             return new ChartPoints(points, markers);
         }
 
-        private Thickness GetLabelMargin(System.Windows.Point plotPoint, int seriesIndex)
+        private Thickness GetLabelMargin(System.Windows.Point plotPoint, int seriesIndex, IList<double> labelAnchors)
         {
             const double leftRight = -8;
+            const double labelHeight = 14;
+            const double markerHeight = 8;
+            const double minimumSeparation = 16;
+
+            double marginTop = GetBaseLabelOffset(plotPoint, seriesIndex);
+            double labelTop = EstimateLabelTop(plotPoint, marginTop, markerHeight);
+            bool adjusted;
+            int safety = 0;
+
+            do
+            {
+                adjusted = false;
+                foreach (double anchor in labelAnchors)
+                {
+                    if (Math.Abs(labelTop - anchor) < minimumSeparation)
+                    {
+                        double pushDown = (anchor + minimumSeparation) - labelTop;
+                        marginTop += pushDown;
+                        labelTop += pushDown;
+                        adjusted = true;
+                    }
+                }
+
+                if (labelTop + labelHeight > ChartHeight)
+                {
+                    double overflow = (labelTop + labelHeight) - ChartHeight;
+                    marginTop -= overflow;
+                    labelTop -= overflow;
+                    adjusted = true;
+                }
+
+                if (labelTop < 0)
+                {
+                    marginTop += -labelTop;
+                    labelTop = 0;
+                    adjusted = true;
+                }
+            } while (adjusted && ++safety < 6);
+
+            labelAnchors.Add(labelTop);
+            return new Thickness(leftRight, marginTop, leftRight, 0);
+        }
+
+        private double GetBaseLabelOffset(System.Windows.Point plotPoint, int seriesIndex)
+        {
             double stackedOffset = 6 + (seriesIndex * 14);
 
             if (plotPoint.Y >= ChartHeight - 28)
             {
-                return new Thickness(leftRight, -20 - (seriesIndex * 10), leftRight, 0);
+                return -20 - (seriesIndex * 10);
             }
 
             if (plotPoint.Y <= 12)
             {
-                return new Thickness(leftRight, stackedOffset + 4, leftRight, 0);
+                return stackedOffset + 4;
             }
 
-            return new Thickness(leftRight, stackedOffset, leftRight, 0);
+            return stackedOffset;
+        }
+
+        private static double EstimateLabelTop(System.Windows.Point plotPoint, double marginTop, double markerHeight)
+        {
+            return plotPoint.Y + marginTop + markerHeight;
         }
 
         public void UpdateAxisForTransform(Matrix transform)
