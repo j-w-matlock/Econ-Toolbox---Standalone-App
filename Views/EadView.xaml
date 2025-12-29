@@ -152,7 +152,7 @@
                         <StackPanel>
                             <TextBlock Text="Visualize Your Curve"
                                        FontWeight="SemiBold"
-                                       Margin="{StaticResource Margin.Stack}"/>
+                                       Margin="0,0,0,12"/>
                             <StackPanel Margin="{StaticResource Margin.Stack}">
                                 <TextBlock Text="Customize chart labels"
                                            FontWeight="SemiBold"/>
@@ -160,10 +160,11 @@
                                            Style="{StaticResource Text.Caption}"
                                            Margin="0,4,0,8"/>
                                 <TextBox Text="{Binding ChartTitle, UpdateSourceTrigger=PropertyChanged}"
-                                         MinWidth="200"
-                                         Margin="0,0,0,6"
+                                         MinWidth="260"
+                                         HorizontalAlignment="Stretch"
+                                         Margin="0,0,0,10"
                                          ToolTip="Title shown above the EAD chart."/>
-                                <UniformGrid Columns="2" Rows="1" Margin="0,0,0,0">
+                                <UniformGrid Columns="2" Rows="1" Margin="0,0,0,10">
                                     <StackPanel Margin="0,0,8,0">
                                         <TextBlock Text="X-axis label" Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding CustomXAxisTitle, UpdateSourceTrigger=PropertyChanged}"
@@ -177,29 +178,30 @@
                                                  ToolTip="Leave blank to use the suggested axis title."/>
                                     </StackPanel>
                                 </UniformGrid>
-                                <Grid Margin="0,8,0,0" HorizontalAlignment="Left">
+                                <Grid Margin="0,8,0,0" HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,8,8">
+                                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,8">
                                         <TextBlock Text="Axis label size" Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding AxisLabelFontSize, UpdateSourceTrigger=PropertyChanged}"
                                                  MinWidth="160"
+                                                 HorizontalAlignment="Stretch"
                                                  ToolTip="Adjust the font size for tick mark labels on both axes."/>
                                     </StackPanel>
-                                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="8,0,0,8">
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,8">
                                         <TextBlock Text="Axis title size" Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding AxisTitleFontSize, UpdateSourceTrigger=PropertyChanged}"
                                                  MinWidth="160"
+                                                 HorizontalAlignment="Stretch"
                                                  ToolTip="Adjust the font size for the X and Y axis titles."/>
                                     </StackPanel>
-                                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,8">
+                                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
                                         <TextBlock Text="Axis label offset (X,Y)" Style="{StaticResource Text.Caption}"/>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -228,14 +230,11 @@
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>
-                                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,0,8">
-                                        <TextBlock Text="X-axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,0">
+                                        <TextBlock Text="Axis title offsets" Style="{StaticResource Text.Caption}"/>
+                                        <UniformGrid Columns="2" Rows="2" Margin="0,4,0,0">
+                                            <StackPanel Margin="0,0,8,8">
+                                                <TextBlock Text="X title offset (X)" Style="{StaticResource Text.Caption}"/>
                                                 <TextBox Text="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
                                                          Width="92"
                                                          ToolTip="Horizontal offset applied to the X-axis title."/>
@@ -245,7 +244,8 @@
                                                         Value="{Binding XAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
                                                         Margin="0,4,0,0"/>
                                             </StackPanel>
-                                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                            <StackPanel Margin="8,0,0,8">
+                                                <TextBlock Text="X title offset (Y)" Style="{StaticResource Text.Caption}"/>
                                                 <TextBox Text="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
                                                          Width="92"
                                                          ToolTip="Vertical offset applied to the X-axis title."/>
@@ -255,16 +255,8 @@
                                                         Value="{Binding XAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
                                                         Margin="0,4,0,0"/>
                                             </StackPanel>
-                                        </Grid>
-                                    </StackPanel>
-                                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="8,0,0,0">
-                                        <TextBlock Text="Y-axis title offset (X,Y)" Style="{StaticResource Text.Caption}"/>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                            <StackPanel Margin="0,0,8,0">
+                                                <TextBlock Text="Y title offset (X)" Style="{StaticResource Text.Caption}"/>
                                                 <TextBox Text="{Binding YAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
                                                          Width="92"
                                                          ToolTip="Horizontal offset applied to the Y-axis title."/>
@@ -274,7 +266,8 @@
                                                         Value="{Binding YAxisTitleOffsetX, UpdateSourceTrigger=PropertyChanged}"
                                                         Margin="0,4,0,0"/>
                                             </StackPanel>
-                                            <StackPanel Grid.Column="1">
+                                            <StackPanel Margin="8,0,0,0">
+                                                <TextBlock Text="Y title offset (Y)" Style="{StaticResource Text.Caption}"/>
                                                 <TextBox Text="{Binding YAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
                                                          Width="92"
                                                          ToolTip="Vertical offset applied to the Y-axis title."/>
@@ -284,7 +277,7 @@
                                                         Value="{Binding YAxisTitleOffsetY, UpdateSourceTrigger=PropertyChanged}"
                                                         Margin="0,4,0,0"/>
                                             </StackPanel>
-                                        </Grid>
+                                        </UniformGrid>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -414,7 +407,7 @@
                                                     <ItemsControl Grid.RowSpan="4"
                                                                   Grid.ColumnSpan="4"
                                                                   ItemsSource="{Binding DamageSeries}"
-                                                                  IsHitTestVisible="False">
+                                                                  IsHitTestVisible="True">
                                                         <ItemsControl.ItemsPanel>
                                                             <ItemsPanelTemplate>
                                                                 <Canvas Width="420" Height="220"/>
@@ -422,11 +415,40 @@
                                                         </ItemsControl.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
-                                                                <Polyline Points="{Binding Points}"
-                                                                          Stroke="{Binding Stroke}"
-                                                                          StrokeThickness="3"
-                                                                          StrokeEndLineCap="Round"
-                                                                          StrokeStartLineCap="Round"/>
+                                                                <Canvas Width="420" Height="220">
+                                                                    <Polyline Points="{Binding Points}"
+                                                                              Stroke="{Binding Stroke}"
+                                                                              StrokeThickness="3"
+                                                                              StrokeEndLineCap="Round"
+                                                                              StrokeStartLineCap="Round"/>
+                                                                    <ItemsControl ItemsSource="{Binding Markers}">
+                                                                        <ItemsControl.ItemsPanel>
+                                                                            <ItemsPanelTemplate>
+                                                                                <Canvas Width="420" Height="220"/>
+                                                                            </ItemsPanelTemplate>
+                                                                        </ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <StackPanel Canvas.Left="{Binding PlotPoint.X}"
+                                                                                            Canvas.Top="{Binding PlotPoint.Y}"
+                                                                                            Margin="-4,-4,0,0"
+                                                                                            HorizontalAlignment="Center"
+                                                                                            ToolTip="{Binding Tooltip}">
+                                                                                    <Ellipse Width="8"
+                                                                                             Height="8"
+                                                                                             Fill="{Binding DataContext.Stroke, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                                             StrokeThickness="0.5"
+                                                                                             Stroke="{StaticResource Brush.Border}"/>
+                                                                                    <TextBlock Text="{Binding Label}"
+                                                                                               Visibility="{Binding ShowLabel, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                                                               Style="{StaticResource Text.Caption}"
+                                                                                               Margin="-8,6,-8,0"
+                                                                                               TextAlignment="Center"/>
+                                                                                </StackPanel>
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                </Canvas>
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
@@ -511,7 +533,7 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                             <TextBlock Style="{StaticResource Text.Caption}" TextWrapping="Wrap">
-                                Damages are plotted against stage when stage values are supplied; otherwise, the curve uses exceedance probability on the x-axis.
+                                Damages are plotted against stage when stage values are supplied, with stage labels shown on each plotted point; otherwise, the curve uses exceedance probability on the x-axis.
                             </TextBlock>
                         </StackPanel>
                     </Border>
