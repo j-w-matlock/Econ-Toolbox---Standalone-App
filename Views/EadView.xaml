@@ -171,77 +171,91 @@
                                           Height="280"
                                           SnapsToDevicePixels="True"
                                           ClipToBounds="True">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                        <Grid>
+                                            <Grid x:Name="ChartContentGrid">
+                                                <Grid.RenderTransform>
+                                                    <MatrixTransform x:Name="ChartTransform"/>
+                                                </Grid.RenderTransform>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="*"/>
+                                                    <RowDefinition Height="*"/>
+                                                    <RowDefinition Height="*"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
 
-                                        <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="1" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
-                                        <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="2" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
-                                        <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="3" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
+                                                <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="1" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
+                                                <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="2" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
+                                                <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Row="3" Grid.ColumnSpan="5" VerticalAlignment="Top"/>
 
-                                        <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="1" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-                                        <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="2" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-                                        <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="3" Grid.RowSpan="4" HorizontalAlignment="Left"/>
-                                        <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="4" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+                                                <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="1" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+                                                <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="2" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+                                                <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="3" Grid.RowSpan="4" HorizontalAlignment="Left"/>
+                                                <Line X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6" Grid.Column="4" Grid.RowSpan="4" HorizontalAlignment="Left"/>
 
-                                        <ItemsControl Grid.RowSpan="4"
-                                                      Grid.ColumnSpan="5"
-                                                      ItemsSource="{Binding DamageSeries}"
-                                                      IsHitTestVisible="True">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <Canvas Width="480" Height="280"/>
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Canvas Width="480" Height="280">
-                                                        <Polyline Points="{Binding Points}"
-                                                                  Stroke="{Binding Stroke}"
-                                                                  StrokeThickness="3"
-                                                                  StrokeEndLineCap="Round"
-                                                                  StrokeStartLineCap="Round"/>
-                                                        <ItemsControl ItemsSource="{Binding Markers}">
-                                                            <ItemsControl.ItemsPanel>
-                                                                <ItemsPanelTemplate>
-                                                                    <Canvas Width="480" Height="280"/>
-                                                                </ItemsPanelTemplate>
-                                                            </ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <StackPanel Canvas.Left="{Binding PlotPoint.X}"
-                                                                                Canvas.Top="{Binding PlotPoint.Y}"
-                                                                                Margin="-4,-4,0,0"
-                                                                                HorizontalAlignment="Center"
-                                                                                ToolTip="{Binding Tooltip}">
-                                                                        <Ellipse Width="8"
-                                                                                 Height="8"
-                                                                                 Fill="{Binding DataContext.Stroke, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                                                 StrokeThickness="0.5"
-                                                                                 Stroke="{StaticResource Brush.Border}"/>
-                                                                        <TextBlock Text="{Binding Label}"
-                                                                                   Visibility="{Binding ShowLabel, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                                                   Style="{StaticResource Text.Caption}"
-                                                                                   Margin="-8,6,-8,0"
-                                                                                   TextAlignment="Center"/>
-                                                                    </StackPanel>
-                                                                </DataTemplate>
-                                                            </ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </Canvas>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                                <ItemsControl Grid.RowSpan="4"
+                                                              Grid.ColumnSpan="5"
+                                                              ItemsSource="{Binding DamageSeries}"
+                                                              IsHitTestVisible="True">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <Canvas Width="480" Height="280"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Canvas Width="480" Height="280">
+                                                                <Polyline Points="{Binding Points}"
+                                                                          Stroke="{Binding Stroke}"
+                                                                          StrokeThickness="3"
+                                                                          StrokeEndLineCap="Round"
+                                                                          StrokeStartLineCap="Round"/>
+                                                                <ItemsControl ItemsSource="{Binding Markers}">
+                                                                    <ItemsControl.ItemsPanel>
+                                                                        <ItemsPanelTemplate>
+                                                                            <Canvas Width="480" Height="280"/>
+                                                                        </ItemsPanelTemplate>
+                                                                    </ItemsControl.ItemsPanel>
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <StackPanel Canvas.Left="{Binding PlotPoint.X}"
+                                                                                        Canvas.Top="{Binding PlotPoint.Y}"
+                                                                                        Margin="-4,-4,0,0"
+                                                                                        HorizontalAlignment="Center"
+                                                                                        ToolTip="{Binding Tooltip}">
+                                                                                <Ellipse Width="8"
+                                                                                         Height="8"
+                                                                                         Fill="{Binding DataContext.Stroke, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                                         StrokeThickness="0.5"
+                                                                                         Stroke="{StaticResource Brush.Border}"/>
+                                                                                <TextBlock Text="{Binding Label}"
+                                                                                           Visibility="{Binding ShowLabel, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                                                           Style="{StaticResource Text.Caption}"
+                                                                                           Margin="-8,6,-8,0"
+                                                                                           TextAlignment="Center"/>
+                                                                            </StackPanel>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </Canvas>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Grid>
+                                            <Rectangle x:Name="ChartInteractionLayer"
+                                                       Fill="Transparent"
+                                                       MouseWheel="ChartInteractionLayer_OnMouseWheel"
+                                                       MouseDown="ChartInteractionLayer_OnMouseDown"
+                                                       MouseMove="ChartInteractionLayer_OnMouseMove"
+                                                       MouseUp="ChartInteractionLayer_OnMouseUp"
+                                                       MouseLeave="ChartInteractionLayer_OnMouseLeave"/>
+                                        </Grid>
                                     </Grid>
                                 </Border>
 
