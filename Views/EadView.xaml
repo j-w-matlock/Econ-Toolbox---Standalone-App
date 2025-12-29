@@ -82,18 +82,22 @@
                         Padding="{StaticResource Padding.Content}"
                         Margin="0,0,0,12">
                     <StackPanel>
-                        <TextBlock Text="{Binding ChartTitle}"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,12"/>
+                        <TextBox Text="{Binding ChartTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="16"
+                                 FontWeight="SemiBold"
+                                 HorizontalAlignment="Center"
+                                 Margin="0,0,0,12"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 TextAlignment="Center"
+                                 HorizontalContentAlignment="Center"/>
                         <Viewbox Stretch="Uniform" StretchDirection="Both">
                             <Grid Width="640"
-                                  Height="420"
+                                  Height="320"
                                   SnapsToDevicePixels="True">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="24"/>
-                                    <RowDefinition Height="280"/>
+                                    <RowDefinition Height="186.67"/>
                                     <RowDefinition Height="44"/>
                                     <RowDefinition Height="32"/>
                                 </Grid.RowDefinitions>
@@ -108,20 +112,23 @@
                                         <ColumnDefinition Width="34"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding YAxisTitle}"
-                                               Grid.Column="0"
-                                               FontWeight="SemiBold"
-                                               FontSize="{Binding AxisTitleFontSize}"
-                                               Foreground="{StaticResource Brush.TextPrimary}"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center">
-                                        <TextBlock.RenderTransform>
+                                    <TextBox Text="{Binding EditableYAxisTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Column="0"
+                                             FontWeight="SemiBold"
+                                             FontSize="{Binding AxisTitleFontSize}"
+                                             Foreground="{StaticResource Brush.TextPrimary}"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             TextAlignment="Center">
+                                        <TextBox.RenderTransform>
                                             <TransformGroup>
                                                 <RotateTransform Angle="-90" CenterX="0" CenterY="0"/>
                                                 <TranslateTransform X="{Binding YAxisTitleOffsetX}" Y="{Binding YAxisTitleOffsetY}"/>
                                             </TransformGroup>
-                                        </TextBlock.RenderTransform>
-                                    </TextBlock>
+                                        </TextBox.RenderTransform>
+                                    </TextBox>
                                     <Grid Grid.Column="1">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*"/>
@@ -168,7 +175,7 @@
                                         BorderBrush="{StaticResource Brush.Border}"
                                         BorderThickness="1">
                                     <Grid Width="480"
-                                          Height="280"
+                                          Height="186.67"
                                           SnapsToDevicePixels="True"
                                           ClipToBounds="True">
                                         <Grid>
@@ -205,12 +212,12 @@
                                                               IsHitTestVisible="True">
                                                     <ItemsControl.ItemsPanel>
                                                         <ItemsPanelTemplate>
-                                                            <Canvas Width="480" Height="280"/>
+                                                            <Canvas Width="480" Height="186.67"/>
                                                         </ItemsPanelTemplate>
                                                     </ItemsControl.ItemsPanel>
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
-                                                            <Canvas Width="480" Height="280">
+                                                            <Canvas Width="480" Height="186.67">
                                                                 <Polyline Points="{Binding Points}"
                                                                           Stroke="{Binding Stroke}"
                                                                           StrokeThickness="3"
@@ -219,7 +226,7 @@
                                                                 <ItemsControl ItemsSource="{Binding Markers}">
                                                                     <ItemsControl.ItemsPanel>
                                                                         <ItemsPanelTemplate>
-                                                                            <Canvas Width="480" Height="280"/>
+                                                                            <Canvas Width="480" Height="186.67"/>
                                                                         </ItemsPanelTemplate>
                                                                     </ItemsControl.ItemsPanel>
                                                                     <ItemsControl.ItemTemplate>
@@ -298,18 +305,22 @@
                                     </TextBlock>
                                 </Grid>
 
-                                <TextBlock Grid.Row="3"
-                                           Grid.Column="1"
-                                           Text="{Binding XAxisTitle}"
-                                           FontWeight="SemiBold"
-                                           FontSize="{Binding AxisTitleFontSize}"
-                                           Foreground="{StaticResource Brush.TextPrimary}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center">
-                                    <TextBlock.RenderTransform>
+                                <TextBox Grid.Row="3"
+                                         Grid.Column="1"
+                                         Text="{Binding EditableXAxisTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         FontWeight="SemiBold"
+                                         FontSize="{Binding AxisTitleFontSize}"
+                                         Foreground="{StaticResource Brush.TextPrimary}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         TextAlignment="Center"
+                                         HorizontalContentAlignment="Center">
+                                    <TextBox.RenderTransform>
                                         <TranslateTransform X="{Binding XAxisTitleOffsetX}" Y="{Binding XAxisTitleOffsetY}"/>
-                                    </TextBlock.RenderTransform>
-                                </TextBlock>
+                                    </TextBox.RenderTransform>
+                                </TextBox>
                             </Grid>
                         </Viewbox>
                     </StackPanel>
