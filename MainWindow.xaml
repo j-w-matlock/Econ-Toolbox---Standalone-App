@@ -141,15 +141,6 @@
                 BorderThickness="0,0,0,1"
                 Padding="12,8"
                 SnapsToDevicePixels="True">
-            <DockPanel LastChildFill="False">
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
-                    <Rectangle Width="1" Height="24" Fill="{StaticResource Brush.NavigationBorder}" Margin="0,0,6,0"/>
-                    <TextBlock Text="v2.0 style reference"
-                               Foreground="#CDE7FF"
-                               FontSize="12"/>
-                </StackPanel>
-            </DockPanel>
         </Border>
 
         <Border Grid.Row="1"
@@ -172,7 +163,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Flood Damage Analysis 2.0"
+                            <TextBlock Text="Economics Toolbox"
                                        Style="{StaticResource Text.Title}"/>
                             <TextBlock Text="Refined economic tools for Corps planning"
                                        Style="{StaticResource Text.Title.Small}"
