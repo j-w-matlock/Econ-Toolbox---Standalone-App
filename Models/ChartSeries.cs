@@ -1,0 +1,18 @@
+using System.Collections.Generic;
+using System.Windows.Media;
+
+namespace EconToolbox.Desktop.Models
+{
+    public class ChartSeries
+    {
+        public string Name { get; set; } = string.Empty;
+        public Brush Stroke { get; set; } = Brushes.SteelBlue;
+        public List<ChartDataPoint> Points { get; set; } = new();
+    }
+
+    public class ChartDataPoint
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+}
