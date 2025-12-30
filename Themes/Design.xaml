@@ -3,19 +3,29 @@
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                     xmlns:converters="clr-namespace:EconToolbox.Desktop.Converters;assembly=EconToolbox.Desktop">
     <!-- Color palette -->
-    <Color x:Key="Color.Primary">#164A75</Color>
-    <Color x:Key="Color.Accent">#00A189</Color>
-    <Color x:Key="Color.Surface">#FFFFFFFF</Color>
-    <Color x:Key="Color.SurfaceAlt">#F2F6FA</Color>
-    <Color x:Key="Color.Border">#CBD9E6</Color>
-    <Color x:Key="Color.TextPrimary">#102337</Color>
-    <Color x:Key="Color.TextSecondary">#3B5B75</Color>
+    <Color x:Key="Color.Primary">#0E304F</Color>
+    <Color x:Key="Color.PrimaryDark">#0A233B</Color>
+    <Color x:Key="Color.Accent">#66C4E2</Color>
+    <Color x:Key="Color.Surface">#F9FBFE</Color>
+    <Color x:Key="Color.SurfaceAlt">#EEF2F8</Color>
+    <Color x:Key="Color.Border">#C9D5E5</Color>
+    <Color x:Key="Color.TextPrimary">#0F1C2E</Color>
+    <Color x:Key="Color.TextSecondary">#3B5875</Color>
     <Color x:Key="Color.WarningBackground">#FFF5E5</Color>
     <Color x:Key="Color.WarningBorder">#F0B429</Color>
     <Color x:Key="Color.AlertForeground">#8A1C1C</Color>
+    <Color x:Key="Color.Navigation">#0B2338</Color>
+    <Color x:Key="Color.NavigationActive">#123A5F</Color>
+    <Color x:Key="Color.NavigationBorder">#20466E</Color>
+    <Color x:Key="Color.NavigationText">#E4ECF7</Color>
+    <Color x:Key="Color.HeroStart">#173B62</Color>
+    <Color x:Key="Color.HeroEnd">#0C2339</Color>
+    <Color x:Key="Color.HighlightBackground">#E6F3F7</Color>
+    <Color x:Key="Color.HighlightBorder">#9CC7D5</Color>
 
     <!-- Brushes -->
     <SolidColorBrush x:Key="Brush.Primary" Color="{StaticResource Color.Primary}"/>
+    <SolidColorBrush x:Key="Brush.PrimaryDark" Color="{StaticResource Color.PrimaryDark}"/>
     <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}"/>
     <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}"/>
     <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="{StaticResource Color.SurfaceAlt}"/>
@@ -25,12 +35,18 @@
     <SolidColorBrush x:Key="Brush.WarningBackground" Color="{StaticResource Color.WarningBackground}"/>
     <SolidColorBrush x:Key="Brush.WarningBorder" Color="{StaticResource Color.WarningBorder}"/>
     <SolidColorBrush x:Key="Brush.AlertForeground" Color="{StaticResource Color.AlertForeground}"/>
-    <Color x:Key="Color.HighlightBackground">#E6F3F7</Color>
-    <Color x:Key="Color.HighlightBorder">#9CC7D5</Color>
     <SolidColorBrush x:Key="Brush.HighlightBackground" Color="{StaticResource Color.HighlightBackground}"/>
     <SolidColorBrush x:Key="Brush.HighlightBorder" Color="{StaticResource Color.HighlightBorder}"/>
     <SolidColorBrush x:Key="Brush.ChartGrid" Color="#DCE7F1"/>
     <SolidColorBrush x:Key="Brush.ChartFill" Color="#F7FBFF"/>
+    <SolidColorBrush x:Key="Brush.Navigation" Color="{StaticResource Color.Navigation}"/>
+    <SolidColorBrush x:Key="Brush.NavigationActive" Color="{StaticResource Color.NavigationActive}"/>
+    <SolidColorBrush x:Key="Brush.NavigationBorder" Color="{StaticResource Color.NavigationBorder}"/>
+    <SolidColorBrush x:Key="Brush.NavigationText" Color="{StaticResource Color.NavigationText}"/>
+    <LinearGradientBrush x:Key="Brush.HeroBackground" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="{StaticResource Color.HeroStart}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color.HeroEnd}" Offset="1"/>
+    </LinearGradientBrush>
     <converters:OffsetConverter x:Key="OffsetConverter"/>
     <converters:DayToPixelConverter x:Key="DayToPixelConverter"/>
     <converters:DayToPixelConverter x:Key="RowToPixelConverter" Scale="44"/>
@@ -89,6 +105,29 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
+    <Style x:Key="Border.Hero" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Brush.HeroBackground}"/>
+        <Setter Property="CornerRadius" Value="14"/>
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="#1AFFFFFF"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="#33000000"
+                                  ShadowDepth="0"
+                                  BlurRadius="18"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Border.Panel" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Brush.Surface}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
     <!-- Type ramp -->
     <Style x:Key="Text.Caption" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI"/>
@@ -139,7 +178,7 @@
     <Style TargetType="Button">
         <Setter Property="Background" Value="{StaticResource Brush.Primary}"/>
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="Padding" Value="12,10"/>
         <Setter Property="Margin" Value="{StaticResource Margin.Stack}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
@@ -150,9 +189,9 @@
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border"
                             Background="{TemplateBinding Background}"
-                            BorderBrush="{StaticResource Brush.Primary}"
+                            BorderBrush="{StaticResource Brush.PrimaryDark}"
                             BorderThickness="1"
-                            CornerRadius="8"
+                            CornerRadius="10"
                             SnapsToDevicePixels="True">
                         <ContentPresenter Margin="{TemplateBinding Padding}"
                                           HorizontalAlignment="Center"
@@ -167,8 +206,8 @@
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Brush.Accent}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#0C344F"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#0C344F"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource Brush.PrimaryDark}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Brush.PrimaryDark}"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="border" Property="BorderThickness" Value="2"/>
@@ -303,6 +342,52 @@
     <Style TargetType="TabControl">
         <Setter Property="Margin" Value="{StaticResource Margin.Container}"/>
         <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <Style x:Key="ListBox.Navigation" TargetType="ListBox">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource Brush.NavigationBorder}"/>
+                    <Setter Property="Background" Value="#0DFFFFFF"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Border x:Name="border"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="10"
+                                        SnapsToDevicePixels="True">
+                                    <ContentPresenter Margin="10"
+                                                      VerticalAlignment="Center"
+                                                      RecognizesAccessKey="True"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="{StaticResource Brush.NavigationActive}"/>
+                                        <Setter TargetName="border" Property="BorderBrush" Value="#4DBAF0"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#14314D"/>
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="border" Property="Opacity" Value="0.6"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="ScrollViewer">
