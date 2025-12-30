@@ -12,9 +12,6 @@ using System.Windows.Threading;
 using EconToolbox.Desktop.Behaviors;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
-using Microsoft.Msagl.Core.Routing;
-using Microsoft.Msagl.Drawing;
-using Microsoft.Msagl.Layout.Layered;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -57,11 +54,18 @@ namespace EconToolbox.Desktop.ViewModels
             set { _results = value; OnPropertyChanged(); }
         }
 
-        private Graph _graph = new("eadGraph");
-        public Graph Graph
+        private ObservableCollection<ChartSeries> _chartSeries = new();
+        public ObservableCollection<ChartSeries> ChartSeries
         {
-            get => _graph;
-            private set { _graph = value; OnPropertyChanged(); }
+            get => _chartSeries;
+            private set { _chartSeries = value; OnPropertyChanged(); }
+        }
+
+        private string _chartStatusMessage = string.Empty;
+        public string ChartStatusMessage
+        {
+            get => _chartStatusMessage;
+            private set { _chartStatusMessage = value; OnPropertyChanged(); }
         }
 
         public ObservableCollection<LegendItem> LegendItems { get; } = new();
@@ -74,8 +78,6 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 _chartTitle = value;
                 OnPropertyChanged();
-                Graph.Attr.Label = value;
-                OnPropertyChanged(nameof(Graph));
             }
         }
 
@@ -94,7 +96,6 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 Interval = TimeSpan.FromMilliseconds(150)
             };
-            _graph.Attr.Label = ChartTitle;
             _computeDebounceTimer.Tick += (_, _) =>
             {
                 _computeDebounceTimer.Stop();
@@ -241,7 +242,8 @@ namespace EconToolbox.Desktop.ViewModels
                         new() { Label = "Status", Result = "No data" }
                     };
                     LegendItems.Clear();
-                    Graph = CreateEmptyGraph("Enter frequency and damage inputs to build the MSAGL chart.");
+                    ChartSeries = new ObservableCollection<ChartSeries>();
+                    ChartStatusMessage = "Enter frequency and damage inputs to build the graph.";
                     return;
                 }
 
@@ -252,7 +254,8 @@ namespace EconToolbox.Desktop.ViewModels
                         new() { Label = "Status", Result = "Probabilities must be between 0 and 1." }
                     };
                     LegendItems.Clear();
-                    Graph = CreateEmptyGraph("Probabilities must be between 0 and 1.");
+                    ChartSeries = new ObservableCollection<ChartSeries>();
+                    ChartStatusMessage = "Probabilities must be between 0 and 1.";
                     return;
                 }
 
@@ -282,7 +285,7 @@ namespace EconToolbox.Desktop.ViewModels
                     });
                 }
                 Results = new ObservableCollection<EadResultRow>(results);
-                UpdateGraph();
+                UpdateChartSeries();
             }
             catch (Exception ex)
             {
@@ -291,7 +294,8 @@ namespace EconToolbox.Desktop.ViewModels
                     new() { Label = "Error", Result = ex.Message }
                 };
                 LegendItems.Clear();
-                Graph = CreateEmptyGraph("Unable to build graph. Check inputs and try again.");
+                ChartSeries = new ObservableCollection<ChartSeries>();
+                ChartStatusMessage = "Unable to build graph. Check inputs and try again.";
             }
             finally
             {
@@ -299,7 +303,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private void UpdateGraph()
+        private void UpdateChartSeries()
         {
             LegendItems.Clear();
             bool hasStageData = UseStage && Rows.Any(r => r.Stage.HasValue && r.Damages.Count > 0);
@@ -328,72 +332,35 @@ namespace EconToolbox.Desktop.ViewModels
 
             if (seriesData.Count == 0)
             {
-                Graph = CreateEmptyGraph("Add at least one probability/stage row to see the graph.");
+                ChartSeries = new ObservableCollection<ChartSeries>();
+                ChartStatusMessage = "Add at least one probability/stage row to see the graph.";
                 return;
             }
 
-            var graph = new Graph("eadGraph")
-            {
-                Attr =
-                {
-                    LayerDirection = LayerDirection.LR,
-                    Label = ChartTitle
-                },
-                LayoutAlgorithmSettings = new SugiyamaLayoutSettings
-                {
-                    EdgeRoutingSettings = new EdgeRoutingSettings
-                    {
-                        EdgeRoutingMode = EdgeRoutingMode.SplineBundling
-                    },
-                    LayerDirection = LayerDirection.LR
-                }
-            };
-
+            var chartSeries = new ObservableCollection<ChartSeries>();
             for (int i = 0; i < seriesData.Count; i++)
             {
                 var brush = GetSeriesBrush(i);
-                var color = ToMsaglColor(brush);
                 LegendItems.Add(new LegendItem
                 {
                     Name = seriesData[i].Name,
                     Color = brush
                 });
 
-                Node? previousNode = null;
-                bool labelPlaced = false;
-                for (int pointIndex = 0; pointIndex < seriesData[i].Points.Count; pointIndex++)
+                var points = seriesData[i].Points
+                    .Select(p => new ChartDataPoint { X = p.X, Y = p.Y })
+                    .ToList();
+
+                chartSeries.Add(new ChartSeries
                 {
-                    var point = seriesData[i].Points[pointIndex];
-                    string nodeId = $"{seriesData[i].Name}_{pointIndex}";
-                    var node = graph.AddNode(nodeId);
-                    node.LabelText = hasStageData
-                        ? $"Stage {point.X:N2}\n{point.Y:C0}"
-                        : $"Prob {point.X:P2}\n{point.Y:C0}";
-                    node.Attr.FillColor = color;
-                    node.Attr.Color = color;
-                    node.Attr.Shape = Shape.Circle;
-                    node.Attr.LineWidth = 1.5;
-                    node.Attr.Fontcolor = Microsoft.Msagl.Drawing.Color.Black;
-                    node.Label.FontSize = 10;
-
-                    if (previousNode != null)
-                    {
-                        var edge = graph.AddEdge(previousNode.Id, node.Id);
-                        edge.Attr.ArrowheadAtTarget = ArrowStyle.None;
-                        edge.Attr.Color = color;
-                        edge.Attr.LineWidth = 2.5;
-                        if (!labelPlaced)
-                        {
-                            edge.LabelText = seriesData[i].Name;
-                            labelPlaced = true;
-                        }
-                    }
-
-                    previousNode = node;
-                }
+                    Name = seriesData[i].Name,
+                    Stroke = brush,
+                    Points = points
+                });
             }
 
-            Graph = graph;
+            ChartSeries = chartSeries;
+            ChartStatusMessage = string.Empty;
         }
 
         private async Task ExportAsync()
@@ -459,18 +426,6 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private Graph CreateEmptyGraph(string label)
-        {
-            return new Graph("eadGraph")
-            {
-                Attr =
-                {
-                    LayerDirection = LayerDirection.LR,
-                    Label = label
-                }
-            };
-        }
-
         private Brush GetSeriesBrush(int index)
         {
             Brush[] palette =
@@ -484,16 +439,6 @@ namespace EconToolbox.Desktop.ViewModels
             };
 
             return palette[index % palette.Length];
-        }
-
-        private Microsoft.Msagl.Drawing.Color ToMsaglColor(Brush brush)
-        {
-            if (brush is SolidColorBrush scb)
-            {
-                return new Microsoft.Msagl.Drawing.Color(scb.Color.A, scb.Color.R, scb.Color.G, scb.Color.B);
-            }
-
-            return Microsoft.Msagl.Drawing.Color.Black;
         }
 
         private void DamageColumn_PropertyChanged(object? sender, PropertyChangedEventArgs e)
