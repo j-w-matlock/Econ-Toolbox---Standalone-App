@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +12,9 @@ using System.Windows.Threading;
 using EconToolbox.Desktop.Behaviors;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
+using Microsoft.Msagl.Core.Routing;
+using Microsoft.Msagl.Drawing;
+using Microsoft.Msagl.Layout.Layered;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -54,172 +57,14 @@ namespace EconToolbox.Desktop.ViewModels
             set { _results = value; OnPropertyChanged(); }
         }
 
-        private PointCollection _damageCurvePoints = new();
-        public PointCollection DamageCurvePoints
+        private Graph _graph = new("eadGraph");
+        public Graph Graph
         {
-            get => _damageCurvePoints;
-            set { _damageCurvePoints = value; OnPropertyChanged(); }
+            get => _graph;
+            private set { _graph = value; OnPropertyChanged(); }
         }
 
-        public ObservableCollection<ChartSeries> DamageSeries { get; } = new();
-        public ObservableCollection<double> VerticalGridlines { get; } = new();
-        public ObservableCollection<double> HorizontalGridlines { get; } = new();
-
-        private string _xAxisMinLabel = string.Empty;
-        public string XAxisMinLabel
-        {
-            get => _xAxisMinLabel;
-            private set { _xAxisMinLabel = value; OnPropertyChanged(); }
-        }
-
-        private string _xAxisMidLabel = string.Empty;
-        public string XAxisMidLabel
-        {
-            get => _xAxisMidLabel;
-            private set { _xAxisMidLabel = value; OnPropertyChanged(); }
-        }
-
-        private string _xAxisMaxLabel = string.Empty;
-        public string XAxisMaxLabel
-        {
-            get => _xAxisMaxLabel;
-            private set { _xAxisMaxLabel = value; OnPropertyChanged(); }
-        }
-
-        private string _xAxisTitle = string.Empty;
-        public string XAxisTitle
-        {
-            get => _xAxisTitle;
-            private set { _xAxisTitle = value; OnPropertyChanged(); }
-        }
-
-        private string _customXAxisTitle = string.Empty;
-        public string CustomXAxisTitle
-        {
-            get => _customXAxisTitle;
-            set
-            {
-                _customXAxisTitle = value;
-                OnPropertyChanged();
-                RefreshAxisTitles();
-            }
-        }
-
-        private string _yAxisMinLabel = string.Empty;
-        public string YAxisMinLabel
-        {
-            get => _yAxisMinLabel;
-            private set { _yAxisMinLabel = value; OnPropertyChanged(); }
-        }
-
-        private string _yAxisMidLabel = string.Empty;
-        public string YAxisMidLabel
-        {
-            get => _yAxisMidLabel;
-            private set { _yAxisMidLabel = value; OnPropertyChanged(); }
-        }
-
-        private string _yAxisMaxLabel = string.Empty;
-        public string YAxisMaxLabel
-        {
-            get => _yAxisMaxLabel;
-            private set { _yAxisMaxLabel = value; OnPropertyChanged(); }
-        }
-
-        private string _yAxisTitle = string.Empty;
-        public string YAxisTitle
-        {
-            get => _yAxisTitle;
-            private set { _yAxisTitle = value; OnPropertyChanged(); }
-        }
-
-        private double _axisLabelFontSize = 11;
-        public double AxisLabelFontSize
-        {
-            get => _axisLabelFontSize;
-            set { _axisLabelFontSize = value; OnPropertyChanged(); }
-        }
-
-        private double _axisTitleFontSize = 12;
-        public double AxisTitleFontSize
-        {
-            get => _axisTitleFontSize;
-            set { _axisTitleFontSize = value; OnPropertyChanged(); }
-        }
-
-        private double _axisLabelOffsetX;
-        public double AxisLabelOffsetX
-        {
-            get => _axisLabelOffsetX;
-            set { _axisLabelOffsetX = value; OnPropertyChanged(); }
-        }
-
-        private double _axisLabelOffsetY;
-        public double AxisLabelOffsetY
-        {
-            get => _axisLabelOffsetY;
-            set { _axisLabelOffsetY = value; OnPropertyChanged(); }
-        }
-
-        private double _xAxisTitleOffsetX;
-        public double XAxisTitleOffsetX
-        {
-            get => _xAxisTitleOffsetX;
-            set { _xAxisTitleOffsetX = value; OnPropertyChanged(); }
-        }
-
-        private double _xAxisTitleOffsetY;
-        public double XAxisTitleOffsetY
-        {
-            get => _xAxisTitleOffsetY;
-            set { _xAxisTitleOffsetY = value; OnPropertyChanged(); }
-        }
-
-        private double _yAxisTitleOffsetX;
-        public double YAxisTitleOffsetX
-        {
-            get => _yAxisTitleOffsetX;
-            set { _yAxisTitleOffsetX = value; OnPropertyChanged(); }
-        }
-
-        private double _yAxisTitleOffsetY;
-        public double YAxisTitleOffsetY
-        {
-            get => _yAxisTitleOffsetY;
-            set { _yAxisTitleOffsetY = value; OnPropertyChanged(); }
-        }
-
-        private string _customYAxisTitle = string.Empty;
-        public string CustomYAxisTitle
-        {
-            get => _customYAxisTitle;
-            set
-            {
-                _customYAxisTitle = value;
-                OnPropertyChanged();
-                RefreshAxisTitles();
-            }
-        }
-
-        public string EditableXAxisTitle
-        {
-            get => string.IsNullOrWhiteSpace(CustomXAxisTitle) ? _defaultXAxisTitle : CustomXAxisTitle;
-            set
-            {
-                CustomXAxisTitle = string.IsNullOrWhiteSpace(value) ? string.Empty : value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string EditableYAxisTitle
-        {
-            get => string.IsNullOrWhiteSpace(CustomYAxisTitle) ? _defaultYAxisTitle : CustomYAxisTitle;
-            set
-            {
-                CustomYAxisTitle = string.IsNullOrWhiteSpace(value) ? string.Empty : value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservableCollection<LegendItem> LegendItems { get; } = new();
 
         private string _chartTitle = "Expected Annual Damage";
         public string ChartTitle
@@ -229,17 +74,10 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 _chartTitle = value;
                 OnPropertyChanged();
+                Graph.Attr.Label = value;
+                OnPropertyChanged(nameof(Graph));
             }
         }
-
-        private const double ChartWidth = 480;
-        private const double ChartHeight = 186.67;
-
-        private ChartRange? _plotRange;
-        private bool _chartHasStageData;
-
-        private string _defaultXAxisTitle = string.Empty;
-        private string _defaultYAxisTitle = string.Empty;
 
         public IRelayCommand AddDamageColumnCommand { get; }
         public IRelayCommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
@@ -256,6 +94,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 Interval = TimeSpan.FromMilliseconds(150)
             };
+            _graph.Attr.Label = ChartTitle;
             _computeDebounceTimer.Tick += (_, _) =>
             {
                 _computeDebounceTimer.Stop();
@@ -401,10 +240,8 @@ namespace EconToolbox.Desktop.ViewModels
                     {
                         new() { Label = "Status", Result = "No data" }
                     };
-                    DamageSeries.Clear();
-                    DamageCurvePoints = new PointCollection();
-                    _plotRange = null;
-                    SetAxisLabels(null, false);
+                    LegendItems.Clear();
+                    Graph = CreateEmptyGraph("Enter frequency and damage inputs to build the MSAGL chart.");
                     return;
                 }
 
@@ -414,10 +251,8 @@ namespace EconToolbox.Desktop.ViewModels
                     {
                         new() { Label = "Status", Result = "Probabilities must be between 0 and 1." }
                     };
-                    DamageSeries.Clear();
-                    DamageCurvePoints = new PointCollection();
-                    _plotRange = null;
-                    SetAxisLabels(null, false);
+                    LegendItems.Clear();
+                    Graph = CreateEmptyGraph("Probabilities must be between 0 and 1.");
                     return;
                 }
 
@@ -428,7 +263,9 @@ namespace EconToolbox.Desktop.ViewModels
                     _suppressAutoCompute = true;
                     Rows.Clear();
                     foreach (var r in sortedRows)
+                    {
                         Rows.Add(r);
+                    }
                     _suppressAutoCompute = false;
                 }
 
@@ -445,7 +282,7 @@ namespace EconToolbox.Desktop.ViewModels
                     });
                 }
                 Results = new ObservableCollection<EadResultRow>(results);
-                UpdateCharts();
+                UpdateGraph();
             }
             catch (Exception ex)
             {
@@ -453,10 +290,8 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     new() { Label = "Error", Result = ex.Message }
                 };
-                DamageCurvePoints = new PointCollection();
-                DamageSeries.Clear();
-                _plotRange = null;
-                SetAxisLabels(null, false);
+                LegendItems.Clear();
+                Graph = CreateEmptyGraph("Unable to build graph. Check inputs and try again.");
             }
             finally
             {
@@ -464,398 +299,101 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private void UpdateCharts()
+        private void UpdateGraph()
         {
-            if (Rows.Count == 0) return;
-
+            LegendItems.Clear();
             bool hasStageData = UseStage && Rows.Any(r => r.Stage.HasValue && r.Damages.Count > 0);
 
             var seriesData = new System.Collections.Generic.List<(string Name, System.Collections.Generic.List<(double X, double Y)> Points)>();
-            double? minX = null, maxX = null, minY = null, maxY = null;
 
             for (int i = 0; i < DamageColumns.Count; i++)
             {
                 var data = hasStageData
                     ? Rows.Where(r => r.Stage.HasValue && r.Damages.Count > i)
-                          .OrderBy(r => r.Stage!.Value)
-                          .Select(r => (X: r.Stage!.Value, Y: r.Damages[i]))
-                          .ToList()
+                        .OrderBy(r => r.Stage!.Value)
+                        .Select(r => (X: r.Stage!.Value, Y: r.Damages[i]))
+                        .ToList()
                     : Rows.Where(r => r.Damages.Count > i)
-                          .OrderBy(r => r.Probability)
-                          .Select(r => (X: r.Probability, Y: r.Damages[i]))
-                          .ToList();
+                        .OrderBy(r => r.Probability)
+                        .Select(r => (X: r.Probability, Y: r.Damages[i]))
+                        .ToList();
 
                 if (data.Count == 0)
                 {
                     continue;
                 }
 
-                minX = minX.HasValue ? Math.Min(minX.Value, data.Min(p => p.X)) : data.Min(p => p.X);
-                maxX = maxX.HasValue ? Math.Max(maxX.Value, data.Max(p => p.X)) : data.Max(p => p.X);
-                minY = minY.HasValue ? Math.Min(minY.Value, data.Min(p => p.Y)) : data.Min(p => p.Y);
-                maxY = maxY.HasValue ? Math.Max(maxY.Value, data.Max(p => p.Y)) : data.Max(p => p.Y);
-
                 seriesData.Add((DamageColumns[i].Name, data));
             }
 
-            DamageSeries.Clear();
-            if (seriesData.Count == 0 || !minX.HasValue || !maxX.HasValue || !minY.HasValue || !maxY.HasValue)
+            if (seriesData.Count == 0)
             {
-                DamageCurvePoints = new PointCollection();
-                _plotRange = null;
-                SetAxisLabels(null, hasStageData);
+                Graph = CreateEmptyGraph("Add at least one probability/stage row to see the graph.");
                 return;
             }
 
-            var baselineMinY = Math.Min(0, minY.Value);
-            var range = new ChartRange(minX.Value, maxX.Value, baselineMinY, maxY.Value);
-
-            double xPadding = (range.MaxX - range.MinX) * 0.05;
-            if (xPadding <= 0)
+            var graph = new Graph("eadGraph")
             {
-                xPadding = hasStageData ? Math.Max(Math.Abs(range.MaxX) * 0.05, 1) : 0.05;
-            }
+                Attr =
+                {
+                    LayerDirection = LayerDirection.LR,
+                    Label = ChartTitle
+                },
+                LayoutAlgorithmSettings = new SugiyamaLayoutSettings
+                {
+                    EdgeRoutingSettings = new EdgeRoutingSettings
+                    {
+                        EdgeRoutingMode = EdgeRoutingMode.SplineBundling
+                    },
+                    LayerDirection = LayerDirection.LR
+                }
+            };
 
-            double paddedMinX = hasStageData ? range.MinX - xPadding : Math.Max(0, range.MinX - xPadding);
-            double paddedMaxX = hasStageData ? range.MaxX + xPadding : Math.Min(1, range.MaxX + xPadding);
-
-            double yPadding = (range.MaxY - range.MinY) * 0.15;
-            if (yPadding <= 0)
-            {
-                yPadding = Math.Max(Math.Abs(range.MaxY) * 0.15, 1);
-            }
-
-            double paddedMinY = range.MinY - yPadding;
-            double paddedMaxY = range.MaxY + yPadding;
-            var paddedRange = new ChartRange(paddedMinX, paddedMaxX, paddedMinY, paddedMaxY);
             for (int i = 0; i < seriesData.Count; i++)
             {
-                var chartPoints = CreateChartPoints(seriesData[i].Points, paddedRange, hasStageData, i);
-                var series = new ChartSeries(seriesData[i].Name, chartPoints.Points, chartPoints.Markers, GetSeriesBrush(i));
-                DamageSeries.Add(series);
-
-                if (i == 0)
+                var brush = GetSeriesBrush(i);
+                var color = ToMsaglColor(brush);
+                LegendItems.Add(new LegendItem
                 {
-                    DamageCurvePoints = new PointCollection(chartPoints.Points);
-                }
-            }
+                    Name = seriesData[i].Name,
+                    Color = brush
+                });
 
-            _plotRange = paddedRange;
-            _chartHasStageData = hasStageData;
-            UpdateAxisForTransform(Matrix.Identity);
-        }
-
-        private ChartPoints CreateChartPoints(System.Collections.Generic.List<(double X, double Y)> data, ChartRange range, bool hasStageData, int seriesIndex)
-        {
-            PointCollection points = new();
-            System.Collections.Generic.List<ChartPoint> markers = new();
-            if (data.Count == 0) return new ChartPoints(points, markers);
-
-            double xRange = range.MaxX - range.MinX;
-            if (xRange == 0) xRange = 1;
-            double yRange = range.MaxY - range.MinY;
-            if (yRange == 0) yRange = 1;
-
-            List<double> labelAnchors = new();
-
-            foreach (var p in data)
-            {
-                double x = (p.X - range.MinX) / xRange * ChartWidth;
-                double y = ChartHeight - (p.Y - range.MinY) / yRange * ChartHeight;
-                var plotPoint = new System.Windows.Point(x, y);
-                points.Add(plotPoint);
-
-                string label = hasStageData ? p.X.ToString("N2") : string.Empty;
-                string tooltip = hasStageData
-                    ? $"Stage: {p.X:N2}\nDamage: {p.Y:C0}"
-                    : $"Probability: {p.X:P2}\nDamage: {p.Y:C0}";
-                var labelOffset = GetLabelOffset(plotPoint, seriesIndex, labelAnchors);
-                markers.Add(new ChartPoint(plotPoint, label, hasStageData, tooltip, labelOffset.X, labelOffset.Y));
-            }
-
-            return new ChartPoints(points, markers);
-        }
-
-        private System.Windows.Point GetLabelOffset(System.Windows.Point plotPoint, int seriesIndex, IList<double> labelAnchors)
-        {
-            const double labelHeight = 14;
-            const double markerHeight = 8;
-            const double minimumSeparation = 16;
-
-            double offsetY = GetBaseLabelOffset(plotPoint, seriesIndex);
-            double labelTop = EstimateLabelTop(plotPoint, offsetY, markerHeight);
-            bool adjusted;
-            int safety = 0;
-
-            do
-            {
-                adjusted = false;
-                foreach (double anchor in labelAnchors)
+                Node? previousNode = null;
+                bool labelPlaced = false;
+                for (int pointIndex = 0; pointIndex < seriesData[i].Points.Count; pointIndex++)
                 {
-                    if (Math.Abs(labelTop - anchor) < minimumSeparation)
+                    var point = seriesData[i].Points[pointIndex];
+                    string nodeId = $"{seriesData[i].Name}_{pointIndex}";
+                    var node = graph.AddNode(nodeId);
+                    node.LabelText = hasStageData
+                        ? $"Stage {point.X:N2}\n{point.Y:C0}"
+                        : $"Prob {point.X:P2}\n{point.Y:C0}";
+                    node.Attr.FillColor = color;
+                    node.Attr.Color = color;
+                    node.Attr.Shape = Shape.Circle;
+                    node.Attr.LineWidth = 1.5;
+                    node.Attr.Fontcolor = Microsoft.Msagl.Drawing.Color.Black;
+                    node.Label.FontSize = 10;
+
+                    if (previousNode != null)
                     {
-                        double pushDown = (anchor + minimumSeparation) - labelTop;
-                        offsetY += pushDown;
-                        labelTop += pushDown;
-                        adjusted = true;
+                        var edge = graph.AddEdge(previousNode.Id, node.Id);
+                        edge.Attr.ArrowheadAtTarget = ArrowStyle.None;
+                        edge.Attr.Color = color;
+                        edge.Attr.LineWidth = 2.5;
+                        if (!labelPlaced)
+                        {
+                            edge.LabelText = seriesData[i].Name;
+                            labelPlaced = true;
+                        }
                     }
+
+                    previousNode = node;
                 }
-
-                if (labelTop + labelHeight > ChartHeight)
-                {
-                    double overflow = (labelTop + labelHeight) - ChartHeight;
-                    offsetY -= overflow;
-                    labelTop -= overflow;
-                    adjusted = true;
-                }
-
-                if (labelTop < 0)
-                {
-                    offsetY += -labelTop;
-                    labelTop = 0;
-                    adjusted = true;
-                }
-            } while (adjusted && ++safety < 6);
-
-            labelAnchors.Add(labelTop);
-            return new System.Windows.Point(0, offsetY);
-        }
-
-        private double GetBaseLabelOffset(System.Windows.Point plotPoint, int seriesIndex)
-        {
-            double stackedOffset = 6 + (seriesIndex * 14);
-
-            if (plotPoint.Y >= ChartHeight - 28)
-            {
-                return -20 - (seriesIndex * 10);
             }
 
-            if (plotPoint.Y <= 12)
-            {
-                return stackedOffset + 4;
-            }
-
-            return stackedOffset;
-        }
-
-        private static double EstimateLabelTop(System.Windows.Point plotPoint, double marginTop, double markerHeight)
-        {
-            return plotPoint.Y + marginTop + markerHeight;
-        }
-
-        public void UpdateAxisForTransform(Matrix transform)
-        {
-            if (_plotRange == null || !transform.HasInverse)
-            {
-                return;
-            }
-
-            var inverse = transform;
-            inverse.Invert();
-
-            var corners = new[]
-            {
-                inverse.Transform(new System.Windows.Point(0, 0)),
-                inverse.Transform(new System.Windows.Point(ChartWidth, 0)),
-                inverse.Transform(new System.Windows.Point(0, ChartHeight)),
-                inverse.Transform(new System.Windows.Point(ChartWidth, ChartHeight))
-            };
-
-            double minContentX = corners.Min(p => p.X);
-            double maxContentX = corners.Max(p => p.X);
-            double minContentY = corners.Min(p => p.Y);
-            double maxContentY = corners.Max(p => p.Y);
-
-            minContentX = Math.Clamp(minContentX, 0, ChartWidth);
-            maxContentX = Math.Clamp(maxContentX, 0, ChartWidth);
-            minContentY = Math.Clamp(minContentY, 0, ChartHeight);
-            maxContentY = Math.Clamp(maxContentY, 0, ChartHeight);
-
-            double xRange = _plotRange.Value.MaxX - _plotRange.Value.MinX;
-            double yRange = _plotRange.Value.MaxY - _plotRange.Value.MinY;
-
-            double visibleMinX = _plotRange.Value.MinX + (minContentX / ChartWidth) * xRange;
-            double visibleMaxX = _plotRange.Value.MinX + (maxContentX / ChartWidth) * xRange;
-            double visibleMaxY = _plotRange.Value.MaxY - (minContentY / ChartHeight) * yRange;
-            double visibleMinY = _plotRange.Value.MaxY - (maxContentY / ChartHeight) * yRange;
-
-            SetAxisLabels(new ChartRange(visibleMinX, visibleMaxX, visibleMinY, visibleMaxY), _chartHasStageData);
-        }
-
-        private void SetAxisLabels(ChartRange? range, bool hasStageData)
-        {
-            if (range == null)
-            {
-                XAxisMinLabel = string.Empty;
-                XAxisMidLabel = string.Empty;
-                XAxisMaxLabel = string.Empty;
-                _defaultXAxisTitle = string.Empty;
-                YAxisMinLabel = string.Empty;
-                YAxisMidLabel = string.Empty;
-                YAxisMaxLabel = string.Empty;
-                _defaultYAxisTitle = string.Empty;
-                RefreshAxisTitles();
-                VerticalGridlines.Clear();
-                HorizontalGridlines.Clear();
-                return;
-            }
-
-            XAxisMinLabel = FormatXAxisValue(range.Value.MinX, hasStageData);
-            XAxisMidLabel = FormatXAxisValue((range.Value.MinX + range.Value.MaxX) / 2, hasStageData);
-            XAxisMaxLabel = FormatXAxisValue(range.Value.MaxX, hasStageData);
-            _defaultXAxisTitle = hasStageData ? "Stage / Water Surface" : "Exceedance Probability (annual)";
-            YAxisMinLabel = FormatYAxisValue(range.Value.MinY);
-            YAxisMidLabel = FormatYAxisValue((range.Value.MinY + range.Value.MaxY) / 2);
-            YAxisMaxLabel = FormatYAxisValue(range.Value.MaxY);
-            _defaultYAxisTitle = "Damage (USD)";
-            RefreshAxisTitles();
-            UpdateGridlines(range.Value);
-        }
-
-        private void RefreshAxisTitles()
-        {
-            XAxisTitle = string.IsNullOrWhiteSpace(CustomXAxisTitle)
-                ? _defaultXAxisTitle
-                : CustomXAxisTitle;
-            YAxisTitle = string.IsNullOrWhiteSpace(CustomYAxisTitle)
-                ? _defaultYAxisTitle
-                : CustomYAxisTitle;
-            OnPropertyChanged(nameof(EditableXAxisTitle));
-            OnPropertyChanged(nameof(EditableYAxisTitle));
-        }
-
-        private string FormatXAxisValue(double value, bool hasStageData)
-        {
-            return hasStageData
-                ? value.ToString("N2")
-                : value.ToString("P1");
-        }
-
-        private string FormatYAxisValue(double value)
-        {
-            if (Math.Abs(value) >= 1_000_000)
-            {
-                return $"${value / 1_000_000d:0.##}M";
-            }
-
-            if (Math.Abs(value) >= 1_000)
-            {
-                return $"${value / 1_000d:0.##}K";
-            }
-
-            return value.ToString("C2");
-        }
-
-        private Brush GetSeriesBrush(int index)
-        {
-            Brush[] palette =
-            {
-                Brushes.SteelBlue,
-                Brushes.OrangeRed,
-                Brushes.SeaGreen,
-                Brushes.MediumPurple,
-                Brushes.Goldenrod,
-                Brushes.Firebrick
-            };
-
-            return palette[index % palette.Length];
-        }
-
-        private void UpdateGridlines(ChartRange visibleRange)
-        {
-            if (_plotRange == null)
-            {
-                VerticalGridlines.Clear();
-                HorizontalGridlines.Clear();
-                return;
-            }
-
-            var xTicks = GenerateTicks(visibleRange.MinX, visibleRange.MaxX);
-            var yTicks = GenerateTicks(visibleRange.MinY, visibleRange.MaxY);
-
-            double plotWidth = _plotRange.Value.MaxX - _plotRange.Value.MinX;
-            double plotHeight = _plotRange.Value.MaxY - _plotRange.Value.MinY;
-
-            VerticalGridlines.Clear();
-            foreach (double tick in xTicks)
-            {
-                if (tick < _plotRange.Value.MinX || tick > _plotRange.Value.MaxX)
-                {
-                    continue;
-                }
-
-                double normalized = (tick - _plotRange.Value.MinX) / plotWidth;
-                VerticalGridlines.Add(normalized * ChartWidth);
-            }
-
-            HorizontalGridlines.Clear();
-            foreach (double tick in yTicks)
-            {
-                if (tick < _plotRange.Value.MinY || tick > _plotRange.Value.MaxY)
-                {
-                    continue;
-                }
-
-                double normalized = (tick - _plotRange.Value.MinY) / plotHeight;
-                double pixelY = ChartHeight - (normalized * ChartHeight);
-                HorizontalGridlines.Add(pixelY);
-            }
-        }
-
-        private static IEnumerable<double> GenerateTicks(double min, double max)
-        {
-            if (Math.Abs(max - min) < double.Epsilon)
-            {
-                yield return min;
-                yield break;
-            }
-
-            double range = NiceNumber(max - min, false);
-            double spacing = NiceNumber(range / 4, true);
-
-            if (spacing == 0)
-            {
-                yield return min;
-                yield return max;
-                yield break;
-            }
-
-            double start = Math.Floor(min / spacing) * spacing;
-            double end = Math.Ceiling(max / spacing) * spacing;
-
-            for (double tick = start; tick <= end + (spacing / 2); tick += spacing)
-            {
-                yield return Math.Round(tick, 6);
-            }
-        }
-
-        private static double NiceNumber(double value, bool round)
-        {
-            if (value == 0)
-            {
-                return 0;
-            }
-
-            double exponent = Math.Floor(Math.Log10(Math.Abs(value)));
-            double fraction = value / Math.Pow(10, exponent);
-            double niceFraction;
-
-            if (round)
-            {
-                if (fraction < 1.5) niceFraction = 1;
-                else if (fraction < 3) niceFraction = 2;
-                else if (fraction < 7) niceFraction = 5;
-                else niceFraction = 10;
-            }
-            else
-            {
-                if (fraction <= 1) niceFraction = 1;
-                else if (fraction <= 2) niceFraction = 2;
-                else if (fraction <= 5) niceFraction = 5;
-                else niceFraction = 10;
-            }
-
-            return niceFraction * Math.Pow(10, exponent);
+            Graph = graph;
         }
 
         private async Task ExportAsync()
@@ -919,6 +457,43 @@ namespace EconToolbox.Desktop.ViewModels
                     ToolTip = "Damage amount for this category at the selected probability."
                 });
             }
+        }
+
+        private Graph CreateEmptyGraph(string label)
+        {
+            return new Graph("eadGraph")
+            {
+                Attr =
+                {
+                    LayerDirection = LayerDirection.LR,
+                    Label = label
+                }
+            };
+        }
+
+        private Brush GetSeriesBrush(int index)
+        {
+            Brush[] palette =
+            {
+                Brushes.SteelBlue,
+                Brushes.OrangeRed,
+                Brushes.SeaGreen,
+                Brushes.MediumPurple,
+                Brushes.Goldenrod,
+                Brushes.Firebrick
+            };
+
+            return palette[index % palette.Length];
+        }
+
+        private Microsoft.Msagl.Drawing.Color ToMsaglColor(Brush brush)
+        {
+            if (brush is SolidColorBrush scb)
+            {
+                return new Microsoft.Msagl.Drawing.Color(scb.Color.A, scb.Color.R, scb.Color.G, scb.Color.B);
+            }
+
+            return Microsoft.Msagl.Drawing.Color.Black;
         }
 
         private void DamageColumn_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -1010,68 +585,10 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public readonly struct ChartRange
+        public class LegendItem
         {
-            public ChartRange(double minX, double maxX, double minY, double maxY)
-            {
-                MinX = minX;
-                MaxX = maxX;
-                MinY = minY;
-                MaxY = maxY;
-            }
-
-            public double MinX { get; }
-            public double MaxX { get; }
-            public double MinY { get; }
-            public double MaxY { get; }
-        }
-
-        public class ChartSeries
-        {
-            public ChartSeries(string name, PointCollection points, System.Collections.Generic.IReadOnlyList<ChartPoint> markers, Brush stroke)
-            {
-                Name = name;
-                Points = points;
-                Markers = markers;
-                Stroke = stroke;
-            }
-
-            public string Name { get; }
-            public PointCollection Points { get; }
-            public System.Collections.Generic.IReadOnlyList<ChartPoint> Markers { get; }
-            public Brush Stroke { get; }
-        }
-
-        public readonly struct ChartPoints
-        {
-            public ChartPoints(PointCollection points, System.Collections.Generic.IReadOnlyList<ChartPoint> markers)
-            {
-                Points = points;
-                Markers = markers;
-            }
-
-            public PointCollection Points { get; }
-            public System.Collections.Generic.IReadOnlyList<ChartPoint> Markers { get; }
-        }
-
-        public class ChartPoint
-        {
-            public ChartPoint(System.Windows.Point plotPoint, string label, bool showLabel, string tooltip, double labelOffsetX, double labelOffsetY)
-            {
-                PlotPoint = plotPoint;
-                Label = label;
-                ShowLabel = showLabel;
-                Tooltip = tooltip;
-                LabelOffsetX = labelOffsetX;
-                LabelOffsetY = labelOffsetY;
-            }
-
-            public System.Windows.Point PlotPoint { get; }
-            public string Label { get; }
-            public bool ShowLabel { get; }
-            public string Tooltip { get; }
-            public double LabelOffsetX { get; }
-            public double LabelOffsetY { get; }
+            public string Name { get; set; } = string.Empty;
+            public Brush Color { get; set; } = Brushes.Transparent;
         }
     }
 }
