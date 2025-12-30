@@ -156,7 +156,7 @@
                                    Foreground="{StaticResource Brush.NavigationText}"
                                    FontSize="18"
                                    FontWeight="SemiBold"/>
-                        <TextBlock Text="USACE Planning & Economics"
+                        <TextBlock Text="USACE Planning &amp; Economics"
                                    Foreground="#99FFFFFF"
                                    FontSize="12"/>
                     </StackPanel>
