@@ -13,7 +13,7 @@ namespace EconToolbox.Desktop
 {
     public partial class App : Application
     {
-        private readonly IHost _host;
+        private IHost? _host;
         private static int _dispatcherErrorShown;
 
         public App()
@@ -21,25 +21,18 @@ namespace EconToolbox.Desktop
             InitializeComponent();
             SetupGlobalExceptionHandlers();
 
-            _host = Host.CreateDefaultBuilder()
-                .ConfigureServices((_, services) =>
-                {
-                    services.AddSingleton<IExcelExportService, ExcelExportService>();
-
-                    services.AddSingleton<ReadMeViewModel>();
-                    services.AddSingleton<EadViewModel>();
-                    services.AddSingleton<AgricultureDepthDamageViewModel>();
-                    services.AddSingleton<UpdatedCostViewModel>();
-                    services.AddSingleton<AnnualizerViewModel>();
-                    services.AddSingleton<UdvViewModel>();
-                    services.AddSingleton<WaterDemandViewModel>();
-                    services.AddSingleton<RecreationCapacityViewModel>();
-                    services.AddSingleton<GanttViewModel>();
-
-                    services.AddSingleton<MainViewModel>();
-                    services.AddSingleton<MainWindow>();
-                })
-                .Build();
+            try
+            {
+                _host = BuildHost();
+            }
+            catch (Exception ex)
+            {
+                LogUnhandledException(ex, "HostBuild");
+                ShowStartupError(
+                    "building the dependency container",
+                    "Confirm the .NET SDK is installed and run the VS Code Restore task before starting the app.",
+                    ex);
+            }
         }
 
         private static void SetupGlobalExceptionHandlers()
@@ -91,20 +84,85 @@ namespace EconToolbox.Desktop
             Console.Error.WriteLine(details);
         }
 
+        private static IHost BuildHost()
+        {
+            return Host.CreateDefaultBuilder()
+                .ConfigureServices((_, services) =>
+                {
+                    services.AddSingleton<IExcelExportService, ExcelExportService>();
+
+                    services.AddSingleton<ReadMeViewModel>();
+                    services.AddSingleton<EadViewModel>();
+                    services.AddSingleton<AgricultureDepthDamageViewModel>();
+                    services.AddSingleton<UpdatedCostViewModel>();
+                    services.AddSingleton<AnnualizerViewModel>();
+                    services.AddSingleton<UdvViewModel>();
+                    services.AddSingleton<WaterDemandViewModel>();
+                    services.AddSingleton<RecreationCapacityViewModel>();
+                    services.AddSingleton<GanttViewModel>();
+
+                    services.AddSingleton<MainViewModel>();
+                    services.AddSingleton<MainWindow>();
+                })
+                .Build();
+        }
+
+        private static void ShowStartupError(string stage, string guidance, Exception ex)
+        {
+            var message =
+                $"Economic Toolbox could not start while {stage}.\n\n" +
+                $"{ex.GetType().Name}: {ex.Message}\n\n" +
+                $"{guidance}\n\n" +
+                "See the VS Code debug console for full details.";
+
+            try
+            {
+                MessageBox.Show(message, "Startup Failure", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch
+            {
+                // If we cannot show a dialog, at least ensure the exception is logged.
+                LogUnhandledException(ex, "StartupErrorDialog");
+            }
+        }
+
         protected override async void OnStartup(StartupEventArgs e)
         {
-            await _host.StartAsync();
+            if (_host == null)
+            {
+                Shutdown(-1);
+                return;
+            }
 
-            var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+            try
+            {
+                await _host.StartAsync();
+
+                var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+                mainWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                LogUnhandledException(ex, "HostStartup");
+                ShowStartupError(
+                    "starting services",
+                    "Run the Restore task in VS Code (Terminal → Run Task… → restore) and verify the Windows Desktop SDK workload is available.",
+                    ex);
+                Shutdown(-1);
+                return;
+            }
+
 
             base.OnStartup(e);
         }
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            await _host.StopAsync(TimeSpan.FromSeconds(5));
-            _host.Dispose();
+            if (_host != null)
+            {
+                await _host.StopAsync(TimeSpan.FromSeconds(5));
+                _host.Dispose();
+            }
 
             base.OnExit(e);
         }
