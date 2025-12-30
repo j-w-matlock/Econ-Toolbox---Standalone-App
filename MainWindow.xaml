@@ -249,11 +249,11 @@
                                 SelectedIndex="{Binding SelectedIndex}"
                                 Background="{StaticResource Brush.Surface}"
                                 BorderThickness="0">
-                        <TabControl.Resources>
+                        <TabControl.ItemContainerStyle>
                             <Style TargetType="TabItem">
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </Style>
-                        </TabControl.Resources>
+                        </TabControl.ItemContainerStyle>
                         <TabControl.ContentTemplate>
                             <DataTemplate>
                                 <ScrollViewer x:Name="MainContentScrollViewer"
