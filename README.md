@@ -31,6 +31,12 @@ The Economic Toolbox is a Windows Presentation Foundation (WPF) desktop applicat
    dotnet build EconToolbox.Desktop.sln
    ```
    The solution includes a `NuGet.config` that adds the MSAGL MyGet feed so the `Microsoft.Msagl.WpfGraphControl` dependency restores correctly; ensure your restore uses this configuration.
+   - If the MyGet feed is unavailable, you can point restores to a local MSAGL build by setting an environment variable before restoring:
+     ```bash
+     set MSAGL_LOCAL_SOURCE=C:\path\to\local\nuget\feed   # Windows (PowerShell: $env:MSAGL_LOCAL_SOURCE=\"...\")
+     dotnet restore EconToolbox.Desktop.sln --configfile NuGet.config
+     ```
+     The property is also honored by Visual Studio restores. The path should be a folder that contains the locally packed `Microsoft.Msagl` and `Microsoft.Msagl.WpfGraphControl` `.nupkg` files you built from the MSAGL source.
 4. **Run the app**: Either press `F5` in your IDE or execute:
    ```bash
    dotnet run
