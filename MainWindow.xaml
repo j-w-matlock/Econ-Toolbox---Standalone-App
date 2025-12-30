@@ -165,7 +165,7 @@
                         <StackPanel>
                             <TextBlock Text="Economics Toolbox"
                                        Style="{StaticResource Text.Title}"/>
-                            <TextBlock Text="Refined economic tools for Corps planning"
+                            <TextBlock Text="Tools for common Corps planning economics tasks"
                                        Style="{StaticResource Text.Title.Small}"
                                        Foreground="#DCEBFA"/>
                         </StackPanel>
