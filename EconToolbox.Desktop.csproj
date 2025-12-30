@@ -22,8 +22,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <MsaglLocalSource Condition="'$(MSAGL_LOCAL_SOURCE)' != ''">$(MSAGL_LOCAL_SOURCE)</MsaglLocalSource>
-    <RestoreSources>$(RestoreSources);$(MsaglLocalSource);https://api.nuget.org/v3/index.json;https://www.myget.org/F/msagl/api/v3/index.json</RestoreSources>
+    <RestoreSources>$(RestoreSources);https://api.nuget.org/v3/index.json;https://www.myget.org/F/msagl/api/v3/index.json</RestoreSources>
   </PropertyGroup>
 
   <ItemGroup>
