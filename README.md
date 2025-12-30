@@ -30,6 +30,7 @@ The Economic Toolbox is a Windows Presentation Foundation (WPF) desktop applicat
    ```bash
    dotnet build EconToolbox.Desktop.sln
    ```
+   The solution includes a `NuGet.config` that adds the MSAGL MyGet feed so the `Microsoft.Msagl.WpfGraphControl` dependency restores correctly; ensure your restore uses this configuration.
 4. **Run the app**: Either press `F5` in your IDE or execute:
    ```bash
    dotnet run
