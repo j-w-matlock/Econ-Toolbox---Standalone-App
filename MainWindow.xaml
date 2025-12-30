@@ -161,7 +161,7 @@
                                    FontSize="12"/>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" Spacing="6">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
                     <Rectangle Width="1" Height="24" Fill="{StaticResource Brush.NavigationBorder}" Margin="0,0,6,0"/>
                     <TextBlock Text="v2.0 style reference"
                                Foreground="#CDE7FF"
