@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 using EconToolbox.Desktop.Behaviors;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
@@ -26,6 +27,9 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<DataGridColumnDescriptor> ColumnDefinitions { get; } = new();
 
         private bool _useStage;
+        private readonly DispatcherTimer _computeDebounceTimer;
+        private bool _suppressAutoCompute;
+        private bool _isComputing;
         public bool UseStage
         {
             get => _useStage;
@@ -248,6 +252,15 @@ namespace EconToolbox.Desktop.ViewModels
         public EadViewModel(IExcelExportService excelExportService)
         {
             _excelExportService = excelExportService;
+            _computeDebounceTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(150)
+            };
+            _computeDebounceTimer.Tick += (_, _) =>
+            {
+                _computeDebounceTimer.Stop();
+                Compute();
+            };
             Rows.CollectionChanged += Rows_CollectionChanged;
             AddDamageColumnCommand = new RelayCommand(AddDamageColumn);
             _removeDamageColumnCommand = new RelayCommand(RemoveDamageColumn, () => DamageColumns.Count > 1);
@@ -339,7 +352,22 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     while (row.Damages.Count < DamageColumns.Count)
                         row.Damages.Add(0);
+
+                    AttachRow(row);
                 }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (EadRow row in e.OldItems)
+                {
+                    DetachRow(row);
+                }
+            }
+
+            if (!_suppressAutoCompute)
+            {
+                ScheduleCompute();
             }
         }
 
@@ -358,6 +386,13 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void Compute()
         {
+            if (_isComputing)
+            {
+                return;
+            }
+
+            _computeDebounceTimer.Stop();
+            _isComputing = true;
             try
             {
                 if (Rows.Count == 0 || DamageColumns.Count == 0)
@@ -390,9 +425,11 @@ namespace EconToolbox.Desktop.ViewModels
                 var sortedRows = Rows.OrderByDescending(r => r.Probability).ToList();
                 if (!sortedRows.SequenceEqual(Rows))
                 {
+                    _suppressAutoCompute = true;
                     Rows.Clear();
                     foreach (var r in sortedRows)
                         Rows.Add(r);
+                    _suppressAutoCompute = false;
                 }
 
                 var probabilities = Rows.Select(r => r.Probability).ToArray();
@@ -420,6 +457,10 @@ namespace EconToolbox.Desktop.ViewModels
                 DamageSeries.Clear();
                 _plotRange = null;
                 SetAxisLabels(null, false);
+            }
+            finally
+            {
+                _isComputing = false;
             }
         }
 
@@ -829,6 +870,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 try
                 {
+                    ForceCompute();
                     string combined = string.Join(" | ", Results.Select(r => $"{r.Label}: {r.Result}"));
                     await Task.Run(() => _excelExportService.ExportEad(
                         Rows,
@@ -883,8 +925,49 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.PropertyName == nameof(DamageColumn.Name))
             {
-                Compute();
+                ScheduleCompute();
             }
+        }
+
+        private void AttachRow(EadRow row)
+        {
+            row.PropertyChanged += Row_PropertyChanged;
+            row.Damages.CollectionChanged += RowDamages_CollectionChanged;
+        }
+
+        private void DetachRow(EadRow row)
+        {
+            row.PropertyChanged -= Row_PropertyChanged;
+            row.Damages.CollectionChanged -= RowDamages_CollectionChanged;
+        }
+
+        private void Row_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(EadRow.Probability) || e.PropertyName == nameof(EadRow.Stage))
+            {
+                ScheduleCompute();
+            }
+        }
+
+        private void RowDamages_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            ScheduleCompute();
+        }
+
+        private void ScheduleCompute()
+        {
+            if (_suppressAutoCompute)
+            {
+                return;
+            }
+
+            _computeDebounceTimer.Stop();
+            _computeDebounceTimer.Start();
+        }
+
+        public void ForceCompute()
+        {
+            Compute();
         }
 
         public class EadRow : BaseViewModel

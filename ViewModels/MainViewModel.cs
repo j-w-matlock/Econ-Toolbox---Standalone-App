@@ -294,6 +294,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 try
                 {
+                    Ead.ForceCompute();
                     await Task.Run(() => _excelExportService.ExportAll(
                         Ead,
                         AgricultureDepthDamage,
