@@ -23,7 +23,7 @@ The Economic Toolbox is a Windows Presentation Foundation (WPF) desktop applicat
 ## Getting Started
 
 1. **Install prerequisites**
-   - [.NET SDK 8](https://dotnet.microsoft.com/en-us/download)
+   - [.NET SDK 8](https://dotnet.microsoft.com/en-us/download) (the repo pins to `8.0.204` through `global.json`)
    - [Visual Studio Code](https://code.visualstudio.com/) with the C# extension (or Visual Studio 2022)
 2. **Open the project**: Launch your IDE and open the `Econ-Toolbox---Standalone-App` folder.
 3. **Restore and build** (run commands from the repository root that contains `EconToolbox.Desktop.sln`):
@@ -34,6 +34,8 @@ The Economic Toolbox is a Windows Presentation Foundation (WPF) desktop applicat
    ```bash
    dotnet run
    ```
+
+> **VS Code tip:** The `.vscode` folder includes restore/build tasks and a launch profile. Use **Terminal → Run Task… → restore** before opening the solution explorer if you are on macOS/Linux so the workspace can resolve the Windows-targeted WPF projects with `EnableWindowsTargeting` applied.
 
 ## Module Reference
 

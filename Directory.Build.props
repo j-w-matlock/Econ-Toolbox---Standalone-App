@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <!-- Allow Windows-specific targets (WPF) to restore/build when opening the solution from non-Windows hosts such as VS Code on macOS/Linux. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+</Project>
