@@ -359,12 +359,6 @@ namespace EconToolbox.Desktop.ViewModels
             double s0011 = ReadDouble(row, map, "structuredamageat0011aep", "structuredamage0011aep", "structuredamage0011");
             double s0003 = ReadDouble(row, map, "structuredamageat0003aep", "structuredamage0003aep", "structuredamage0003");
 
-            bool hasDamage = s0493 > 0 || s0224 > 0 || s0034 > 0 || s0011 > 0 || s0003 > 0;
-            if (!hasDamage)
-            {
-                return null;
-            }
-
             return new StageDamageRecord
             {
                 StructureFid = string.IsNullOrWhiteSpace(structureFid) ? "Unknown" : structureFid.Trim(),
