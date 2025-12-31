@@ -193,15 +193,10 @@
                                      Style="{StaticResource ListBox.Navigation}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel>
+                                        <StackPanel ToolTip="{Binding Description}">
                                             <TextBlock Text="{Binding Title}"
                                                        Foreground="{StaticResource Brush.NavigationText}"
                                                        FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding Description}"
-                                                       Foreground="#9DB5D3"
-                                                       TextWrapping="Wrap"
-                                                       FontSize="12"
-                                                       Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
