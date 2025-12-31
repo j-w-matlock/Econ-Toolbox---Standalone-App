@@ -395,12 +395,11 @@ namespace EconToolbox.Desktop.ViewModels
                 return null;
             }
 
-            var aepValues = new List<StageDamageAepValue>();
-            foreach (var column in aepColumns)
-            {
-                double value = ReadDouble(row, map, column.NormalizedKey);
-                aepValues.Add(new StageDamageAepValue(column.Label, value));
-            }
+            double s0493 = ReadDouble(row, map, "structuredamageat0493aep", "structuredamage0493aep", "structuredamage0493");
+            double s0224 = ReadDouble(row, map, "structuredamageat0224aep", "structuredamage0224aep", "structuredamage0224");
+            double s0034 = ReadDouble(row, map, "structuredamageat0034aep", "structuredamage0034aep", "structuredamage0034");
+            double s0011 = ReadDouble(row, map, "structuredamageat0011aep", "structuredamage0011aep", "structuredamage0011");
+            double s0003 = ReadDouble(row, map, "structuredamageat0003aep", "structuredamage0003aep", "structuredamage0003");
 
             return new StageDamageRecord
             {
