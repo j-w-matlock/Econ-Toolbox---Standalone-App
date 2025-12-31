@@ -6,6 +6,13 @@
              mc:Ignorable="d"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Design.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
         <StackPanel>
         <Border Margin="10,0,10,10"
@@ -156,7 +163,7 @@
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
-                    <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                    <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
@@ -233,7 +240,7 @@
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
-                    <TextBlock Text="{Binding TotalJointOm, StringFormat=Total Joint O&amp;M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost"/>
+                    <TextBlock Text="{Binding TotalJointOm, Mode=OneWay, StringFormat=Total Joint O&amp;M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost"/>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
@@ -796,8 +803,8 @@
                         </StackPanel>
                     </Button>
                     <StackPanel Grid.Row="7" Grid.ColumnSpan="2">
-                        <TextBlock Text="{Binding RrrUpdatedCost, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value × CWCCI" FontWeight="Bold" Margin="0,0,0,4"/>
-                        <TextBlock Text="{Binding RrrAnnualized, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding RrrUpdatedCost, Mode=OneWay, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value × CWCCI" FontWeight="Bold" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding RrrAnnualized, Mode=OneWay, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF" FontWeight="Bold"/>
                     </StackPanel>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
@@ -900,21 +907,21 @@
                         </Grid.ColumnDefinitions>
                         <GroupBox Header="Cost 1" Grid.Column="0" Margin="0,0,5,0">
                             <StackPanel>
-                                <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
-                                <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
-                                <TextBlock Text="{Binding Capital1, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1"/>
-                                <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
-                                <TextBlock Text="{Binding RrrScaled, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent"/>
-                                <TextBlock Text="{Binding Total1, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                                <TextBlock Text="{Binding CostRecommendation, Mode=OneWay, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
+                                <TextBlock Text="{Binding Capital1, Mode=OneWay, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1"/>
+                                <TextBlock Text="{Binding OmScaled, Mode=OneWay, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
+                                <TextBlock Text="{Binding RrrScaled, Mode=OneWay, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent"/>
+                                <TextBlock Text="{Binding Total1, Mode=OneWay, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation" FontWeight="Bold"/>
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Header="Cost 2" Grid.Column="1" Margin="5,0,0,0">
                             <StackPanel>
-                                <TextBlock Text="{Binding Percent, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
-                                <TextBlock Text="{Binding CostRecommendation, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
-                                <TextBlock Text="{Binding Capital2, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2"/>
-                                <TextBlock Text="{Binding OmScaled, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
-                                <TextBlock Text="{Binding Total2, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                                <TextBlock Text="{Binding CostRecommendation, Mode=OneWay, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
+                                <TextBlock Text="{Binding Capital2, Mode=OneWay, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2"/>
+                                <TextBlock Text="{Binding OmScaled, Mode=OneWay, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
+                                <TextBlock Text="{Binding Total2, Mode=OneWay, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M" FontWeight="Bold"/>
                             </StackPanel>
                         </GroupBox>
                     </Grid>
