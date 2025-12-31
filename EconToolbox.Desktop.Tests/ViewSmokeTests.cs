@@ -57,6 +57,18 @@ public class ViewSmokeTests
         Assert.IsNotNull(view.Content);
     }
 
+    [STATestMethod]
+    public void StageDamageOrganizerView_Renders()
+    {
+        var view = new StageDamageOrganizerView
+        {
+            DataContext = new StageDamageOrganizerViewModel()
+        };
+
+        view.Measure(new Size(100, 100));
+        Assert.IsNotNull(view.Content);
+    }
+
     private sealed class StubExcelExportService : IExcelExportService
     {
         public void ExportAll(EadViewModel ead, AgricultureDepthDamageViewModel agriculture, UpdatedCostViewModel updated, AnnualizerViewModel annualizer, WaterDemandViewModel waterDemand, UdvViewModel udv, RecreationCapacityViewModel recreationCapacity, GanttViewModel gantt, string filePath)
