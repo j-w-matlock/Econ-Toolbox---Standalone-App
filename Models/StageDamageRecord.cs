@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EconToolbox.Desktop.Models
 {
@@ -9,15 +11,19 @@ namespace EconToolbox.Desktop.Models
         public string Description { get; init; } = string.Empty;
         public string ImpactArea { get; init; } = string.Empty;
         public string OccTypeName { get; init; } = string.Empty;
-        public double StructureDamage0493 { get; init; }
-        public double StructureDamage0224 { get; init; }
-        public double StructureDamage0034 { get; init; }
-        public double StructureDamage0011 { get; init; }
-        public double StructureDamage0003 { get; init; }
 
-        public double FrequentPeakDamage => Math.Max(StructureDamage0493, Math.Max(StructureDamage0224, StructureDamage0034));
+        public IReadOnlyList<StageDamageAepValue> AepDamages { get; init; } = Array.Empty<StageDamageAepValue>();
 
-        public double FrequentSumDamage => StructureDamage0493 + StructureDamage0224 + StructureDamage0034;
+        public double FrequentPeakDamage
+        {
+            get
+            {
+                var (_, value) = GetPeakAep();
+                return value;
+            }
+        }
+
+        public double FrequentSumDamage => AepDamages.Take(3).Sum(a => a.Value);
 
         public string FrequentPeakAepLabel
         {
@@ -39,12 +45,11 @@ namespace EconToolbox.Desktop.Models
 
         private (string Label, double Value) GetPeakAep()
         {
-            var candidates = new[]
+            var candidates = AepDamages.Take(3).ToList();
+            if (candidates.Count == 0)
             {
-                (Label: "0.493 AEP", Value: StructureDamage0493),
-                (Label: "0.224 AEP", Value: StructureDamage0224),
-                (Label: "0.034 AEP", Value: StructureDamage0034)
-            };
+                return (Label: "N/A", Value: 0);
+            }
 
             var best = candidates[0];
             foreach (var candidate in candidates)
@@ -63,12 +68,8 @@ namespace EconToolbox.Desktop.Models
     {
         public string DamageCategory { get; init; } = string.Empty;
         public int StructureCount { get; init; }
+        public IReadOnlyList<double> AepDamages { get; init; } = Array.Empty<double>();
         public double FrequentSumDamage { get; init; }
-        public double StructureDamage0493 { get; init; }
-        public double StructureDamage0224 { get; init; }
-        public double StructureDamage0034 { get; init; }
-        public double StructureDamage0011 { get; init; }
-        public double StructureDamage0003 { get; init; }
         public double PeakStructureDamage { get; init; }
     }
 
@@ -81,4 +82,6 @@ namespace EconToolbox.Desktop.Models
         public string HighestAepLabel { get; init; } = string.Empty;
         public double HighestStructureDamage { get; init; }
     }
+
+    public record StageDamageAepValue(string Label, double Value);
 }

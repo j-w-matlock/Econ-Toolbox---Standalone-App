@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows.Media;
 using EconToolbox.Desktop.Models;
 using Microsoft.VisualBasic.FileIO;
@@ -14,6 +15,8 @@ namespace EconToolbox.Desktop.ViewModels
     public class StageDamageOrganizerViewModel : BaseViewModel
     {
         private readonly ObservableCollection<StageDamageRecord> _records = new();
+        private readonly ObservableCollection<string> _aepHeaders = new();
+        private List<AepColumn> _aepColumns = new();
 
         private string _summaryName = "StageDamageSummary";
         private string _statusMessage = "Load one or more Stage Damage Functions_StructureStageDamageDetails.csv files to summarize damages by category.";
@@ -23,6 +26,21 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<StageDamageCategorySummary> CategorySummaries { get; } = new();
         public ObservableCollection<StageDamageHighlight> Highlights { get; } = new();
         public ObservableCollection<ChartSeries> ChartSeries { get; } = new();
+        public ObservableCollection<string> AepHeaders => _aepHeaders;
+
+        public string FrequentAepLabelSummary
+        {
+            get
+            {
+                if (AepHeaders.Count == 0)
+                {
+                    return "Bars show the sum of structure damages across the frequent AEPs for each DamageCatagory.";
+                }
+
+                var frequentAeps = string.Join(", ", AepHeaders.Take(3));
+                return $"Bars show the sum of structure damages across the frequent AEPs ({frequentAeps}) for each DamageCatagory.";
+            }
+        }
 
         public string SummaryName
         {
@@ -74,6 +92,8 @@ namespace EconToolbox.Desktop.ViewModels
                 (ClearCommand as RelayCommand)?.NotifyCanExecuteChanged();
                 (SaveSummaryCommand as AsyncRelayCommand)?.NotifyCanExecuteChanged();
             };
+
+            AepHeaders.CollectionChanged += (_, _) => OnPropertyChanged(nameof(FrequentAepLabelSummary));
         }
 
         private void ClearAll()
@@ -82,6 +102,8 @@ namespace EconToolbox.Desktop.ViewModels
             CategorySummaries.Clear();
             Highlights.Clear();
             ChartSeries.Clear();
+            AepHeaders.Clear();
+            _aepColumns.Clear();
             StatusMessage = "Cleared results. Load new CSV files to regenerate summaries.";
         }
 
@@ -105,9 +127,15 @@ namespace EconToolbox.Desktop.ViewModels
                 var imported = await Task.Run(() => LoadRecords(dialog.FileNames));
 
                 Records.Clear();
+                AepHeaders.Clear();
                 foreach (var record in imported)
                 {
                     Records.Add(record);
+                }
+
+                foreach (var header in _aepColumns.Select(c => c.Label))
+                {
+                    AepHeaders.Add(header);
                 }
 
                 ComputeSummaries();
@@ -158,21 +186,25 @@ namespace EconToolbox.Desktop.ViewModels
         {
             using var writer = new StreamWriter(filePath);
             writer.WriteLine($"{SummaryName} - Damage totals by category");
-            writer.WriteLine("Damage Category,Structures,Structure Damage @0.493 AEP,Structure Damage @0.224 AEP,Structure Damage @0.034 AEP,Structure Damage @0.011 AEP,Structure Damage @0.003 AEP,Frequent AEP Sum,Peak Frequent AEP");
+            var headerColumns = new List<string> { "Damage Category", "Structures" };
+            headerColumns.AddRange(AepHeaders.Select(h => $"Structure Damage @{h}"));
+            headerColumns.AddRange(new[] { "Frequent AEP Sum", "Peak Frequent AEP" });
+            writer.WriteLine(string.Join(",", headerColumns));
             foreach (var summary in CategorySummaries)
             {
-                writer.WriteLine(string.Join(",", new[]
+                var values = new List<string>
                 {
                     Escape(summary.DamageCategory),
-                    summary.StructureCount.ToString(CultureInfo.InvariantCulture),
-                    summary.StructureDamage0493.ToString("0.##", CultureInfo.InvariantCulture),
-                    summary.StructureDamage0224.ToString("0.##", CultureInfo.InvariantCulture),
-                    summary.StructureDamage0034.ToString("0.##", CultureInfo.InvariantCulture),
-                    summary.StructureDamage0011.ToString("0.##", CultureInfo.InvariantCulture),
-                    summary.StructureDamage0003.ToString("0.##", CultureInfo.InvariantCulture),
-                    summary.FrequentSumDamage.ToString("0.##", CultureInfo.InvariantCulture),
-                    summary.PeakStructureDamage.ToString("0.##", CultureInfo.InvariantCulture)
-                }));
+                    summary.StructureCount.ToString(CultureInfo.InvariantCulture)
+                };
+
+                values.AddRange(summary.AepDamages
+                    .Select(v => v.ToString("0.##", CultureInfo.InvariantCulture)));
+
+                values.Add(summary.FrequentSumDamage.ToString("0.##", CultureInfo.InvariantCulture));
+                values.Add(summary.PeakStructureDamage.ToString("0.##", CultureInfo.InvariantCulture));
+
+                writer.WriteLine(string.Join(",", values));
             }
 
             writer.WriteLine();
@@ -208,7 +240,7 @@ namespace EconToolbox.Desktop.ViewModels
             Highlights.Clear();
             ChartSeries.Clear();
 
-            if (Records.Count == 0)
+            if (Records.Count == 0 || _aepColumns.Count == 0)
             {
                 StatusMessage = "No rows available. Load CSV files to generate results.";
                 return;
@@ -220,11 +252,9 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     DamageCategory = g.Key,
                     StructureCount = g.Count(),
-                    StructureDamage0493 = g.Sum(r => r.StructureDamage0493),
-                    StructureDamage0224 = g.Sum(r => r.StructureDamage0224),
-                    StructureDamage0034 = g.Sum(r => r.StructureDamage0034),
-                    StructureDamage0011 = g.Sum(r => r.StructureDamage0011),
-                    StructureDamage0003 = g.Sum(r => r.StructureDamage0003),
+                    AepDamages = _aepColumns
+                        .Select((_, index) => g.Sum(r => index < r.AepDamages.Count ? r.AepDamages[index].Value : 0))
+                        .ToList(),
                     FrequentSumDamage = g.Sum(r => r.FrequentSumDamage),
                     PeakStructureDamage = g.Max(r => r.FrequentPeakDamage)
                 })
@@ -285,9 +315,10 @@ namespace EconToolbox.Desktop.ViewModels
             OnPropertyChanged(nameof(ChartSeries));
         }
 
-        private static List<StageDamageRecord> LoadRecords(IEnumerable<string> filePaths)
+        private List<StageDamageRecord> LoadRecords(IEnumerable<string> filePaths)
         {
             var results = new List<StageDamageRecord>();
+            _aepColumns = new List<AepColumn>();
             foreach (var path in filePaths)
             {
                 if (!File.Exists(path))
@@ -309,6 +340,17 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 var headerMap = BuildHeaderMap(header!);
+                var aepColumns = FindAepColumns(header!);
+                if (aepColumns.Count == 0)
+                {
+                    continue;
+                }
+
+                if (_aepColumns.Count == 0)
+                {
+                    _aepColumns = aepColumns;
+                }
+
                 while (!parser.EndOfData)
                 {
                     var row = parser.ReadFields();
@@ -317,7 +359,7 @@ namespace EconToolbox.Desktop.ViewModels
                         continue;
                     }
 
-                    var record = ParseRow(row, headerMap);
+                    var record = ParseRow(row, headerMap, _aepColumns);
                     if (record != null)
                     {
                         results.Add(record);
@@ -343,7 +385,7 @@ namespace EconToolbox.Desktop.ViewModels
             return map;
         }
 
-        private static StageDamageRecord? ParseRow(string[] row, IReadOnlyDictionary<string, int> map)
+        private static StageDamageRecord? ParseRow(string[] row, IReadOnlyDictionary<string, int> map, IReadOnlyList<AepColumn> aepColumns)
         {
             string structureFid = ReadString(row, map, "structurefid", "structureid");
             string damageCategory = ReadString(row, map, "damagecatagory", "damagecategory");
@@ -366,17 +408,14 @@ namespace EconToolbox.Desktop.ViewModels
                 Description = ReadString(row, map, "description"),
                 ImpactArea = ReadString(row, map, "impactarearownumberinimpactareaset", "impactarea"),
                 OccTypeName = ReadString(row, map, "occtypename", "occupancytype"),
-                StructureDamage0493 = s0493,
-                StructureDamage0224 = s0224,
-                StructureDamage0034 = s0034,
-                StructureDamage0011 = s0011,
-                StructureDamage0003 = s0003
+                AepDamages = aepValues
             };
         }
 
         private static bool TryReadHeader(TextFieldParser parser, out string[]? header)
         {
             header = null;
+            bool skippedFirst = false;
 
             while (!parser.EndOfData)
             {
@@ -384,6 +423,12 @@ namespace EconToolbox.Desktop.ViewModels
                 if (candidate == null)
                 {
                     break;
+                }
+
+                if (!skippedFirst)
+                {
+                    skippedFirst = true;
+                    continue;
                 }
 
                 // FDA exports typically start with a title row. Walk until we find a row that
@@ -402,6 +447,40 @@ namespace EconToolbox.Desktop.ViewModels
         {
             var filtered = header.Where(char.IsLetterOrDigit);
             return new string(filtered.ToArray()).ToLowerInvariant();
+        }
+
+        private static List<AepColumn> FindAepColumns(string[] header)
+        {
+            var columns = new List<AepColumn>();
+            foreach (var column in header)
+            {
+                var normalized = NormalizeHeader(column);
+                if (!normalized.Contains("structuredamage") || !normalized.Contains("aep"))
+                {
+                    continue;
+                }
+
+                if (columns.Any(c => c.NormalizedKey.Equals(normalized, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                var label = ExtractAepLabel(column);
+                columns.Add(new AepColumn(normalized, label));
+            }
+
+            return columns;
+        }
+
+        private static string ExtractAepLabel(string header)
+        {
+            var match = Regex.Match(header, @"([0-9]*\.?[0-9]+)\s*AEP", RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                return $"{match.Groups[1].Value.Trim()} AEP";
+            }
+
+            return header.Trim();
         }
 
         private static string ReadString(string[] row, IReadOnlyDictionary<string, int> map, params string[] keys)
@@ -440,4 +519,6 @@ namespace EconToolbox.Desktop.ViewModels
             return 0d;
         }
     }
+
+    internal record AepColumn(string NormalizedKey, string Label);
 }

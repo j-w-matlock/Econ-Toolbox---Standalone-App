@@ -144,26 +144,15 @@
                                     <TextBlock Text="DamageCatagory summary"
                                                FontWeight="SemiBold"
                                                Margin="0,0,0,8"/>
-                                    <DataGrid ItemsSource="{Binding CategorySummaries}"
+                                    <DataGrid x:Name="CategorySummaryGrid"
+                                              ItemsSource="{Binding CategorySummaries}"
                                               AutoGenerateColumns="False"
                                               CanUserAddRows="False"
                                               CanUserDeleteRows="False"
                                               IsReadOnly="True"
                                               HeadersVisibility="Column"
                                               ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Damage Category" Binding="{Binding DamageCategory}" Width="*" />
-                                            <DataGridTextColumn Header="Structures" Binding="{Binding StructureCount}" Width="80"/>
-                                            <DataGridTextColumn Header="0.493 AEP" Binding="{Binding StructureDamage0493, StringFormat=C0}" Width="120"/>
-                                            <DataGridTextColumn Header="0.224 AEP" Binding="{Binding StructureDamage0224, StringFormat=C0}" Width="120"/>
-                                            <DataGridTextColumn Header="0.034 AEP" Binding="{Binding StructureDamage0034, StringFormat=C0}" Width="120"/>
-                                            <DataGridTextColumn Header="0.011 AEP" Binding="{Binding StructureDamage0011, StringFormat=C0}" Width="120"/>
-                                            <DataGridTextColumn Header="0.003 AEP" Binding="{Binding StructureDamage0003, StringFormat=C0}" Width="120"/>
-                                            <DataGridTextColumn Header="Frequent AEP Sum" Binding="{Binding FrequentSumDamage, StringFormat=C0}" Width="150"/>
-                                            <DataGridTextColumn Header="Peak Frequent AEP" Binding="{Binding PeakStructureDamage, StringFormat=C0}" Width="150"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
                                 </StackPanel>
                             </Border>
 
@@ -221,7 +210,7 @@
                                                       Series="{Binding ChartSeries}"
                                                       EmptyMessage="{Binding StatusMessage}"/>
                         </Border>
-                        <TextBlock Text="Bars show the sum of structure damages across the frequent AEPs (0.493, 0.224, 0.034) for each DamageCatagory."
+                        <TextBlock Text="{Binding FrequentAepLabelSummary}"
                                    Margin="0,8,0,0"
                                    TextWrapping="Wrap"
                                    Foreground="{StaticResource Brush.TextSecondary}"/>
