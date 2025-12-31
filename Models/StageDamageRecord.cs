@@ -18,8 +18,8 @@ namespace EconToolbox.Desktop.Models
         {
             get
             {
-                var (_, value) = GetPeakAep();
-                return value;
+                var peak = GetPeakAep();
+                return peak.Value;
             }
         }
 
@@ -29,8 +29,8 @@ namespace EconToolbox.Desktop.Models
         {
             get
             {
-                var (label, _) = GetPeakAep();
-                return label;
+                var peak = GetPeakAep();
+                return peak.Label;
             }
         }
 
@@ -38,17 +38,17 @@ namespace EconToolbox.Desktop.Models
         {
             get
             {
-                var (_, value) = GetPeakAep();
-                return value;
+                var peak = GetPeakAep();
+                return peak.Value;
             }
         }
 
-        private (string Label, double Value) GetPeakAep()
+        private StageDamageAepValue GetPeakAep()
         {
             var candidates = AepDamages.Take(3).ToList();
             if (candidates.Count == 0)
             {
-                return (Label: "N/A", Value: 0);
+                return new StageDamageAepValue("N/A", 0);
             }
 
             var best = candidates[0];
