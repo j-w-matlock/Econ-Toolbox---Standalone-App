@@ -143,13 +143,13 @@
                                     BorderThickness="1"
                                     CornerRadius="8"
                                     Padding="12"
-                                    Margin="0,0,0,8">
+                                    Margin="0,0,8,0">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="Damage Category Summary"
+                                    <TextBlock Text="DamageCatagory summary"
                                                FontWeight="SemiBold"
                                                Margin="0,0,0,8"/>
                                     <DataGrid x:Name="CategorySummaryGrid"
@@ -170,7 +170,8 @@
                                     BorderBrush="{StaticResource Brush.Border}"
                                     BorderThickness="1"
                                     CornerRadius="8"
-                                    Padding="12">
+                                    Padding="12"
+                                    Margin="8,0,0,0">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
