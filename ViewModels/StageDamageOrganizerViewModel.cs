@@ -404,6 +404,30 @@ namespace EconToolbox.Desktop.ViewModels
             return false;
         }
 
+        private static bool TryReadHeader(TextFieldParser parser, out string[]? header)
+        {
+            header = null;
+
+            while (!parser.EndOfData)
+            {
+                var candidate = parser.ReadFields();
+                if (candidate == null)
+                {
+                    break;
+                }
+
+                // FDA exports typically start with a title row. Walk until we find a row that
+                // looks like the actual header instead of skipping only a single line.
+                if (candidate.Any(f => f.Contains("Structure", StringComparison.OrdinalIgnoreCase)))
+                {
+                    header = candidate;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static string NormalizeHeader(string header)
         {
             var filtered = header.Where(char.IsLetterOrDigit);
