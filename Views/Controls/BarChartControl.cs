@@ -79,7 +79,15 @@ namespace EconToolbox.Desktop.Views.Controls
                 return;
             }
 
-            var seriesList = Series?.Where(s => s != null && s.Points.Count > 0).ToList();
+            var seriesList = Series?
+                .Select(s => new
+                {
+                    Series = s,
+                    Points = s?.Points.Where(p => p != null && double.IsFinite(p.Y)).ToList() ?? new List<ChartDataPoint>()
+                })
+                .Where(s => s.Series != null && s.Points.Count > 0)
+                .ToList();
+
             if (seriesList == null || seriesList.Count == 0)
             {
                 DrawEmpty(dc, width, height);

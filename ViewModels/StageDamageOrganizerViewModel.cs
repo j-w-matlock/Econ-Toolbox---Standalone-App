@@ -420,6 +420,11 @@ namespace EconToolbox.Desktop.ViewModels
                 if (double.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out double value) ||
                     double.TryParse(raw, NumberStyles.Any, CultureInfo.CurrentCulture, out value))
                 {
+                    if (double.IsNaN(value) || double.IsInfinity(value))
+                    {
+                        return 0d;
+                    }
+
                     return value;
                 }
             }
