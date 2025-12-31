@@ -24,6 +24,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<GanttTask> Tasks { get; } = new();
         public ObservableCollection<GanttBar> Bars { get; } = new();
+        public ObservableCollection<GanttLink> Links { get; } = new();
 
         public GanttTask? SelectedTask
         {
@@ -179,6 +180,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
             Tasks.Clear();
             Bars.Clear();
+            Links.Clear();
             ScheduleSummary = string.Empty;
             ProjectStart = DateTime.Today;
             ProjectFinish = DateTime.Today;
@@ -234,12 +236,34 @@ namespace EconToolbox.Desktop.ViewModels
             OnPropertyChanged(nameof(TotalDurationDays));
 
             Bars.Clear();
+            Links.Clear();
             int row = 0;
-            foreach (var task in Tasks.OrderBy(t => t.StartDate))
+            var orderedTasks = Tasks.OrderBy(t => t.StartDate).ToList();
+            var barLookup = new Dictionary<GanttTask, GanttBar>();
+            foreach (var task in orderedTasks)
             {
                 double offset = (task.StartDate - ProjectStart).TotalDays;
                 double length = task.IsMilestone ? 0.5 : Math.Max(1, task.DurationDays);
-                Bars.Add(new GanttBar(task, row++, offset, length));
+                var bar = new GanttBar(task, row++, offset, length);
+                Bars.Add(bar);
+                barLookup[task] = bar;
+            }
+
+            foreach (var targetTask in orderedTasks)
+            {
+                if (!barLookup.TryGetValue(targetTask, out var targetBar))
+                    continue;
+
+                foreach (var dependencyName in ParseDependencies(targetTask.Dependencies))
+                {
+                    if (!lookup.TryGetValue(dependencyName, out var dependencyTask))
+                        continue;
+
+                    if (!barLookup.TryGetValue(dependencyTask, out var dependencyBar))
+                        continue;
+
+                    Links.Add(new GanttLink(dependencyBar, targetBar));
+                }
             }
 
             double totalDays = (ProjectFinish - ProjectStart).TotalDays;
@@ -304,6 +328,19 @@ namespace EconToolbox.Desktop.ViewModels
             public string Workstream => Task.Workstream;
             public double CanvasOffsetDays => IsMilestone ? Math.Max(0, OffsetDays - 0.6) : OffsetDays;
             public double CanvasDurationDays => IsMilestone ? 1.2 : DurationDays;
+            public double CenterLineY => RowIndex * 44 + 14;
+            public double EndCapDays => CanvasOffsetDays + CanvasDurationDays;
+            public Brush StrokeBrush => Task.BorderBrush;
+        }
+
+        public record GanttLink(GanttBar From, GanttBar To)
+        {
+            public int FromRow => From.RowIndex;
+            public int ToRow => To.RowIndex;
+            public double FromDay => From.EndCapDays;
+            public double ToDay => To.CanvasOffsetDays;
+            public Brush Stroke => From.StrokeBrush;
+            public string Caption => $"{From.Task.Name} → {To.Task.Name}";
         }
 
         private void AssignColor(GanttTask task)
