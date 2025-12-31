@@ -303,28 +303,12 @@ namespace EconToolbox.Desktop.ViewModels
                     TextFieldType = FieldType.Delimited
                 };
 
-                string[]? header = null;
-                while (!parser.EndOfData && header == null)
-                {
-                    var candidate = parser.ReadFields();
-                    if (candidate == null)
-                    {
-                        break;
-                    }
-
-                    if (candidate.Any(f => f.Contains("Structure", StringComparison.OrdinalIgnoreCase)))
-                    {
-                        header = candidate;
-                        break;
-                    }
-                }
-
-                if (header == null)
+                if (!TryReadHeader(parser, out var header))
                 {
                     continue;
                 }
 
-                var headerMap = BuildHeaderMap(header);
+                var headerMap = BuildHeaderMap(header!);
                 while (!parser.EndOfData)
                 {
                     var row = parser.ReadFields();
@@ -394,6 +378,30 @@ namespace EconToolbox.Desktop.ViewModels
                 StructureDamage0011 = s0011,
                 StructureDamage0003 = s0003
             };
+        }
+
+        private static bool TryReadHeader(TextFieldParser parser, out string[]? header)
+        {
+            header = null;
+
+            while (!parser.EndOfData)
+            {
+                var candidate = parser.ReadFields();
+                if (candidate == null)
+                {
+                    break;
+                }
+
+                // FDA exports typically start with a title row. Walk until we find a row that
+                // looks like the actual header instead of skipping only a single line.
+                if (candidate.Any(f => f.Contains("Structure", StringComparison.OrdinalIgnoreCase)))
+                {
+                    header = candidate;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static string NormalizeHeader(string header)
