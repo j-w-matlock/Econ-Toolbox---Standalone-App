@@ -124,7 +124,7 @@
 
                         <TextBlock Text="{Binding StatusMessage}"
                                    FontStyle="Italic"
-                                   Foreground="{StaticResource Brush.Secondary}"
+                                   Foreground="{StaticResource Brush.TextSecondary}"
                                    Margin="4,0,0,4"/>
 
                         <Grid Grid.Row="1">
@@ -224,7 +224,7 @@
                         <TextBlock Text="Bars show the sum of structure damages across the frequent AEPs (0.493, 0.224, 0.034) for each DamageCatagory."
                                    Margin="0,8,0,0"
                                    TextWrapping="Wrap"
-                                   Foreground="{StaticResource Brush.Secondary}"/>
+                                   Foreground="{StaticResource Brush.TextSecondary}"/>
                     </StackPanel>
                 </Border>
             </Grid>
