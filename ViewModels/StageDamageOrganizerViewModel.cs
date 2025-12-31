@@ -345,19 +345,19 @@ namespace EconToolbox.Desktop.ViewModels
 
         private static StageDamageRecord? ParseRow(string[] row, IReadOnlyDictionary<string, int> map)
         {
-            string structureFid = ReadString(row, map, "structurefid");
-            string damageCategory = ReadString(row, map, "damagecatagory");
+            string structureFid = ReadString(row, map, "structurefid", "structureid");
+            string damageCategory = ReadString(row, map, "damagecatagory", "damagecategory");
 
             if (string.IsNullOrWhiteSpace(structureFid) && string.IsNullOrWhiteSpace(damageCategory))
             {
                 return null;
             }
 
-            double s0493 = ReadDouble(row, map, "structuredamageat0493aep");
-            double s0224 = ReadDouble(row, map, "structuredamageat0224aep");
-            double s0034 = ReadDouble(row, map, "structuredamageat0034aep");
-            double s0011 = ReadDouble(row, map, "structuredamageat0011aep");
-            double s0003 = ReadDouble(row, map, "structuredamageat0003aep");
+            double s0493 = ReadDouble(row, map, "structuredamageat0493aep", "structuredamage0493aep", "structuredamage0493");
+            double s0224 = ReadDouble(row, map, "structuredamageat0224aep", "structuredamage0224aep", "structuredamage0224");
+            double s0034 = ReadDouble(row, map, "structuredamageat0034aep", "structuredamage0034aep", "structuredamage0034");
+            double s0011 = ReadDouble(row, map, "structuredamageat0011aep", "structuredamage0011aep", "structuredamage0011");
+            double s0003 = ReadDouble(row, map, "structuredamageat0003aep", "structuredamage0003aep", "structuredamage0003");
 
             bool hasDamage = s0493 > 0 || s0224 > 0 || s0034 > 0 || s0011 > 0 || s0003 > 0;
             if (!hasDamage)
@@ -370,8 +370,8 @@ namespace EconToolbox.Desktop.ViewModels
                 StructureFid = string.IsNullOrWhiteSpace(structureFid) ? "Unknown" : structureFid.Trim(),
                 DamageCategory = string.IsNullOrWhiteSpace(damageCategory) ? "Uncategorized" : damageCategory.Trim(),
                 Description = ReadString(row, map, "description"),
-                ImpactArea = ReadString(row, map, "impactarearownumberinimpactareaset"),
-                OccTypeName = ReadString(row, map, "occtypename"),
+                ImpactArea = ReadString(row, map, "impactarearownumberinimpactareaset", "impactarea"),
+                OccTypeName = ReadString(row, map, "occtypename", "occupancytype"),
                 StructureDamage0493 = s0493,
                 StructureDamage0224 = s0224,
                 StructureDamage0034 = s0034,
@@ -410,30 +410,36 @@ namespace EconToolbox.Desktop.ViewModels
             return new string(filtered.ToArray()).ToLowerInvariant();
         }
 
-        private static string ReadString(string[] row, IReadOnlyDictionary<string, int> map, string key)
+        private static string ReadString(string[] row, IReadOnlyDictionary<string, int> map, params string[] keys)
         {
-            if (map.TryGetValue(key, out int index) && index < row.Length)
+            foreach (var key in keys)
             {
-                return row[index];
+                if (map.TryGetValue(key, out int index) && index < row.Length)
+                {
+                    return row[index];
+                }
             }
 
             return string.Empty;
         }
 
-        private static double ReadDouble(string[] row, IReadOnlyDictionary<string, int> map, string key)
+        private static double ReadDouble(string[] row, IReadOnlyDictionary<string, int> map, params string[] keys)
         {
-            if (map.TryGetValue(key, out int index) && index < row.Length)
+            foreach (var key in keys)
             {
-                var raw = row[index];
-                if (double.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out double value) ||
-                    double.TryParse(raw, NumberStyles.Any, CultureInfo.CurrentCulture, out value))
+                if (map.TryGetValue(key, out int index) && index < row.Length)
                 {
-                    if (double.IsNaN(value) || double.IsInfinity(value))
+                    var raw = row[index];
+                    if (double.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out double value) ||
+                        double.TryParse(raw, NumberStyles.Any, CultureInfo.CurrentCulture, out value))
                     {
-                        return 0d;
-                    }
+                        if (double.IsNaN(value) || double.IsInfinity(value))
+                        {
+                            return 0d;
+                        }
 
-                    return value;
+                        return value;
+                    }
                 }
             }
 
