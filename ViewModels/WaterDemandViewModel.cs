@@ -30,6 +30,27 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<Scenario> Scenarios { get; } = new();
         private Scenario? _selectedScenario;
         private Scenario? _baselineScenario;
+        private readonly ObservableCollection<ChartSeries> _chartSeries = new();
+        public ObservableCollection<ChartSeries> ChartSeries
+        {
+            get => _chartSeries;
+        }
+
+        public ObservableCollection<LegendItem> LegendItems { get; } = new();
+
+        private string _chartStatusMessage = "Add scenarios and forecast to view the adjusted demand chart.";
+        public string ChartStatusMessage
+        {
+            get => _chartStatusMessage;
+            private set { _chartStatusMessage = value; OnPropertyChanged(); }
+        }
+
+        private string _chartTitle = "Adjusted Demand Forecast";
+        public string ChartTitle
+        {
+            get => _chartTitle;
+            set { _chartTitle = value; OnPropertyChanged(); }
+        }
 
         private static readonly IReadOnlyDictionary<string, (double Current, double Future)> DefaultSectorPercents
             = new Dictionary<string, (double Current, double Future)>(StringComparer.OrdinalIgnoreCase)
@@ -563,7 +584,6 @@ namespace EconToolbox.Desktop.ViewModels
                     }
 
                     AttachResultHandlers(scenario);
-                    scenario.ChartPoints = CreatePointCollection(scenario.Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
                 }
 
                 Results = SelectedScenario?.Results ?? new ObservableCollection<DemandEntry>();
@@ -582,16 +602,20 @@ namespace EconToolbox.Desktop.ViewModels
                         Explanation += " Adjusted demand is undefined when losses are 100% or greater.";
                     }
                 }
+
+                UpdateChartSeries();
             }
             catch
             {
                 foreach (var scenario in Scenarios)
                 {
                     scenario.Results.Clear();
-                    scenario.ChartPoints = new PointCollection();
                 }
                 Results = new ObservableCollection<DemandEntry>();
                 Explanation = string.Empty;
+                ChartSeries.Clear();
+                LegendItems.Clear();
+                ChartStatusMessage = "Unable to compute forecast with the provided inputs.";
             }
         }
 
@@ -615,7 +639,6 @@ namespace EconToolbox.Desktop.ViewModels
                     if (index > 0)
                     {
                         RecalculateFromIndex(scenario, index);
-                        scenario.ChartPoints = CreatePointCollection(scenario.Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
                         if (scenario == SelectedScenario)
                             Results = scenario.Results;
                         recalculated = true;
@@ -739,11 +762,12 @@ namespace EconToolbox.Desktop.ViewModels
 
                 if (scenarioUpdated)
                 {
-                    scenario.ChartPoints = CreatePointCollection(scenario.Results.Select(r => (r.Year, r.AdjustedDemand)).ToList());
                     if (scenario == SelectedScenario)
                         Results = scenario.Results;
                 }
             }
+
+            UpdateChartSeries();
         }
 
         private static bool NearlyEqual(double value1, double value2, double tolerance = 1e-6)
@@ -771,39 +795,6 @@ namespace EconToolbox.Desktop.ViewModels
             return demand / denominator * improvementsFactor;
         }
 
-        private static PointCollection CreatePointCollection(List<(int Year, double Demand)> data)
-        {
-            PointCollection points = new();
-            var finiteData = data.Where(d => double.IsFinite(d.Demand)).ToList();
-            if (finiteData.Count == 0) return points;
-
-            double minYear = finiteData[0].Year;
-            double maxYear = finiteData[^1].Year;
-            double minDemand = double.MaxValue;
-            double maxDemand = double.MinValue;
-            foreach (var d in finiteData)
-            {
-                if (d.Demand < minDemand) minDemand = d.Demand;
-                if (d.Demand > maxDemand) maxDemand = d.Demand;
-            }
-
-            const double width = 300; // Canvas width used in XAML
-            const double height = 168; // Canvas height used in XAML
-            double yearRange = maxYear - minYear;
-            if (yearRange == 0) yearRange = 1;
-            double demandRange = maxDemand - minDemand;
-            if (demandRange == 0) demandRange = 1;
-
-            foreach (var d in finiteData)
-            {
-                double x = (d.Year - minYear) / yearRange * width;
-                double y = height - (d.Demand - minDemand) / demandRange * height;
-                points.Add(new System.Windows.Point(x, y));
-            }
-
-            return points;
-        }
-
         private async Task ExportAsync()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
@@ -825,6 +816,54 @@ namespace EconToolbox.Desktop.ViewModels
                 }
             }
         }
+
+        private void UpdateChartSeries()
+        {
+            ChartSeries.Clear();
+            LegendItems.Clear();
+
+            var validScenarios = Scenarios
+                .Where(s => s.Results.Any(r => double.IsFinite(r.AdjustedDemand)))
+                .ToList();
+
+            if (validScenarios.Count == 0)
+            {
+                ChartStatusMessage = "Enter forecast inputs to visualize adjusted demand by scenario.";
+                return;
+            }
+
+            foreach (var scenario in validScenarios)
+            {
+                var points = scenario.Results
+                    .Where(r => double.IsFinite(r.AdjustedDemand))
+                    .OrderBy(r => r.Year)
+                    .Select(r => new ChartDataPoint
+                    {
+                        X = r.Year,
+                        Y = r.AdjustedDemand
+                    })
+                    .ToList();
+
+                if (points.Count == 0)
+                {
+                    continue;
+                }
+
+                ChartSeries.Add(new ChartSeries
+                {
+                    Name = scenario.Name,
+                    Stroke = scenario.LineBrush,
+                    Points = points
+                });
+
+                LegendItems.Add(new LegendItem
+                {
+                    Name = scenario.Name,
+                    Color = scenario.LineBrush
+                });
+            }
+
+            ChartStatusMessage = string.Empty;
+        }
     }
 }
-

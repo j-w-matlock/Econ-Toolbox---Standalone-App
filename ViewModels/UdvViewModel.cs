@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -23,10 +22,25 @@ namespace EconToolbox.Desktop.ViewModels
         private string _visitationPeriod = "Per Day";
         private double _totalUserDays;
         private double _annualRecreationBenefit;
-        private PointCollection _chartPoints = new();
         private double? _historicalMedianVisitation;
         private int _historicalObservationCount;
         private string _historicalDataError = string.Empty;
+        private readonly ObservableCollection<ChartSeries> _chartSeries = new();
+        public ObservableCollection<ChartSeries> ChartSeries => _chartSeries;
+        public ObservableCollection<LegendItem> LegendItems { get; } = new();
+        private string _chartStatusMessage = "Enter point values to plot the unit day value curve.";
+        public string ChartStatusMessage
+        {
+            get => _chartStatusMessage;
+            private set { _chartStatusMessage = value; OnPropertyChanged(); }
+        }
+
+        private string _chartTitle = "Unit Day Value Curve";
+        public string ChartTitle
+        {
+            get => _chartTitle;
+            set { _chartTitle = value; OnPropertyChanged(); }
+        }
 
         public ObservableCollection<PointValueRow> Table { get; } = UdvModel.CreateDefaultTable();
         public ObservableCollection<HistoricalVisitationRow> HistoricalVisitationRows { get; } = new();
@@ -46,7 +60,6 @@ namespace EconToolbox.Desktop.ViewModels
                     OnPropertyChanged();
                     UpdateActivityTypes();
                     UpdateUnitDayValue();
-                    UpdateChart();
                 }
             }
         }
@@ -61,7 +74,6 @@ namespace EconToolbox.Desktop.ViewModels
                     _activityType = value;
                     OnPropertyChanged();
                     UpdateUnitDayValue();
-                    UpdateChart();
                 }
             }
         }
@@ -74,6 +86,7 @@ namespace EconToolbox.Desktop.ViewModels
                 _points = value;
                 OnPropertyChanged();
                 UpdateUnitDayValue();
+                UpdateChart();
             }
         }
 
@@ -149,12 +162,6 @@ namespace EconToolbox.Desktop.ViewModels
                     OnPropertyChanged();
                 }
             }
-        }
-
-        public PointCollection ChartPoints
-        {
-            get => _chartPoints;
-            private set { _chartPoints = value; OnPropertyChanged(); }
         }
 
         public double? HistoricalMedianVisitation
@@ -283,6 +290,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void UpdateUnitDayValue()
         {
             UnitDayValue = UdvModel.ComputeUnitDayValue(Table, RecreationType, ActivityType, Points);
+            UpdateChart();
         }
 
         private void UpdateChart()
@@ -295,33 +303,58 @@ namespace EconToolbox.Desktop.ViewModels
                 ("Specialized", "Other (e.g., Boating)") => "Specialized Recreation",
                 _ => "General Recreation",
             };
-            double maxX = Table.Max(r => r.Points);
-            double maxY = Table.Max(r => column switch
-            {
-                "General Recreation" => r.GeneralRecreation,
-                "General Fishing and Hunting" => r.GeneralFishingHunting,
-                "Specialized Fishing and Hunting" => r.SpecializedFishingHunting,
-                "Specialized Recreation" => r.SpecializedRecreation,
-                _ => r.GeneralRecreation,
-            });
-            double width = 200.0;
-            double height = 120.0;
-            var pc = new PointCollection();
-            foreach (var row in Table)
-            {
-                double val = column switch
+
+            var points = Table
+                .Select(row => new ChartDataPoint
                 {
-                    "General Recreation" => row.GeneralRecreation,
-                    "General Fishing and Hunting" => row.GeneralFishingHunting,
-                    "Specialized Fishing and Hunting" => row.SpecializedFishingHunting,
-                    "Specialized Recreation" => row.SpecializedRecreation,
-                    _ => row.GeneralRecreation,
-                };
-                double x = row.Points / maxX * width;
-                double y = height - (val / maxY * height);
-                pc.Add(new Point(x, y));
+                    X = row.Points,
+                    Y = column switch
+                    {
+                        "General Recreation" => row.GeneralRecreation,
+                        "General Fishing and Hunting" => row.GeneralFishingHunting,
+                        "Specialized Fishing and Hunting" => row.SpecializedFishingHunting,
+                        "Specialized Recreation" => row.SpecializedRecreation,
+                        _ => row.GeneralRecreation,
+                    }
+                })
+                .Where(dp => double.IsFinite(dp.X) && double.IsFinite(dp.Y))
+                .ToList();
+
+            var selectedPoint = new ChartDataPoint
+            {
+                X = Points,
+                Y = UnitDayValue
+            };
+
+            ChartSeries.Clear();
+            LegendItems.Clear();
+
+            if (points.Count == 0)
+            {
+                ChartStatusMessage = "Enter a point value and pick a recreation type to see the curve.";
+                return;
             }
-            ChartPoints = pc;
+
+            ChartSeries.Add(new ChartSeries
+            {
+                Name = $"{column} scale",
+                Stroke = new SolidColorBrush(Color.FromRgb(33, 150, 243)),
+                Points = points
+            });
+            LegendItems.Add(new LegendItem { Name = $"{column} scale", Color = new SolidColorBrush(Color.FromRgb(33, 150, 243)) });
+
+            if (double.IsFinite(selectedPoint.X) && double.IsFinite(selectedPoint.Y))
+            {
+                ChartSeries.Add(new ChartSeries
+                {
+                    Name = "Selected point",
+                    Stroke = new SolidColorBrush(Color.FromRgb(255, 152, 0)),
+                    Points = new List<ChartDataPoint> { selectedPoint }
+                });
+                LegendItems.Add(new LegendItem { Name = "Selected point", Color = new SolidColorBrush(Color.FromRgb(255, 152, 0)) });
+            }
+
+            ChartStatusMessage = string.Empty;
         }
 
         private void RecalculateUserDays()

@@ -29,6 +29,30 @@ namespace EconToolbox.Desktop.Views.Controls
             typeof(LineGraphControl),
             new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.AffectsRender, OnEmptyMessageChanged));
 
+        public static readonly DependencyProperty XAxisLabelFormatProperty = DependencyProperty.Register(
+            nameof(XAxisLabelFormat),
+            typeof(string),
+            typeof(LineGraphControl),
+            new FrameworkPropertyMetadata("P0", FrameworkPropertyMetadataOptions.AffectsRender, OnAxisChanged));
+
+        public static readonly DependencyProperty XAxisLabelPrefixProperty = DependencyProperty.Register(
+            nameof(XAxisLabelPrefix),
+            typeof(string),
+            typeof(LineGraphControl),
+            new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.AffectsRender, OnAxisChanged));
+
+        public static readonly DependencyProperty YAxisLabelFormatProperty = DependencyProperty.Register(
+            nameof(YAxisLabelFormat),
+            typeof(string),
+            typeof(LineGraphControl),
+            new FrameworkPropertyMetadata("C0", FrameworkPropertyMetadataOptions.AffectsRender, OnAxisChanged));
+
+        public static readonly DependencyProperty YAxisLabelPrefixProperty = DependencyProperty.Register(
+            nameof(YAxisLabelPrefix),
+            typeof(string),
+            typeof(LineGraphControl),
+            new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.AffectsRender, OnAxisChanged));
+
         private INotifyCollectionChanged? _seriesCollection;
 
         public IEnumerable<ChartSeries>? Series
@@ -47,6 +71,30 @@ namespace EconToolbox.Desktop.Views.Controls
         {
             get => (string)GetValue(EmptyMessageProperty);
             set => SetValue(EmptyMessageProperty, value);
+        }
+
+        public string XAxisLabelFormat
+        {
+            get => (string)GetValue(XAxisLabelFormatProperty);
+            set => SetValue(XAxisLabelFormatProperty, value);
+        }
+
+        public string XAxisLabelPrefix
+        {
+            get => (string)GetValue(XAxisLabelPrefixProperty);
+            set => SetValue(XAxisLabelPrefixProperty, value);
+        }
+
+        public string YAxisLabelFormat
+        {
+            get => (string)GetValue(YAxisLabelFormatProperty);
+            set => SetValue(YAxisLabelFormatProperty, value);
+        }
+
+        public string YAxisLabelPrefix
+        {
+            get => (string)GetValue(YAxisLabelPrefixProperty);
+            set => SetValue(YAxisLabelPrefixProperty, value);
         }
 
         private static void OnSeriesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -159,14 +207,22 @@ namespace EconToolbox.Desktop.Views.Controls
                 double xValue = minX + (maxX - minX) * fraction;
                 double x = marginLeft + plotWidth * fraction;
                 dc.DrawLine(gridPen, new Point(x, marginTop), new Point(x, marginTop + plotHeight));
-                var xLabel = CreateLabel(IsStageAxis ? $"Stage {xValue:N2}" : $"{xValue:P0}", dpi, labelBrush);
+                string xFormat = XAxisLabelFormat;
+                string xPrefix = XAxisLabelPrefix;
+                if (IsStageAxis)
+                {
+                    xFormat = "N2";
+                    xPrefix = "Stage ";
+                }
+
+                var xLabel = CreateLabel(FormatLabel(xPrefix, xValue, xFormat), dpi, labelBrush);
                 dc.DrawText(xLabel, new Point(x - xLabel.Width / 2, marginTop + plotHeight + 6));
 
                 // Y ticks
                 double yValue = minY + (maxY - minY) * fraction;
                 double y = marginTop + plotHeight - (plotHeight * fraction);
                 dc.DrawLine(gridPen, new Point(marginLeft, y), new Point(marginLeft + plotWidth, y));
-                var yLabel = CreateLabel($"{yValue:C0}", dpi, labelBrush);
+                var yLabel = CreateLabel(FormatLabel(YAxisLabelPrefix, yValue, YAxisLabelFormat), dpi, labelBrush);
                 dc.DrawText(yLabel, new Point(Math.Max(2, marginLeft - yLabel.Width - 6), y - yLabel.Height / 2));
             }
 
@@ -233,6 +289,17 @@ namespace EconToolbox.Desktop.Views.Controls
                 brush,
                 dpi);
 #pragma warning restore CS0618
+        }
+
+        private static string FormatLabel(string prefix, double value, string format)
+        {
+            string formatted = format switch
+            {
+                null or "" => value.ToString(CultureInfo.CurrentCulture),
+                _ => string.Format(CultureInfo.CurrentCulture, $"{{0:{format}}}", value)
+            };
+
+            return string.Concat(prefix, formatted);
         }
     }
 }
