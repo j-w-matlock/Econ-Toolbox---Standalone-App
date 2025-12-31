@@ -49,6 +49,9 @@
             <DataTemplate DataType="{x:Type vm:GanttViewModel}">
                 <views:GanttView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:StageDamageOrganizerViewModel}">
+                <views:StageDamageOrganizerView/>
+            </DataTemplate>
             <DataTemplate x:Key="ActionsWideTemplate">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>

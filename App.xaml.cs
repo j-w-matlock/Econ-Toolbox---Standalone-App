@@ -100,6 +100,7 @@ namespace EconToolbox.Desktop
                     services.AddSingleton<WaterDemandViewModel>();
                     services.AddSingleton<RecreationCapacityViewModel>();
                     services.AddSingleton<GanttViewModel>();
+                    services.AddSingleton<StageDamageOrganizerViewModel>();
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<MainWindow>();

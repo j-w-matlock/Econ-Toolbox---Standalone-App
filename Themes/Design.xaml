@@ -66,6 +66,7 @@
     <converters:CurrencyConverter x:Key="CurrencyConverter"/>
     <converters:SafeNumberConverter x:Key="SafeNumberConverter"/>
     <converters:NullOrEmptyToValueConverter x:Key="NullOrEmptyToValueConverter"/>
+    <converters:BooleanInverseConverter x:Key="BoolInverseConverter"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <!-- Spacing tokens -->

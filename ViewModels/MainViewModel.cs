@@ -20,6 +20,7 @@ namespace EconToolbox.Desktop.ViewModels
         public WaterDemandViewModel WaterDemand { get; }
         public RecreationCapacityViewModel RecreationCapacity { get; }
         public GanttViewModel Gantt { get; }
+        public StageDamageOrganizerViewModel StageDamageOrganizer { get; }
 
         public IReadOnlyList<ModuleDefinition> Modules { get; }
 
@@ -66,6 +67,7 @@ namespace EconToolbox.Desktop.ViewModels
             WaterDemandViewModel waterDemand,
             RecreationCapacityViewModel recreationCapacity,
             GanttViewModel gantt,
+            StageDamageOrganizerViewModel stageDamageOrganizer,
             IExcelExportService excelExportService)
         {
             ReadMe = readMe;
@@ -77,6 +79,7 @@ namespace EconToolbox.Desktop.ViewModels
             WaterDemand = waterDemand;
             RecreationCapacity = recreationCapacity;
             Gantt = gantt;
+            StageDamageOrganizer = stageDamageOrganizer;
             _excelExportService = excelExportService;
 
             CalculateCommand = new RelayCommand(Calculate);
@@ -248,13 +251,32 @@ namespace EconToolbox.Desktop.ViewModels
                     },
                     new[]
                     {
-                        "Automatically sequences start and finish dates based on dependency logic.",
-                        "Generates a bar chart showing duration, percent complete, and milestones.",
-                        "Exports both the task register and timeline graphic alongside other modules."
-                    },
-                    "Example: A feasibility study includes kickoff, stakeholder workshops, baseline analysis, and a design milestone with finish-to-start dependencies.",
+                    "Automatically sequences start and finish dates based on dependency logic.",
+                    "Generates a bar chart showing duration, percent complete, and milestones.",
+                    "Exports both the task register and timeline graphic alongside other modules."
+                },
+                "Example: A feasibility study includes kickoff, stakeholder workshops, baseline analysis, and a design milestone with finish-to-start dependencies.",
                     Gantt,
-                    Gantt.ComputeCommand)
+                    Gantt.ComputeCommand),
+                new ModuleDefinition(
+                    "Stage Damage Organizer",
+                    "Compile FDA 2.0 Stage Damage Functions_StructureStageDamageDetails.csv files by damage category.",
+                    "Loads CSV exports, groups by DamageCatagory, highlights peak frequent-AEP structure damages, and plots a summary bar chart.",
+                    new[]
+                    {
+                        "Select one or more Stage Damage Functions_StructureStageDamageDetails.csv files exported from FDA 2.0.",
+                        "Confirm the DamageCatagory values look correct in the summary table.",
+                        "Optional: rename the summary to control the CSV export file name and chart legend."
+                    },
+                    new[]
+                    {
+                        "Shows total structure damages by DamageCatagory across frequent AEPs (0.493, 0.224, 0.034).",
+                        "Lists the structures with the highest frequent-AEP structure damages and their AEP of peak impact.",
+                        "Exports a concise CSV summary that includes category totals and highlighted structures."
+                    },
+                    "Example: Organize multiple impact areas and report which DamageCatagory drives the highest frequent-AEP structure damages.",
+                    StageDamageOrganizer,
+                    null)
             };
 
             foreach (var module in Modules)
