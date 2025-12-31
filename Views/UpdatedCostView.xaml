@@ -275,13 +275,6 @@
                 </Border>
                 <Grid Margin="0,8,0,10">
                     <Grid.Resources>
-                        <SolidColorBrush x:Key="Brush.Link.JointUse" Color="#C54F1F"/>
-                        <SolidColorBrush x:Key="Brush.Link.PreEnr" Color="#9B3D8A"/>
-                        <SolidColorBrush x:Key="Brush.Link.TransitionEnr" Color="#0F7C8B"/>
-                        <SolidColorBrush x:Key="Brush.Link.Enr1967" Color="#5A3CA0"/>
-                        <SolidColorBrush x:Key="Brush.Link.CwccisBase" Color="#2E6EB5"/>
-                        <SolidColorBrush x:Key="Brush.Link.CwccisCurrent" Color="#5E8D2A"/>
-
                         <Style TargetType="TextBlock" x:Key="UpdatedCostLabelTextStyle">
                             <Setter Property="FontWeight" Value="SemiBold"/>
                             <Setter Property="Margin" Value="0,0,0,4"/>
