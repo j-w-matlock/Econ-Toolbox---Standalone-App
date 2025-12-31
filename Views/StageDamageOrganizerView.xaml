@@ -147,21 +147,23 @@
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Text="DamageCatagory summary"
-                                               FontWeight="SemiBold"
-                                               Margin="0,0,0,8"/>
-                                    <DataGrid x:Name="CategorySummaryGrid"
-                                              Grid.Row="1"
-                                              ItemsSource="{Binding CategorySummaries}"
-                                              AutoGenerateColumns="False"
-                                              CanUserAddRows="False"
-                                              CanUserDeleteRows="False"
-                                              IsReadOnly="True"
-                                              HeadersVisibility="Column"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="DamageCatagory summary"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <DataGrid x:Name="CategorySummaryGrid"
+                                          Grid.Row="1"
+                                          ItemsSource="{Binding CategorySummaries}"
+                                          AutoGenerateColumns="False"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          IsReadOnly="True"
+                                          HeadersVisibility="Column"
+                                          MinHeight="220"
+                                          MaxHeight="360"
+                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                          ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
                                 </Grid>
                             </Border>
 
@@ -187,15 +189,29 @@
                                               CanUserDeleteRows="False"
                                               IsReadOnly="True"
                                               HeadersVisibility="Column"
+                                              MinHeight="220"
+                                              MaxHeight="360"
                                               ScrollViewer.VerticalScrollBarVisibility="Auto"
                                               ScrollViewer.HorizontalScrollBarVisibility="Auto">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Structure FID" Binding="{Binding StructureFid}" Width="*" />
-                                            <DataGridTextColumn Header="Damage Category" Binding="{Binding DamageCategory}" Width="140"/>
-                                            <DataGridTextColumn Header="Impact Area" Binding="{Binding ImpactArea}" Width="120"/>
-                                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="220"/>
-                                            <DataGridTextColumn Header="Highest AEP" Binding="{Binding HighestAepLabel}" Width="100"/>
-                                            <DataGridTextColumn Header="Structure Damage" Binding="{Binding HighestStructureDamage, StringFormat=C0}" Width="150"/>
+                                            <DataGridTextColumn Header="Structure FID"
+                                                                 Binding="{Binding StructureFid}"
+                                                                 Width="SizeToHeader"/>
+                                            <DataGridTextColumn Header="Damage Category"
+                                                                 Binding="{Binding DamageCategory}"
+                                                                 Width="SizeToHeader"/>
+                                            <DataGridTextColumn Header="Impact Area"
+                                                                 Binding="{Binding ImpactArea}"
+                                                                 Width="SizeToHeader"/>
+                                            <DataGridTextColumn Header="Description"
+                                                                 Binding="{Binding Description}"
+                                                                 Width="SizeToHeader"/>
+                                            <DataGridTextColumn Header="Highest AEP"
+                                                                 Binding="{Binding HighestAepLabel}"
+                                                                 Width="SizeToHeader"/>
+                                            <DataGridTextColumn Header="Structure Damage"
+                                                                 Binding="{Binding HighestStructureDamage, StringFormat=C0}"
+                                                                 Width="SizeToHeader"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Grid>
