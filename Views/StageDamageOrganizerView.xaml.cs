@@ -46,14 +46,14 @@ namespace EconToolbox.Desktop.Views
             {
                 Header = "Damage Category",
                 Binding = new Binding("DamageCategory"),
-                Width = new DataGridLength(1, DataGridLengthUnitType.Star)
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
 
             CategorySummaryGrid.Columns.Add(new DataGridTextColumn
             {
                 Header = "Structures",
                 Binding = new Binding("StructureCount"),
-                Width = 80
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
 
             for (int i = 0; i < viewModel.AepHeaders.Count; i++)
@@ -62,7 +62,7 @@ namespace EconToolbox.Desktop.Views
                 {
                     Header = viewModel.AepHeaders[i],
                     Binding = new Binding($"AepDamages[{i}]") { StringFormat = "C0" },
-                    Width = 120
+                    Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
                 });
             }
 
@@ -70,14 +70,14 @@ namespace EconToolbox.Desktop.Views
             {
                 Header = "Frequent AEP Sum",
                 Binding = new Binding("FrequentSumDamage") { StringFormat = "C0" },
-                Width = 150
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
 
             CategorySummaryGrid.Columns.Add(new DataGridTextColumn
             {
                 Header = "Peak Frequent AEP",
                 Binding = new Binding("PeakStructureDamage") { StringFormat = "C0" },
-                Width = 150
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
         }
     }
