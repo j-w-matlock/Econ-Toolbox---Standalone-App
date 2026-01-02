@@ -75,7 +75,7 @@ namespace EconToolbox.Desktop.Views
 
             CategorySummaryGrid.Columns.Add(new DataGridTextColumn
             {
-                Header = "Frequent AEP Sum",
+                Header = "Total AEP Sum",
                 Binding = new Binding("FrequentSumDamage") { StringFormat = "C0" },
                 Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });

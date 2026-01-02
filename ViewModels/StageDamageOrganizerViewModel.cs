@@ -22,6 +22,16 @@ namespace EconToolbox.Desktop.ViewModels
         private string _statusMessage = "Load one or more Stage Damage Functions_StructureStageDamageDetails.csv files to summarize damages by category.";
         private bool _isBusy;
 
+        private static readonly Color[] ChartPalette =
+        {
+            Color.FromRgb(45, 106, 142),
+            Color.FromRgb(26, 188, 156),
+            Color.FromRgb(127, 86, 217),
+            Color.FromRgb(243, 156, 18),
+            Color.FromRgb(52, 152, 219),
+            Color.FromRgb(231, 76, 60)
+        };
+
         public ObservableCollection<StageDamageRecord> Records => _records;
         public ObservableCollection<StageDamageCategorySummary> CategorySummaries { get; } = new();
         public ObservableCollection<StageDamageHighlight> Highlights { get; } = new();
@@ -36,11 +46,11 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 if (AepHeaders.Count == 0)
                 {
-                    return "Bars show the sum of structure damages across the frequent AEPs for each DamageCatagory.";
+                    return "Bars show the sum of structure damages across all available AEPs for each DamageCatagory.";
                 }
 
-                var frequentAeps = string.Join(", ", AepHeaders.Take(3));
-                return $"Bars show the sum of structure damages across the frequent AEPs ({frequentAeps}) for each DamageCatagory.";
+                var listedAeps = string.Join(", ", AepHeaders);
+                return $"Bars show the sum of structure damages across all AEPs ({listedAeps}) for each DamageCatagory.";
             }
         }
 
@@ -188,7 +198,7 @@ namespace EconToolbox.Desktop.ViewModels
             writer.WriteLine("Stage Damage Organizer - Damage totals by category");
             var headerColumns = new List<string> { "Summary Name", "Damage Category", "Structures" };
             headerColumns.AddRange(AepHeaders.Select(h => $"Structure Damage @{h}"));
-            headerColumns.Add("Frequent AEP Sum");
+            headerColumns.Add("Total AEP Sum");
             writer.WriteLine(string.Join(",", headerColumns));
             foreach (var summary in CategorySummaries)
             {
@@ -251,6 +261,10 @@ namespace EconToolbox.Desktop.ViewModels
                 .GroupBy(r => string.IsNullOrWhiteSpace(r.SummaryName) ? "StageDamageSummary" : r.SummaryName.Trim())
                 .ToList();
 
+            var categoryTotals = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+            var summaryBundles = new List<(string SummaryName, List<StageDamageCategorySummary> Categories)>();
+            int paletteIndex = 0;
+
             foreach (var summaryGroup in groupedBySummary)
             {
                 var summaries = summaryGroup
@@ -268,9 +282,14 @@ namespace EconToolbox.Desktop.ViewModels
                     .OrderByDescending(s => s.FrequentSumDamage)
                     .ToList();
 
+                summaryBundles.Add((summaryGroup.Key, summaries));
+
                 foreach (var summary in summaries)
                 {
                     CategorySummaries.Add(summary);
+                    categoryTotals[summary.DamageCategory] = categoryTotals.TryGetValue(summary.DamageCategory, out var current)
+                        ? current + summary.FrequentSumDamage
+                        : summary.FrequentSumDamage;
                 }
 
                 var topStructures = summaryGroup
@@ -292,20 +311,38 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     Highlights.Add(highlight);
                 }
+            }
+
+            var categoryOrder = categoryTotals
+                .OrderByDescending(kv => kv.Value)
+                .Select(kv => kv.Key)
+                .ToList();
+
+            foreach (var bundle in summaryBundles)
+            {
+                var color = ChartPalette[paletteIndex % ChartPalette.Length];
+                var points = categoryOrder
+                    .Select((category, index) =>
+                    {
+                        var match = bundle.Categories.FirstOrDefault(c => c.DamageCategory.Equals(category, StringComparison.OrdinalIgnoreCase));
+                        return new ChartDataPoint
+                        {
+                            X = index,
+                            Y = match?.FrequentSumDamage ?? 0d,
+                            Label = category
+                        };
+                    })
+                    .ToList();
 
                 var chartSeries = new ChartSeries
                 {
-                    Name = summaryGroup.Key,
-                    Stroke = new SolidColorBrush(Color.FromRgb(45, 106, 142)),
-                    Points = summaries.Select((s, index) => new ChartDataPoint
-                    {
-                        X = index,
-                        Y = s.FrequentSumDamage,
-                        Label = s.DamageCategory
-                    }).ToList()
+                    Name = bundle.SummaryName,
+                    Stroke = new SolidColorBrush(color),
+                    Points = points
                 };
 
                 ChartSeries.Add(chartSeries);
+                paletteIndex++;
             }
         }
 
@@ -344,10 +381,7 @@ namespace EconToolbox.Desktop.ViewModels
                     continue;
                 }
 
-                if (_aepColumns.Count == 0)
-                {
-                    _aepColumns = aepColumns;
-                }
+                MergeAepColumns(aepColumns, results);
 
                 while (!parser.EndOfData)
                 {
@@ -381,6 +415,23 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             return map;
+        }
+
+        private void MergeAepColumns(IEnumerable<AepColumn> discoveredColumns, List<StageDamageRecord> existingRecords)
+        {
+            foreach (var column in discoveredColumns)
+            {
+                if (_aepColumns.Any(c => c.NormalizedKey.Equals(column.NormalizedKey, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                _aepColumns.Add(column);
+                foreach (var record in existingRecords)
+                {
+                    record.AepDamages.Add(new StageDamageAepValue(column.Label, 0d));
+                }
+            }
         }
 
         private static StageDamageRecord? ParseRow(string[] row, IReadOnlyDictionary<string, int> map, IReadOnlyList<AepColumn> aepColumns, string summaryName, string sourceKey)
