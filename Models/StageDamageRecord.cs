@@ -14,7 +14,7 @@ namespace EconToolbox.Desktop.Models
         public string SummaryName { get; set; } = string.Empty;
         public string SourceKey { get; set; } = string.Empty;
 
-        public IReadOnlyList<StageDamageAepValue> AepDamages { get; init; } = Array.Empty<StageDamageAepValue>();
+        public List<StageDamageAepValue> AepDamages { get; set; } = new();
 
         public double FrequentPeakDamage
         {
@@ -25,7 +25,7 @@ namespace EconToolbox.Desktop.Models
             }
         }
 
-        public double FrequentSumDamage => AepDamages.Take(3).Sum(a => a.Value);
+        public double FrequentSumDamage => AepDamages.Sum(a => a.Value);
 
         public string FrequentPeakAepLabel
         {
@@ -47,7 +47,7 @@ namespace EconToolbox.Desktop.Models
 
         private StageDamageAepValue GetPeakAep()
         {
-            var candidates = AepDamages.Take(3).ToList();
+            var candidates = AepDamages.ToList();
             if (candidates.Count == 0)
             {
                 return new StageDamageAepValue("N/A", 0);

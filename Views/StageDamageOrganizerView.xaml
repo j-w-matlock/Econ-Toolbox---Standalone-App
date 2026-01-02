@@ -38,7 +38,7 @@
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap"
                                Margin="0,6,0,0">
-                        Upload Stage Damage Functions_StructureStageDamageDetails.csv exports from FDA 2.0. The organizer groups results by <Run FontStyle="Italic">DamageCatagory</Run>, surfaces structures with the highest frequent-AEP structure damages, and builds a bar chart using the same MSAGL-inspired styling applied elsewhere in the toolbox.
+                        Upload Stage Damage Functions_StructureStageDamageDetails.csv exports from FDA 2.0. The organizer groups results by <Run FontStyle="Italic">DamageCatagory</Run>, surfaces structures with the highest AEP structure damages, and builds a stacked bar chart using the same MSAGL-inspired styling applied elsewhere in the toolbox.
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -194,7 +194,7 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="Top frequent-AEP structure damages"
+                                    <TextBlock Text="Top structure damages (highest AEP)"
                                                FontWeight="SemiBold"
                                                Margin="0,0,0,8"/>
                                     <DataGrid Grid.Row="1"
@@ -245,7 +245,7 @@
                         CornerRadius="8"
                         Padding="12">
                     <StackPanel>
-                        <TextBlock Text="Frequent AEP structure damage by DamageCatagory"
+                        <TextBlock Text="Total structure damage by DamageCatagory"
                                    FontWeight="SemiBold"
                                    Margin="0,0,0,8"/>
                         <Border Background="{StaticResource Brush.ChartFill}"
