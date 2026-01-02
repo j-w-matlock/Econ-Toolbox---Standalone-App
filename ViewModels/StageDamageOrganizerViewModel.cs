@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -17,8 +19,6 @@ namespace EconToolbox.Desktop.ViewModels
         private readonly ObservableCollection<StageDamageRecord> _records = new();
         private readonly ObservableCollection<string> _aepHeaders = new();
         private List<AepColumn> _aepColumns = new();
-
-        private string _summaryName = "StageDamageSummary";
         private string _statusMessage = "Load one or more Stage Damage Functions_StructureStageDamageDetails.csv files to summarize damages by category.";
         private bool _isBusy;
 
@@ -27,6 +27,8 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<StageDamageHighlight> Highlights { get; } = new();
         public ObservableCollection<ChartSeries> ChartSeries { get; } = new();
         public ObservableCollection<string> AepHeaders => _aepHeaders;
+
+        public ObservableCollection<StageDamageSummaryInfo> Summaries { get; } = new();
 
         public string FrequentAepLabelSummary
         {
@@ -39,18 +41,6 @@ namespace EconToolbox.Desktop.ViewModels
 
                 var frequentAeps = string.Join(", ", AepHeaders.Take(3));
                 return $"Bars show the sum of structure damages across the frequent AEPs ({frequentAeps}) for each DamageCatagory.";
-            }
-        }
-
-        public string SummaryName
-        {
-            get => _summaryName;
-            set
-            {
-                if (value == _summaryName) return;
-                _summaryName = value;
-                OnPropertyChanged();
-                UpdateChartSeriesLabel();
             }
         }
 
@@ -94,6 +84,7 @@ namespace EconToolbox.Desktop.ViewModels
             };
 
             AepHeaders.CollectionChanged += (_, _) => OnPropertyChanged(nameof(FrequentAepLabelSummary));
+            Summaries.CollectionChanged += OnSummariesChanged;
         }
 
         private void ClearAll()
@@ -103,6 +94,7 @@ namespace EconToolbox.Desktop.ViewModels
             Highlights.Clear();
             ChartSeries.Clear();
             AepHeaders.Clear();
+            Summaries.Clear();
             _aepColumns.Clear();
             StatusMessage = "Cleared results. Load new CSV files to regenerate summaries.";
         }
@@ -128,7 +120,15 @@ namespace EconToolbox.Desktop.ViewModels
 
                 Records.Clear();
                 AepHeaders.Clear();
-                foreach (var record in imported)
+                Summaries.Clear();
+
+                foreach (var summary in imported.Summaries)
+                {
+                    AttachSummaryHandlers(summary);
+                    Summaries.Add(summary);
+                }
+
+                foreach (var record in imported.Records)
                 {
                     Records.Add(record);
                 }
@@ -162,7 +162,7 @@ namespace EconToolbox.Desktop.ViewModels
             var dialog = new Microsoft.Win32.SaveFileDialog
             {
                 Filter = "CSV files (*.csv)|*.csv",
-                FileName = $"{SummaryName}.csv",
+                FileName = "StageDamageSummaries.csv",
                 Title = "Save summarized stage damage results"
             };
 
@@ -185,15 +185,16 @@ namespace EconToolbox.Desktop.ViewModels
         private void WriteSummaryCsv(string filePath)
         {
             using var writer = new StreamWriter(filePath);
-            writer.WriteLine($"{SummaryName} - Damage totals by category");
-            var headerColumns = new List<string> { "Damage Category", "Structures" };
+            writer.WriteLine("Stage Damage Organizer - Damage totals by category");
+            var headerColumns = new List<string> { "Summary Name", "Damage Category", "Structures" };
             headerColumns.AddRange(AepHeaders.Select(h => $"Structure Damage @{h}"));
-            headerColumns.AddRange(new[] { "Frequent AEP Sum", "Peak Frequent AEP" });
+            headerColumns.Add("Frequent AEP Sum");
             writer.WriteLine(string.Join(",", headerColumns));
             foreach (var summary in CategorySummaries)
             {
                 var values = new List<string>
                 {
+                    Escape(summary.SummaryName),
                     Escape(summary.DamageCategory),
                     summary.StructureCount.ToString(CultureInfo.InvariantCulture)
                 };
@@ -202,18 +203,18 @@ namespace EconToolbox.Desktop.ViewModels
                     .Select(v => v.ToString("0.##", CultureInfo.InvariantCulture)));
 
                 values.Add(summary.FrequentSumDamage.ToString("0.##", CultureInfo.InvariantCulture));
-                values.Add(summary.PeakStructureDamage.ToString("0.##", CultureInfo.InvariantCulture));
 
                 writer.WriteLine(string.Join(",", values));
             }
 
             writer.WriteLine();
             writer.WriteLine("Top structures by frequent AEP structure damage");
-            writer.WriteLine("Structure FID,Damage Category,Impact Area,Description,Highest AEP,Structure Damage");
+            writer.WriteLine("Summary Name,Structure FID,Damage Category,Impact Area,Description,Highest AEP,Structure Damage");
             foreach (var highlight in Highlights)
             {
                 writer.WriteLine(string.Join(",", new[]
                 {
+                    Escape(highlight.SummaryName),
                     Escape(highlight.StructureFid),
                     Escape(highlight.DamageCategory),
                     Escape(highlight.ImpactArea),
@@ -246,78 +247,72 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            var summaries = Records
-                .GroupBy(r => string.IsNullOrWhiteSpace(r.DamageCategory) ? "Uncategorized" : r.DamageCategory.Trim())
-                .Select(g => new StageDamageCategorySummary
-                {
-                    DamageCategory = g.Key,
-                    StructureCount = g.Count(),
-                    AepDamages = _aepColumns
-                        .Select((_, index) => g.Sum(r => index < r.AepDamages.Count ? r.AepDamages[index].Value : 0))
-                        .ToList(),
-                    FrequentSumDamage = g.Sum(r => r.FrequentSumDamage),
-                    PeakStructureDamage = g.Max(r => r.FrequentPeakDamage)
-                })
-                .OrderByDescending(s => s.FrequentSumDamage)
+            var groupedBySummary = Records
+                .GroupBy(r => string.IsNullOrWhiteSpace(r.SummaryName) ? "StageDamageSummary" : r.SummaryName.Trim())
                 .ToList();
 
-            foreach (var summary in summaries)
+            foreach (var summaryGroup in groupedBySummary)
             {
-                CategorySummaries.Add(summary);
-            }
+                var summaries = summaryGroup
+                    .GroupBy(r => string.IsNullOrWhiteSpace(r.DamageCategory) ? "Uncategorized" : r.DamageCategory.Trim())
+                    .Select(g => new StageDamageCategorySummary
+                    {
+                        SummaryName = summaryGroup.Key,
+                        DamageCategory = g.Key,
+                        StructureCount = g.Count(),
+                        AepDamages = _aepColumns
+                            .Select((_, index) => g.Sum(r => index < r.AepDamages.Count ? r.AepDamages[index].Value : 0))
+                            .ToList(),
+                        FrequentSumDamage = g.Sum(r => r.FrequentSumDamage)
+                    })
+                    .OrderByDescending(s => s.FrequentSumDamage)
+                    .ToList();
 
-            var topStructures = Records
-                .OrderByDescending(r => r.FrequentPeakDamage)
-                .ThenBy(r => r.StructureFid)
-                .Take(10)
-                .Select(r => new StageDamageHighlight
+                foreach (var summary in summaries)
                 {
-                    StructureFid = r.StructureFid,
-                    DamageCategory = r.DamageCategory,
-                    Description = r.Description,
-                    ImpactArea = r.ImpactArea,
-                    HighestAepLabel = r.FrequentPeakAepLabel,
-                    HighestStructureDamage = r.FrequentPeakDamage
-                });
+                    CategorySummaries.Add(summary);
+                }
 
-            foreach (var highlight in topStructures)
-            {
-                Highlights.Add(highlight);
-            }
+                var topStructures = summaryGroup
+                    .OrderByDescending(r => r.FrequentPeakDamage)
+                    .ThenBy(r => r.StructureFid)
+                    .Take(10)
+                    .Select(r => new StageDamageHighlight
+                    {
+                        SummaryName = summaryGroup.Key,
+                        StructureFid = r.StructureFid,
+                        DamageCategory = r.DamageCategory,
+                        Description = r.Description,
+                        ImpactArea = r.ImpactArea,
+                        HighestAepLabel = r.FrequentPeakAepLabel,
+                        HighestStructureDamage = r.FrequentPeakDamage
+                    });
 
-            var chartSeries = new ChartSeries
-            {
-                Name = SummaryName,
-                Stroke = new SolidColorBrush(Color.FromRgb(45, 106, 142)),
-                Points = summaries.Select((s, index) => new ChartDataPoint
+                foreach (var highlight in topStructures)
                 {
-                    X = index,
-                    Y = s.FrequentSumDamage,
-                    Label = s.DamageCategory
-                }).ToList()
-            };
+                    Highlights.Add(highlight);
+                }
 
-            ChartSeries.Add(chartSeries);
+                var chartSeries = new ChartSeries
+                {
+                    Name = summaryGroup.Key,
+                    Stroke = new SolidColorBrush(Color.FromRgb(45, 106, 142)),
+                    Points = summaries.Select((s, index) => new ChartDataPoint
+                    {
+                        X = index,
+                        Y = s.FrequentSumDamage,
+                        Label = s.DamageCategory
+                    }).ToList()
+                };
+
+                ChartSeries.Add(chartSeries);
+            }
         }
 
-        private void UpdateChartSeriesLabel()
-        {
-            if (ChartSeries.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var series in ChartSeries)
-            {
-                series.Name = SummaryName;
-            }
-
-            OnPropertyChanged(nameof(ChartSeries));
-        }
-
-        private List<StageDamageRecord> LoadRecords(IEnumerable<string> filePaths)
+        private StageDamageLoadResult LoadRecords(IEnumerable<string> filePaths)
         {
             var results = new List<StageDamageRecord>();
+            var summaries = new List<StageDamageSummaryInfo>();
             _aepColumns = new List<AepColumn>();
             foreach (var path in filePaths)
             {
@@ -333,6 +328,9 @@ namespace EconToolbox.Desktop.ViewModels
                     TrimWhiteSpace = true,
                     TextFieldType = FieldType.Delimited
                 };
+
+                var summaryInfo = new StageDamageSummaryInfo(path, Path.GetFileNameWithoutExtension(path));
+                summaries.Add(summaryInfo);
 
                 if (!TryReadHeader(parser, out var header))
                 {
@@ -359,7 +357,7 @@ namespace EconToolbox.Desktop.ViewModels
                         continue;
                     }
 
-                    var record = ParseRow(row, headerMap, _aepColumns);
+                    var record = ParseRow(row, headerMap, _aepColumns, summaryInfo.Name, summaryInfo.SourceKey);
                     if (record != null)
                     {
                         results.Add(record);
@@ -367,7 +365,7 @@ namespace EconToolbox.Desktop.ViewModels
                 }
             }
 
-            return results;
+            return new StageDamageLoadResult(results, summaries);
         }
 
         private static Dictionary<string, int> BuildHeaderMap(string[] header)
@@ -385,7 +383,7 @@ namespace EconToolbox.Desktop.ViewModels
             return map;
         }
 
-        private static StageDamageRecord? ParseRow(string[] row, IReadOnlyDictionary<string, int> map, IReadOnlyList<AepColumn> aepColumns)
+        private static StageDamageRecord? ParseRow(string[] row, IReadOnlyDictionary<string, int> map, IReadOnlyList<AepColumn> aepColumns, string summaryName, string sourceKey)
         {
             string structureFid = ReadString(row, map, "structurefid", "structureid");
             string damageCategory = ReadString(row, map, "damagecatagory", "damagecategory");
@@ -406,7 +404,9 @@ namespace EconToolbox.Desktop.ViewModels
                 Description = ReadString(row, map, "description"),
                 ImpactArea = ReadString(row, map, "impactarearownumberinimpactareaset", "impactarea"),
                 OccTypeName = ReadString(row, map, "occtypename", "occupancytype"),
-                AepDamages = aepValues
+                AepDamages = aepValues,
+                SummaryName = summaryName,
+                SourceKey = sourceKey
             };
         }
 
@@ -515,6 +515,86 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             return 0d;
+        }
+
+        private void OnSummariesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (var item in e.NewItems)
+                {
+                    if (item is StageDamageSummaryInfo info)
+                    {
+                        AttachSummaryHandlers(info);
+                    }
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (var item in e.OldItems)
+                {
+                    if (item is StageDamageSummaryInfo info)
+                    {
+                        info.PropertyChanged -= OnSummaryPropertyChanged;
+                    }
+                }
+            }
+        }
+
+        private void AttachSummaryHandlers(StageDamageSummaryInfo info)
+        {
+            info.PropertyChanged -= OnSummaryPropertyChanged;
+            info.PropertyChanged += OnSummaryPropertyChanged;
+        }
+
+        private void OnSummaryPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(StageDamageSummaryInfo.Name) || sender is not StageDamageSummaryInfo info)
+            {
+                return;
+            }
+
+            var newName = string.IsNullOrWhiteSpace(info.Name) ? info.SourceLabel : info.Name.Trim();
+            foreach (var record in Records.Where(r => r.SourceKey == info.SourceKey))
+            {
+                record.SummaryName = newName;
+            }
+
+            ComputeSummaries();
+        }
+
+        private record StageDamageLoadResult(IReadOnlyList<StageDamageRecord> Records, IReadOnlyList<StageDamageSummaryInfo> Summaries);
+    }
+
+    public class StageDamageSummaryInfo : ObservableObject
+    {
+        private string _name;
+
+        public StageDamageSummaryInfo(string sourceKey, string sourceLabel)
+        {
+            SourceKey = sourceKey;
+            SourceLabel = sourceLabel;
+            _name = sourceLabel;
+        }
+
+        public string SourceKey { get; }
+
+        public string SourceLabel { get; }
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (value == _name)
+                {
+                    return;
+                }
+
+                _name = value;
+                OnPropertyChanged();
+            }
         }
     }
 
