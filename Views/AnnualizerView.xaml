@@ -369,11 +369,11 @@
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text=""
+                                                   Text=""
                                                    FontSize="18"
                                                    Foreground="{StaticResource Brush.Primary}"
                                                    Margin="0,0,8,0"/>
-                                        <TextBlock Text="How to Read the Results"
+                                        <TextBlock Text="Result guidance"
                                                    FontWeight="Bold"
                                                    Foreground="{StaticResource Brush.Primary}"/>
                                     </StackPanel>
@@ -386,28 +386,7 @@
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text=""
-                                                   FontSize="18"
-                                                   Foreground="{StaticResource Brush.Primary}"
-                                                   Margin="0,0,8,0"/>
-                                        <TextBlock Text="Policy Notes"
-                                                   FontWeight="Bold"
-                                                   Foreground="{StaticResource Brush.Primary}"/>
-                                    </StackPanel>
-                                    <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                                        <Run Text="• Use OMB Circular A-94 real discount rates (Appendix C, Table 1) or MSC-approved rates for Federal evaluations and document the analysis period per ER 1105-2-100, Chapter 2 (Section 2-4, pp. 2-21–2-23)."/>
-                                        <LineBreak/>
-                                        <Run Text="• Record IDC schedules and future cost assumptions in the project management plan so reviewers can trace how annualized values were derived (ER 5-1-11, Appendix C, pp. C-3–C-5)."/>
-                                        <LineBreak/>
-                                        <Run Text="• When presenting annual costs, note whether benefits reflect price-level adjustments consistent with current CWCCIS tables (ER 1105-2-100, Appendix E, Section E-9, pp. E-65–E-72)."/>
-                                    </TextBlock>
-                                </StackPanel>
-                            </Border>
-                            <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text=""
+                                                   Text=""
                                                    FontSize="18"
                                                    Foreground="{StaticResource Brush.Primary}"
                                                    Margin="0,0,8,0"/>

@@ -234,7 +234,7 @@
                          Background="Transparent"
                          TextAlignment="Center"
                          HorizontalContentAlignment="Center"/>
-                <TextBlock Text="MSAGL-styled curve showing how unit day values rise with higher point scores. The selected point overlays the active recreation and activity choice."
+                <TextBlock Text="Line chart showing how unit day values rise with higher point scores. The selected point overlays the active recreation and activity choice."
                            TextWrapping="Wrap"
                            Foreground="{StaticResource Brush.TextSecondary}"
                            Margin="0,0,0,12"/>
@@ -316,8 +316,8 @@
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
                         The highlighted Unit Day Value and Annual Recreation Benefit respond immediately to changes in points, visitation cadence, or season length. Use them to explain how quality adjustments move you between table tiers while user days scale the monetized benefit.
@@ -327,22 +327,22 @@
             <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
-                        <Run Text="• Follow ER 1105-2-100, Appendix E (Section E-18, Tables E-18-1 through E-18-6, pp. E-182–E-207) when selecting point scores and document any district supplements."/>
+                        <Run Text="• Verify point selections against the published ranges before interpreting the UDV."/>
                         <LineBreak/>
-                        <Run Text="• Coordinate visitation forecasts with recreation planners so season lengths and user day assumptions align with master plan updates (ER 1130-2-550, Chapter 2, pp. 2-6–2-8)."/>
+                        <Run Text="• Revisit visitation cadence and season length if user days look too high or low."/>
                         <LineBreak/>
-                        <Run Text="• Archive the calculation output alongside benefit-cost files to support quality assurance and policy compliance reviews (ER 5-1-11, Appendix C, pp. C-3–C-5)."/>
+                        <Run Text="• Use the export to capture both the selected point tier and the calculated annual benefit."/>
                     </TextBlock>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
                         <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">

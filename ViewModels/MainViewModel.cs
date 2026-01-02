@@ -227,14 +227,14 @@ namespace EconToolbox.Desktop.ViewModels
                     new[]
                     {
                         "Document the campsite inventory, managed shoreline, and usable water surface from the master plan.",
-                        "Confirm occupancy, spacing, and turnover multipliers consistent with EP 1130-2-550 (Chapter 8, pp. 8-3–8-7; Appendix H, Tables H-1–H-3) and ER 1130-2-550 (Chapter 3, pp. 3-1–3-6) guidance.",
-                        "Enter recreation season lengths before calculating to align with policy reporting periods."
+                        "Confirm occupancy, spacing, and turnover multipliers align with your study assumptions.",
+                        "Enter recreation season lengths before calculating so totals match your reporting window."
                     },
                     new[]
                     {
                         "Computes people-at-one-time and design day user capacities for each recreation activity.",
                         "Rolls the activities into a seasonal user-day total for master plan documentation.",
-                        "Captures key assumptions with policy references for audit packages."
+                        "Captures key assumptions so stakeholders can review capacity drivers."
                     },
                     "Example: Updating a lake master plan with 120 campsites, 2,400 feet of managed shoreline, and 650 acres of usable water surface.",
                     RecreationCapacity,
@@ -247,7 +247,7 @@ namespace EconToolbox.Desktop.ViewModels
                     {
                         "List each task with a start date, duration, and responsible workstream.",
                         "Identify predecessors to respect finish-to-start dependencies across the plan.",
-                        "Adjust pen thickness and color in the sketch tab to annotate delivery risks or notes."
+                        "Use the Calculate action to refresh dates after editing durations or dependencies."
                     },
                     new[]
                     {
@@ -261,20 +261,20 @@ namespace EconToolbox.Desktop.ViewModels
                 new ModuleDefinition(
                     "Stage Damage Organizer",
                     "Compile FDA 2.0 Stage Damage Functions_StructureStageDamageDetails.csv files by damage category.",
-                    "Loads CSV exports, groups by DamageCatagory, highlights peak frequent-AEP structure damages, and plots a summary bar chart.",
+                    "Loads CSV exports, groups by DamageCategory, highlights peak frequent-AEP structure damages, and plots a summary bar chart.",
                     new[]
                     {
                         "Select one or more Stage Damage Functions_StructureStageDamageDetails.csv files exported from FDA 2.0.",
-                        "Confirm the DamageCatagory values look correct in the summary table.",
+                        "Confirm the DamageCategory values look correct in the summary table.",
                         "Optional: rename the summary to control the CSV export file name and chart legend."
                     },
                     new[]
                     {
-                        "Shows total structure damages by DamageCatagory across frequent AEPs (0.493, 0.224, 0.034).",
+                        "Shows total structure damages by DamageCategory across frequent AEPs (0.493, 0.224, 0.034).",
                         "Lists the structures with the highest frequent-AEP structure damages and their AEP of peak impact.",
                         "Exports a concise CSV summary that includes category totals and highlighted structures."
                     },
-                    "Example: Organize multiple impact areas and report which DamageCatagory drives the highest frequent-AEP structure damages.",
+                    "Example: Organize multiple impact areas and report which DamageCategory drives the highest frequent-AEP structure damages.",
                     StageDamageOrganizer,
                     null)
             };

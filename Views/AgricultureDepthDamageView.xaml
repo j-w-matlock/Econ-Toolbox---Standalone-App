@@ -739,11 +739,11 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
+                                   Text=""
                                    FontSize="18"
                                    Foreground="{StaticResource Brush.Primary}"
                                    Margin="0,0,8,0"/>
-                        <TextBlock Text="How to Read the Results"
+                        <TextBlock Text="Result guidance"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
@@ -759,22 +759,22 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
+                                   Text=""
                                    FontSize="18"
                                    Foreground="{StaticResource Brush.Primary}"
                                    Margin="0,0,8,0"/>
-                        <TextBlock Text="Policy Notes"
+                        <TextBlock Text="Workflow tips"
                                    FontWeight="Bold"
                                    Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap"
                                Margin="{StaticResource Margin.TopSmall}">
-                        <Run Text="• Align crop damage factors with current district agricultural economics guidance and document data sources in the project record."/>
+                        <Run Text="• Confirm exceedance probabilities, depths, and damages align with your study area before running the simulation."/>
                         <LineBreak/>
-                        <Run Text="• Confirm Monte Carlo assumptions and CropScape layers with planning and GIS leads when preparing feasibility or PED documentation."/>
+                        <Run Text="• Use CSV export to share depth-duration tables with teammates for quick QA."/>
                         <LineBreak/>
-                        <Run Text="• Retain exported acreage summaries with cost and benefit files to satisfy ER 1105-2-100 audit expectations (Chapter 2, Section 2-5, pp. 2-23–2-28)."/>
+                        <Run Text="• Adjust CropScape acres or damage factors first if modeled acres or damage percent look off."/>
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -783,7 +783,7 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
+                                   Text=""
                                    FontSize="18"
                                    Foreground="{StaticResource Brush.Primary}"
                                    Margin="0,0,8,0"/>

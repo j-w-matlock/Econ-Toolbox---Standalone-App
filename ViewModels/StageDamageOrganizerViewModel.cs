@@ -46,11 +46,11 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 if (AepHeaders.Count == 0)
                 {
-                    return "Bars show the sum of structure damages across all available AEPs for each DamageCatagory.";
+                    return "Bars show the sum of structure damages across all available AEPs for each DamageCategory.";
                 }
 
                 var listedAeps = string.Join(", ", AepHeaders);
-                return $"Bars show the sum of structure damages across all AEPs ({listedAeps}) for each DamageCatagory.";
+                return $"Bars show the sum of structure damages across all AEPs ({listedAeps}) for each DamageCategory.";
             }
         }
 

@@ -92,7 +92,7 @@
                                  Background="Transparent"
                                  TextAlignment="Center"
                                  HorizontalContentAlignment="Center"/>
-                        <TextBlock Text="Graph layout styled after the MSAGL visuals and rendered directly within the app. Nodes represent each probability or stage entry with edges tracing the damage curves."
+                        <TextBlock Text="Graph shows frequency-damage or stage-damage curves for each column so you can visually confirm the inputs."
                                    TextWrapping="Wrap"
                                    Margin="0,0,0,12"
                                    Foreground="{StaticResource Brush.TextSecondary}"/>
