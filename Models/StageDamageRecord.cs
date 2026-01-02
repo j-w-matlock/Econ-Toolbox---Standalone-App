@@ -6,11 +6,13 @@ namespace EconToolbox.Desktop.Models
 {
     public class StageDamageRecord
     {
-        public string StructureFid { get; init; } = string.Empty;
-        public string DamageCategory { get; init; } = "Uncategorized";
-        public string Description { get; init; } = string.Empty;
-        public string ImpactArea { get; init; } = string.Empty;
-        public string OccTypeName { get; init; } = string.Empty;
+        public string StructureFid { get; set; } = string.Empty;
+        public string DamageCategory { get; set; } = "Uncategorized";
+        public string Description { get; set; } = string.Empty;
+        public string ImpactArea { get; set; } = string.Empty;
+        public string OccTypeName { get; set; } = string.Empty;
+        public string SummaryName { get; set; } = string.Empty;
+        public string SourceKey { get; set; } = string.Empty;
 
         public IReadOnlyList<StageDamageAepValue> AepDamages { get; init; } = Array.Empty<StageDamageAepValue>();
 
@@ -66,15 +68,16 @@ namespace EconToolbox.Desktop.Models
 
     public class StageDamageCategorySummary
     {
+        public string SummaryName { get; init; } = string.Empty;
         public string DamageCategory { get; init; } = string.Empty;
         public int StructureCount { get; init; }
         public IReadOnlyList<double> AepDamages { get; init; } = Array.Empty<double>();
         public double FrequentSumDamage { get; init; }
-        public double PeakStructureDamage { get; init; }
     }
 
     public class StageDamageHighlight
     {
+        public string SummaryName { get; init; } = string.Empty;
         public string StructureFid { get; init; } = string.Empty;
         public string DamageCategory { get; init; } = string.Empty;
         public string Description { get; init; } = string.Empty;

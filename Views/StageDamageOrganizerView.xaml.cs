@@ -44,6 +44,13 @@ namespace EconToolbox.Desktop.Views
 
             CategorySummaryGrid.Columns.Add(new DataGridTextColumn
             {
+                Header = "Summary Name",
+                Binding = new Binding("SummaryName"),
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
+            });
+
+            CategorySummaryGrid.Columns.Add(new DataGridTextColumn
+            {
                 Header = "Damage Category",
                 Binding = new Binding("DamageCategory"),
                 Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
@@ -70,13 +77,6 @@ namespace EconToolbox.Desktop.Views
             {
                 Header = "Frequent AEP Sum",
                 Binding = new Binding("FrequentSumDamage") { StringFormat = "C0" },
-                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
-            });
-
-            CategorySummaryGrid.Columns.Add(new DataGridTextColumn
-            {
-                Header = "Peak Frequent AEP",
-                Binding = new Binding("PeakStructureDamage") { StringFormat = "C0" },
                 Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
         }

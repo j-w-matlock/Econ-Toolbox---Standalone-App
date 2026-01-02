@@ -93,15 +93,30 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="1"
-                                        Orientation="Horizontal"
                                         VerticalAlignment="Center"
                                         Margin="0,0,12,0">
-                                <TextBlock Text="Summary name"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,8,0"/>
-                                <TextBox Text="{Binding SummaryName, UpdateSourceTrigger=PropertyChanged}"
-                                         MinWidth="200"
-                                         ToolTip="Used for the CSV export file name and chart label."/>
+                                <TextBlock Text="Summary names (one per uploaded file)"
+                                           Margin="0,0,0,4"/>
+                                <ItemsControl ItemsSource="{Binding Summaries}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding SourceLabel}"
+                                                           VerticalAlignment="Center"
+                                                           FontWeight="SemiBold"/>
+                                                <TextBox Grid.Column="2"
+                                                         Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                                         MinWidth="180"
+                                                         ToolTip="Edit the summary name for this file. Used for chart legends and CSV output."/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </StackPanel>
 
                             <Button Grid.Column="2"
@@ -186,14 +201,17 @@
                                               ItemsSource="{Binding Highlights}"
                                               AutoGenerateColumns="False"
                                               CanUserAddRows="False"
-                                              CanUserDeleteRows="False"
-                                              IsReadOnly="True"
-                                              HeadersVisibility="Column"
-                                              MinHeight="220"
-                                              MaxHeight="360"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                        CanUserDeleteRows="False"
+                                        IsReadOnly="True"
+                                        HeadersVisibility="Column"
+                                        MinHeight="220"
+                                        MaxHeight="360"
+                                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                        ScrollViewer.HorizontalScrollBarVisibility="Auto">
                                         <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Summary Name"
+                                                                 Binding="{Binding SummaryName}"
+                                                                 Width="SizeToHeader"/>
                                             <DataGridTextColumn Header="Structure FID"
                                                                  Binding="{Binding StructureFid}"
                                                                  Width="SizeToHeader"/>
