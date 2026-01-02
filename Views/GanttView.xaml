@@ -34,7 +34,7 @@
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap"
                                Margin="0,6,0,0">
-                        Document project tasks, durations, and dependencies. The timeline uses MSAGL-inspired routing to show clean, curved connectors between predecessor and successor tasks. Use the Calculate button at the bottom of the window to refresh the schedule and bars. Export shares the task table and timeline with the rest of the workbook.
+                        Document project tasks, durations, and dependencies. Use the Calculate button at the bottom of the window to refresh the schedule and bars. Export shares the task table and timeline with the rest of the workbook.
                     </TextBlock>
                 </StackPanel>
             </Border>
@@ -209,7 +209,7 @@
                             <StackPanel>
                                 <TextBlock Text="Schedule Timeline" FontWeight="SemiBold"/>
                                 <TextBlock Text="{Binding ScheduleSummary}" FontSize="12" Foreground="{StaticResource Brush.TextSecondary}"/>
-                                <TextBlock Text="Connectors follow MSAGL principles with curved, low-crossing links for cleaner dependencies."
+                                <TextBlock Text="Connectors show finish-to-start relationships between tasks."
                                            FontSize="11"
                                            Foreground="{StaticResource Brush.TextSecondary}"
                                            TextWrapping="Wrap"/>
@@ -337,26 +337,11 @@
                 <Border Style="{StaticResource Border.ResultInfo}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                            <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                            <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                             The task grid drives the bars, milestone diamonds, and total cost at the bottom of the table. Use the Schedule Summary caption above the chart to describe the active window, and remember that zero-duration tasks render as milestones with the diamond marker.
-                        </TextBlock>
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                            <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
-                        </StackPanel>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                            <Run Text="• Align task names, durations, and dependencies with the approved PMP baseline; document revisions through configuration control."/>
-                            <LineBreak/>
-                            <Run Text="• Share exported schedules with the district planning lead so milestones integrate with MSC reporting requirements."/>
-                            <LineBreak/>
-                            <Run Text="• Avoid storing sensitive acquisition details—link to secure contract files instead and capture summary notes within the timeline."/>
                         </TextBlock>
                     </StackPanel>
                 </Border>

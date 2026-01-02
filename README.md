@@ -8,7 +8,7 @@ The Economic Toolbox is a Windows Presentation Foundation (WPF) desktop applicat
 
 ### Key capabilities
 
-- **Ten ready-to-use modules** covering expected annual damage, cost annualization, recreation benefits, agricultural depth-damage modelling, water demand forecasting, qualitative mind mapping, Gantt scheduling, and freehand sketching.
+- **Ten focused modules** covering the in-app README, expected annual damage, agricultural depth-damage, updated storage costs, cost annualization, water demand forecasting, unit day values, recreation capacity, Gantt scheduling, and stage-damage CSV summaries.
 - **Consistent tooltips and onboarding cues** so every field explains the assumptions behind the required inputs, including the in-app README tab for on-demand documentation.
 - **Export-ready Excel workbooks** with a dashboard landing page, formatted tables, Segoe UI typography, and embedded visualizations for each calculator.
 - **Responsive MVVM infrastructure** using observable view models, async commands, and a shared dependency injection container.
@@ -62,15 +62,14 @@ Project baseline and alternative demand scenarios using historic records, sector
 ### Unit Day Value (UDV)
 Calibrate recreational benefits using USACE unit day value tables. Quality points, visitation cadence, and season length feed into annual benefit estimates.
 
-### Mind Map Workspace
-Capture qualitative insights during workshops. Drag-and-drop nodes, add notes, and export the resulting hierarchy for meeting summaries or reports.
-- Choose from curated icon palettes, electrical-style connectors, and relationship notes to visually reinforce how parents, siblings, and child ideas relate.
+### Recreation Capacity Study
+Estimate camping, shoreline fishing, and boating capacities with people-at-one-time, design day, and seasonal outputs based on site inventories and turnover assumptions.
 
 ### Standard Gantt Planner
-Plan tasks, dependencies, and milestones in a familiar tabular layout. The timeline visual automatically reflects task color, duration, percent complete, and milestone diamonds.
+Plan tasks, dependencies, milestones, and labor costs in a familiar tabular layout. The timeline visual automatically reflects task color, duration, percent complete, and milestone diamonds.
 
-### Sketch Pad
-Sketch freehand notes, diagrams, or signatures using configurable pen palettes and stroke thickness. Undo and Clear commands help refine drawings before exporting.
+### Stage Damage Organizer
+Load FDA 2.0 Stage Damage Functions_StructureStageDamageDetails.csv exports, summarize structure damages by category, and highlight the highest frequent-AEP records before saving a concise CSV.
 
 ## Excel Export Experience
 
@@ -83,7 +82,7 @@ Selecting **Export** creates a single workbook with:
   - **Updated Cost of Storage** registers for legacy cost escalation, RR&R adjustments, and allocation totals.
   - **Annualizer** key metrics, future cost schedule, and a visual comparison of annual benefits versus annual costs.
   - **Water Demand** scenario workbooks with sector allocations, adjustments, and automatically generated line charts.
-  - **UDV, Mind Map, Gantt, and Sketch** exports mirroring the in-app state, including formatted tables and embedded imagery for mind-map and drawing outputs.
+  - **UDV, Recreation Capacity, Gantt, and Stage Damage Organizer** exports mirroring the in-app state with formatted tables and charts.
 - Auto-formatted tables, Segoe UI fonts, and modern theming so deliverables are publication-ready without manual cleanup.
 
 ## Repository Layout

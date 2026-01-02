@@ -399,7 +399,7 @@
                                              Background="Transparent"
                                              TextAlignment="Center"
                                              HorizontalContentAlignment="Center"/>
-                                    <TextBlock Text="MSAGL-inspired layout showing adjusted demand by scenario. Years plot along the X-axis with adjusted gallons per day on the Y-axis for each forecast line."
+                                    <TextBlock Text="Line chart plotting adjusted demand by scenario. Years sit on the X-axis and adjusted gallons per day on the Y-axis for each forecast line."
                                                TextWrapping="Wrap"
                                                Foreground="{StaticResource Brush.TextSecondary}"
                                                Margin="0,0,0,12"/>
@@ -447,7 +447,7 @@
             <Border Grid.Row="2" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
                         <TextBlock Text="Scenario Summary" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock Text="{Binding SelectedScenario.Description}" TextWrapping="Wrap" Margin="0,6,0,0"/>
@@ -465,8 +465,8 @@
             <Border Grid.Row="4" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                         • Growth Rate reflects the year-over-year percent change driven by your population and per-capita assumptions. Higher growth inputs raise this column.
@@ -482,22 +482,22 @@
             <Border Grid.Row="5" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                        <Run Text="• Align forecast assumptions with current municipal and USACE water supply planning guidance (ER 1105-2-100, Appendix E, Section E-8, pp. E-58–E-64)."/>
+                        <Run Text="• Review sector percentages after adjusting growth to ensure they still sum to 100%."/>
                         <LineBreak/>
-                        <Run Text="• Coordinate demand scenarios with system operations, environmental, and plan formulation leads before citing results in decision documents (ER 1105-2-100, Chapter 2, Section 2-5, pp. 2-23–2-28)."/>
+                        <Run Text="• Use Advanced Adjustments to visualize conservation or losses without changing historical baselines."/>
                         <LineBreak/>
-                        <Run Text="• Retain exported demand tables and adjustment notes in the study's official records so reviewers can trace conservation or loss-factor changes (ER 5-1-11, Appendix C, pp. C-3–C-5)."/>
+                        <Run Text="• Compare scenarios side-by-side in the chart to confirm the selected inputs behave as expected."/>
                     </TextBlock>
                 </StackPanel>
             </Border>
             <Border Grid.Row="6" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
                         <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">

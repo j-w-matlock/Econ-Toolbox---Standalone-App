@@ -939,8 +939,8 @@
         <Border Style="{StaticResource Border.ResultInfo}" Margin="10,0,10,0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                    <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                     Storage Allocation, Updated RR&amp;R, and Total Annual Cost tabs feed the same allocation percentage and cost streams. Review the allocation tab first, then confirm how escalated costs, RR&amp;R schedules, and annualized totals change as you adjust discounting assumptions across scenarios.
@@ -950,15 +950,15 @@
         <Border Style="{StaticResource Border.ResultInfo}" Margin="10,12,10,0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                    <Run Text="• Apply the latest CWCCI escalation factors and document the fiscal year consistent with ER 1105-2-100, Appendix E (Section E-9, pp. E-65–E-72) and EM 1110-2-1304, Chapter 3 (pp. 3-1–3-9) guidance."/>
+                    <Run Text="• Verify storage recommendation and total usable storage before comparing Cost 1 and Cost 2."/>
                     <LineBreak/>
-                    <Run Text="• Use the current OMB Circular A-94 real discount rate tables (Appendix C, Table 1) when entering capital recovery factors for Federal evaluations."/>
+                    <Run Text="• Recalculate capital recovery factors after adjusting discount rates or analysis periods."/>
                     <LineBreak/>
-                    <Run Text="• Save exported workbooks with plan formulation records so reviewers can trace storage allocation, joint cost sharing, and RR&amp;R assumptions (ER 5-1-11, Appendix C, pp. C-3–C-5)."/>
+                    <Run Text="• Use the export to capture both storage allocation percentages and RR&amp;R assumptions for review."/>
                 </TextBlock>
             </StackPanel>
         </Border>

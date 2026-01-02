@@ -25,26 +25,26 @@
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="How to Read the Results" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Using the README tab" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                        The rendered README mirrors the repository markdown, so headings, links, and code snippets appear exactly as authored. Use the built-in scroll and search (Ctrl+F) to navigate setup steps while staying inside the toolbox.
+                        Browse setup steps, module descriptions, and publishing guidance without leaving the toolbox. Use the scroll bar and Ctrl+F search to jump to the section you need while working inside the app.
                     </TextBlock>
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Policy Notes" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Navigation tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                        <Run Text="• Treat this tab as a convenience copy—retain the signed project README and governance documents in the source repository of record."/>
+                        <Run Text="• Use the Table of Contents in the rendered markdown to jump to build, module, or publishing sections."/>
                         <LineBreak/>
-                        <Run Text="• Verify hyperlinks before sharing externally; some resources may be limited to CAC or MSC networks."/>
+                        <Run Text="• External links open in your default browser; keep the tab open to continue working in the toolbox."/>
                         <LineBreak/>
-                        <Run Text="• Reference the README when onboarding team members so processes stay aligned with district quality management plans."/>
+                        <Run Text="• Refresh the README from the main window if the repository content changes."/>
                     </TextBlock>
                 </StackPanel>
             </Border>
