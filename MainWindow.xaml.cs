@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -11,10 +12,23 @@ namespace EconToolbox.Desktop
 {
     public partial class MainWindow : Window
     {
+        private const string LightThemePath = "Themes/Design.xaml";
+        private const string DarkThemePath = "Themes/Design.Dark.xaml";
+
         public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
             DataContext = viewModel;
+        }
+
+        private void ThemeToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            ApplyTheme(true);
+        }
+
+        private void ThemeToggle_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ApplyTheme(false);
         }
 
         private void MainScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -97,6 +111,28 @@ namespace EconToolbox.Desktop
             }
 
             return LogicalTreeHelper.GetParent(child);
+        }
+
+        private static void ApplyTheme(bool isDark)
+        {
+            var uri = new Uri(isDark ? DarkThemePath : LightThemePath, UriKind.Relative);
+            var themeDictionary = new ResourceDictionary { Source = uri };
+            var mergedDictionaries = Application.Current.Resources.MergedDictionaries;
+
+            var existingTheme = mergedDictionaries.FirstOrDefault(dictionary =>
+                dictionary.Source != null &&
+                (dictionary.Source.OriginalString.EndsWith("Design.xaml", StringComparison.OrdinalIgnoreCase) ||
+                 dictionary.Source.OriginalString.EndsWith("Design.Dark.xaml", StringComparison.OrdinalIgnoreCase)));
+
+            if (existingTheme != null)
+            {
+                var themeIndex = mergedDictionaries.IndexOf(existingTheme);
+                mergedDictionaries[themeIndex] = themeDictionary;
+            }
+            else
+            {
+                mergedDictionaries.Insert(0, themeDictionary);
+            }
         }
     }
 }

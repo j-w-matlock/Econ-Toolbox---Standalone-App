@@ -6,41 +6,41 @@
     <Color x:Key="Color.Primary">#0E639C</Color>
     <Color x:Key="Color.PrimaryDark">#094771</Color>
     <Color x:Key="Color.Accent">#007ACC</Color>
-    <Color x:Key="Color.Surface">#FFFFFF</Color>
-    <Color x:Key="Color.SurfaceAlt">#F3F3F3</Color>
-    <Color x:Key="Color.Border">#D0D0D0</Color>
-    <Color x:Key="Color.TextPrimary">#1E1E1E</Color>
-    <Color x:Key="Color.TextSecondary">#5A5A5A</Color>
-    <Color x:Key="Color.WarningBackground">#FFF4CE</Color>
+    <Color x:Key="Color.Surface">#1E1E1E</Color>
+    <Color x:Key="Color.SurfaceAlt">#252526</Color>
+    <Color x:Key="Color.Border">#3C3C3C</Color>
+    <Color x:Key="Color.TextPrimary">#D4D4D4</Color>
+    <Color x:Key="Color.TextSecondary">#9DA1A6</Color>
+    <Color x:Key="Color.WarningBackground">#3B2F13</Color>
     <Color x:Key="Color.WarningBorder">#CCA700</Color>
-    <Color x:Key="Color.AlertForeground">#A1260D</Color>
-    <Color x:Key="Color.Navigation">#F3F3F3</Color>
-    <Color x:Key="Color.NavigationActive">#E5E5E5</Color>
-    <Color x:Key="Color.NavigationBorder">#D0D0D0</Color>
-    <Color x:Key="Color.NavigationText">#1E1E1E</Color>
+    <Color x:Key="Color.AlertForeground">#F48771</Color>
+    <Color x:Key="Color.Navigation">#252526</Color>
+    <Color x:Key="Color.NavigationActive">#37373D</Color>
+    <Color x:Key="Color.NavigationBorder">#3C3C3C</Color>
+    <Color x:Key="Color.NavigationText">#D4D4D4</Color>
     <Color x:Key="Color.HeroStart">#2C2C2C</Color>
     <Color x:Key="Color.HeroEnd">#1E1E1E</Color>
-    <Color x:Key="Color.HighlightBackground">#E5F1FB</Color>
-    <Color x:Key="Color.HighlightBorder">#9CC7F7</Color>
-    <Color x:Key="Color.AppBackground">#F3F3F3</Color>
-    <Color x:Key="Color.EditorBackground">#FFFFFF</Color>
-    <Color x:Key="Color.SidebarBackground">#F3F3F3</Color>
-    <Color x:Key="Color.PanelBackground">#F8F8F8</Color>
-    <Color x:Key="Color.TitleBarBackground">#E7E7E7</Color>
-    <Color x:Key="Color.StatusBarBackground">#E7E7E7</Color>
-    <Color x:Key="Color.Splitter">#D0D0D0</Color>
-    <Color x:Key="Color.Diagnostic.InfoBackground">#E8F2FF</Color>
-    <Color x:Key="Color.Diagnostic.InfoBorder">#C3D9F3</Color>
-    <Color x:Key="Color.Diagnostic.InfoIcon">#007ACC</Color>
-    <Color x:Key="Color.Diagnostic.WarningBackground">#FFF4CE</Color>
-    <Color x:Key="Color.Diagnostic.WarningBorder">#CCA700</Color>
+    <Color x:Key="Color.HighlightBackground">#2A2D2E</Color>
+    <Color x:Key="Color.HighlightBorder">#3C3C3C</Color>
+    <Color x:Key="Color.AppBackground">#1E1E1E</Color>
+    <Color x:Key="Color.EditorBackground">#1E1E1E</Color>
+    <Color x:Key="Color.SidebarBackground">#252526</Color>
+    <Color x:Key="Color.PanelBackground">#252526</Color>
+    <Color x:Key="Color.TitleBarBackground">#3C3C3C</Color>
+    <Color x:Key="Color.StatusBarBackground">#007ACC</Color>
+    <Color x:Key="Color.Splitter">#3C3C3C</Color>
+    <Color x:Key="Color.Diagnostic.InfoBackground">#1B2B3A</Color>
+    <Color x:Key="Color.Diagnostic.InfoBorder">#264F78</Color>
+    <Color x:Key="Color.Diagnostic.InfoIcon">#3794FF</Color>
+    <Color x:Key="Color.Diagnostic.WarningBackground">#3A2F10</Color>
+    <Color x:Key="Color.Diagnostic.WarningBorder">#8A6A00</Color>
     <Color x:Key="Color.Diagnostic.WarningIcon">#CCA700</Color>
-    <Color x:Key="Color.Diagnostic.AdvisoryBackground">#FFE8D2</Color>
-    <Color x:Key="Color.Diagnostic.AdvisoryBorder">#D17A22</Color>
-    <Color x:Key="Color.Diagnostic.AdvisoryIcon">#D17A22</Color>
-    <Color x:Key="Color.Diagnostic.ErrorBackground">#FDE7E9</Color>
-    <Color x:Key="Color.Diagnostic.ErrorBorder">#D13438</Color>
-    <Color x:Key="Color.Diagnostic.ErrorIcon">#D13438</Color>
+    <Color x:Key="Color.Diagnostic.AdvisoryBackground">#3A2415</Color>
+    <Color x:Key="Color.Diagnostic.AdvisoryBorder">#8A4E1C</Color>
+    <Color x:Key="Color.Diagnostic.AdvisoryIcon">#D18616</Color>
+    <Color x:Key="Color.Diagnostic.ErrorBackground">#3A1D1D</Color>
+    <Color x:Key="Color.Diagnostic.ErrorBorder">#8A1F1F</Color>
+    <Color x:Key="Color.Diagnostic.ErrorIcon">#F14C4C</Color>
     <Color x:Key="Color.Link.JointUse">#C54F1F</Color>
     <Color x:Key="Color.Link.PreEnr">#9B3D8A</Color>
     <Color x:Key="Color.Link.TransitionEnr">#0F7C8B</Color>
@@ -63,8 +63,8 @@
     <SolidColorBrush x:Key="Brush.AlertForeground" Color="{StaticResource Color.AlertForeground}"/>
     <SolidColorBrush x:Key="Brush.HighlightBackground" Color="{StaticResource Color.HighlightBackground}"/>
     <SolidColorBrush x:Key="Brush.HighlightBorder" Color="{StaticResource Color.HighlightBorder}"/>
-    <SolidColorBrush x:Key="Brush.ChartGrid" Color="#D0D0D0"/>
-    <SolidColorBrush x:Key="Brush.ChartFill" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.ChartGrid" Color="#3C3C3C"/>
+    <SolidColorBrush x:Key="Brush.ChartFill" Color="#1E1E1E"/>
     <SolidColorBrush x:Key="Brush.Navigation" Color="{StaticResource Color.Navigation}"/>
     <SolidColorBrush x:Key="Brush.NavigationActive" Color="{StaticResource Color.NavigationActive}"/>
     <SolidColorBrush x:Key="Brush.NavigationBorder" Color="{StaticResource Color.NavigationBorder}"/>
@@ -173,10 +173,10 @@
     </Style>
 
     <Style x:Key="Border.Panel" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource Brush.Panel}"/>
+        <Setter Property="Background" Value="{StaticResource Brush.Surface}"/>
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Padding" Value="16"/>
     </Style>
 

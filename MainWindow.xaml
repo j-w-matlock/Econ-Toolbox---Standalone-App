@@ -4,9 +4,9 @@
         xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
         xmlns:views="clr-namespace:EconToolbox.Desktop.Views"
         Title="Economic Toolbox"
-        Height="700"
-        Width="960"
-        MinWidth="640"
+        Height="720"
+        Width="1200"
+        MinWidth="900"
         MinHeight="600"
         ResizeMode="CanResize"
         SnapsToDevicePixels="True"
@@ -19,9 +19,6 @@
         ToolTipService.VerticalOffset="12">
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Themes/Design.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type vm:EadViewModel}">
                 <views:EadView/>
             </DataTemplate>
@@ -52,6 +49,59 @@
             <DataTemplate DataType="{x:Type vm:StageDamageOrganizerViewModel}">
                 <views:StageDamageOrganizerView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:DiagnosticItem}">
+                <Border x:Name="DiagnosticBorder"
+                        Padding="10"
+                        Margin="0,0,0,8"
+                        CornerRadius="6"
+                        BorderThickness="1"
+                        Background="{DynamicResource Brush.Diagnostic.InfoBackground}"
+                        BorderBrush="{DynamicResource Brush.Diagnostic.InfoBorder}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Ellipse x:Name="DiagnosticDot"
+                                 Width="8"
+                                 Height="8"
+                                 Margin="0,4,8,0"
+                                 Fill="{DynamicResource Brush.Diagnostic.InfoIcon}"
+                                 VerticalAlignment="Top"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding Title}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Brush.TextPrimary}"/>
+                            <TextBlock Text="{Binding Description}"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource Brush.TextSecondary}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Level}" Value="Warning">
+                                    <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.WarningBackground}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.WarningBorder}"/>
+                                    <Setter TargetName="DiagnosticDot" Property="Fill" Value="{DynamicResource Brush.Diagnostic.WarningIcon}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Level}" Value="Advisory">
+                                    <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.AdvisoryBackground}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.AdvisoryBorder}"/>
+                                    <Setter TargetName="DiagnosticDot" Property="Fill" Value="{DynamicResource Brush.Diagnostic.AdvisoryIcon}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Level}" Value="Error">
+                                    <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.ErrorBackground}"/>
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.ErrorBorder}"/>
+                                    <Setter TargetName="DiagnosticDot" Property="Fill" Value="{DynamicResource Brush.Diagnostic.ErrorIcon}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+            </DataTemplate>
+
             <DataTemplate x:Key="ActionsWideTemplate">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
@@ -62,7 +112,7 @@
                             Grid.Column="0"
                             Command="{Binding CalculateCommand}"
                             Margin="0,0,12,0"
-                            Height="64"
+                            Height="40"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
                         <StackPanel Orientation="Horizontal"
@@ -71,24 +121,24 @@
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
                                        Margin="0,0,8,0"
-                                       FontSize="20"/>
-                            <TextBlock Text="{Binding PrimaryActionLabel, Converter={StaticResource NullOrEmptyToValueConverter}, ConverterParameter=Calculate}"
                                        FontSize="16"/>
+                            <TextBlock Text="{Binding PrimaryActionLabel, Converter={StaticResource NullOrEmptyToValueConverter}, ConverterParameter=Calculate}"
+                                       FontSize="14"/>
                         </StackPanel>
                     </Button>
                     <Button Grid.Column="1"
                             Command="{Binding ExportCommand}"
                             Margin="0"
-                            Height="64">
+                            Height="40">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xEDE1;"
                                        Margin="0,0,8,0"
-                                       FontSize="20"/>
-                            <TextBlock Text="Export"
                                        FontSize="16"/>
+                            <TextBlock Text="Export"
+                                       FontSize="14"/>
                         </StackPanel>
                     </Button>
                 </Grid>
@@ -97,8 +147,8 @@
             <DataTemplate x:Key="ActionsNarrowTemplate">
                 <StackPanel>
                     <Button Command="{Binding CalculateCommand}"
-                            Margin="0,0,0,12"
-                            Height="56"
+                            Margin="0,0,0,8"
+                            Height="38"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
                         <StackPanel Orientation="Horizontal"
@@ -107,23 +157,23 @@
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
                                        Margin="0,0,8,0"
-                                       FontSize="20"/>
-                            <TextBlock Text="{Binding PrimaryActionLabel, Converter={StaticResource NullOrEmptyToValueConverter}, ConverterParameter=Calculate}"
                                        FontSize="16"/>
+                            <TextBlock Text="{Binding PrimaryActionLabel, Converter={StaticResource NullOrEmptyToValueConverter}, ConverterParameter=Calculate}"
+                                       FontSize="14"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ExportCommand}"
                             Margin="0"
-                            Height="56">
+                            Height="38">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xEDE1;"
                                        Margin="0,0,8,0"
-                                       FontSize="20"/>
-                            <TextBlock Text="Export"
                                        FontSize="16"/>
+                            <TextBlock Text="Export"
+                                       FontSize="14"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -139,123 +189,241 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
-                Background="{StaticResource Brush.Navigation}"
-                BorderBrush="{StaticResource Brush.NavigationBorder}"
+                Background="{DynamicResource Brush.TitleBar}"
+                BorderBrush="{DynamicResource Brush.PanelBorder}"
                 BorderThickness="0,0,0,1"
-                Padding="12,8"
-                SnapsToDevicePixels="True">
+                Padding="12,8">
+            <DockPanel LastChildFill="True">
+                <StackPanel Orientation="Horizontal"
+                            DockPanel.Dock="Left">
+                    <TextBlock Text="ECON TOOLBOX"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource Brush.TextPrimary}"/>
+                    <TextBlock Text="{Binding SelectedModule.Title}"
+                               FontSize="13"
+                               Margin="12,0,0,0"
+                               Foreground="{DynamicResource Brush.TextSecondary}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            DockPanel.Dock="Right"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="Dark Mode"
+                               Margin="0,0,8,0"
+                               FontSize="12"
+                               Foreground="{DynamicResource Brush.TextSecondary}"/>
+                    <ToggleButton x:Name="ThemeToggle"
+                                  Width="44"
+                                  Height="22"
+                                  Style="{DynamicResource ToggleButton.Switch}"
+                                  Checked="ThemeToggle_Checked"
+                                  Unchecked="ThemeToggle_Unchecked"/>
+                </StackPanel>
+            </DockPanel>
         </Border>
 
-        <Border Grid.Row="1"
-                Margin="{StaticResource Margin.Container}"
-                Padding="0"
-                Background="{StaticResource Brush.SurfaceAlt}"
-                CornerRadius="12">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240" MinWidth="200"/>
+                <ColumnDefinition Width="6"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="6"/>
+                <ColumnDefinition Width="320" MinWidth="260"/>
+            </Grid.ColumnDefinitions>
 
-                <Border Style="{StaticResource Border.Hero}"
-                        Margin="12"
-                        Grid.Row="0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel>
-                            <TextBlock Text="Economics Toolbox"
-                                       Style="{StaticResource Text.Title}"/>
-                            <TextBlock Text="Tools for common Corps planning economics tasks"
-                                       Style="{StaticResource Text.Title.Small}"
-                                       Foreground="#DCEBFA"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="260"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border Grid.Column="0"
-                            Background="{StaticResource Brush.Navigation}"
-                            BorderBrush="{StaticResource Brush.NavigationBorder}"
-                            BorderThickness="0,1,1,0"
-                            CornerRadius="12,0,0,12">
-                        <Grid Margin="12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Modules"
-                                       Foreground="{StaticResource Brush.NavigationText}"
-                                       FontWeight="SemiBold"
-                                       Margin="4,0,0,8"/>
-                            <ListBox ItemsSource="{Binding Modules}"
-                                     SelectedIndex="{Binding SelectedIndex}"
-                                     Grid.Row="1"
-                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                     Style="{StaticResource ListBox.Navigation}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel ToolTip="{Binding Description}">
-                                            <TextBlock Text="{Binding Title}"
-                                                       Foreground="{StaticResource Brush.NavigationText}"
-                                                       FontWeight="SemiBold"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </Grid>
-                    </Border>
-
-                    <TabControl Grid.Column="1"
-                                ItemsSource="{Binding Modules}"
-                                SelectedIndex="{Binding SelectedIndex}"
-                                Background="{StaticResource Brush.Surface}"
-                                BorderThickness="0">
-                        <TabControl.ItemContainerStyle>
-                            <Style TargetType="TabItem">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </Style>
-                        </TabControl.ItemContainerStyle>
-                        <TabControl.ContentTemplate>
+            <Border Grid.Column="0"
+                    Background="{DynamicResource Brush.Sidebar}"
+                    BorderBrush="{DynamicResource Brush.PanelBorder}"
+                    BorderThickness="0,0,1,0">
+                <DockPanel Margin="12">
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock Text="EXPLORER"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="Modules"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Brush.TextPrimary}"
+                                   Margin="0,0,0,8"/>
+                    </StackPanel>
+                    <ListBox ItemsSource="{Binding Modules}"
+                             SelectedIndex="{Binding SelectedIndex}"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             Style="{DynamicResource ListBox.Navigation}">
+                        <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <ScrollViewer x:Name="MainContentScrollViewer"
-                                              Focusable="False"
-                                              HorizontalScrollBarVisibility="Auto"
-                                              VerticalScrollBarVisibility="Auto"
-                                              PreviewMouseWheel="MainScrollViewer_PreviewMouseWheel">
-                                    <ContentControl Content="{Binding ContentViewModel}"
-                                                    Margin="{StaticResource Margin.Container}"/>
-                                </ScrollViewer>
+                                <StackPanel ToolTip="{Binding Description}">
+                                    <TextBlock Text="{Binding Title}"
+                                               Foreground="{DynamicResource Brush.TextPrimary}"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding FunctionSummary}"
+                                               Foreground="{DynamicResource Brush.TextSecondary}"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
                             </DataTemplate>
-                        </TabControl.ContentTemplate>
-                    </TabControl>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <GridSplitter Grid.Column="1"
+                          Width="6"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="{DynamicResource Brush.Splitter}"
+                          ResizeBehavior="PreviousAndNext"
+                          ResizeDirection="Columns"/>
+
+            <Border Grid.Column="2"
+                    Background="{DynamicResource Brush.Editor}"
+                    BorderBrush="{DynamicResource Brush.PanelBorder}"
+                    BorderThickness="0,0,1,0">
+                <ScrollViewer x:Name="MainContentScrollViewer"
+                              Focusable="False"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto"
+                              PreviewMouseWheel="MainScrollViewer_PreviewMouseWheel">
+                    <ContentControl Content="{Binding SelectedModule.ContentViewModel}"
+                                    Margin="20"/>
+                </ScrollViewer>
+            </Border>
+
+            <GridSplitter Grid.Column="3"
+                          Width="6"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="{DynamicResource Brush.Splitter}"
+                          ResizeBehavior="PreviousAndNext"
+                          ResizeDirection="Columns"/>
+
+            <Border Grid.Column="4"
+                    Background="{DynamicResource Brush.Panel}"
+                    BorderBrush="{DynamicResource Brush.PanelBorder}"
+                    BorderThickness="1,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0"
+                                Margin="12">
+                        <TextBlock Text="DETAILS"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                   Margin="0,0,0,6"/>
+                        <TextBlock Text="{Binding SelectedModule.Title}"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource Brush.TextPrimary}"
+                                   Margin="0,0,0,6"/>
+                        <TextBlock Text="{Binding SelectedModule.Description}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1"
+                                  Margin="12,0"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="Summary"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                       Margin="0,0,0,6"/>
+                            <TextBlock Text="{Binding SelectedModule.FunctionSummary}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource Brush.TextSecondary}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,12"/>
+
+                            <TextBlock Text="Inputs"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                       Margin="0,0,0,6"/>
+                            <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="• {Binding}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                                   Margin="0,0,0,6"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Text="Outputs"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                       Margin="0,8,0,6"/>
+                            <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="• {Binding}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                                   Margin="0,0,0,6"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Text="Diagnostics"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                       Margin="0,12,0,6"/>
+                            <ItemsControl ItemsSource="{Binding Diagnostics}"/>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Border Grid.Row="2"
+                            BorderBrush="{DynamicResource Brush.PanelBorder}"
+                            BorderThickness="0,1,0,0"
+                            Padding="12">
+                        <ContentControl Content="{Binding}">
+                            <ContentControl.Style>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource ActionsNarrowTemplate}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                     Value="Wide">
+                                            <Setter Property="ContentTemplate" Value="{StaticResource ActionsWideTemplate}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
+                    </Border>
                 </Grid>
-            </Grid>
-        </Border>
+            </Border>
+        </Grid>
 
         <Border Grid.Row="2"
-                Background="{StaticResource Brush.SurfaceAlt}"
-                Padding="{StaticResource Padding.Section}">
-            <ContentControl Content="{Binding}">
-                <ContentControl.Style>
-                    <Style TargetType="ContentControl">
-                        <Setter Property="ContentTemplate" Value="{StaticResource ActionsNarrowTemplate}"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                         Value="Wide">
-                                <Setter Property="ContentTemplate" Value="{StaticResource ActionsWideTemplate}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ContentControl.Style>
-            </ContentControl>
+                Background="{DynamicResource Brush.StatusBar}"
+                BorderBrush="{DynamicResource Brush.PanelBorder}"
+                BorderThickness="0,1,0,0"
+                Padding="8,6">
+            <DockPanel>
+                <TextBlock Text="Ready"
+                           FontSize="11"
+                           Foreground="{DynamicResource Brush.TextSecondary}"
+                           DockPanel.Dock="Left"/>
+                <TextBlock Text="{Binding SelectedModule.Title}"
+                           FontSize="11"
+                           Foreground="{DynamicResource Brush.TextSecondary}"
+                           DockPanel.Dock="Right"/>
+            </DockPanel>
         </Border>
     </Grid>
 </Window>
