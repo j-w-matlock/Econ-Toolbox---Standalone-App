@@ -207,29 +207,38 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
+    <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition x:Name="OutputSplitterRow" Height="6"/>
+            <RowDefinition x:Name="OutputSplitterRow"
+                           Height="6">
+                <RowDefinition.Style>
+                    <Style TargetType="RowDefinition">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DataContext.IsOutputPaneVisible, ElementName=RootGrid}" Value="False">
+                                <Setter Property="Height" Value="0"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RowDefinition.Style>
+            </RowDefinition>
             <RowDefinition x:Name="OutputRow"
                            Height="{Binding OutputPaneHeight, Converter={StaticResource DoubleToGridLengthConverter}, Mode=TwoWay}"
-                           MinHeight="140"/>
+                           MinHeight="140">
+                <RowDefinition.Style>
+                    <Style TargetType="RowDefinition">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DataContext.IsOutputPaneVisible, ElementName=RootGrid}" Value="False">
+                                <Setter Property="Height" Value="0"/>
+                                <Setter Property="MinHeight" Value="0"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RowDefinition.Style>
+            </RowDefinition>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid.Style>
-            <Style TargetType="Grid">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsOutputPaneVisible}" Value="False">
-                        <Setter TargetName="OutputRow" Property="RowDefinition.Height" Value="0"/>
-                        <Setter TargetName="OutputRow" Property="RowDefinition.MinHeight" Value="0"/>
-                        <Setter TargetName="OutputSplitterRow" Property="RowDefinition.Height" Value="0"/>
-                        <Setter TargetName="OutputSplitter" Property="Visibility" Value="Collapsed"/>
-                        <Setter TargetName="OutputPane" Property="Visibility" Value="Collapsed"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
 
         <Border Grid.Row="0"
                 Background="{DynamicResource Brush.TitleBar}"
@@ -540,13 +549,15 @@
                       VerticalAlignment="Stretch"
                       Background="{DynamicResource Brush.Splitter}"
                       ResizeBehavior="PreviousAndNext"
-                      ResizeDirection="Rows"/>
+                      ResizeDirection="Rows"
+                      Visibility="{Binding IsOutputPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
         <Border x:Name="OutputPane"
                 Grid.Row="3"
                 Background="{DynamicResource Brush.Panel}"
                 BorderBrush="{DynamicResource Brush.PanelBorder}"
-                BorderThickness="0,1,0,0">
+                BorderThickness="0,1,0,0"
+                Visibility="{Binding IsOutputPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}">
             <TabControl Margin="0"
                         Background="{DynamicResource Brush.Panel}">
                 <TabItem Header="Diagnostics">
