@@ -236,7 +236,7 @@
                                                             Width="200"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
-                                <UniformGrid Columns="3" HorizontalAlignment="Right" Margin="0,10,0,0" Rows="1">
+                                <UniformGrid Columns="3" HorizontalAlignment="Left" Margin="0,10,0,0" Rows="1">
                                     <Button Command="{Binding AddScenarioComparisonCommand}" Width="150" Margin="0,0,8,0">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
@@ -309,7 +309,7 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
                                 <Button Command="{Binding ResetIdcCommand}" MinWidth="160" ToolTip="Clear all IDC schedule entries">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
@@ -369,7 +369,7 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
                                 <Button Command="{Binding ResetFutureCostsCommand}" MinWidth="160" ToolTip="Clear all future cost entries">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
