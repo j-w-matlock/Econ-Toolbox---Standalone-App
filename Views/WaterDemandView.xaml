@@ -30,17 +30,23 @@
                     Style="{StaticResource Border.Explainer}"
                     Margin="0,0,0,12">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
                                    FontSize="18"
                                    Foreground="{StaticResource Brush.Primary}"
                                    Margin="0,0,8,0"/>
-                        <TextBlock Text="Water Demand Forecast Workflow"
+                        <TextBlock Grid.Column="1"
+                                   Text="Water Demand Forecast Workflow"
                                    FontWeight="Bold"
                                    FontSize="16"
-                                   Foreground="{StaticResource Brush.Primary}"/>
-                    </StackPanel>
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
                     <TextBlock TextWrapping="Wrap"
                                Margin="0,6,0,0">
                         <Run Text="• Enter historic demand records first to calibrate the baseline."/>

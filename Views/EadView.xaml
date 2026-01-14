@@ -22,17 +22,23 @@
             <StackPanel>
                 <Border Style="{StaticResource Border.Explainer}">
                     <StackPanel>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""
                                        FontSize="18"
                                        Foreground="{StaticResource Brush.Primary}"
                                        Margin="0,0,8,0"/>
-                            <TextBlock Text="Expected Annual Damage"
+                            <TextBlock Grid.Column="1"
+                                       Text="Expected Annual Damage"
                                        FontSize="16"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource Brush.Primary}"/>
-                        </StackPanel>
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
                         <TextBlock TextWrapping="Wrap"
                                    Margin="0,6,0,0">
                             Add stage/frequency and damage values for each category, then use the buttons below to compare scenarios and visualize the curves. Select Calculate after updates so the chart and summary outputs stay synchronized.
