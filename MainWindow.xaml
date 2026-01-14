@@ -186,13 +186,19 @@
                             BorderBrush="{StaticResource Brush.NavigationBorder}"
                             BorderThickness="0,1,1,0"
                             CornerRadius="12,0,0,12">
-                        <StackPanel Margin="12">
+                        <Grid Margin="12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
                             <TextBlock Text="Modules"
                                        Foreground="{StaticResource Brush.NavigationText}"
                                        FontWeight="SemiBold"
                                        Margin="4,0,0,8"/>
                             <ListBox ItemsSource="{Binding Modules}"
                                      SelectedIndex="{Binding SelectedIndex}"
+                                     Grid.Row="1"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                                      Style="{StaticResource ListBox.Navigation}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -204,7 +210,7 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                        </StackPanel>
+                        </Grid>
                     </Border>
 
                     <TabControl Grid.Column="1"
