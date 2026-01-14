@@ -47,8 +47,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         public IRelayCommand CalculateCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
-        public IRelayCommand ToggleDetailsPaneCommand { get; }
-        public IRelayCommand ToggleExplorerPaneCommand { get; }
+        public IRelayCommand ToggleLeftPaneCommand { get; }
+        public IRelayCommand ToggleRightPaneCommand { get; }
 
         private bool _isDetailsPaneVisible = true;
         public bool IsDetailsPaneVisible
@@ -178,8 +178,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             CalculateCommand = new RelayCommand(Calculate);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
-            ToggleDetailsPaneCommand = new RelayCommand(ToggleDetailsPane);
-            ToggleExplorerPaneCommand = new RelayCommand(ToggleExplorerPane);
+            ToggleLeftPaneCommand = new RelayCommand(ToggleExplorerPane);
+            ToggleRightPaneCommand = new RelayCommand(ToggleDetailsPane);
 
             Modules = new List<ModuleDefinition>
             {

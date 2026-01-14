@@ -21,10 +21,10 @@
     <Window.InputBindings>
         <KeyBinding Key="E"
                     Modifiers="Control+Alt"
-                    Command="{Binding ToggleExplorerPaneCommand}"/>
+                    Command="{Binding ToggleLeftPaneCommand}"/>
         <KeyBinding Key="D"
                     Modifiers="Control+Alt"
-                    Command="{Binding ToggleDetailsPaneCommand}"/>
+                    Command="{Binding ToggleRightPaneCommand}"/>
     </Window.InputBindings>
     <Window.Resources>
         <ResourceDictionary>
@@ -59,24 +59,55 @@
                 <views:StageDamageOrganizerView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:DiagnosticItem}">
-                <Border x:Name="DiagnosticBorder"
-                        Padding="10"
-                        Margin="0,0,0,8"
-                        CornerRadius="6"
-                        BorderThickness="1"
-                        Background="{DynamicResource Brush.Diagnostic.InfoBackground}"
-                        BorderBrush="{DynamicResource Brush.Diagnostic.InfoBorder}">
+                <DataTemplate.Resources>
+                    <Style x:Key="DiagnosticBorderStyle" TargetType="Border">
+                        <Setter Property="Padding" Value="10"/>
+                        <Setter Property="Margin" Value="0,0,0,8"/>
+                        <Setter Property="CornerRadius" Value="6"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.InfoBackground}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.InfoBorder}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Level}" Value="Warning">
+                                <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.WarningBackground}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.WarningBorder}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Level}" Value="Advisory">
+                                <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.AdvisoryBackground}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.AdvisoryBorder}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Level}" Value="Error">
+                                <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.ErrorBackground}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.ErrorBorder}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="DiagnosticDotStyle" TargetType="Ellipse">
+                        <Setter Property="Width" Value="8"/>
+                        <Setter Property="Height" Value="8"/>
+                        <Setter Property="Margin" Value="0,4,8,0"/>
+                        <Setter Property="Fill" Value="{DynamicResource Brush.Diagnostic.InfoIcon}"/>
+                        <Setter Property="VerticalAlignment" Value="Top"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Level}" Value="Warning">
+                                <Setter Property="Fill" Value="{DynamicResource Brush.Diagnostic.WarningIcon}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Level}" Value="Advisory">
+                                <Setter Property="Fill" Value="{DynamicResource Brush.Diagnostic.AdvisoryIcon}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Level}" Value="Error">
+                                <Setter Property="Fill" Value="{DynamicResource Brush.Diagnostic.ErrorIcon}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataTemplate.Resources>
+                <Border Style="{StaticResource DiagnosticBorderStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Ellipse x:Name="DiagnosticDot"
-                                 Width="8"
-                                 Height="8"
-                                 Margin="0,4,8,0"
-                                 Fill="{DynamicResource Brush.Diagnostic.InfoIcon}"
-                                 VerticalAlignment="Top"/>
+                        <Ellipse Style="{StaticResource DiagnosticDotStyle}"/>
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="{Binding Title}"
                                        FontWeight="SemiBold"
@@ -88,41 +119,6 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                <DataTemplate.Triggers>
-                    <DataTrigger Binding="{Binding Level}" Value="Warning">
-                        <Setter TargetName="DiagnosticBorder"
-                                Property="Background"
-                                Value="{DynamicResource Brush.Diagnostic.WarningBackground}"/>
-                        <Setter TargetName="DiagnosticBorder"
-                                Property="BorderBrush"
-                                Value="{DynamicResource Brush.Diagnostic.WarningBorder}"/>
-                        <Setter TargetName="DiagnosticDot"
-                                Property="Fill"
-                                Value="{DynamicResource Brush.Diagnostic.WarningIcon}"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Level}" Value="Advisory">
-                        <Setter TargetName="DiagnosticBorder"
-                                Property="Background"
-                                Value="{DynamicResource Brush.Diagnostic.AdvisoryBackground}"/>
-                        <Setter TargetName="DiagnosticBorder"
-                                Property="BorderBrush"
-                                Value="{DynamicResource Brush.Diagnostic.AdvisoryBorder}"/>
-                        <Setter TargetName="DiagnosticDot"
-                                Property="Fill"
-                                Value="{DynamicResource Brush.Diagnostic.AdvisoryIcon}"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Level}" Value="Error">
-                        <Setter TargetName="DiagnosticBorder"
-                                Property="Background"
-                                Value="{DynamicResource Brush.Diagnostic.ErrorBackground}"/>
-                        <Setter TargetName="DiagnosticBorder"
-                                Property="BorderBrush"
-                                Value="{DynamicResource Brush.Diagnostic.ErrorBorder}"/>
-                        <Setter TargetName="DiagnosticDot"
-                                Property="Fill"
-                                Value="{DynamicResource Brush.Diagnostic.ErrorIcon}"/>
-                    </DataTrigger>
-                </DataTemplate.Triggers>
             </DataTemplate>
 
             <DataTemplate x:Key="ActionsWideTemplate">
@@ -258,7 +254,7 @@
                         </StackPanel>
                     </Button>
                     <Separator/>
-                    <Button Command="{Binding ToggleExplorerPaneCommand}"
+                    <Button Command="{Binding ToggleLeftPaneCommand}"
                             Padding="10,4"
                             ToolTip="Toggle Explorer (Ctrl+Alt+E)">
                         <StackPanel Orientation="Horizontal">
@@ -268,7 +264,7 @@
                             <TextBlock Text="Explorer"/>
                         </StackPanel>
                     </Button>
-                    <Button Command="{Binding ToggleDetailsPaneCommand}"
+                    <Button Command="{Binding ToggleRightPaneCommand}"
                             Padding="10,4"
                             ToolTip="Toggle Details (Ctrl+Alt+D)">
                         <StackPanel Orientation="Horizontal">
@@ -315,7 +311,9 @@
                         </MultiBinding>
                     </ColumnDefinition.Width>
                 </ColumnDefinition>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition x:Name="CenterColumn"
+                                  Width="*"
+                                  MinWidth="420"/>
                 <ColumnDefinition x:Name="DetailsSplitterColumn">
                     <ColumnDefinition.Width>
                         <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
@@ -344,18 +342,15 @@
                     Visibility="{Binding IsExplorerPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                     Background="{DynamicResource Brush.Sidebar}"
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
-                    BorderThickness="0,0,1,0">
-                <DockPanel Margin="12">
+                    BorderThickness="0,0,1,0"
+                    Padding="{StaticResource Padding.Content}">
+                <DockPanel>
                     <StackPanel DockPanel.Dock="Top">
                         <TextBlock Text="EXPLORER"
-                                   FontSize="11"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                   Style="{StaticResource Text.PaneCaption}"
                                    Margin="0,0,0,8"/>
                         <TextBlock Text="Modules"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource Brush.TextPrimary}"
+                                   Style="{StaticResource Text.PaneTitle}"
                                    Margin="0,0,0,8"/>
                     </StackPanel>
                     <ListBox ItemsSource="{Binding Modules}"
@@ -395,11 +390,8 @@
 
             <GridSplitter x:Name="ExplorerSplitter"
                           Grid.Column="1"
-                          Width="6"
+                          Style="{StaticResource GridSplitter.Pane}"
                           Visibility="{Binding IsExplorerPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Background="{DynamicResource Brush.Splitter}"
                           ResizeBehavior="PreviousAndNext"
                           ResizeDirection="Columns"/>
 
@@ -408,7 +400,7 @@
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
                     BorderThickness="0">
                 <ContentControl Content="{Binding CurrentViewModel}"
-                                Margin="16"
+                                Margin="{StaticResource Padding.Section}"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 TextElement.FontSize="12"/>
@@ -416,11 +408,8 @@
 
             <GridSplitter x:Name="DetailsSplitter"
                           Grid.Column="3"
-                          Width="6"
+                          Style="{StaticResource GridSplitter.Pane}"
                           Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Background="{DynamicResource Brush.Splitter}"
                           ResizeBehavior="PreviousAndNext"
                           ResizeDirection="Columns"/>
 
@@ -429,7 +418,8 @@
                     Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                     Background="{DynamicResource Brush.Panel}"
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
-                    BorderThickness="1,0,0,0">
+                    BorderThickness="1,0,0,0"
+                    Padding="{StaticResource Padding.Content}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -438,15 +428,13 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0"
-                                Margin="12">
+                                Margin="0,0,0,8">
                         <DockPanel LastChildFill="False">
                             <TextBlock Text="PROPERTIES"
-                                       FontSize="11"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Brush.TextSecondary}"
+                                       Style="{StaticResource Text.PaneCaption}"
                                        Margin="0,0,0,6"
                                        DockPanel.Dock="Left"/>
-                            <Button Command="{Binding ToggleDetailsPaneCommand}"
+                            <Button Command="{Binding ToggleRightPaneCommand}"
                                     DockPanel.Dock="Right"
                                     Padding="6,2"
                                     Margin="8,0,0,6">
@@ -468,7 +456,7 @@
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1"
-                                  Margin="12,0"
+                                  Margin="0"
                                   VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <TextBlock Text="Summary"
@@ -528,7 +516,7 @@
                     <Border Grid.Row="2"
                             BorderBrush="{DynamicResource Brush.PanelBorder}"
                             BorderThickness="0,1,0,0"
-                            Padding="12">
+                            Padding="0,8,0,0">
                         <ContentControl Content="{Binding}">
                             <ContentControl.Style>
                                 <Style TargetType="ContentControl">
