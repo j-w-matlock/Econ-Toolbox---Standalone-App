@@ -97,6 +97,7 @@
                                   CanUserAddRows="True"
                                   CanUserDeleteRows="True"
                                   HeadersVisibility="Column"
+                                  ColumnWidth="SizeToHeader"
                                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                                   Margin="0"
                                   behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
@@ -173,14 +174,15 @@
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
                                   HeadersVisibility="Column"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  ColumnWidth="SizeToHeader">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Damage Column"
                                                     Binding="{Binding Label}"
-                                                    Width="*"/>
+                                                    Width="SizeToHeader"/>
                                 <DataGridTextColumn Header="Expected Annual Damage"
                                                     Binding="{Binding Result}"
-                                                    Width="220"/>
+                                                    Width="SizeToHeader"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>
