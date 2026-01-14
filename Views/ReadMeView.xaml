@@ -27,7 +27,7 @@
             <md:MarkdownScrollViewer x:Name="MarkdownViewer"
                                      Markdown="{Binding MarkdownContent}"
                                      VerticalScrollBarVisibility="Auto"
-                                     HorizontalScrollBarVisibility="Disabled"
+                                     HorizontalScrollBarVisibility="Auto"
                                      Background="Transparent"
                                      Foreground="{StaticResource Brush.TextPrimary}"
                                      FontSize="14"/>

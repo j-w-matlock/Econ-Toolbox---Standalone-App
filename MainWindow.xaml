@@ -227,7 +227,7 @@
                             <DataTemplate>
                                 <ScrollViewer x:Name="MainContentScrollViewer"
                                               Focusable="False"
-                                              HorizontalScrollBarVisibility="Disabled"
+                                              HorizontalScrollBarVisibility="Auto"
                                               VerticalScrollBarVisibility="Auto"
                                               PreviewMouseWheel="MainScrollViewer_PreviewMouseWheel">
                                     <ContentControl Content="{Binding ContentViewModel}"
