@@ -2,14 +2,14 @@
 
 ## Overview
 
-The Economic Toolbox is a Windows Presentation Foundation (WPF) desktop application that streamlines common U.S. Army Corps of Engineers planning workflows. The app targets **.NET 8**, follows the Model-View-ViewModel (MVVM) pattern via [CommunityToolkit.Mvvm](https://learn.microsoft.com/windows/communitytoolkit/mvvm/introduction), and boots with a host-based dependency injection container powered by `Microsoft.Extensions.Hosting`.
+The Economic Toolbox is a **standalone Windows Presentation Foundation (WPF) desktop application** that streamlines common U.S. Army Corps of Engineers planning workflows. The current iteration emphasizes offline-friendly execution, consistent Excel deliverables, and embedded documentation so planners can stay in one tool from intake through reporting. The app targets **.NET 8**, follows the Model-View-ViewModel (MVVM) pattern via [CommunityToolkit.Mvvm](https://learn.microsoft.com/windows/communitytoolkit/mvvm/introduction), and boots with a host-based dependency injection container powered by `Microsoft.Extensions.Hosting`.
 
 > 💡 **In-app documentation:** The full contents of this README are rendered directly inside the Economic Toolbox under the **Project README** tab so you can review setup guidance, module notes, and publishing steps without leaving the application.
 
 ### Key capabilities
 
-- **Ten focused modules** covering the in-app README, expected annual damage, agricultural depth-damage, updated storage costs, cost annualization, water demand forecasting, unit day values, recreation capacity, Gantt scheduling, and stage-damage CSV summaries.
-- **Consistent tooltips and onboarding cues** so every field explains the assumptions behind the required inputs, including the in-app README tab for on-demand documentation.
+- **Ten focused modules** for expected annual damage, agricultural depth-damage, updated storage costs, cost annualization, water demand forecasting, unit day values, recreation capacity, Gantt scheduling, stage-damage CSV summaries, and the in-app README.
+- **Offline-friendly onboarding** with embedded documentation, consistent tooltips, and contextual hero banner guidance for each tab.
 - **Export-ready Excel workbooks** with a dashboard landing page, formatted tables, Segoe UI typography, and embedded visualizations for each calculator.
 - **Responsive MVVM infrastructure** using observable view models, async commands, and a shared dependency injection container.
 
@@ -39,7 +39,7 @@ The Economic Toolbox is a Windows Presentation Foundation (WPF) desktop applicat
 
 ## Module Reference
 
-Each tab inside the toolbox focuses on a specific planning task. The hero banner at the top of the window summarizes expected inputs, outputs, and real-world use cases for the currently selected module.
+Each tab inside the toolbox focuses on a specific planning task. The hero banner at the top of the window summarizes expected inputs, outputs, and real-world use cases for the currently selected module, keeping the workflow self-contained.
 
 ### Project README
 Renders this documentation so onboarding instructions and architectural notes are available offline. External links open in your default browser.
@@ -121,4 +121,4 @@ The packaged executable is emitted to `bin/Release/net8.0-windows/win-x64/publis
 ## Known Issues and Limitations
 
 - CropScape raster import relies on GeoTIFFs with legends that match the bundled templates.
-- Mind map canvas navigation is optimized for mouse input; touchpad gestures are limited to scroll and zoom.
+- The WPF client requires Windows 10/11; macOS/Linux users should build in a Windows VM or CI agent.
