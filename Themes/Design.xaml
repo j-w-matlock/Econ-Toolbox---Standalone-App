@@ -322,6 +322,8 @@
         <Setter Property="Margin" Value="{StaticResource Margin.Stack}"/>
         <Setter Property="Padding" Value="8,6"/>
         <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Background" Value="{StaticResource Brush.Surface}"/>
