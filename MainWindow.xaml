@@ -25,9 +25,6 @@
         <KeyBinding Key="D"
                     Modifiers="Control+Alt"
                     Command="{Binding ToggleDetailsPaneCommand}"/>
-        <KeyBinding Key="O"
-                    Modifiers="Control+Alt"
-                    Command="{Binding ToggleOutputPaneCommand}"/>
     </Window.InputBindings>
     <Window.Resources>
         <ResourceDictionary>
@@ -211,32 +208,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition x:Name="OutputSplitterRow"
-                           Height="6">
-                <RowDefinition.Style>
-                    <Style TargetType="RowDefinition">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding DataContext.IsOutputPaneVisible, ElementName=RootGrid}" Value="False">
-                                <Setter Property="Height" Value="0"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </RowDefinition.Style>
-            </RowDefinition>
-            <RowDefinition x:Name="OutputRow"
-                           Height="{Binding OutputPaneHeight, Converter={StaticResource DoubleToGridLengthConverter}, Mode=TwoWay}"
-                           MinHeight="140">
-                <RowDefinition.Style>
-                    <Style TargetType="RowDefinition">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding DataContext.IsOutputPaneVisible, ElementName=RootGrid}" Value="False">
-                                <Setter Property="Height" Value="0"/>
-                                <Setter Property="MinHeight" Value="0"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </RowDefinition.Style>
-            </RowDefinition>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -280,16 +251,6 @@
                                        Text="&#xE8FD;"
                                        Margin="0,0,6,0"/>
                             <TextBlock Text="Details"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{Binding ToggleOutputPaneCommand}"
-                            Padding="10,4"
-                            ToolTip="Toggle Output (Ctrl+Alt+O)">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8A7;"
-                                       Margin="0,0,6,0"/>
-                            <TextBlock Text="Output"/>
                         </StackPanel>
                     </Button>
                     <Separator/>
@@ -504,7 +465,7 @@
                             <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="• {Binding}"
+                                        <TextBlock Text="{Binding StringFormat=• {0}}"
                                                    FontSize="12"
                                                    TextWrapping="Wrap"
                                                    Foreground="{DynamicResource Brush.TextSecondary}"
@@ -521,7 +482,7 @@
                             <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="• {Binding}"
+                                        <TextBlock Text="{Binding StringFormat=• {0}}"
                                                    FontSize="12"
                                                    TextWrapping="Wrap"
                                                    Foreground="{DynamicResource Brush.TextSecondary}"
@@ -561,41 +522,7 @@
             </Border>
         </Grid>
 
-        <GridSplitter x:Name="OutputSplitter"
-                      Grid.Row="2"
-                      Height="6"
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch"
-                      Background="{DynamicResource Brush.Splitter}"
-                      ResizeBehavior="PreviousAndNext"
-                      ResizeDirection="Rows"
-                      Visibility="{Binding IsOutputPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
-
-        <Border x:Name="OutputPane"
-                Grid.Row="3"
-                Background="{DynamicResource Brush.Panel}"
-                BorderBrush="{DynamicResource Brush.PanelBorder}"
-                BorderThickness="0,1,0,0"
-                Visibility="{Binding IsOutputPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-            <TabControl Margin="0"
-                        Background="{DynamicResource Brush.Panel}">
-                <TabItem Header="Diagnostics">
-                    <Border Padding="12"
-                            Background="{DynamicResource Brush.Panel}">
-                        <ListBox ItemsSource="{Binding Diagnostics}"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                 ScrollViewer.CanContentScroll="True"
-                                 VirtualizingStackPanel.IsVirtualizing="True"
-                                 VirtualizingStackPanel.VirtualizationMode="Recycling"
-                                 BorderThickness="0"
-                                 Background="Transparent"/>
-                    </Border>
-                </TabItem>
-            </TabControl>
-        </Border>
-
-        <StatusBar Grid.Row="4"
+        <StatusBar Grid.Row="2"
                    Background="{DynamicResource Brush.StatusBar}"
                    BorderBrush="{DynamicResource Brush.PanelBorder}"
                    BorderThickness="0,1,0,0">

@@ -14,8 +14,6 @@ namespace EconToolbox.Desktop.ViewModels
     {
         private const double DefaultExplorerPaneWidth = 280;
         private const double DefaultDetailsPaneWidth = 340;
-        private const double DefaultOutputPaneHeight = 220;
-
         public ReadMeViewModel ReadMe { get; }
         public EadViewModel Ead { get; }
         public AgricultureDepthDamageViewModel AgricultureDepthDamage { get; }
@@ -51,7 +49,6 @@ namespace EconToolbox.Desktop.ViewModels
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ToggleDetailsPaneCommand { get; }
         public IRelayCommand ToggleExplorerPaneCommand { get; }
-        public IRelayCommand ToggleOutputPaneCommand { get; }
 
         private bool _isDetailsPaneVisible = true;
         public bool IsDetailsPaneVisible
@@ -74,19 +71,6 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 if (_isExplorerPaneVisible == value) return;
                 _isExplorerPaneVisible = value;
-                OnPropertyChanged();
-                UpdateLayoutSettings();
-            }
-        }
-
-        private bool _isOutputPaneVisible = true;
-        public bool IsOutputPaneVisible
-        {
-            get => _isOutputPaneVisible;
-            set
-            {
-                if (_isOutputPaneVisible == value) return;
-                _isOutputPaneVisible = value;
                 OnPropertyChanged();
                 UpdateLayoutSettings();
             }
@@ -140,23 +124,6 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private double _outputPaneHeight = DefaultOutputPaneHeight;
-        public double OutputPaneHeight
-        {
-            get => _outputPaneHeight;
-            set
-            {
-                if (Math.Abs(_outputPaneHeight - value) < 0.1) return;
-                _outputPaneHeight = value;
-                if (value > 0)
-                {
-                    _outputPaneHeightBeforeCollapse = value;
-                }
-                OnPropertyChanged();
-                UpdateLayoutSettings();
-            }
-        }
-
         public BaseViewModel? CurrentViewModel => SelectedModule?.ContentViewModel;
 
         public ModuleDefinition? SelectedModule => SelectedIndex >= 0 && SelectedIndex < Modules.Count
@@ -178,7 +145,6 @@ namespace EconToolbox.Desktop.ViewModels
         private LayoutSettings _layoutSettings = new();
         private double _explorerPaneWidthBeforeCollapse = DefaultExplorerPaneWidth;
         private double _detailsPaneWidthBeforeCollapse = DefaultDetailsPaneWidth;
-        private double _outputPaneHeightBeforeCollapse = DefaultOutputPaneHeight;
         private bool _isApplyingSettings;
 
         public MainViewModel(
@@ -214,7 +180,6 @@ namespace EconToolbox.Desktop.ViewModels
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ToggleDetailsPaneCommand = new RelayCommand(ToggleDetailsPane);
             ToggleExplorerPaneCommand = new RelayCommand(ToggleExplorerPane);
-            ToggleOutputPaneCommand = new RelayCommand(ToggleOutputPane);
 
             Modules = new List<ModuleDefinition>
             {
@@ -426,10 +391,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             _explorerPaneWidth = _layoutSettings.IsExplorerPaneVisible ? _layoutSettings.ExplorerPaneWidth : 0;
             _detailsPaneWidth = _layoutSettings.IsDetailsPaneVisible ? _layoutSettings.DetailsPaneWidth : 0;
-            _outputPaneHeight = _layoutSettings.IsOutputPaneVisible ? _layoutSettings.OutputPaneHeight : 0;
             _isExplorerPaneVisible = _layoutSettings.IsExplorerPaneVisible;
             _isDetailsPaneVisible = _layoutSettings.IsDetailsPaneVisible;
-            _isOutputPaneVisible = _layoutSettings.IsOutputPaneVisible;
             _isDarkTheme = _layoutSettings.IsDarkTheme;
 
             _explorerPaneWidthBeforeCollapse = _layoutSettings.ExplorerPaneWidth > 0
@@ -438,18 +401,12 @@ namespace EconToolbox.Desktop.ViewModels
             _detailsPaneWidthBeforeCollapse = _layoutSettings.DetailsPaneWidth > 0
                 ? _layoutSettings.DetailsPaneWidth
                 : DefaultDetailsPaneWidth;
-            _outputPaneHeightBeforeCollapse = _layoutSettings.OutputPaneHeight > 0
-                ? _layoutSettings.OutputPaneHeight
-                : DefaultOutputPaneHeight;
-
             _isApplyingSettings = false;
 
             OnPropertyChanged(nameof(ExplorerPaneWidth));
             OnPropertyChanged(nameof(DetailsPaneWidth));
-            OnPropertyChanged(nameof(OutputPaneHeight));
             OnPropertyChanged(nameof(IsExplorerPaneVisible));
             OnPropertyChanged(nameof(IsDetailsPaneVisible));
-            OnPropertyChanged(nameof(IsOutputPaneVisible));
             OnPropertyChanged(nameof(IsDarkTheme));
 
             _themeService.ApplyTheme(_isDarkTheme);
@@ -481,20 +438,6 @@ namespace EconToolbox.Desktop.ViewModels
 
             IsExplorerPaneVisible = true;
             ExplorerPaneWidth = _explorerPaneWidthBeforeCollapse > 0 ? _explorerPaneWidthBeforeCollapse : DefaultExplorerPaneWidth;
-        }
-
-        private void ToggleOutputPane()
-        {
-            if (IsOutputPaneVisible)
-            {
-                _outputPaneHeightBeforeCollapse = OutputPaneHeight > 0 ? OutputPaneHeight : _outputPaneHeightBeforeCollapse;
-                OutputPaneHeight = 0;
-                IsOutputPaneVisible = false;
-                return;
-            }
-
-            IsOutputPaneVisible = true;
-            OutputPaneHeight = _outputPaneHeightBeforeCollapse > 0 ? _outputPaneHeightBeforeCollapse : DefaultOutputPaneHeight;
         }
 
         private void Calculate()
@@ -586,10 +529,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             _layoutSettings.ExplorerPaneWidth = IsExplorerPaneVisible ? ExplorerPaneWidth : _explorerPaneWidthBeforeCollapse;
             _layoutSettings.DetailsPaneWidth = IsDetailsPaneVisible ? DetailsPaneWidth : _detailsPaneWidthBeforeCollapse;
-            _layoutSettings.OutputPaneHeight = IsOutputPaneVisible ? OutputPaneHeight : _outputPaneHeightBeforeCollapse;
             _layoutSettings.IsExplorerPaneVisible = IsExplorerPaneVisible;
             _layoutSettings.IsDetailsPaneVisible = IsDetailsPaneVisible;
-            _layoutSettings.IsOutputPaneVisible = IsOutputPaneVisible;
             _layoutSettings.IsDarkTheme = IsDarkTheme;
             _layoutSettingsService.Save(_layoutSettings);
         }
