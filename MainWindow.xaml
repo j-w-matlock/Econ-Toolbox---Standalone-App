@@ -308,37 +308,54 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="ExplorerColumn"
-                                  Width="{Binding ExplorerPaneWidth, Converter={StaticResource DoubleToGridLengthConverter}, Mode=TwoWay}"
-                                  MinWidth="220"/>
-                <ColumnDefinition x:Name="ExplorerSplitterColumn" Width="6"/>
+                <ColumnDefinition x:Name="ExplorerColumn">
+                    <ColumnDefinition.Width>
+                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
+                            <Binding Path="IsExplorerPaneVisible"/>
+                            <Binding Path="ExplorerPaneWidth"/>
+                        </MultiBinding>
+                    </ColumnDefinition.Width>
+                    <ColumnDefinition.MinWidth>
+                        <Binding Path="IsExplorerPaneVisible"
+                                 Converter="{StaticResource BoolToDoubleConverter}"
+                                 ConverterParameter="220"/>
+                    </ColumnDefinition.MinWidth>
+                </ColumnDefinition>
+                <ColumnDefinition x:Name="ExplorerSplitterColumn">
+                    <ColumnDefinition.Width>
+                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
+                            <Binding Path="IsExplorerPaneVisible"/>
+                            <Binding Source="6"/>
+                        </MultiBinding>
+                    </ColumnDefinition.Width>
+                </ColumnDefinition>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition x:Name="DetailsSplitterColumn" Width="6"/>
-                <ColumnDefinition x:Name="DetailsColumn"
-                                  Width="{Binding DetailsPaneWidth, Converter={StaticResource DoubleToGridLengthConverter}, Mode=TwoWay}"
-                                  MinWidth="260"/>
+                <ColumnDefinition x:Name="DetailsSplitterColumn">
+                    <ColumnDefinition.Width>
+                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
+                            <Binding Path="IsDetailsPaneVisible"/>
+                            <Binding Source="6"/>
+                        </MultiBinding>
+                    </ColumnDefinition.Width>
+                </ColumnDefinition>
+                <ColumnDefinition x:Name="DetailsColumn">
+                    <ColumnDefinition.Width>
+                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
+                            <Binding Path="IsDetailsPaneVisible"/>
+                            <Binding Path="DetailsPaneWidth"/>
+                        </MultiBinding>
+                    </ColumnDefinition.Width>
+                    <ColumnDefinition.MinWidth>
+                        <Binding Path="IsDetailsPaneVisible"
+                                 Converter="{StaticResource BoolToDoubleConverter}"
+                                 ConverterParameter="260"/>
+                    </ColumnDefinition.MinWidth>
+                </ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsExplorerPaneVisible}" Value="False">
-                            <Setter TargetName="ExplorerColumn" Property="ColumnDefinition.MinWidth" Value="0"/>
-                            <Setter TargetName="ExplorerSplitterColumn" Property="ColumnDefinition.Width" Value="0"/>
-                            <Setter TargetName="ExplorerSplitter" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="ExplorerPane" Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsDetailsPaneVisible}" Value="False">
-                            <Setter TargetName="DetailsColumn" Property="ColumnDefinition.MinWidth" Value="0"/>
-                            <Setter TargetName="DetailsSplitterColumn" Property="ColumnDefinition.Width" Value="0"/>
-                            <Setter TargetName="DetailsSplitter" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="DetailsPane" Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
 
             <Border x:Name="ExplorerPane"
                     Grid.Column="0"
+                    Visibility="{Binding IsExplorerPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                     Background="{DynamicResource Brush.Sidebar}"
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
                     BorderThickness="0,0,1,0">
@@ -393,6 +410,7 @@
             <GridSplitter x:Name="ExplorerSplitter"
                           Grid.Column="1"
                           Width="6"
+                          Visibility="{Binding IsExplorerPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Background="{DynamicResource Brush.Splitter}"
@@ -414,6 +432,7 @@
             <GridSplitter x:Name="DetailsSplitter"
                           Grid.Column="3"
                           Width="6"
+                          Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Background="{DynamicResource Brush.Splitter}"
@@ -422,6 +441,7 @@
 
             <Border x:Name="DetailsPane"
                     Grid.Column="4"
+                    Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                     Background="{DynamicResource Brush.Panel}"
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
                     BorderThickness="1,0,0,0">
