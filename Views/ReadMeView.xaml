@@ -35,10 +35,18 @@
         <StackPanel Grid.Row="1" Margin="0,16,0,0">
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Using the README tab" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
-                    </StackPanel>
+                        <TextBlock Grid.Column="1"
+                                   Text="Using the README tab"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                         Browse setup steps, module descriptions, and publishing guidance without leaving the toolbox. Use the scroll bar and Ctrl+F search to jump to the section you need while working inside the app.
                     </TextBlock>
@@ -46,10 +54,18 @@
             </Border>
             <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Navigation tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
-                    </StackPanel>
+                        <TextBlock Grid.Column="1"
+                                   Text="Navigation tips"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                         <Run Text="• Use the Table of Contents in the rendered markdown to jump to build, module, or publishing sections."/>
                         <LineBreak/>

@@ -26,7 +26,11 @@
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Style="{StaticResource Border.Explainer}">
             <StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
                     <Viewbox Width="28" Height="28" Margin="{StaticResource Margin.Inline}">
                         <Canvas Width="28" Height="28">
                             <Polygon Points="14,3 8,13 11,13 6,20 22,20 17,13 20,13" Fill="#C23E64"/>
@@ -37,11 +41,13 @@
                             <Path Data="M5,25 L23,25" Stroke="#C23E64" StrokeThickness="1.8" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
                         </Canvas>
                     </Viewbox>
-                    <TextBlock Text="Unit Day Value Overview"
+                    <TextBlock Grid.Column="1"
+                               Text="Unit Day Value Overview"
                                FontWeight="Bold"
                                FontSize="16"
-                               Foreground="{StaticResource Brush.Primary}"/>
-                </StackPanel>
+                               Foreground="{StaticResource Brush.Primary}"
+                               TextWrapping="Wrap"/>
+                </Grid>
                 <TextBlock TextWrapping="Wrap"
                            Margin="0,6,0,0">
                     Choose the recreation and activity classification, then supply a point score, season length, and visitation cadence. Points must align with the table order to return the correct value tier. Use the Calculate button at the bottom of the window whenever you change inputs so the unit day value stays synchronized.

@@ -22,17 +22,23 @@
         <StackPanel>
             <Border Style="{StaticResource Border.Explainer}">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
                                    FontSize="18"
                                    Foreground="{StaticResource Brush.Primary}"
                                    Margin="0,0,8,0"/>
-                        <TextBlock Text="Recreation capacity study"
+                        <TextBlock Grid.Column="1"
+                                   Text="Recreation capacity study"
                                    FontWeight="Bold"
                                    FontSize="16"
-                                   Foreground="{StaticResource Brush.Primary}"/>
-                    </StackPanel>
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
                     <TextBlock Margin="0,6,0,0"
                                TextWrapping="Wrap">
                         This worksheet estimates people-at-one-time (PAOT) and design day user capacities for

@@ -26,17 +26,23 @@
             <Border Grid.Row="0"
                     Style="{StaticResource Border.Explainer}">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
                                    FontSize="18"
                                    Foreground="{StaticResource Brush.Primary}"
                                    Margin="0,0,8,0"/>
-                        <TextBlock Text="Standard Gantt Planner"
+                        <TextBlock Grid.Column="1"
+                                   Text="Standard Gantt Planner"
                                    FontSize="16"
                                    FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"/>
-                    </StackPanel>
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
                     <TextBlock TextWrapping="Wrap"
                                Margin="0,6,0,0">
                         Document project tasks, durations, and dependencies. Use the Calculate button at the bottom of the window to refresh the schedule and bars. Export shares the task table and timeline with the rest of the workbook.
@@ -45,24 +51,22 @@
             </Border>
             <Grid Grid.Row="1"
                   Margin="0,12,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2.2*"/>
-                    <ColumnDefinition Width="1.8*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0"
-                            Margin="0,0,16,0">
-                    <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="12">
-                        <StackPanel>
-                            <TextBlock Text="Work Breakdown"
-                                       FontWeight="SemiBold"
-                                       FontSize="15"
-                                       Margin="0,0,0,8"/>
-                            <DataGrid ItemsSource="{Binding Tasks}"
-                                      SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
-                                      AutoGenerateColumns="False"
-                                      CanUserAddRows="True"
-                                      HeadersVisibility="Column"
-                                      Margin="0,0,0,8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="12">
+                    <StackPanel>
+                        <TextBlock Text="Work Breakdown"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"
+                                   Margin="0,0,0,8"/>
+                        <DataGrid ItemsSource="{Binding Tasks}"
+                                  SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="True"
+                                  HeadersVisibility="Column"
+                                  Margin="0,0,0,8">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Task" Binding="{Binding Name, Mode=TwoWay}" Width="160">
                                         <DataGridTextColumn.HeaderStyle>
@@ -170,40 +174,40 @@
                                     </DataGridTextColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                <Button Command="{Binding AddTaskCommand}" Width="120" Margin="0,0,8,0" ToolTip="Insert a new task row at the bottom of the table.">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
-                                        <TextBlock Text="Add Task"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button Command="{Binding RemoveTaskCommand}" Width="140" Margin="0,0,8,0" ToolTip="Delete the currently selected task from the list.">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
-                                        <TextBlock Text="Remove Selected"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button Command="{Binding ClearTasksCommand}" Width="120" ToolTip="Clear all tasks so you can start a fresh schedule.">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
-                                        <TextBlock Text="Clear"/>
-                                    </StackPanel>
-                                </Button>
-                                <TextBlock Text="{Binding TotalLaborCost, StringFormat=Total Cost: {0:C2}}"
-                                           Margin="16,0,0,0"
-                                           VerticalAlignment="Center"
-                                           FontWeight="SemiBold"
-                                           Foreground="{StaticResource Brush.Primary}"/>
-                            </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Button Command="{Binding AddTaskCommand}" Width="120" Margin="0,0,8,0" ToolTip="Insert a new task row at the bottom of the table.">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Add Task"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding RemoveTaskCommand}" Width="140" Margin="0,0,8,0" ToolTip="Delete the currently selected task from the list.">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Remove Selected"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding ClearTasksCommand}" Width="120" ToolTip="Clear all tasks so you can start a fresh schedule.">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                    <TextBlock Text="Clear"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="{Binding TotalLaborCost, StringFormat=Total Cost: {0:C2}}"
+                                       Margin="16,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource Brush.Primary}"/>
                         </StackPanel>
-                    </Border>
-                </StackPanel>
-                <Border Grid.Column="1"
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1"
                         Background="{StaticResource Brush.Surface}"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
                         CornerRadius="8"
-                        Padding="12">
+                        Padding="12"
+                        Margin="0,16,0,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
