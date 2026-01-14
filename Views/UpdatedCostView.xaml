@@ -93,7 +93,7 @@
                             </Style.Triggers>
                         </Style>
                     </Canvas.Style>
-                    <Rectangle Width="70" Height="40" Fill="White" Stroke="{StaticResource Brush.Accent}" RadiusX="6" RadiusY="6" Canvas.Left="5" Canvas.Top="15"/>
+                    <Rectangle Width="70" Height="40" Fill="{StaticResource Brush.Surface}" Stroke="{StaticResource Brush.Accent}" RadiusX="6" RadiusY="6" Canvas.Left="5" Canvas.Top="15"/>
                     <Polyline Points="5,45 25,25 45,30 65,10" Stroke="{StaticResource Brush.Primary}" StrokeThickness="3" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
                     <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="1" Canvas.Top="41"/>
                     <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="21" Canvas.Top="21"/>
