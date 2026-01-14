@@ -44,13 +44,8 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" MinWidth="360"/>
-                    <ColumnDefinition Width="*" MinWidth="260"/>
-                </Grid.ColumnDefinitions>
 
                 <Border Grid.Row="0"
-                        Grid.Column="0"
                         Background="{StaticResource Brush.Surface}"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
@@ -503,13 +498,13 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="0"
-                        Grid.Column="1"
+                <Border Grid.Row="1"
                         Background="{StaticResource Brush.Surface}"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
                         CornerRadius="8"
-                        Padding="{StaticResource Padding.Content}">
+                        Padding="{StaticResource Padding.Content}"
+                        Margin="{StaticResource Margin.TopLarge}">
                     <StackPanel>
                         <TextBlock Text="Modeled impact probability"
                                    FontWeight="SemiBold"
@@ -545,8 +540,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="1"
-                        Grid.ColumnSpan="2"
+                <Border Grid.Row="2"
                         Background="{StaticResource Brush.Surface}"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
@@ -588,8 +582,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="2"
-                        Grid.ColumnSpan="2"
+                <Border Grid.Row="3"
                         Background="{StaticResource Brush.Surface}"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
