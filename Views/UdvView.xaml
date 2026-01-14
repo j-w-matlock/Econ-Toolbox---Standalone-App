@@ -220,7 +220,7 @@
                            Text="{Binding HistoricalDataError}"/>
             </StackPanel>
         </Border>
-        <Border Grid.Row="4" Background="#FFF7F0" BorderBrush="#E9C28E" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}" Margin="{StaticResource Margin.Stack}">
+        <Border Grid.Row="4" Background="{StaticResource Brush.HighlightBackground}" BorderBrush="{StaticResource Brush.HighlightBorder}" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}" Margin="{StaticResource Margin.Stack}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Unit Day Value:" FontWeight="Bold"/>
@@ -288,7 +288,7 @@
                 </Border>
             </StackPanel>
         </Border>
-        <Border Grid.Row="6" Background="White" BorderBrush="#D0E4F2" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}">
+        <Border Grid.Row="6" Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.HighlightBorder}" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="{StaticResource Margin.Inline}"/>
