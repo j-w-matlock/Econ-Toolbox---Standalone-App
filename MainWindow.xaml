@@ -233,6 +233,31 @@
                          BorderThickness="0"
                          Padding="0"
                          VerticalAlignment="Center">
+                    <Button Command="{Binding CalculateCommand}"
+                            Padding="10,4"
+                            Margin="0,0,8,0"
+                            ToolTip="{Binding PrimaryActionLabel, StringFormat=Run {0}}"
+                            Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                            IsEnabled="{Binding IsCalculateVisible}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE8EF;"
+                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="{Binding PrimaryActionLabel}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportCommand}"
+                            Padding="10,4"
+                            Margin="0,0,8,0"
+                            ToolTip="Export results">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xEDE1;"
+                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="Export"/>
+                        </StackPanel>
+                    </Button>
+                    <Separator/>
                     <Button Command="{Binding ToggleExplorerPaneCommand}"
                             Padding="10,4"
                             ToolTip="Toggle Explorer (Ctrl+Alt+E)">

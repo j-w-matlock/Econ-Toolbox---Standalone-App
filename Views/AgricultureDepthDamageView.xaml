@@ -233,7 +233,7 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                                 <StackPanel Orientation="Horizontal"
-                                            HorizontalAlignment="Right"
+                                            HorizontalAlignment="Left"
                                             Margin="{StaticResource Margin.StackSmall}">
                                     <Button Content="Add point"
                                             Command="{Binding AddDepthDurationPointCommand}"
@@ -333,7 +333,7 @@
                                                FontSize="14"
                                                VerticalAlignment="Center"/>
                                     <StackPanel Orientation="Horizontal"
-                                                HorizontalAlignment="Right"
+                                                HorizontalAlignment="Left"
                                                 Margin="{StaticResource Margin.InlineLarge}">
                                         <Button Content="Import CropScape CDL"
                                                 Command="{Binding ImportCropScapeRasterCommand}"
@@ -426,7 +426,7 @@
                                                                TextWrapping="Wrap"/>
                                                 </StackPanel>
                                                 <StackPanel Orientation="Horizontal"
-                                                            HorizontalAlignment="Right"
+                                                            HorizontalAlignment="Left"
                                                             Margin="{StaticResource Margin.InlineLarge}"
                                                             VerticalAlignment="Center">
                                                     <StackPanel Margin="{StaticResource Margin.Inline}">
@@ -735,7 +735,7 @@
                 <StackPanel Grid.Row="3"
                             Grid.ColumnSpan="2"
                             Orientation="Horizontal"
-                            HorizontalAlignment="Right"
+                            HorizontalAlignment="Left"
                             Margin="{StaticResource Margin.StackLarge}">
                     <Button Content="Calculate"
                             Command="{Binding ComputeCommand}"

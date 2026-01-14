@@ -644,7 +644,7 @@
                 </DataGrid>
                 <Button Margin="0,4,0,4"
                         Command="{Binding ResetUpdatedCostItemsCommand}"
-                        HorizontalAlignment="Right"
+                        HorizontalAlignment="Left"
                         ToolTip="Clear all updated cost rows so you can rebuild the table from scratch.">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
@@ -804,7 +804,7 @@
                             Grid.ColumnSpan="2"
                             Margin="0,4,0,4"
                             Command="{Binding ResetRrrItemsCommand}"
-                            HorizontalAlignment="Right"
+                            HorizontalAlignment="Left"
                             ToolTip="Clear all RR&amp;R and mitigation entries from the table.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
