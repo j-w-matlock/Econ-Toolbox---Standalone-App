@@ -186,11 +186,12 @@
                           PreviewKeyDown="HistoricalVisitationGrid_PreviewKeyDown"
                           HeadersVisibility="Column"
                           Margin="0,8,0,8"
+                          ColumnWidth="SizeToHeader"
                           ScrollViewer.VerticalScrollBarVisibility="Auto"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Label, UpdateSourceTrigger=PropertyChanged}"
-                                            Width="2*">
+                                            Width="SizeToHeader">
                             <DataGridTextColumn.Header>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Label (optional)"/>
@@ -198,7 +199,7 @@
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding VisitationText, UpdateSourceTrigger=PropertyChanged}"
-                                            Width="*">
+                                            Width="SizeToHeader">
                             <DataGridTextColumn.Header>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Visitation"/>
@@ -303,7 +304,7 @@
                 <TextBlock TextWrapping="Wrap" FontSize="12" Margin="{StaticResource Margin.Stack}">
                     Reference this table to ensure your point selection matches the published ranges. The highlighted unit day value is chosen by matching your point entry to the correct column.
                 </TextBlock>
-                <DataGrid ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <DataGrid ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ColumnWidth="SizeToHeader">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Points" Binding="{Binding Points}"/>
                         <DataGridTextColumn Header="General Recreation">

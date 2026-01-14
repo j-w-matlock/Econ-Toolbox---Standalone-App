@@ -93,6 +93,7 @@
                                                   VerticalAlignment="Stretch"
                                                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                                                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                                  ColumnWidth="SizeToHeader"
                                                   Margin="0">
                                             <DataGrid.Columns>
                                             <DataGridTextColumn Binding="{Binding Year}">
@@ -202,7 +203,7 @@
                                     <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding PerCapitaDemandChangeRate}"/>
                                     <TextBlock Text="%" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <DataGrid Grid.Row="6" Grid.ColumnSpan="3" ItemsSource="{Binding Sectors}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" Margin="0,5,0,5">
+                                    <DataGrid Grid.Row="6" Grid.ColumnSpan="3" ItemsSource="{Binding Sectors}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" Margin="0,5,0,5" ColumnWidth="SizeToHeader">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Sector" Binding="{Binding Name}" IsReadOnly="True"/>
                                             <DataGridTextColumn Binding="{Binding CurrentPercent, Mode=TwoWay}">
@@ -320,7 +321,7 @@
                                     </Border>
                                 </Grid>
                                 <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="8" Padding="12" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
-                                    <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0">
+                                    <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0" ColumnWidth="SizeToHeader">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
                                             <DataGridTextColumn Header="Growth Rate (%)" Binding="{Binding GrowthRate, Mode=TwoWay, StringFormat={}{0:N2}}">

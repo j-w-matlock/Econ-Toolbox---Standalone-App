@@ -183,11 +183,12 @@
                                           CanUserAddRows="False"
                                           CanUserDeleteRows="False"
                                           HeadersVisibility="Column"
+                                          ColumnWidth="SizeToHeader"
                                           Margin="{StaticResource Margin.StackSmall}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Depth (ft)"
                                                             Binding="{Binding DepthFeet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
-                                                            Width="*">
+                                                            Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet)."/>
@@ -202,7 +203,7 @@
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Header="Duration (days)"
                                                             Binding="{Binding DurationDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
-                                                            Width="*">
+                                                            Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="ToolTip" Value="Length of inundation represented by the row (days)."/>
@@ -217,7 +218,7 @@
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Header="Base damage (fraction)"
                                                             Binding="{Binding BaseDamage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
-                                                            Width="*">
+                                                            Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1)."/>
@@ -358,6 +359,7 @@
                                           CanUserDeleteRows="False"
                                           HeadersVisibility="Column"
                                           IsReadOnly="True"
+                                          ColumnWidth="SizeToHeader"
                                           Margin="{StaticResource Margin.StackSmall}"
                                           RowHeaderWidth="0"
                                           MinHeight="160"
@@ -365,13 +367,13 @@
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Code"
                                                             Binding="{Binding Code}"
-                                                            Width="80"/>
+                                                            Width="SizeToHeader"/>
                                         <DataGridTextColumn Header="Crop type"
                                                             Binding="{Binding Name}"
-                                                            Width="2*"/>
+                                                            Width="SizeToHeader"/>
                                         <DataGridTextColumn Header="Acres"
                                                             Binding="{Binding Acres, StringFormat={}{0:N1}}"
-                                                            Width="*">
+                                                            Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -380,7 +382,7 @@
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Header="% of total"
                                                             Binding="{Binding PercentOfTotal, StringFormat={}{0:P1}}"
-                                                            Width="*">
+                                                            Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -570,7 +572,8 @@
                                   CanUserDeleteRows="False"
                                   HeadersVisibility="Column"
                                   Margin="0"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  ColumnWidth="SizeToHeader">
                             <DataGrid.Resources>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Margin" Value="2"/>
@@ -579,12 +582,12 @@
                             </DataGrid.Resources>
                             <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding DepthFeet, StringFormat={}{0:0.##}}"
-                                                    Width="*"
+                                                    Width="SizeToHeader"
                                                     Header="Depth (ft)"/>
                                 <DataGridTextColumn Binding="{Binding DurationDays, StringFormat={}{0:0.##}}"
-                                                    Width="*"
+                                                    Width="SizeToHeader"
                                                     Header="Duration (days)"/>
-                                <DataGridTextColumn Binding="{Binding DamagePercent, StringFormat={}{0:0.##}}" Width="*">
+                                <DataGridTextColumn Binding="{Binding DamagePercent, StringFormat={}{0:0.##}}" Width="SizeToHeader">
                                     <DataGridTextColumn.Header>
                                         <TextBlock Text="Damage (%)"/>
                                     </DataGridTextColumn.Header>
@@ -680,6 +683,7 @@
                                           CanUserDeleteRows="False"
                                           HeadersVisibility="Column"
                                           IsReadOnly="True"
+                                          ColumnWidth="SizeToHeader"
                                           Margin="0"
                                           RowHeaderWidth="0"
                                           MinHeight="160"
@@ -687,16 +691,16 @@
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Depth (ft)"
                                                             Binding="{Binding DepthFeet, StringFormat={}{0:0.##}}"
-                                                            Width="*"/>
+                                                            Width="SizeToHeader"/>
                                         <DataGridTextColumn Header="Duration (days)"
                                                             Binding="{Binding DurationDays, StringFormat={}{0:0.##}}"
-                                                            Width="*"/>
+                                                            Width="SizeToHeader"/>
                                         <DataGridTextColumn Header="Damage (%)"
                                                             Binding="{Binding DamagePercent, StringFormat={}{0:0.##}}"
-                                                            Width="*"/>
+                                                            Width="SizeToHeader"/>
                                         <DataGridTextColumn Header="Damaged acres"
                                                             Binding="{Binding DamagedAcres, StringFormat={}{0:N1}}"
-                                                            Width="*">
+                                                            Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -705,7 +709,7 @@
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Header="Residual acres"
                                                             Binding="{Binding ResidualAcres, StringFormat={}{0:N1}}"
-                                                            Width="*">
+                                                            Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -714,7 +718,7 @@
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Header="Total acres"
                                                             Binding="{Binding TotalAcres, StringFormat={}{0:N1}}"
-                                                            Width="*">
+                                                            Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
