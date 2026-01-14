@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace EconToolbox.Desktop.ViewModels
         public StageDamageOrganizerViewModel StageDamageOrganizer { get; }
 
         public IReadOnlyList<ModuleDefinition> Modules { get; }
+        public ObservableCollection<DiagnosticItem> Diagnostics { get; } = new();
 
         private int _selectedIndex;
         public int SelectedIndex
@@ -36,6 +38,7 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(IsCalculateVisible));
                 OnPropertyChanged(nameof(SelectedModule));
                 OnPropertyChanged(nameof(PrimaryActionLabel));
+                UpdateDiagnostics();
             }
         }
 
@@ -283,6 +286,8 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 SubscribeToComputeCommand(module.ComputeCommand);
             }
+
+            UpdateDiagnostics();
         }
 
         private void Calculate()
@@ -334,6 +339,35 @@ namespace EconToolbox.Desktop.ViewModels
                     MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void UpdateDiagnostics()
+        {
+            Diagnostics.Clear();
+
+            if (SelectedModule == null)
+            {
+                Diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "Select a module",
+                    "Choose a module from the explorer to review inputs, run calculations, and view outputs."));
+                return;
+            }
+
+            Diagnostics.Add(new DiagnosticItem(
+                DiagnosticLevel.Info,
+                "Module ready",
+                $"You are in {SelectedModule.Title}. Review inputs before running calculations."));
+
+            Diagnostics.Add(new DiagnosticItem(
+                DiagnosticLevel.Warning,
+                "Check required inputs",
+                "Ensure required tables are filled out and probabilities are listed in descending order where applicable."));
+
+            Diagnostics.Add(new DiagnosticItem(
+                DiagnosticLevel.Advisory,
+                "Export reminder",
+                "Use the Export action to capture a workbook snapshot after computing results."));
         }
     }
 }
