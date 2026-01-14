@@ -425,8 +425,7 @@
                                 Margin="16"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
-                                TextElement.FontSize="12"
-                                TextElement.TextWrapping="Wrap"/>
+                                TextElement.FontSize="12"/>
             </Border>
 
             <GridSplitter x:Name="DetailsSplitter"
