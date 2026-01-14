@@ -44,6 +44,19 @@ namespace EconToolbox.Desktop.ViewModels
 
         public IRelayCommand CalculateCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
+        public IRelayCommand ToggleDetailsPaneCommand { get; }
+
+        private bool _isDetailsPaneVisible = true;
+        public bool IsDetailsPaneVisible
+        {
+            get => _isDetailsPaneVisible;
+            set
+            {
+                if (_isDetailsPaneVisible == value) return;
+                _isDetailsPaneVisible = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ModuleDefinition? SelectedModule => SelectedIndex >= 0 && SelectedIndex < Modules.Count
             ? Modules[SelectedIndex]
@@ -87,6 +100,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             CalculateCommand = new RelayCommand(Calculate);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
+            ToggleDetailsPaneCommand = new RelayCommand(ToggleDetailsPane);
 
             Modules = new List<ModuleDefinition>
             {
@@ -288,6 +302,11 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             UpdateDiagnostics();
+        }
+
+        private void ToggleDetailsPane()
+        {
+            IsDetailsPaneVisible = !IsDetailsPaneVisible;
         }
 
         private void Calculate()
