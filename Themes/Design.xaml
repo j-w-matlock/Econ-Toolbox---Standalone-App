@@ -106,6 +106,7 @@
     <converters:SafeNumberConverter x:Key="SafeNumberConverter"/>
     <converters:NullOrEmptyToValueConverter x:Key="NullOrEmptyToValueConverter"/>
     <converters:BooleanInverseConverter x:Key="BoolInverseConverter"/>
+    <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <!-- Spacing tokens -->

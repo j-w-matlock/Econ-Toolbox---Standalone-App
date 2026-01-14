@@ -90,6 +90,8 @@ namespace EconToolbox.Desktop
                 .ConfigureServices((_, services) =>
                 {
                     services.AddSingleton<IExcelExportService, ExcelExportService>();
+                    services.AddSingleton<ILayoutSettingsService, LayoutSettingsService>();
+                    services.AddSingleton<IThemeService, ThemeService>();
 
                     services.AddSingleton<ReadMeViewModel>();
                     services.AddSingleton<EadViewModel>();
