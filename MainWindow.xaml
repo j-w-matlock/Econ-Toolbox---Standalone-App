@@ -296,14 +296,12 @@
                     Background="{DynamicResource Brush.Editor}"
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
                     BorderThickness="0,0,1,0">
-                <ScrollViewer x:Name="MainContentScrollViewer"
-                              Focusable="False"
-                              HorizontalScrollBarVisibility="Auto"
-                              VerticalScrollBarVisibility="Auto"
-                              PreviewMouseWheel="MainScrollViewer_PreviewMouseWheel">
-                    <ContentControl Content="{Binding SelectedModule.ContentViewModel}"
-                                    Margin="20"/>
-                </ScrollViewer>
+                <Grid Margin="20">
+                    <Viewbox Stretch="Uniform"
+                             StretchDirection="Both">
+                        <ContentControl Content="{Binding SelectedModule.ContentViewModel}"/>
+                    </Viewbox>
+                </Grid>
             </Border>
 
             <GridSplitter Grid.Column="3"
