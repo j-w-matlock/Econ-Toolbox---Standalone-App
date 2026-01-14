@@ -5,16 +5,36 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
              mc:Ignorable="d"
+             Background="{StaticResource Brush.SurfaceAlt}"
+             SnapsToDevicePixels="True"
+             UseLayoutRounding="True"
              d:DataContext="{d:DesignInstance Type=vm:RecreationCapacityViewModel}">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                  VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="{StaticResource Margin.Container}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Design.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Padding="{StaticResource Padding.Card}">
+        <StackPanel>
             <Border Style="{StaticResource Border.Explainer}">
                 <StackPanel>
-                    <TextBlock Text="Recreation capacity study"
-                               FontWeight="Bold"
-                               Foreground="{StaticResource Brush.Primary}"/>
-                    <TextBlock Margin="{StaticResource Margin.TopSmall}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets"
+                                   Text=""
+                                   FontSize="18"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Text="Recreation capacity study"
+                                   FontWeight="Bold"
+                                   FontSize="16"
+                                   Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock Margin="0,6,0,0"
+                               TextWrapping="Wrap">
                         This worksheet estimates people-at-one-time (PAOT) and design day user capacities for
                         camping, shoreline fishing, and boating in accordance with U.S. Army Corps of Engineers
                         recreation planning policy (ER 1130-2-550, Chapter 3, pp. 3-1–3-6). Supply facility

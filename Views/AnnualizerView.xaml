@@ -3,11 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:EconToolbox.Desktop.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             Background="{StaticResource Brush.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Design.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <ScrollViewer Focusable="False"
-                      HorizontalScrollBarVisibility="Disabled"
+                      HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto"
                       Padding="{StaticResource Padding.Card}">
             <TabControl Margin="0"
@@ -15,20 +23,21 @@
                         HorizontalContentAlignment="Stretch">
                 <TabItem Header="Annualization" Padding="0">
                     <StackPanel Margin="0">
-                        <Border Style="{StaticResource Border.Explainer}" Padding="{StaticResource Padding.Card}">
+                        <Border Style="{StaticResource Border.Explainer}">
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock FontFamily="Segoe MDL2 Assets"
                                                Text=""
-                                               FontSize="22"
+                                               FontSize="18"
                                                Foreground="{StaticResource Brush.Primary}"
-                                               Margin="{StaticResource Margin.Inline}"/>
+                                               Margin="0,0,8,0"/>
                                     <TextBlock Text="Cost Annualization Workflow"
                                                FontWeight="Bold"
                                                FontSize="16"
                                                Foreground="{StaticResource Brush.Primary}"/>
                                 </StackPanel>
-                                <TextBlock Style="{StaticResource Text.Body}">
+                                <TextBlock TextWrapping="Wrap"
+                                           Margin="0,6,0,0">
                                     <Run Text="• Document upfront investments, financing assumptions, and the analysis period."/>
                                     <LineBreak/>
                                     <Run Text="• Capture construction cash flow in the IDC schedule and list future costs in the year they occur."/>
@@ -41,7 +50,7 @@
                         </Border>
 
                         <Border Background="{StaticResource Brush.Surface}"
-                                CornerRadius="10"
+                                CornerRadius="8"
                                 Padding="{StaticResource Padding.Card}"
                                 BorderBrush="{StaticResource Brush.Border}"
                                 BorderThickness="1"
@@ -162,7 +171,7 @@
                         </Border>
 
                         <Border Background="{StaticResource Brush.Surface}"
-                                CornerRadius="10"
+                                CornerRadius="8"
                                 Padding="{StaticResource Padding.Card}"
                                 BorderBrush="{StaticResource Brush.Border}"
                                 BorderThickness="1"
@@ -250,7 +259,7 @@
                                                 ToolTip="List construction outlays by month and timing so the tool can compute interest during construction."/>
                                 <TextBlock Text="IDC Schedule" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
-                            <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
+                            <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
                                 <DataGrid x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All" Validation.Error="DataGrid_OnError">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn>
@@ -310,7 +319,7 @@
                                                 ToolTip="Add future capital expenses in the year and timing they occur to include their present value."/>
                                 <TextBlock Text="Future Costs" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
-                            <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6">
+                            <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
                                 <DataGrid x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn>

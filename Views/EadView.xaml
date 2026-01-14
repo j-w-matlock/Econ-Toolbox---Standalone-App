@@ -4,20 +4,41 @@
              xmlns:behaviors="clr-namespace:EconToolbox.Desktop.Behaviors"
              xmlns:controls="clr-namespace:EconToolbox.Desktop.Views.Controls"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             Background="{StaticResource Brush.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Design.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <ScrollViewer Focusable="False"
-                      HorizontalScrollBarVisibility="Disabled"
+                      HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto"
                       Padding="{StaticResource Padding.Card}">
             <StackPanel>
-                <TextBlock Text="Expected Annual Damage"
-                           FontSize="18"
-                           FontWeight="SemiBold"
-                           Foreground="{StaticResource Brush.Primary}"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,12"/>
+                <Border Style="{StaticResource Border.Explainer}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text=""
+                                       FontSize="18"
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Text="Expected Annual Damage"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.Primary}"/>
+                        </StackPanel>
+                        <TextBlock TextWrapping="Wrap"
+                                   Margin="0,6,0,0">
+                            Add stage/frequency and damage values for each category, then use the buttons below to compare scenarios and visualize the curves. Select Calculate after updates so the chart and summary outputs stay synchronized.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
 
                 <Border Background="{StaticResource Brush.Surface}"
                         CornerRadius="8"
@@ -56,7 +77,7 @@
                 </Border>
 
                 <Border Background="{StaticResource Brush.Surface}"
-                        CornerRadius="10"
+                        CornerRadius="8"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
                         Padding="{StaticResource Padding.Content}"
@@ -79,7 +100,7 @@
                 <Border Background="{StaticResource Brush.Surface}"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
-                        CornerRadius="10"
+                        CornerRadius="8"
                         Padding="{StaticResource Padding.Content}"
                         Margin="0,0,0,12">
                     <StackPanel>
@@ -133,7 +154,7 @@
                 </Border>
 
                 <Border Background="{StaticResource Brush.Surface}"
-                        CornerRadius="10"
+                        CornerRadius="8"
                         BorderBrush="{StaticResource Brush.Border}"
                         BorderThickness="1"
                         Padding="{StaticResource Padding.Content}">

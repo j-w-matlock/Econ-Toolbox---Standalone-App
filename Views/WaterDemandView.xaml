@@ -6,8 +6,15 @@
              Background="{StaticResource Brush.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Design.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Disabled"
+                  HorizontalScrollBarVisibility="Auto"
                   Padding="{StaticResource Padding.Card}">
         <Grid>
             <Grid.RowDefinitions>
@@ -23,18 +30,19 @@
                     Style="{StaticResource Border.Explainer}"
                     Margin="0,0,0,12">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.Stack}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
-                                   FontSize="22"
+                                   FontSize="18"
                                    Foreground="{StaticResource Brush.Primary}"
-                                   Margin="{StaticResource Margin.Inline}"/>
+                                   Margin="0,0,8,0"/>
                         <TextBlock Text="Water Demand Forecast Workflow"
                                    FontWeight="Bold"
                                    FontSize="16"
                                    Foreground="{StaticResource Brush.Primary}"/>
                     </StackPanel>
-                    <TextBlock Style="{StaticResource Text.Body}">
+                    <TextBlock TextWrapping="Wrap"
+                               Margin="0,6,0,0">
                         <Run Text="• Enter historic demand records first to calibrate the baseline."/>
                         <LineBreak/>
                         <Run Text="• Choose or add scenarios, then set the forecast horizon and demographic assumptions."/>
@@ -70,7 +78,7 @@
                                         Background="{StaticResource Brush.Surface}"
                                         BorderBrush="{StaticResource Brush.Border}"
                                         BorderThickness="1"
-                                        CornerRadius="10"
+                                        CornerRadius="8"
                                         Padding="12"
                                         Margin="0,0,0,8">
                                     <StackPanel>
@@ -309,7 +317,7 @@
                                         </Grid>
                                     </Border>
                                 </Grid>
-                                <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="10" Padding="12" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+                                <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="8" Padding="12" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
                                     <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
@@ -373,7 +381,7 @@
                                     </DataGrid>
                                 </Border>
                             </Grid>
-                            <Border Background="{StaticResource Brush.Surface}" CornerRadius="12" Padding="16" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+                            <Border Background="{StaticResource Brush.Surface}" CornerRadius="8" Padding="16" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Grid.Column" Value="1"/>
