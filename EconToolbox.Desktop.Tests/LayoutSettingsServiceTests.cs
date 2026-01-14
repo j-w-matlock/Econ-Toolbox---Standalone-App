@@ -19,10 +19,8 @@ public class LayoutSettingsServiceTests
 
         Assert.AreEqual(280, settings.ExplorerPaneWidth, 0.1);
         Assert.AreEqual(340, settings.DetailsPaneWidth, 0.1);
-        Assert.AreEqual(220, settings.OutputPaneHeight, 0.1);
         Assert.IsTrue(settings.IsExplorerPaneVisible);
         Assert.IsTrue(settings.IsDetailsPaneVisible);
-        Assert.IsTrue(settings.IsOutputPaneVisible);
     }
 
     [TestMethod]
@@ -34,10 +32,8 @@ public class LayoutSettingsServiceTests
         {
             ExplorerPaneWidth = 300,
             DetailsPaneWidth = 360,
-            OutputPaneHeight = 180,
             IsExplorerPaneVisible = false,
             IsDetailsPaneVisible = true,
-            IsOutputPaneVisible = false,
             IsDarkTheme = true
         };
 
@@ -46,10 +42,8 @@ public class LayoutSettingsServiceTests
 
         Assert.AreEqual(300, loaded.ExplorerPaneWidth, 0.1);
         Assert.AreEqual(360, loaded.DetailsPaneWidth, 0.1);
-        Assert.AreEqual(180, loaded.OutputPaneHeight, 0.1);
         Assert.IsFalse(loaded.IsExplorerPaneVisible);
         Assert.IsTrue(loaded.IsDetailsPaneVisible);
-        Assert.IsFalse(loaded.IsOutputPaneVisible);
         Assert.IsTrue(loaded.IsDarkTheme);
 
         if (Directory.Exists(tempFolder))
