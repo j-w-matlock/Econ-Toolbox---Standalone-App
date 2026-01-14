@@ -78,28 +78,42 @@
                                        Foreground="{DynamicResource Brush.TextSecondary}"/>
                         </StackPanel>
                     </Grid>
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Level}" Value="Warning">
-                                    <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.WarningBackground}"/>
-                                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.WarningBorder}"/>
-                                    <Setter TargetName="DiagnosticDot" Property="Fill" Value="{DynamicResource Brush.Diagnostic.WarningIcon}"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Level}" Value="Advisory">
-                                    <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.AdvisoryBackground}"/>
-                                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.AdvisoryBorder}"/>
-                                    <Setter TargetName="DiagnosticDot" Property="Fill" Value="{DynamicResource Brush.Diagnostic.AdvisoryIcon}"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Level}" Value="Error">
-                                    <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.ErrorBackground}"/>
-                                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.ErrorBorder}"/>
-                                    <Setter TargetName="DiagnosticDot" Property="Fill" Value="{DynamicResource Brush.Diagnostic.ErrorIcon}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
                 </Border>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding Level}" Value="Warning">
+                        <Setter TargetName="DiagnosticBorder"
+                                Property="Background"
+                                Value="{DynamicResource Brush.Diagnostic.WarningBackground}"/>
+                        <Setter TargetName="DiagnosticBorder"
+                                Property="BorderBrush"
+                                Value="{DynamicResource Brush.Diagnostic.WarningBorder}"/>
+                        <Setter TargetName="DiagnosticDot"
+                                Property="Fill"
+                                Value="{DynamicResource Brush.Diagnostic.WarningIcon}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Level}" Value="Advisory">
+                        <Setter TargetName="DiagnosticBorder"
+                                Property="Background"
+                                Value="{DynamicResource Brush.Diagnostic.AdvisoryBackground}"/>
+                        <Setter TargetName="DiagnosticBorder"
+                                Property="BorderBrush"
+                                Value="{DynamicResource Brush.Diagnostic.AdvisoryBorder}"/>
+                        <Setter TargetName="DiagnosticDot"
+                                Property="Fill"
+                                Value="{DynamicResource Brush.Diagnostic.AdvisoryIcon}"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Level}" Value="Error">
+                        <Setter TargetName="DiagnosticBorder"
+                                Property="Background"
+                                Value="{DynamicResource Brush.Diagnostic.ErrorBackground}"/>
+                        <Setter TargetName="DiagnosticBorder"
+                                Property="BorderBrush"
+                                Value="{DynamicResource Brush.Diagnostic.ErrorBorder}"/>
+                        <Setter TargetName="DiagnosticDot"
+                                Property="Fill"
+                                Value="{DynamicResource Brush.Diagnostic.ErrorIcon}"/>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
             </DataTemplate>
 
             <DataTemplate x:Key="ActionsWideTemplate">
