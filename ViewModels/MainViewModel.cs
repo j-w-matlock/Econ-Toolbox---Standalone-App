@@ -2,16 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
+        private const double DefaultExplorerPaneWidth = 280;
+        private const double DefaultDetailsPaneWidth = 340;
+        private const double DefaultOutputPaneHeight = 220;
+
         public ReadMeViewModel ReadMe { get; }
         public EadViewModel Ead { get; }
         public AgricultureDepthDamageViewModel AgricultureDepthDamage { get; }
@@ -38,6 +42,7 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(IsCalculateVisible));
                 OnPropertyChanged(nameof(SelectedModule));
                 OnPropertyChanged(nameof(PrimaryActionLabel));
+                OnPropertyChanged(nameof(CurrentViewModel));
                 UpdateDiagnostics();
             }
         }
@@ -45,6 +50,8 @@ namespace EconToolbox.Desktop.ViewModels
         public IRelayCommand CalculateCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ToggleDetailsPaneCommand { get; }
+        public IRelayCommand ToggleExplorerPaneCommand { get; }
+        public IRelayCommand ToggleOutputPaneCommand { get; }
 
         private bool _isDetailsPaneVisible = true;
         public bool IsDetailsPaneVisible
@@ -55,8 +62,102 @@ namespace EconToolbox.Desktop.ViewModels
                 if (_isDetailsPaneVisible == value) return;
                 _isDetailsPaneVisible = value;
                 OnPropertyChanged();
+                UpdateLayoutSettings();
             }
         }
+
+        private bool _isExplorerPaneVisible = true;
+        public bool IsExplorerPaneVisible
+        {
+            get => _isExplorerPaneVisible;
+            set
+            {
+                if (_isExplorerPaneVisible == value) return;
+                _isExplorerPaneVisible = value;
+                OnPropertyChanged();
+                UpdateLayoutSettings();
+            }
+        }
+
+        private bool _isOutputPaneVisible = true;
+        public bool IsOutputPaneVisible
+        {
+            get => _isOutputPaneVisible;
+            set
+            {
+                if (_isOutputPaneVisible == value) return;
+                _isOutputPaneVisible = value;
+                OnPropertyChanged();
+                UpdateLayoutSettings();
+            }
+        }
+
+        private bool _isDarkTheme;
+        public bool IsDarkTheme
+        {
+            get => _isDarkTheme;
+            set
+            {
+                if (_isDarkTheme == value) return;
+                _isDarkTheme = value;
+                OnPropertyChanged();
+                _themeService.ApplyTheme(_isDarkTheme);
+                UpdateLayoutSettings();
+            }
+        }
+
+        private double _explorerPaneWidth = DefaultExplorerPaneWidth;
+        public double ExplorerPaneWidth
+        {
+            get => _explorerPaneWidth;
+            set
+            {
+                if (Math.Abs(_explorerPaneWidth - value) < 0.1) return;
+                _explorerPaneWidth = value;
+                if (value > 0)
+                {
+                    _explorerPaneWidthBeforeCollapse = value;
+                }
+                OnPropertyChanged();
+                UpdateLayoutSettings();
+            }
+        }
+
+        private double _detailsPaneWidth = DefaultDetailsPaneWidth;
+        public double DetailsPaneWidth
+        {
+            get => _detailsPaneWidth;
+            set
+            {
+                if (Math.Abs(_detailsPaneWidth - value) < 0.1) return;
+                _detailsPaneWidth = value;
+                if (value > 0)
+                {
+                    _detailsPaneWidthBeforeCollapse = value;
+                }
+                OnPropertyChanged();
+                UpdateLayoutSettings();
+            }
+        }
+
+        private double _outputPaneHeight = DefaultOutputPaneHeight;
+        public double OutputPaneHeight
+        {
+            get => _outputPaneHeight;
+            set
+            {
+                if (Math.Abs(_outputPaneHeight - value) < 0.1) return;
+                _outputPaneHeight = value;
+                if (value > 0)
+                {
+                    _outputPaneHeightBeforeCollapse = value;
+                }
+                OnPropertyChanged();
+                UpdateLayoutSettings();
+            }
+        }
+
+        public BaseViewModel? CurrentViewModel => SelectedModule?.ContentViewModel;
 
         public ModuleDefinition? SelectedModule => SelectedIndex >= 0 && SelectedIndex < Modules.Count
             ? Modules[SelectedIndex]
@@ -72,6 +173,13 @@ namespace EconToolbox.Desktop.ViewModels
         };
 
         private readonly IExcelExportService _excelExportService;
+        private readonly ILayoutSettingsService _layoutSettingsService;
+        private readonly IThemeService _themeService;
+        private LayoutSettings _layoutSettings = new();
+        private double _explorerPaneWidthBeforeCollapse = DefaultExplorerPaneWidth;
+        private double _detailsPaneWidthBeforeCollapse = DefaultDetailsPaneWidth;
+        private double _outputPaneHeightBeforeCollapse = DefaultOutputPaneHeight;
+        private bool _isApplyingSettings;
 
         public MainViewModel(
             ReadMeViewModel readMe,
@@ -84,7 +192,9 @@ namespace EconToolbox.Desktop.ViewModels
             RecreationCapacityViewModel recreationCapacity,
             GanttViewModel gantt,
             StageDamageOrganizerViewModel stageDamageOrganizer,
-            IExcelExportService excelExportService)
+            IExcelExportService excelExportService,
+            ILayoutSettingsService layoutSettingsService,
+            IThemeService themeService)
         {
             ReadMe = readMe;
             Ead = ead;
@@ -97,10 +207,14 @@ namespace EconToolbox.Desktop.ViewModels
             Gantt = gantt;
             StageDamageOrganizer = stageDamageOrganizer;
             _excelExportService = excelExportService;
+            _layoutSettingsService = layoutSettingsService;
+            _themeService = themeService;
 
             CalculateCommand = new RelayCommand(Calculate);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ToggleDetailsPaneCommand = new RelayCommand(ToggleDetailsPane);
+            ToggleExplorerPaneCommand = new RelayCommand(ToggleExplorerPane);
+            ToggleOutputPaneCommand = new RelayCommand(ToggleOutputPane);
 
             Modules = new List<ModuleDefinition>
             {
@@ -301,12 +415,86 @@ namespace EconToolbox.Desktop.ViewModels
                 SubscribeToComputeCommand(module.ComputeCommand);
             }
 
+            ApplyLayoutSettings();
             UpdateDiagnostics();
+        }
+
+        private void ApplyLayoutSettings()
+        {
+            _layoutSettings = _layoutSettingsService.Load();
+            _isApplyingSettings = true;
+
+            _explorerPaneWidth = _layoutSettings.IsExplorerPaneVisible ? _layoutSettings.ExplorerPaneWidth : 0;
+            _detailsPaneWidth = _layoutSettings.IsDetailsPaneVisible ? _layoutSettings.DetailsPaneWidth : 0;
+            _outputPaneHeight = _layoutSettings.IsOutputPaneVisible ? _layoutSettings.OutputPaneHeight : 0;
+            _isExplorerPaneVisible = _layoutSettings.IsExplorerPaneVisible;
+            _isDetailsPaneVisible = _layoutSettings.IsDetailsPaneVisible;
+            _isOutputPaneVisible = _layoutSettings.IsOutputPaneVisible;
+            _isDarkTheme = _layoutSettings.IsDarkTheme;
+
+            _explorerPaneWidthBeforeCollapse = _layoutSettings.ExplorerPaneWidth > 0
+                ? _layoutSettings.ExplorerPaneWidth
+                : DefaultExplorerPaneWidth;
+            _detailsPaneWidthBeforeCollapse = _layoutSettings.DetailsPaneWidth > 0
+                ? _layoutSettings.DetailsPaneWidth
+                : DefaultDetailsPaneWidth;
+            _outputPaneHeightBeforeCollapse = _layoutSettings.OutputPaneHeight > 0
+                ? _layoutSettings.OutputPaneHeight
+                : DefaultOutputPaneHeight;
+
+            _isApplyingSettings = false;
+
+            OnPropertyChanged(nameof(ExplorerPaneWidth));
+            OnPropertyChanged(nameof(DetailsPaneWidth));
+            OnPropertyChanged(nameof(OutputPaneHeight));
+            OnPropertyChanged(nameof(IsExplorerPaneVisible));
+            OnPropertyChanged(nameof(IsDetailsPaneVisible));
+            OnPropertyChanged(nameof(IsOutputPaneVisible));
+            OnPropertyChanged(nameof(IsDarkTheme));
+
+            _themeService.ApplyTheme(_isDarkTheme);
         }
 
         private void ToggleDetailsPane()
         {
-            IsDetailsPaneVisible = !IsDetailsPaneVisible;
+            if (IsDetailsPaneVisible)
+            {
+                _detailsPaneWidthBeforeCollapse = DetailsPaneWidth > 0 ? DetailsPaneWidth : _detailsPaneWidthBeforeCollapse;
+                DetailsPaneWidth = 0;
+                IsDetailsPaneVisible = false;
+                return;
+            }
+
+            IsDetailsPaneVisible = true;
+            DetailsPaneWidth = _detailsPaneWidthBeforeCollapse > 0 ? _detailsPaneWidthBeforeCollapse : DefaultDetailsPaneWidth;
+        }
+
+        private void ToggleExplorerPane()
+        {
+            if (IsExplorerPaneVisible)
+            {
+                _explorerPaneWidthBeforeCollapse = ExplorerPaneWidth > 0 ? ExplorerPaneWidth : _explorerPaneWidthBeforeCollapse;
+                ExplorerPaneWidth = 0;
+                IsExplorerPaneVisible = false;
+                return;
+            }
+
+            IsExplorerPaneVisible = true;
+            ExplorerPaneWidth = _explorerPaneWidthBeforeCollapse > 0 ? _explorerPaneWidthBeforeCollapse : DefaultExplorerPaneWidth;
+        }
+
+        private void ToggleOutputPane()
+        {
+            if (IsOutputPaneVisible)
+            {
+                _outputPaneHeightBeforeCollapse = OutputPaneHeight > 0 ? OutputPaneHeight : _outputPaneHeightBeforeCollapse;
+                OutputPaneHeight = 0;
+                IsOutputPaneVisible = false;
+                return;
+            }
+
+            IsOutputPaneVisible = true;
+            OutputPaneHeight = _outputPaneHeightBeforeCollapse > 0 ? _outputPaneHeightBeforeCollapse : DefaultOutputPaneHeight;
         }
 
         private void Calculate()
@@ -387,6 +575,23 @@ namespace EconToolbox.Desktop.ViewModels
                 DiagnosticLevel.Advisory,
                 "Export reminder",
                 "Use the Export action to capture a workbook snapshot after computing results."));
+        }
+
+        private void UpdateLayoutSettings()
+        {
+            if (_isApplyingSettings)
+            {
+                return;
+            }
+
+            _layoutSettings.ExplorerPaneWidth = IsExplorerPaneVisible ? ExplorerPaneWidth : _explorerPaneWidthBeforeCollapse;
+            _layoutSettings.DetailsPaneWidth = IsDetailsPaneVisible ? DetailsPaneWidth : _detailsPaneWidthBeforeCollapse;
+            _layoutSettings.OutputPaneHeight = IsOutputPaneVisible ? OutputPaneHeight : _outputPaneHeightBeforeCollapse;
+            _layoutSettings.IsExplorerPaneVisible = IsExplorerPaneVisible;
+            _layoutSettings.IsDetailsPaneVisible = IsDetailsPaneVisible;
+            _layoutSettings.IsOutputPaneVisible = IsOutputPaneVisible;
+            _layoutSettings.IsDarkTheme = IsDarkTheme;
+            _layoutSettingsService.Save(_layoutSettings);
         }
     }
 }
