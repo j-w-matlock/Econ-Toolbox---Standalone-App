@@ -6,10 +6,15 @@
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <UserControl.Resources>
-        <converters:GanttLinkGeometryConverter x:Key="GanttLinkGeometryConverter"
-                                               DayScale="18"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Design.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:GanttLinkGeometryConverter x:Key="GanttLinkGeometryConverter"
+                                                   DayScale="18"/>
+        </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+    <ScrollViewer HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Padding="{StaticResource Padding.Card}">
         <Grid>
@@ -215,7 +220,7 @@
                                            TextWrapping="Wrap"/>
                             </StackPanel>
                         </StackPanel>
-                        <Border Grid.Row="1" Background="#F5F8FE" BorderBrush="#D4E0F4" BorderThickness="1" CornerRadius="6" Padding="8">
+                        <Border Grid.Row="1" Background="#F5F8FE" BorderBrush="#D4E0F4" BorderThickness="1" CornerRadius="8" Padding="8">
                             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                                 <Canvas Height="{Binding Bars.Count, Converter={StaticResource RowToPixelConverter}}"
                                         Width="{Binding TotalDurationDays, Converter={StaticResource DayToPixelConverter}}"

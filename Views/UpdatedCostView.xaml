@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
+             Background="{StaticResource Brush.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <UserControl.Resources>
@@ -13,7 +14,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
         <StackPanel>
         <Border Margin="10,0,10,10"
                 Style="{StaticResource Border.Explainer}"
@@ -63,7 +64,7 @@
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
-                    <TextBlock Text="Updated Cost Workflow" FontSize="18" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    <TextBlock Text="Updated Cost Workflow" FontSize="16" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
                     <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
                         <Run Text="• Work through each sub-tab from left to right so dependent calculations stay aligned."/>
                         <LineBreak/>
