@@ -237,18 +237,18 @@
         </Border>
 
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="240" MinWidth="200"/>
-                <ColumnDefinition Width="6"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="6"/>
-                <ColumnDefinition Width="320" MinWidth="260"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" MinHeight="160"/>
+                <RowDefinition Height="6"/>
+                <RowDefinition Height="5*" MinHeight="280"/>
+                <RowDefinition Height="6"/>
+                <RowDefinition Height="3*" MinHeight="220"/>
+            </Grid.RowDefinitions>
 
-            <Border Grid.Column="0"
+            <Border Grid.Row="0"
                     Background="{DynamicResource Brush.Sidebar}"
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
-                    BorderThickness="0,0,1,0">
+                    BorderThickness="0,0,0,1">
                 <DockPanel Margin="12">
                     <StackPanel DockPanel.Dock="Top">
                         <TextBlock Text="EXPLORER"
@@ -284,7 +284,8 @@
                                     </StackPanel.ToolTip>
                                     <TextBlock Text="{Binding Title}"
                                                Foreground="{DynamicResource Brush.TextPrimary}"
-                                               FontWeight="SemiBold"/>
+                                               FontWeight="SemiBold"
+                                               TextWrapping="Wrap"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -292,38 +293,38 @@
                 </DockPanel>
             </Border>
 
-            <GridSplitter Grid.Column="1"
-                          Width="6"
+            <GridSplitter Grid.Row="1"
+                          Height="6"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Background="{DynamicResource Brush.Splitter}"
                           ResizeBehavior="PreviousAndNext"
-                          ResizeDirection="Columns"/>
+                          ResizeDirection="Rows"/>
 
-            <Border Grid.Column="2"
+            <Border Grid.Row="2"
                     Background="{DynamicResource Brush.Editor}"
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
-                    BorderThickness="0,0,1,0">
+                    BorderThickness="0,0,0,1">
                 <ScrollViewer Margin="20"
-                              HorizontalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
                               VerticalScrollBarVisibility="Auto">
                     <ContentControl Content="{Binding SelectedModule.ContentViewModel}"
                                     TextElement.FontSize="12"/>
                 </ScrollViewer>
             </Border>
 
-            <GridSplitter Grid.Column="3"
-                          Width="6"
+            <GridSplitter Grid.Row="3"
+                          Height="6"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
                           Background="{DynamicResource Brush.Splitter}"
                           ResizeBehavior="PreviousAndNext"
-                          ResizeDirection="Columns"/>
+                          ResizeDirection="Rows"/>
 
-            <Border Grid.Column="4"
+            <Border Grid.Row="4"
                     Background="{DynamicResource Brush.Panel}"
                     BorderBrush="{DynamicResource Brush.PanelBorder}"
-                    BorderThickness="1,0,0,0">
+                    BorderThickness="0,1,0,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -342,7 +343,8 @@
                                    FontSize="16"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource Brush.TextPrimary}"
-                                   Margin="0,0,0,6"/>
+                                   Margin="0,0,0,6"
+                                   TextWrapping="Wrap"/>
                         <TextBlock Text="{Binding SelectedModule.Description}"
                                    FontSize="12"
                                    Foreground="{DynamicResource Brush.TextSecondary}"
