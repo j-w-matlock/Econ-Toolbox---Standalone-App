@@ -20,13 +20,13 @@
         Background="{DynamicResource Brush.AppBackground}">
     <Window.InputBindings>
         <KeyBinding Key="E"
-                    Modifiers="Control,Alt"
+                    Modifiers="Control+Alt"
                     Command="{Binding ToggleExplorerPaneCommand}"/>
         <KeyBinding Key="D"
-                    Modifiers="Control,Alt"
+                    Modifiers="Control+Alt"
                     Command="{Binding ToggleDetailsPaneCommand}"/>
         <KeyBinding Key="O"
-                    Modifiers="Control,Alt"
+                    Modifiers="Control+Alt"
                     Command="{Binding ToggleOutputPaneCommand}"/>
     </Window.InputBindings>
     <Window.Resources>
