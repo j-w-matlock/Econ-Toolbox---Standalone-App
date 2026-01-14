@@ -943,8 +943,8 @@ namespace EconToolbox.Desktop.ViewModels
                 _name = name;
                 _description = description;
                 _impactModifier = impactModifier;
-                _floodWindowStartDay = Math.Clamp(floodWindowStartDay, 1, 366);
-                _floodWindowEndDay = Math.Clamp(floodWindowEndDay, _floodWindowStartDay, 366);
+                _floodWindowStartDay = Math.Clamp(floodWindowStartDay, 1, DaysInYear);
+                _floodWindowEndDay = Math.Clamp(floodWindowEndDay, _floodWindowStartDay, DaysInYear);
                 _annualExceedanceProbability = Math.Clamp(annualExceedanceProbability, 0.0, 1.0);
                 _floodSeasonPeakDay = Math.Clamp(floodSeasonPeakDay, _floodWindowStartDay, _floodWindowEndDay);
                 _seasonShiftDays = Math.Clamp(seasonShiftDays, -180, 180);
@@ -1070,7 +1070,7 @@ namespace EconToolbox.Desktop.ViewModels
                 get => _floodWindowStartDay;
                 set
                 {
-                    int adjusted = Math.Clamp(value, 1, 366);
+                    int adjusted = Math.Clamp(value, 1, DaysInYear);
                     if (_floodWindowStartDay == adjusted)
                     {
                         return;
@@ -1099,7 +1099,7 @@ namespace EconToolbox.Desktop.ViewModels
                 get => _floodWindowEndDay;
                 set
                 {
-                    int adjusted = Math.Clamp(value, 1, 366);
+                    int adjusted = Math.Clamp(value, 1, DaysInYear);
                     if (adjusted < _floodWindowStartDay)
                     {
                         adjusted = _floodWindowStartDay;
