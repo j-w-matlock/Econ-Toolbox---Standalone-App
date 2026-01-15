@@ -647,7 +647,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <Grid Background="{TemplateBinding Background}">
-                        <Track IsDirectionReversed="True">
+                        <Track IsDirectionReversed="True"
+                               Minimum="{TemplateBinding Minimum}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Value="{TemplateBinding Value}"
+                               ViewportSize="{TemplateBinding ViewportSize}"
+                               Orientation="{TemplateBinding Orientation}">
                             <Track.Thumb>
                                 <Thumb/>
                             </Track.Thumb>
