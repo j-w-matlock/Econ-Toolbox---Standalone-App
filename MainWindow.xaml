@@ -274,16 +274,6 @@
                             <TextBlock Text="Details"/>
                         </StackPanel>
                     </Button>
-                    <Separator/>
-                    <TextBlock Text="Dark"
-                               Margin="4,0,6,0"
-                               VerticalAlignment="Center"
-                               FontSize="12"
-                               Foreground="{DynamicResource App.TextSecondary}"/>
-                    <ToggleButton Width="44"
-                                  Height="22"
-                                  Style="{DynamicResource ToggleButton.Switch}"
-                                  IsChecked="{Binding IsDarkMode}"/>
                 </ToolBar>
             </DockPanel>
         </Border>
