@@ -439,6 +439,7 @@
         <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource App.Divider}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
         <Setter Property="Margin" Value="{StaticResource Margin.StackLarge}"/>
         <Setter Property="SelectionUnit" Value="CellOrRowHeader"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -482,12 +483,14 @@
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{DynamicResource App.SelectionBackground}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource App.SelectionBorder}"/>
                 <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
             </Trigger>
             <Trigger Property="IsKeyboardFocusWithin" Value="True">
                 <Setter Property="BorderBrush" Value="{DynamicResource App.Focus}"/>
@@ -503,6 +506,7 @@
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource App.RowHoverBackground}"/>
