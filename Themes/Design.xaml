@@ -640,6 +640,57 @@
         <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
     </Style>
 
+    <Style TargetType="ScrollBar">
+        <Setter Property="Background" Value="{DynamicResource App.ScrollBarTrack}"/>
+        <Setter Property="IsMoveToPointEnabled" Value="True"/>
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Track x:Name="PART_Track"
+                               IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                               Minimum="{TemplateBinding Minimum}"
+                               Maximum="{TemplateBinding Maximum}"
+                               Value="{TemplateBinding Value}"
+                               ViewportSize="{TemplateBinding ViewportSize}"
+                               Orientation="{TemplateBinding Orientation}">
+                            <Track.Thumb>
+                                <Thumb/>
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton x:Name="PART_IncreaseButton"
+                                              Command="ScrollBar.PageDownCommand"
+                                              CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                              Background="Transparent"
+                                              Focusable="False"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton x:Name="PART_DecreaseButton"
+                                              Command="ScrollBar.PageUpCommand"
+                                              CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                              Background="Transparent"
+                                              Focusable="False"/>
+                            </Track.DecreaseRepeatButton>
+                        </Track>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="PART_DecreaseButton" Property="Command" Value="ScrollBar.PageLeftCommand"/>
+                            <Setter TargetName="PART_IncreaseButton" Property="Command" Value="ScrollBar.PageRightCommand"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="Width" Value="Auto"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style TargetType="Thumb">
         <Setter Property="Background" Value="{DynamicResource App.ScrollBarThumb}"/>
         <Setter Property="Template">
