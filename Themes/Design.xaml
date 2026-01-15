@@ -662,6 +662,12 @@
                                               Background="Transparent"
                                               Focusable="False"/>
                             </Track.IncreaseRepeatButton>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton x:Name="PART_DecreaseButton"
+                                              Command="ScrollBar.PageUpCommand"
+                                              Background="Transparent"
+                                              Focusable="False"/>
+                            </Track.DecreaseRepeatButton>
                         </Track>
                     </Grid>
                     <ControlTemplate.Triggers>
