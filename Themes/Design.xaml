@@ -433,10 +433,8 @@
     </Style>
 
     <Style TargetType="DataGrid">
-        <Setter Property="Background" Value="{DynamicResource App.Surface}"/>
         <Setter Property="RowBackground" Value="{DynamicResource App.Surface}"/>
         <Setter Property="AlternatingRowBackground" Value="{DynamicResource App.SurfaceAlt}"/>
-        <Setter Property="AlternationCount" Value="2"/>
         <Setter Property="GridLinesVisibility" Value="Horizontal"/>
         <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource App.Divider}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
@@ -507,6 +505,7 @@
         <Setter Property="Margin" Value="0,0,0,2"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -648,22 +647,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <Grid Background="{TemplateBinding Background}">
-                        <Track x:Name="PART_Track" IsDirectionReversed="True">
-                            <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.LineUpCommand"
-                                              Style="{x:Null}"
-                                              IsTabStop="False"
-                                              Background="Transparent"/>
-                            </Track.DecreaseRepeatButton>
+                        <Track IsDirectionReversed="True">
                             <Track.Thumb>
                                 <Thumb/>
                             </Track.Thumb>
-                            <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.LineDownCommand"
-                                              Style="{x:Null}"
-                                              IsTabStop="False"
-                                              Background="Transparent"/>
-                            </Track.IncreaseRepeatButton>
                         </Track>
                     </Grid>
                 </ControlTemplate>
