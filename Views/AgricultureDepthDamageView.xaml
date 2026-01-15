@@ -1,7 +1,7 @@
 <UserControl x:Class="EconToolbox.Desktop.Views.AgricultureDepthDamageView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="{StaticResource Brush.SurfaceAlt}"
+             Background="{DynamicResource App.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -18,13 +18,13 @@
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
                                    FontSize="18"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    Margin="0,0,8,0"/>
                         <TextBlock Grid.Column="1"
                                    Text="Agricultural Depth-Duration Damage Guidance"
                                    FontWeight="Bold"
                                    FontSize="16"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    TextWrapping="Wrap"/>
                     </Grid>
                     <TextBlock TextWrapping="Wrap"
@@ -45,8 +45,8 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0"
-                        Background="{StaticResource Brush.Surface}"
-                        BorderBrush="{StaticResource Brush.Border}"
+                        Background="{DynamicResource App.Surface}"
+                        BorderBrush="{DynamicResource App.Border}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="{StaticResource Padding.Content}"
@@ -71,9 +71,9 @@
                                    TextWrapping="Wrap"
                                    Margin="{StaticResource Margin.Stack}"/>
 
-                        <Border BorderBrush="{StaticResource Brush.Border}"
+                        <Border BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
-                                Background="{StaticResource Brush.SurfaceAlt}"
+                                Background="{DynamicResource App.SurfaceAlt}"
                                 CornerRadius="4"
                                 Padding="{StaticResource Padding.Content}"
                                 Margin="{StaticResource Margin.Stack}">
@@ -262,9 +262,9 @@
                                    TextWrapping="Wrap"
                                    Margin="{StaticResource Margin.Stack}"/>
 
-                        <Border BorderBrush="{StaticResource Brush.Border}"
+                        <Border BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
-                                Background="{StaticResource Brush.SurfaceAlt}"
+                                Background="{DynamicResource App.SurfaceAlt}"
                                 CornerRadius="4"
                                 Padding="{StaticResource Padding.Content}"
                                 Margin="{StaticResource Margin.Stack}">
@@ -312,9 +312,9 @@
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="{StaticResource Brush.Border}"
+                        <Border BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
-                                Background="{StaticResource Brush.SurfaceAlt}"
+                                Background="{DynamicResource App.SurfaceAlt}"
                                 CornerRadius="4"
                                 Padding="{StaticResource Padding.Content}"
                                 Margin="{StaticResource Margin.Stack}">
@@ -402,12 +402,12 @@
                                       Margin="{StaticResource Margin.StackSmall}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="{StaticResource Brush.Border}"
+                                    <Border BorderBrush="{DynamicResource App.Border}"
                                             BorderThickness="1"
                                             CornerRadius="4"
                                             Padding="{StaticResource Padding.Content}"
                                             Margin="{StaticResource Margin.StackSmall}"
-                                            Background="{StaticResource Brush.SurfaceAlt}">
+                                            Background="{DynamicResource App.SurfaceAlt}">
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                                                 <StackPanel Width="220">
@@ -500,8 +500,8 @@
                 </Border>
 
                 <Border Grid.Row="1"
-                        Background="{StaticResource Brush.Surface}"
-                        BorderBrush="{StaticResource Brush.Border}"
+                        Background="{DynamicResource App.Surface}"
+                        BorderBrush="{DynamicResource App.Border}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="{StaticResource Padding.Content}"
@@ -514,7 +514,7 @@
                         <TextBlock Text="{Binding ModeledImpactProbabilityDisplay}"
                                    FontSize="32"
                                    FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Text="{Binding ImpactSummary}"
                                    Style="{StaticResource Text.Body}"
@@ -541,15 +541,15 @@
                             <TextBlock Grid.Column="1"
                                        Text="{Binding MeanDamageDisplay}"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        Margin="{StaticResource Margin.Inline}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Row="2"
-                        Background="{StaticResource Brush.Surface}"
-                        BorderBrush="{StaticResource Brush.Border}"
+                        Background="{DynamicResource App.Surface}"
+                        BorderBrush="{DynamicResource App.Border}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="{StaticResource Padding.Content}"
@@ -591,8 +591,8 @@
                 </Border>
 
                 <Border Grid.Row="3"
-                        Background="{StaticResource Brush.Surface}"
-                        BorderBrush="{StaticResource Brush.Border}"
+                        Background="{DynamicResource App.Surface}"
+                        BorderBrush="{DynamicResource App.Border}"
                         BorderThickness="1"
                         CornerRadius="8"
                         Padding="{StaticResource Padding.Content}"
@@ -630,32 +630,32 @@
                                      MinHeight="220"
                                      Margin="0,0,24,0">
                                 <Grid Width="340" Height="220">
-                                    <Border Background="{StaticResource Brush.ChartFill}"
-                                            BorderBrush="{StaticResource Brush.Border}"
+                                    <Border Background="{DynamicResource App.ChartFill}"
+                                            BorderBrush="{DynamicResource App.Border}"
                                             BorderThickness="1"
                                            CornerRadius="8"/>
                                     <Canvas Width="300"
                                             Height="180"
                                             Margin="20,20,20,20"
                                             ClipToBounds="True">
-                                        <Line X1="0" Y1="180" X2="300" Y2="180" Stroke="{StaticResource Brush.Border}" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
-                                        <Line X1="0" Y1="0" X2="0" Y2="180" Stroke="{StaticResource Brush.Border}" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
-                                        <Line X1="0" Y1="120" X2="300" Y2="120" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
-                                        <Line X1="0" Y1="60" X2="300" Y2="60" Stroke="{StaticResource Brush.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                        <Line X1="0" Y1="180" X2="300" Y2="180" Stroke="{DynamicResource App.Border}" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
+                                        <Line X1="0" Y1="0" X2="0" Y2="180" Stroke="{DynamicResource App.Border}" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
+                                        <Line X1="0" Y1="120" X2="300" Y2="120" Stroke="{DynamicResource App.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                        <Line X1="0" Y1="60" X2="300" Y2="60" Stroke="{DynamicResource App.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
                                         <Polyline Points="{Binding CropScapeDamagePoints}"
-                                                  Stroke="{StaticResource Brush.Primary}"
+                                                  Stroke="{DynamicResource App.Accent}"
                                                   StrokeThickness="3"
                                                   StrokeEndLineCap="Round"
                                                   StrokeStartLineCap="Round"/>
                                     </Canvas>
                                     <TextBlock Text="Depth (ft)"
-                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                               Foreground="{DynamicResource App.TextSecondary}"
                                                FontSize="12"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Bottom"
                                                Margin="0,0,0,6"/>
                                     <TextBlock Text="Damaged acres"
-                                               Foreground="{StaticResource Brush.TextSecondary}"
+                                               Foreground="{DynamicResource App.TextSecondary}"
                                                FontSize="12"
                                                HorizontalAlignment="Left"
                                                VerticalAlignment="Center"
@@ -751,11 +751,11 @@
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
                                    FontSize="18"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    Margin="0,0,8,0"/>
                         <TextBlock Text="Result guidance"
                                    FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"/>
+                                   Foreground="{DynamicResource App.Accent}"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap"
@@ -771,11 +771,11 @@
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
                                    FontSize="18"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    Margin="0,0,8,0"/>
                         <TextBlock Text="Workflow tips"
                                    FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"/>
+                                   Foreground="{DynamicResource App.Accent}"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap"
@@ -795,11 +795,11 @@
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
                                    FontSize="18"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    Margin="0,0,8,0"/>
                         <TextBlock Text="Formula Reference"
                                    FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"/>
+                                   Foreground="{DynamicResource App.Accent}"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap"

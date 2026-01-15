@@ -49,6 +49,7 @@ namespace EconToolbox.Desktop.ViewModels
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ToggleLeftPaneCommand { get; }
         public IRelayCommand ToggleRightPaneCommand { get; }
+        public IRelayCommand ToggleDarkModeCommand { get; }
 
         private bool _isDetailsPaneVisible = true;
         public bool IsDetailsPaneVisible
@@ -76,16 +77,16 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private bool _isDarkTheme;
-        public bool IsDarkTheme
+        private bool _isDarkMode;
+        public bool IsDarkMode
         {
-            get => _isDarkTheme;
+            get => _isDarkMode;
             set
             {
-                if (_isDarkTheme == value) return;
-                _isDarkTheme = value;
+                if (_isDarkMode == value) return;
+                _isDarkMode = value;
                 OnPropertyChanged();
-                _themeService.ApplyTheme(_isDarkTheme);
+                _themeService.ApplyTheme(_isDarkMode ? ThemeVariant.Dark : ThemeVariant.Light);
                 UpdateLayoutSettings();
             }
         }
@@ -180,6 +181,7 @@ namespace EconToolbox.Desktop.ViewModels
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ToggleLeftPaneCommand = new RelayCommand(ToggleExplorerPane);
             ToggleRightPaneCommand = new RelayCommand(ToggleDetailsPane);
+            ToggleDarkModeCommand = new RelayCommand(() => IsDarkMode = !IsDarkMode);
 
             Modules = new List<ModuleDefinition>
             {
@@ -393,7 +395,7 @@ namespace EconToolbox.Desktop.ViewModels
             _detailsPaneWidth = _layoutSettings.IsDetailsPaneVisible ? _layoutSettings.DetailsPaneWidth : 0;
             _isExplorerPaneVisible = _layoutSettings.IsExplorerPaneVisible;
             _isDetailsPaneVisible = _layoutSettings.IsDetailsPaneVisible;
-            _isDarkTheme = _layoutSettings.IsDarkTheme;
+            _isDarkMode = _themeService.CurrentTheme == ThemeVariant.Dark;
 
             _explorerPaneWidthBeforeCollapse = _layoutSettings.ExplorerPaneWidth > 0
                 ? _layoutSettings.ExplorerPaneWidth
@@ -407,9 +409,9 @@ namespace EconToolbox.Desktop.ViewModels
             OnPropertyChanged(nameof(DetailsPaneWidth));
             OnPropertyChanged(nameof(IsExplorerPaneVisible));
             OnPropertyChanged(nameof(IsDetailsPaneVisible));
-            OnPropertyChanged(nameof(IsDarkTheme));
+            OnPropertyChanged(nameof(IsDarkMode));
 
-            _themeService.ApplyTheme(_isDarkTheme);
+            _themeService.ApplyTheme(_themeService.CurrentTheme);
         }
 
         private void ToggleDetailsPane()
@@ -531,7 +533,6 @@ namespace EconToolbox.Desktop.ViewModels
             _layoutSettings.DetailsPaneWidth = IsDetailsPaneVisible ? DetailsPaneWidth : _detailsPaneWidthBeforeCollapse;
             _layoutSettings.IsExplorerPaneVisible = IsExplorerPaneVisible;
             _layoutSettings.IsDetailsPaneVisible = IsDetailsPaneVisible;
-            _layoutSettings.IsDarkTheme = IsDarkTheme;
             _layoutSettingsService.Save(_layoutSettings);
         }
     }
