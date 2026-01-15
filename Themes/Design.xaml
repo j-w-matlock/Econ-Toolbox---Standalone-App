@@ -656,11 +656,29 @@
                             <Track.Thumb>
                                 <Thumb/>
                             </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton x:Name="PART_IncreaseButton"
+                                              Command="ScrollBar.PageDownCommand"
+                                              Background="Transparent"
+                                              Focusable="False"/>
+                            </Track.IncreaseRepeatButton>
                         </Track>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="PART_DecreaseButton" Property="Command" Value="ScrollBar.PageLeftCommand"/>
+                            <Setter TargetName="PART_IncreaseButton" Property="Command" Value="ScrollBar.PageRightCommand"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="Width" Value="Auto"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="Thumb">
