@@ -33,8 +33,7 @@ public class LayoutSettingsServiceTests
             ExplorerPaneWidth = 300,
             DetailsPaneWidth = 360,
             IsExplorerPaneVisible = false,
-            IsDetailsPaneVisible = true,
-            IsDarkTheme = true
+            IsDetailsPaneVisible = true
         };
 
         service.Save(settings);
@@ -44,7 +43,6 @@ public class LayoutSettingsServiceTests
         Assert.AreEqual(360, loaded.DetailsPaneWidth, 0.1);
         Assert.IsFalse(loaded.IsExplorerPaneVisible);
         Assert.IsTrue(loaded.IsDetailsPaneVisible);
-        Assert.IsTrue(loaded.IsDarkTheme);
 
         if (Directory.Exists(tempFolder))
         {

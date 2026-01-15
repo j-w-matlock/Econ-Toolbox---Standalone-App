@@ -2,6 +2,8 @@ namespace EconToolbox.Desktop.Services
 {
     public interface IThemeService
     {
-        void ApplyTheme(bool isDark);
+        ThemeVariant CurrentTheme { get; }
+
+        void ApplyTheme(ThemeVariant theme);
     }
 }
