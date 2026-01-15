@@ -4,13 +4,6 @@
              Background="{StaticResource Brush.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/Design.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Auto"
                   Padding="{StaticResource Padding.Card}">

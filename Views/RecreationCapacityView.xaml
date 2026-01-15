@@ -9,13 +9,6 @@
              SnapsToDevicePixels="True"
              UseLayoutRounding="True"
              d:DataContext="{d:DesignInstance Type=vm:RecreationCapacityViewModel}">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/Design.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Padding="{StaticResource Padding.Card}">
