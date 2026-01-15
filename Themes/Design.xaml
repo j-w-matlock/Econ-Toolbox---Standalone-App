@@ -647,22 +647,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <Grid Background="{TemplateBinding Background}">
-                        <Track x:Name="PART_Track" IsDirectionReversed="True">
-                            <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.LineUpCommand"
-                                              Style="{x:Null}"
-                                              IsTabStop="False"
-                                              Background="Transparent"/>
-                            </Track.DecreaseRepeatButton>
+                        <Track IsDirectionReversed="True">
                             <Track.Thumb>
                                 <Thumb/>
                             </Track.Thumb>
-                            <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="ScrollBar.LineDownCommand"
-                                              Style="{x:Null}"
-                                              IsTabStop="False"
-                                              Background="Transparent"/>
-                            </Track.IncreaseRepeatButton>
                         </Track>
                     </Grid>
                 </ControlTemplate>
