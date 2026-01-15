@@ -49,7 +49,6 @@ namespace EconToolbox.Desktop.ViewModels
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ToggleLeftPaneCommand { get; }
         public IRelayCommand ToggleRightPaneCommand { get; }
-        public IRelayCommand ToggleDarkModeCommand { get; }
 
         private bool _isDetailsPaneVisible = true;
         public bool IsDetailsPaneVisible
@@ -73,20 +72,6 @@ namespace EconToolbox.Desktop.ViewModels
                 if (_isExplorerPaneVisible == value) return;
                 _isExplorerPaneVisible = value;
                 OnPropertyChanged();
-                UpdateLayoutSettings();
-            }
-        }
-
-        private bool _isDarkMode;
-        public bool IsDarkMode
-        {
-            get => _isDarkMode;
-            set
-            {
-                if (_isDarkMode == value) return;
-                _isDarkMode = value;
-                OnPropertyChanged();
-                _themeService.ApplyTheme(_isDarkMode ? ThemeVariant.Dark : ThemeVariant.Light);
                 UpdateLayoutSettings();
             }
         }
@@ -142,7 +127,6 @@ namespace EconToolbox.Desktop.ViewModels
 
         private readonly IExcelExportService _excelExportService;
         private readonly ILayoutSettingsService _layoutSettingsService;
-        private readonly IThemeService _themeService;
         private LayoutSettings _layoutSettings = new();
         private double _explorerPaneWidthBeforeCollapse = DefaultExplorerPaneWidth;
         private double _detailsPaneWidthBeforeCollapse = DefaultDetailsPaneWidth;
@@ -160,8 +144,7 @@ namespace EconToolbox.Desktop.ViewModels
             GanttViewModel gantt,
             StageDamageOrganizerViewModel stageDamageOrganizer,
             IExcelExportService excelExportService,
-            ILayoutSettingsService layoutSettingsService,
-            IThemeService themeService)
+            ILayoutSettingsService layoutSettingsService)
         {
             ReadMe = readMe;
             Ead = ead;
@@ -175,13 +158,11 @@ namespace EconToolbox.Desktop.ViewModels
             StageDamageOrganizer = stageDamageOrganizer;
             _excelExportService = excelExportService;
             _layoutSettingsService = layoutSettingsService;
-            _themeService = themeService;
 
             CalculateCommand = new RelayCommand(Calculate);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ToggleLeftPaneCommand = new RelayCommand(ToggleExplorerPane);
             ToggleRightPaneCommand = new RelayCommand(ToggleDetailsPane);
-            ToggleDarkModeCommand = new RelayCommand(() => IsDarkMode = !IsDarkMode);
 
             Modules = new List<ModuleDefinition>
             {
@@ -395,7 +376,6 @@ namespace EconToolbox.Desktop.ViewModels
             _detailsPaneWidth = _layoutSettings.IsDetailsPaneVisible ? _layoutSettings.DetailsPaneWidth : 0;
             _isExplorerPaneVisible = _layoutSettings.IsExplorerPaneVisible;
             _isDetailsPaneVisible = _layoutSettings.IsDetailsPaneVisible;
-            _isDarkMode = _themeService.CurrentTheme == ThemeVariant.Dark;
 
             _explorerPaneWidthBeforeCollapse = _layoutSettings.ExplorerPaneWidth > 0
                 ? _layoutSettings.ExplorerPaneWidth
@@ -409,9 +389,6 @@ namespace EconToolbox.Desktop.ViewModels
             OnPropertyChanged(nameof(DetailsPaneWidth));
             OnPropertyChanged(nameof(IsExplorerPaneVisible));
             OnPropertyChanged(nameof(IsDetailsPaneVisible));
-            OnPropertyChanged(nameof(IsDarkMode));
-
-            _themeService.ApplyTheme(_themeService.CurrentTheme);
         }
 
         private void ToggleDetailsPane()
