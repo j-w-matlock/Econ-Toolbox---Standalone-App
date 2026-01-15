@@ -647,7 +647,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <Grid Background="{TemplateBinding Background}">
-                        <Track IsDirectionReversed="True"
+                        <Track x:Name="PART_Track"
+                               IsDirectionReversed="True"
+                               IsMoveToPointEnabled="True"
                                Minimum="{TemplateBinding Minimum}"
                                Maximum="{TemplateBinding Maximum}"
                                Value="{TemplateBinding Value}"
