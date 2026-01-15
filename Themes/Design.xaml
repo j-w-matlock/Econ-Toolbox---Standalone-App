@@ -642,12 +642,14 @@
 
     <Style TargetType="ScrollBar">
         <Setter Property="Background" Value="{DynamicResource App.ScrollBarTrack}"/>
+        <Setter Property="IsMoveToPointEnabled" Value="True"/>
         <Setter Property="Width" Value="10"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <Grid Background="{TemplateBinding Background}">
-                        <Track IsDirectionReversed="True"
+                        <Track x:Name="PART_Track"
+                               IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
                                Minimum="{TemplateBinding Minimum}"
                                Maximum="{TemplateBinding Maximum}"
                                Value="{TemplateBinding Value}"
@@ -659,12 +661,14 @@
                             <Track.IncreaseRepeatButton>
                                 <RepeatButton x:Name="PART_IncreaseButton"
                                               Command="ScrollBar.PageDownCommand"
+                                              CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                               Background="Transparent"
                                               Focusable="False"/>
                             </Track.IncreaseRepeatButton>
                             <Track.DecreaseRepeatButton>
                                 <RepeatButton x:Name="PART_DecreaseButton"
                                               Command="ScrollBar.PageUpCommand"
+                                              CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                               Background="Transparent"
                                               Focusable="False"/>
                             </Track.DecreaseRepeatButton>
