@@ -14,137 +14,135 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
+    <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
         <StackPanel>
-        <Border Margin="10,0,10,10"
-                Style="{StaticResource Border.Explainer}"
-                Padding="{StaticResource Padding.Card}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Top">
-                    <Viewbox Width="32" Height="32" Margin="0,0,10,0">
-                        <Canvas Width="32" Height="32">
-                            <Rectangle Width="24"
-                                       Height="16"
-                                       RadiusX="2"
-                                       RadiusY="2"
-                                       Fill="{StaticResource Brush.Primary}"
-                                       Canvas.Left="4"
-                                       Canvas.Top="8"/>
-                            <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="6" Canvas.Top="10"/>
-                            <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="14" Canvas.Top="10"/>
-                            <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="22" Canvas.Top="10"/>
-                            <Path Data="M4,24 C7,22 9,22 12,24 C15,26 17,26 20,24 C23,22 25,22 28,24"
-                                  Stroke="{StaticResource Brush.Accent}"
-                                  StrokeThickness="2"
-                                  StrokeStartLineCap="Round"
-                                  StrokeEndLineCap="Round"
-                                  Fill="Transparent"/>
-                        </Canvas>
-                    </Viewbox>
-                </StackPanel>
-                <StackPanel Grid.Column="1">
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Grid.Row" Value="0"/>
-                            <Setter Property="Grid.ColumnSpan" Value="1"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                             Value="Narrow">
-                                    <Setter Property="Grid.ColumnSpan" Value="2"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <TextBlock Text="Updated Cost Workflow"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="{StaticResource Brush.Primary}"
-                               TextWrapping="Wrap"/>
-                    <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
-                        <Run Text="• Work through each sub-tab from left to right so dependent calculations stay aligned."/>
-                        <LineBreak/>
-                        <Run Text="• Start with storage capacity, capture annual joint costs, then update historical line items."/>
-                        <LineBreak/>
-                        <Run Text="• Evaluate RR&amp;R, mitigation, and total annual cost scenarios once upstream inputs are finalized."/>
-                        <LineBreak/>
-                        <Run Text="• Press Compute within each section before leaving the tab to keep downstream values synchronized."/>
-                    </TextBlock>
-                </StackPanel>
-                <Canvas Width="80" Height="60">
-                    <Canvas.Style>
-                        <Style TargetType="Canvas">
-                            <Setter Property="Grid.Column" Value="2"/>
-                            <Setter Property="Grid.Row" Value="0"/>
-                            <Setter Property="Margin" Value="15,0,0,0"/>
-                            <Setter Property="HorizontalAlignment" Value="Right"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource WidthToLayoutModeConverter}}"
-                                             Value="Narrow">
-                                    <Setter Property="Grid.Column" Value="0"/>
-                                    <Setter Property="Grid.Row" Value="1"/>
-                                    <Setter Property="Margin" Value="0,12,0,0"/>
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Canvas.Style>
-                    <Rectangle Width="70" Height="40" Fill="{StaticResource Brush.Surface}" Stroke="{StaticResource Brush.Accent}" RadiusX="6" RadiusY="6" Canvas.Left="5" Canvas.Top="15"/>
-                    <Polyline Points="5,45 25,25 45,30 65,10" Stroke="{StaticResource Brush.Primary}" StrokeThickness="3" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
-                    <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="1" Canvas.Top="41"/>
-                    <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="21" Canvas.Top="21"/>
-                    <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="41" Canvas.Top="26"/>
-                    <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="61" Canvas.Top="6"/>
-                </Canvas>
-            </Grid>
-        </Border>
-        <TabControl Margin="10,0,10,10" HorizontalContentAlignment="Stretch">
-        <TabItem Header="Storage Cost">
-            <StackPanel Margin="10">
-                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
-                    <StackPanel>
-                        <Grid VerticalAlignment="Center">
+            <Border Style="{StaticResource Border.Explainer}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Top">
+                        <Viewbox Width="32" Height="32" Margin="0,0,10,0">
+                            <Canvas Width="32" Height="32">
+                                <Rectangle Width="24"
+                                           Height="16"
+                                           RadiusX="2"
+                                           RadiusY="2"
+                                           Fill="{StaticResource Brush.Primary}"
+                                           Canvas.Left="4"
+                                           Canvas.Top="8"/>
+                                <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="6" Canvas.Top="10"/>
+                                <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="14" Canvas.Top="10"/>
+                                <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="22" Canvas.Top="10"/>
+                                <Path Data="M4,24 C7,22 9,22 12,24 C15,26 17,26 20,24 C23,22 25,22 28,24"
+                                      Stroke="{StaticResource Brush.Accent}"
+                                      StrokeThickness="2"
+                                      StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round"
+                                      Fill="Transparent"/>
+                            </Canvas>
+                        </Viewbox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Grid.Row" Value="0"/>
+                                <Setter Property="Grid.ColumnSpan" Value="1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                 Value="Narrow">
+                                        <Setter Property="Grid.ColumnSpan" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock Text="Updated Cost Workflow"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Primary}"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
+                            <Run Text="• Work through each sub-tab from left to right so dependent calculations stay aligned."/>
+                            <LineBreak/>
+                            <Run Text="• Start with storage capacity, capture annual joint costs, then update historical line items."/>
+                            <LineBreak/>
+                            <Run Text="• Evaluate RR&amp;R, mitigation, and total annual cost scenarios once upstream inputs are finalized."/>
+                            <LineBreak/>
+                            <Run Text="• Press Compute within each section before leaving the tab to keep downstream values synchronized."/>
+                        </TextBlock>
+                    </StackPanel>
+                    <Canvas Width="80" Height="60">
+                        <Canvas.Style>
+                            <Style TargetType="Canvas">
+                                <Setter Property="Grid.Column" Value="2"/>
+                                <Setter Property="Grid.Row" Value="0"/>
+                                <Setter Property="Margin" Value="15,0,0,0"/>
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource WidthToLayoutModeConverter}}"
+                                                 Value="Narrow">
+                                        <Setter Property="Grid.Column" Value="0"/>
+                                        <Setter Property="Grid.Row" Value="1"/>
+                                        <Setter Property="Margin" Value="0,12,0,0"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Canvas.Style>
+                        <Rectangle Width="70" Height="40" Fill="{StaticResource Brush.Surface}" Stroke="{StaticResource Brush.Accent}" RadiusX="6" RadiusY="6" Canvas.Left="5" Canvas.Top="15"/>
+                        <Polyline Points="5,45 25,25 45,30 65,10" Stroke="{StaticResource Brush.Primary}" StrokeThickness="3" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="1" Canvas.Top="41"/>
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="21" Canvas.Top="21"/>
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="41" Canvas.Top="26"/>
+                        <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="61" Canvas.Top="6"/>
+                    </Canvas>
+                </Grid>
+            </Border>
+            <TabControl Margin="0" HorizontalContentAlignment="Stretch">
+                <TabItem Header="Storage Cost">
+                    <StackPanel Margin="0">
+                        <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <Grid VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontFamily="Segoe MDL2 Assets"
+                                               Text=""
+                                               FontSize="18"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               Margin="0,0,8,0"/>
+                                    <TextBlock Grid.Column="1"
+                                               Text="Storage Guidance"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource Brush.Primary}"
+                                               TextWrapping="Wrap"/>
+                                </Grid>
+                                <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
+                                    <Run Text="• Record the full system storage and the recommended allocation for your study."/>
+                                    <LineBreak/>
+                                    <Run Text="• Use Compute to scale the remaining sections by this proportion before moving forward."/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                        <Grid Margin="0,10,0,10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       FontSize="18"
-                                       Foreground="{StaticResource Brush.Primary}"
-                                       Margin="0,0,8,0"/>
-                            <TextBlock Grid.Column="1"
-                                       Text="Storage Guidance"
-                                       FontWeight="Bold"
-                                       Foreground="{StaticResource Brush.Primary}"
-                                       TextWrapping="Wrap"/>
-                        </Grid>
-                        <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
-                            <Run Text="• Record the full system storage and the recommended allocation for your study."/>
-                            <LineBreak/>
-                            <Run Text="• Use Compute to scale the remaining sections by this proportion before moving forward."/>
-                        </TextBlock>
-                    </StackPanel>
-                </Border>
-                <Grid Margin="0,10,0,10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
                     <TextBlock Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
@@ -971,33 +969,33 @@
                 </Border>
             </StackPanel>
         </TabItem>
-        </TabControl>
-        <Border Style="{StaticResource Border.ResultInfo}" Margin="10,0,10,0">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+            </TabControl>
+            <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        Storage Allocation, Updated RR&amp;R, and Total Annual Cost tabs feed the same allocation percentage and cost streams. Review the allocation tab first, then confirm how escalated costs, RR&amp;R schedules, and annualized totals change as you adjust discounting assumptions across scenarios.
+                    </TextBlock>
                 </StackPanel>
-                <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                    Storage Allocation, Updated RR&amp;R, and Total Annual Cost tabs feed the same allocation percentage and cost streams. Review the allocation tab first, then confirm how escalated costs, RR&amp;R schedules, and annualized totals change as you adjust discounting assumptions across scenarios.
-                </TextBlock>
-            </StackPanel>
-        </Border>
-        <Border Style="{StaticResource Border.ResultInfo}" Margin="10,12,10,0">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+            </Border>
+            <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopLarge}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <Run Text="• Verify storage recommendation and total usable storage before comparing Cost 1 and Cost 2."/>
+                        <LineBreak/>
+                        <Run Text="• Recalculate capital recovery factors after adjusting discount rates or analysis periods."/>
+                        <LineBreak/>
+                        <Run Text="• Use the export to capture both storage allocation percentages and RR&amp;R assumptions for review."/>
+                    </TextBlock>
                 </StackPanel>
-                <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                    <Run Text="• Verify storage recommendation and total usable storage before comparing Cost 1 and Cost 2."/>
-                    <LineBreak/>
-                    <Run Text="• Recalculate capital recovery factors after adjusting discount rates or analysis periods."/>
-                    <LineBreak/>
-                    <Run Text="• Use the export to capture both storage allocation percentages and RR&amp;R assumptions for review."/>
-                </TextBlock>
-            </StackPanel>
-        </Border>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

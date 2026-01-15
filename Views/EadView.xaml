@@ -15,10 +15,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <ScrollViewer Focusable="False"
-                      HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Auto"
-                      Padding="{StaticResource Padding.Card}">
+        <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
             <StackPanel>
                 <Border Style="{StaticResource Border.Explainer}">
                     <StackPanel>
@@ -46,15 +43,11 @@
                     </StackPanel>
                 </Border>
 
-                <Border Background="{StaticResource Brush.Surface}"
-                        CornerRadius="8"
-                        BorderBrush="{StaticResource Brush.Border}"
-                        BorderThickness="1"
-                        Padding="{StaticResource Padding.Content}"
+                <Border Style="{StaticResource Border.Card}"
                         Margin="0,0,0,12">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <Button Command="{Binding AddDamageColumnCommand}"
-                                Padding="12,6"
+                                Style="{StaticResource Button.Action}"
                                 Margin="0,0,12,0"
                                 ToolTip="Append a new damage column for an additional category or scenario.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -63,7 +56,7 @@
                             </StackPanel>
                         </Button>
                         <Button Command="{Binding RemoveDamageColumnCommand}"
-                                Padding="12,6"
+                                Style="{StaticResource Button.Action}"
                                 Margin="0,0,12,0"
                                 ToolTip="Remove the most recently added damage column.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -82,11 +75,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Background="{StaticResource Brush.Surface}"
-                        CornerRadius="8"
-                        BorderBrush="{StaticResource Brush.Border}"
-                        BorderThickness="1"
-                        Padding="{StaticResource Padding.Content}"
+                <Border Style="{StaticResource Border.Card}"
                         Margin="0,0,0,12">
                     <StackPanel>
                         <TextBlock Text="Stage / Frequency / Damage Inputs"
@@ -104,11 +93,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Background="{StaticResource Brush.Surface}"
-                        BorderBrush="{StaticResource Brush.Border}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="{StaticResource Padding.Content}"
+                <Border Style="{StaticResource Border.Card}"
                         Margin="0,0,0,12">
                     <StackPanel>
                         <TextBox Text="{Binding ChartTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -160,11 +145,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Background="{StaticResource Brush.Surface}"
-                        CornerRadius="8"
-                        BorderBrush="{StaticResource Brush.Border}"
-                        BorderThickness="1"
-                        Padding="{StaticResource Padding.Content}">
+                <Border Style="{StaticResource Border.Card}">
                     <StackPanel>
                         <TextBlock Text="Expected Annual Damage Results"
                                    FontWeight="SemiBold"

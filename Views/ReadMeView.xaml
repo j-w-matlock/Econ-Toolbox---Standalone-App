@@ -12,69 +12,67 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Background="Transparent"
-          Margin="{StaticResource Padding.Card}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Border Grid.Row="0"
-                Background="{StaticResource Brush.Surface}"
-                BorderBrush="{StaticResource Brush.Border}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="{StaticResource Padding.Section}">
-            <md:MarkdownScrollViewer x:Name="MarkdownViewer"
-                                     Markdown="{Binding MarkdownContent}"
-                                     VerticalScrollBarVisibility="Auto"
-                                     HorizontalScrollBarVisibility="Auto"
-                                     Background="Transparent"
-                                     Foreground="{StaticResource Brush.TextPrimary}"
-                                     FontSize="14"/>
-        </Border>
-        <StackPanel Grid.Row="1" Margin="0,16,0,0">
-            <Border Style="{StaticResource Border.ResultInfo}">
-                <StackPanel>
-                    <Grid VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Grid.Column="1"
-                                   Text="Using the README tab"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"
-                                   TextWrapping="Wrap"/>
-                    </Grid>
-                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                        Browse setup steps, module descriptions, and publishing guidance without leaving the toolbox. Use the scroll bar and Ctrl+F search to jump to the section you need while working inside the app.
-                    </TextBlock>
-                </StackPanel>
+    <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"
+                    Style="{StaticResource Border.Card}"
+                    Padding="{StaticResource Padding.Section}">
+                <md:MarkdownScrollViewer x:Name="MarkdownViewer"
+                                         Markdown="{Binding MarkdownContent}"
+                                         VerticalScrollBarVisibility="Auto"
+                                         HorizontalScrollBarVisibility="Auto"
+                                         Background="Transparent"
+                                         Foreground="{StaticResource Brush.TextPrimary}"
+                                         FontSize="14"/>
             </Border>
-            <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
-                <StackPanel>
-                    <Grid VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Grid.Column="1"
-                                   Text="Navigation tips"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"
-                                   TextWrapping="Wrap"/>
-                    </Grid>
-                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                        <Run Text="• Use the Table of Contents in the rendered markdown to jump to build, module, or publishing sections."/>
-                        <LineBreak/>
-                        <Run Text="• External links open in your default browser; keep the tab open to continue working in the toolbox."/>
-                        <LineBreak/>
-                        <Run Text="• Refresh the README from the main window if the repository content changes."/>
-                    </TextBlock>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-    </Grid>
+            <StackPanel Grid.Row="1" Margin="0,16,0,0">
+                <Border Style="{StaticResource Border.Explainer}">
+                    <StackPanel>
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Using the README tab"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            Browse setup steps, module descriptions, and publishing guidance without leaving the toolbox. Use the scroll bar and Ctrl+F search to jump to the section you need while working inside the app.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Border.Explainer}" Margin="0,12,0,0">
+                    <StackPanel>
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Navigation tips"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource Brush.Primary}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                            <Run Text="• Use the Table of Contents in the rendered markdown to jump to build, module, or publishing sections."/>
+                            <LineBreak/>
+                            <Run Text="• External links open in your default browser; keep the tab open to continue working in the toolbox."/>
+                            <LineBreak/>
+                            <Run Text="• Refresh the README from the main window if the repository content changes."/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
