@@ -233,7 +233,7 @@ namespace EconToolbox.Desktop.Views.Controls
                     continue;
                 }
 
-                var stroke = series.Stroke ?? Brushes.SteelBlue;
+                var stroke = series.Stroke ?? GetResourceBrush("App.Accent", Brushes.SteelBlue);
                 var polyPen = new Pen(stroke, 2.5);
                 var geometry = new StreamGeometry();
                 using (var context = geometry.Open())
@@ -257,11 +257,12 @@ namespace EconToolbox.Desktop.Views.Controls
                 geometry.Freeze();
                 dc.DrawGeometry(null, polyPen, geometry);
 
+                var pointFill = GetResourceBrush("App.Surface", Brushes.White);
                 foreach (var pt in series.Points)
                 {
                     double x = marginLeft + ((pt.X - minX) / (maxX - minX)) * plotWidth;
                     double y = marginTop + plotHeight - ((pt.Y - minY) / (maxY - minY)) * plotHeight;
-                    dc.DrawEllipse(Brushes.White, new Pen(stroke, 1.5), new Point(x, y), 4, 4);
+                    dc.DrawEllipse(pointFill, new Pen(stroke, 1.5), new Point(x, y), 4, 4);
                 }
             }
         }
@@ -273,8 +274,13 @@ namespace EconToolbox.Desktop.Views.Controls
                 : EmptyMessage;
 
             double dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            var text = CreateLabel(message, dpi, new SolidColorBrush(Color.FromRgb(100, 100, 110)));
+            var text = CreateLabel(message, dpi, GetResourceBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(100, 100, 110))));
             dc.DrawText(text, new Point((width - text.Width) / 2, (height - text.Height) / 2));
+        }
+
+        private static Brush GetResourceBrush(string key, Brush fallback)
+        {
+            return Application.Current?.Resources[key] as Brush ?? fallback;
         }
 
         private static FormattedText CreateLabel(string text, double dpi, Brush brush)

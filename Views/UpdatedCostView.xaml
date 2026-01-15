@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             Background="{StaticResource Brush.SurfaceAlt}"
+             Background="{DynamicResource App.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
@@ -27,14 +27,14 @@
                                            Height="16"
                                            RadiusX="2"
                                            RadiusY="2"
-                                           Fill="{StaticResource Brush.Primary}"
+                                           Fill="{DynamicResource App.Accent}"
                                            Canvas.Left="4"
                                            Canvas.Top="8"/>
-                                <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="6" Canvas.Top="10"/>
-                                <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="14" Canvas.Top="10"/>
-                                <Rectangle Width="4" Height="12" Fill="{StaticResource Brush.Surface}" Opacity="0.6" Canvas.Left="22" Canvas.Top="10"/>
+                                <Rectangle Width="4" Height="12" Fill="{DynamicResource App.Surface}" Opacity="0.6" Canvas.Left="6" Canvas.Top="10"/>
+                                <Rectangle Width="4" Height="12" Fill="{DynamicResource App.Surface}" Opacity="0.6" Canvas.Left="14" Canvas.Top="10"/>
+                                <Rectangle Width="4" Height="12" Fill="{DynamicResource App.Surface}" Opacity="0.6" Canvas.Left="22" Canvas.Top="10"/>
                                 <Path Data="M4,24 C7,22 9,22 12,24 C15,26 17,26 20,24 C23,22 25,22 28,24"
-                                      Stroke="{StaticResource Brush.Accent}"
+                                      Stroke="{DynamicResource App.AccentHover}"
                                       StrokeThickness="2"
                                       StrokeStartLineCap="Round"
                                       StrokeEndLineCap="Round"
@@ -58,7 +58,7 @@
                         <TextBlock Text="Updated Cost Workflow"
                                    FontSize="16"
                                    FontWeight="Bold"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    TextWrapping="Wrap"/>
                         <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
                             <Run Text="• Work through each sub-tab from left to right so dependent calculations stay aligned."/>
@@ -88,12 +88,12 @@
                                 </Style.Triggers>
                             </Style>
                         </Canvas.Style>
-                        <Rectangle Width="70" Height="40" Fill="{StaticResource Brush.Surface}" Stroke="{StaticResource Brush.Accent}" RadiusX="6" RadiusY="6" Canvas.Left="5" Canvas.Top="15"/>
-                        <Polyline Points="5,45 25,25 45,30 65,10" Stroke="{StaticResource Brush.Primary}" StrokeThickness="3" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
-                        <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="1" Canvas.Top="41"/>
-                        <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="21" Canvas.Top="21"/>
-                        <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="41" Canvas.Top="26"/>
-                        <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Accent}" Canvas.Left="61" Canvas.Top="6"/>
+                        <Rectangle Width="70" Height="40" Fill="{DynamicResource App.Surface}" Stroke="{DynamicResource App.AccentHover}" RadiusX="6" RadiusY="6" Canvas.Left="5" Canvas.Top="15"/>
+                        <Polyline Points="5,45 25,25 45,30 65,10" Stroke="{DynamicResource App.Accent}" StrokeThickness="3" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+                        <Ellipse Width="8" Height="8" Fill="{DynamicResource App.AccentHover}" Canvas.Left="1" Canvas.Top="41"/>
+                        <Ellipse Width="8" Height="8" Fill="{DynamicResource App.AccentHover}" Canvas.Left="21" Canvas.Top="21"/>
+                        <Ellipse Width="8" Height="8" Fill="{DynamicResource App.AccentHover}" Canvas.Left="41" Canvas.Top="26"/>
+                        <Ellipse Width="8" Height="8" Fill="{DynamicResource App.AccentHover}" Canvas.Left="61" Canvas.Top="6"/>
                     </Canvas>
                 </Grid>
             </Border>
@@ -110,12 +110,12 @@
                                     <TextBlock FontFamily="Segoe MDL2 Assets"
                                                Text=""
                                                FontSize="18"
-                                               Foreground="{StaticResource Brush.Primary}"
+                                               Foreground="{DynamicResource App.Accent}"
                                                Margin="0,0,8,0"/>
                                     <TextBlock Grid.Column="1"
                                                Text="Storage Guidance"
                                                FontWeight="Bold"
-                                               Foreground="{StaticResource Brush.Primary}"
+                                               Foreground="{DynamicResource App.Accent}"
                                                TextWrapping="Wrap"/>
                                 </Grid>
                                 <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
@@ -191,12 +191,12 @@
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""
                                        FontSize="18"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        Margin="0,0,8,0"/>
                             <TextBlock Grid.Column="1"
                                        Text="Joint O&amp;M Entry"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
@@ -274,12 +274,12 @@
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""
                                        FontSize="18"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        Margin="0,0,8,0"/>
                             <TextBlock Grid.Column="1"
                                        Text="Update Legacy Costs"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
@@ -295,7 +295,7 @@
                         </Style>
                         <Style TargetType="TextBlock" x:Key="UpdatedCostColumnHeaderTextStyle">
                             <Setter Property="FontWeight" Value="Bold"/>
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Primary}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Accent}"/>
                             <Setter Property="Margin" Value="0,0,0,12"/>
                         </Style>
                         <Style TargetType="TextBlock" x:Key="RequiredCategoryTextStyle">
@@ -312,21 +312,21 @@
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Pre-construction Mid-Point Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreMidpointYear}"
-                                     Foreground="{StaticResource Brush.Link.JointUse}"
+                                     Foreground="{DynamicResource App.Link.JointUse}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Year used to label the original construction mid-point joint-use column."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Original ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrYear}"
-                                     Foreground="{StaticResource Brush.Link.PreEnr}"
+                                     Foreground="{DynamicResource App.Link.PreEnr}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Year associated with the initial ENR index values."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Original ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrIndexValue}"
-                                     Foreground="{StaticResource Brush.Link.PreEnr}"
+                                     Foreground="{DynamicResource App.Link.PreEnr}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="ENR index value tied to the original pre-construction year."/>
                         </StackPanel>
@@ -336,21 +336,21 @@
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition Mid-Point Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionMidpointYear}"
-                                     Foreground="{StaticResource Brush.Link.TransitionEnr}"
+                                     Foreground="{DynamicResource App.Link.TransitionEnr}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Year used to label the transition mid-point joint-use column."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrYear}"
-                                     Foreground="{StaticResource Brush.Link.TransitionEnr}"
+                                     Foreground="{DynamicResource App.Link.TransitionEnr}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Year associated with the transition ENR index values."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrIndexValue}"
-                                     Foreground="{StaticResource Brush.Link.TransitionEnr}"
+                                     Foreground="{DynamicResource App.Link.TransitionEnr}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="ENR index value used for the transition mid-point."/>
                         </StackPanel>
@@ -364,28 +364,28 @@
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="1967 ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding Enr1967Year}"
-                                     Foreground="{StaticResource Brush.Link.Enr1967}"
+                                     Foreground="{DynamicResource App.Link.Enr1967}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Year anchoring the ENR and CWCCIS indexing, typically 1967."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="1967 ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding Enr1967IndexValue}"
-                                     Foreground="{StaticResource Brush.Link.Enr1967}"
+                                     Foreground="{DynamicResource App.Link.Enr1967}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="ENR index value for the 1967 base year."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="1967 CWCCIS Base Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding CwccisBaseIndexValue}"
-                                     Foreground="{StaticResource Brush.Link.CwccisBase}"
+                                     Foreground="{DynamicResource App.Link.CwccisBase}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="CWCCIS base index value for 1967 (commonly 100)."/>
                         </StackPanel>
                         <StackPanel>
                             <TextBlock Text="CWCCIS Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding CwccisIndexYear}"
-                                     Foreground="{StaticResource Brush.Link.CwccisCurrent}"
+                                     Foreground="{DynamicResource App.Link.CwccisCurrent}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Calendar year tied to the current CWCCIS index values."/>
                         </StackPanel>
@@ -406,7 +406,7 @@
                     <DataGrid.Resources>
                         <Style TargetType="DataGridCell" x:Key="RequiredCellBaseStyle">
                             <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
                             <Setter Property="BorderThickness" Value="0,0,0,1"/>
                         </Style>
                         <Style x:Key="NumericCellStyle" TargetType="TextBlock">
@@ -419,90 +419,90 @@
                         <Style x:Key="CategoryCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Category}" Value="">
-                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Category}" Value="{x:Null}">
-                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="JointUseCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding JointUsePre1967}" Value="0">
-                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="PreEnrCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Pre1967EnrIndex}" Value="0">
-                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="TransitionEnrCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding TransitionEnrIndex}" Value="0">
-                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="Enr1967CellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Enr1967Index}" Value="0">
-                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="CwccisBaseCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CwccisBase}" Value="0">
-                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="CwccisIndexCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding CwccisIndex}" Value="0">
-                                    <Setter Property="Background" Value="{StaticResource Brush.WarningBackground}"/>
+                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="JointUseTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.JointUse}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.JointUse}"/>
                         </Style>
                         <Style x:Key="JointUseEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.JointUse}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.JointUse}"/>
                         </Style>
                         <Style x:Key="PreEnrTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.PreEnr}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.PreEnr}"/>
                         </Style>
                         <Style x:Key="PreEnrEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.PreEnr}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.PreEnr}"/>
                         </Style>
                         <Style x:Key="TransitionEnrTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.TransitionEnr}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.TransitionEnr}"/>
                         </Style>
                         <Style x:Key="TransitionEnrEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.TransitionEnr}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.TransitionEnr}"/>
                         </Style>
                         <Style x:Key="Enr1967TextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.Enr1967}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.Enr1967}"/>
                         </Style>
                         <Style x:Key="Enr1967EditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.Enr1967}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.Enr1967}"/>
                         </Style>
                         <Style x:Key="CwccisBaseTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.CwccisBase}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisBase}"/>
                         </Style>
                         <Style x:Key="CwccisBaseEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.CwccisBase}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisBase}"/>
                         </Style>
                         <Style x:Key="CwccisIndexTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.CwccisCurrent}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
                         </Style>
                         <Style x:Key="CwccisIndexEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Link.CwccisCurrent}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
                         </Style>
                     </DataGrid.Resources>
                     <DataGrid.Columns>
@@ -527,7 +527,7 @@
                                                     ToolTip="Joint-use cost at the mid-point of construction using the original ENR year."/>
                                     <TextBlock Margin="4,0,0,0"
                                                VerticalAlignment="Center"
-                                               Foreground="{StaticResource Brush.Link.JointUse}"
+                                               Foreground="{DynamicResource App.Link.JointUse}"
                                                Text="Original Joint Use Costs at Midpoint of Construction"/>
                                 </StackPanel>
                             </DataGridTextColumn.Header>
@@ -550,7 +550,7 @@
                                            EditingElementStyle="{StaticResource TransitionEnrEditingTextStyle}"
                                            CellStyle="{StaticResource TransitionEnrCellStyle}">
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="Transition ENR Index Value" Foreground="{StaticResource Brush.Link.TransitionEnr}"/>
+                                <TextBlock Text="Transition ENR Index Value" Foreground="{DynamicResource App.Link.TransitionEnr}"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding Enr1967Index}"
@@ -558,7 +558,7 @@
                                            EditingElementStyle="{StaticResource Enr1967EditingTextStyle}"
                                            CellStyle="{StaticResource Enr1967CellStyle}">
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="1967 ENR Index Value" Foreground="{StaticResource Brush.Link.Enr1967}"/>
+                                <TextBlock Text="1967 ENR Index Value" Foreground="{DynamicResource App.Link.Enr1967}"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
@@ -582,7 +582,7 @@
                                            EditingElementStyle="{StaticResource CwccisBaseEditingTextStyle}"
                                            CellStyle="{StaticResource CwccisBaseCellStyle}">
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="CWCCIS Base Index" Foreground="{StaticResource Brush.Link.CwccisBase}"/>
+                                <TextBlock Text="CWCCIS Base Index" Foreground="{DynamicResource App.Link.CwccisBase}"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
@@ -611,7 +611,7 @@
                                                     ToolTip="Latest CWCCIS index value used for escalation."/>
                                     <TextBlock Text="Current CWCCIS Index"
                                                Margin="4,0,0,0"
-                                               Foreground="{StaticResource Brush.Link.CwccisCurrent}"
+                                               Foreground="{DynamicResource App.Link.CwccisCurrent}"
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
                             </DataGridTextColumn.Header>
@@ -692,12 +692,12 @@
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""
                                        FontSize="18"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        Margin="0,0,8,0"/>
                             <TextBlock Grid.Column="1"
                                        Text="RR&amp;R / Mitigation Planner"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
@@ -849,12 +849,12 @@
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""
                                        FontSize="18"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        Margin="0,0,8,0"/>
                             <TextBlock Grid.Column="1"
                                        Text="Compare Annual Cost Scenarios"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
@@ -966,8 +966,8 @@
             <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                         Storage Allocation, Updated RR&amp;R, and Total Annual Cost tabs feed the same allocation percentage and cost streams. Review the allocation tab first, then confirm how escalated costs, RR&amp;R schedules, and annualized totals change as you adjust discounting assumptions across scenarios.
@@ -977,8 +977,8 @@
             <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopLarge}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
+                        <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
                     </StackPanel>
                     <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
                         <Run Text="• Verify storage recommendation and total usable storage before comparing Cost 1 and Cost 2."/>

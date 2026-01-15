@@ -10,6 +10,5 @@ namespace EconToolbox.Desktop.Models
 
         public bool IsDetailsPaneVisible { get; set; } = true;
 
-        public bool IsDarkTheme { get; set; }
     }
 }

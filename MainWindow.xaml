@@ -17,7 +17,7 @@
         ToolTipService.Placement="Mouse"
         ToolTipService.HorizontalOffset="12"
         ToolTipService.VerticalOffset="12"
-        Background="{DynamicResource Brush.AppBackground}">
+        Background="{DynamicResource App.Background}">
     <Window.InputBindings>
         <KeyBinding Key="E"
                     Modifiers="Control+Alt"
@@ -65,20 +65,20 @@
                         <Setter Property="Margin" Value="0,0,0,8"/>
                         <Setter Property="CornerRadius" Value="6"/>
                         <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.InfoBackground}"/>
-                        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.InfoBorder}"/>
+                        <Setter Property="Background" Value="{DynamicResource App.Diagnostic.InfoBackground}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.InfoBorder}"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Level}" Value="Warning">
-                                <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.WarningBackground}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.WarningBorder}"/>
+                                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.WarningBackground}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.WarningBorder}"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Level}" Value="Advisory">
-                                <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.AdvisoryBackground}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.AdvisoryBorder}"/>
+                                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.AdvisoryBackground}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.AdvisoryBorder}"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Level}" Value="Error">
-                                <Setter Property="Background" Value="{DynamicResource Brush.Diagnostic.ErrorBackground}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Diagnostic.ErrorBorder}"/>
+                                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.ErrorBackground}"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.ErrorBorder}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -86,17 +86,17 @@
                         <Setter Property="Width" Value="8"/>
                         <Setter Property="Height" Value="8"/>
                         <Setter Property="Margin" Value="0,4,8,0"/>
-                        <Setter Property="Fill" Value="{DynamicResource Brush.Diagnostic.InfoIcon}"/>
+                        <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.InfoIcon}"/>
                         <Setter Property="VerticalAlignment" Value="Top"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Level}" Value="Warning">
-                                <Setter Property="Fill" Value="{DynamicResource Brush.Diagnostic.WarningIcon}"/>
+                                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.WarningIcon}"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Level}" Value="Advisory">
-                                <Setter Property="Fill" Value="{DynamicResource Brush.Diagnostic.AdvisoryIcon}"/>
+                                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.AdvisoryIcon}"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Level}" Value="Error">
-                                <Setter Property="Fill" Value="{DynamicResource Brush.Diagnostic.ErrorIcon}"/>
+                                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.ErrorIcon}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -111,11 +111,11 @@
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="{Binding Title}"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Brush.TextPrimary}"/>
+                                       Foreground="{DynamicResource App.TextPrimary}"/>
                             <TextBlock Text="{Binding Description}"
                                        FontSize="12"
                                        TextWrapping="Wrap"
-                                       Foreground="{DynamicResource Brush.TextSecondary}"/>
+                                       Foreground="{DynamicResource App.TextSecondary}"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -208,8 +208,8 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
-                Background="{DynamicResource Brush.TitleBar}"
-                BorderBrush="{DynamicResource Brush.PanelBorder}"
+                Background="{DynamicResource App.TitleBarBackground}"
+                BorderBrush="{DynamicResource App.Surface2Border}"
                 BorderThickness="0,0,0,1"
                 Padding="12,8">
             <DockPanel LastChildFill="True">
@@ -218,11 +218,11 @@
                     <TextBlock Text="ECON TOOLBOX"
                                FontSize="14"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource Brush.TextPrimary}"/>
+                               Foreground="{DynamicResource App.TextPrimary}"/>
                     <TextBlock Text="{Binding SelectedModule.Title}"
                                FontSize="13"
                                Margin="12,0,0,0"
-                               Foreground="{DynamicResource Brush.TextSecondary}"/>
+                               Foreground="{DynamicResource App.TextSecondary}"/>
                 </StackPanel>
                 <ToolBar DockPanel.Dock="Right"
                          Background="Transparent"
@@ -279,11 +279,11 @@
                                Margin="4,0,6,0"
                                VerticalAlignment="Center"
                                FontSize="12"
-                               Foreground="{DynamicResource Brush.TextSecondary}"/>
+                               Foreground="{DynamicResource App.TextSecondary}"/>
                     <ToggleButton Width="44"
                                   Height="22"
                                   Style="{DynamicResource ToggleButton.Switch}"
-                                  IsChecked="{Binding IsDarkTheme}"/>
+                                  IsChecked="{Binding IsDarkMode}"/>
                 </ToolBar>
             </DockPanel>
         </Border>
@@ -340,8 +340,8 @@
             <Border x:Name="ExplorerPane"
                     Grid.Column="0"
                     Visibility="{Binding IsExplorerPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Background="{DynamicResource Brush.Sidebar}"
-                    BorderBrush="{DynamicResource Brush.PanelBorder}"
+                    Background="{DynamicResource App.NavigationBackground}"
+                    BorderBrush="{DynamicResource App.Surface2Border}"
                     BorderThickness="0,0,1,0"
                     Padding="{StaticResource Padding.Content}">
                 <DockPanel>
@@ -373,12 +373,12 @@
                                                            Margin="0,0,0,4"/>
                                                 <TextBlock Text="{Binding FunctionSummary}"
                                                            TextWrapping="Wrap"
-                                                           Foreground="{DynamicResource Brush.TextSecondary}"/>
+                                                           Foreground="{DynamicResource App.TextSecondary}"/>
                                             </StackPanel>
                                         </ToolTip>
                                     </StackPanel.ToolTip>
                                     <TextBlock Text="{Binding Title}"
-                                               Foreground="{DynamicResource Brush.TextPrimary}"
+                                               Foreground="{DynamicResource App.TextPrimary}"
                                                FontWeight="SemiBold"
                                                TextWrapping="Wrap"/>
                                 </StackPanel>
@@ -396,8 +396,8 @@
                           ResizeDirection="Columns"/>
 
             <Border Grid.Column="2"
-                    Background="{DynamicResource Brush.Editor}"
-                    BorderBrush="{DynamicResource Brush.PanelBorder}"
+                    Background="{DynamicResource App.EditorBackground}"
+                    BorderBrush="{DynamicResource App.Surface2Border}"
                     BorderThickness="0">
                 <ContentControl Content="{Binding CurrentViewModel}"
                                 Margin="{StaticResource Padding.Section}"
@@ -416,8 +416,8 @@
             <Border x:Name="DetailsPane"
                     Grid.Column="4"
                     Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Background="{DynamicResource Brush.Panel}"
-                    BorderBrush="{DynamicResource Brush.PanelBorder}"
+                    Background="{DynamicResource App.Surface2}"
+                    BorderBrush="{DynamicResource App.Surface2Border}"
                     BorderThickness="1,0,0,0"
                     Padding="{StaticResource Padding.Content}">
                 <Grid>
@@ -440,18 +440,18 @@
                                     Margin="8,0,0,6">
                                 <TextBlock Text="Hide"
                                            FontSize="11"
-                                           Foreground="{DynamicResource Brush.TextSecondary}"/>
+                                           Foreground="{DynamicResource App.TextSecondary}"/>
                             </Button>
                         </DockPanel>
                         <TextBlock Text="{Binding SelectedModule.Title}"
                                    FontSize="16"
                                    FontWeight="SemiBold"
-                                   Foreground="{DynamicResource Brush.TextPrimary}"
+                                   Foreground="{DynamicResource App.TextPrimary}"
                                    Margin="0,0,0,6"
                                    TextWrapping="Wrap"/>
                         <TextBlock Text="{Binding SelectedModule.Description}"
                                    FontSize="12"
-                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                   Foreground="{DynamicResource App.TextSecondary}"
                                    TextWrapping="Wrap"/>
                     </StackPanel>
 
@@ -462,18 +462,18 @@
                             <TextBlock Text="Summary"
                                        FontSize="12"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                       Foreground="{DynamicResource App.TextPrimary}"
                                        Margin="0,0,0,6"/>
                             <TextBlock Text="{Binding SelectedModule.FunctionSummary}"
                                        FontSize="12"
-                                       Foreground="{DynamicResource Brush.TextSecondary}"
+                                       Foreground="{DynamicResource App.TextSecondary}"
                                        TextWrapping="Wrap"
                                        Margin="0,0,0,12"/>
 
                             <TextBlock Text="Inputs"
                                        FontSize="12"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                       Foreground="{DynamicResource App.TextPrimary}"
                                        Margin="0,0,0,6"/>
                             <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}">
                                 <ItemsControl.ItemTemplate>
@@ -481,7 +481,7 @@
                                         <TextBlock Text="{Binding StringFormat=• {0}}"
                                                    FontSize="12"
                                                    TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                                   Foreground="{DynamicResource App.TextSecondary}"
                                                    Margin="0,0,0,6"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -490,7 +490,7 @@
                             <TextBlock Text="Outputs"
                                        FontSize="12"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                       Foreground="{DynamicResource App.TextPrimary}"
                                        Margin="0,8,0,6"/>
                             <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}">
                                 <ItemsControl.ItemTemplate>
@@ -498,7 +498,7 @@
                                         <TextBlock Text="{Binding StringFormat=• {0}}"
                                                    FontSize="12"
                                                    TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource Brush.TextSecondary}"
+                                                   Foreground="{DynamicResource App.TextSecondary}"
                                                    Margin="0,0,0,6"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -507,14 +507,14 @@
                             <TextBlock Text="Diagnostics"
                                        FontSize="12"
                                        FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Brush.TextPrimary}"
+                                       Foreground="{DynamicResource App.TextPrimary}"
                                        Margin="0,12,0,6"/>
                             <ItemsControl ItemsSource="{Binding Diagnostics}"/>
                         </StackPanel>
                     </ScrollViewer>
 
                     <Border Grid.Row="2"
-                            BorderBrush="{DynamicResource Brush.PanelBorder}"
+                            BorderBrush="{DynamicResource App.Surface2Border}"
                             BorderThickness="0,1,0,0"
                             Padding="0,8,0,0">
                         <ContentControl Content="{Binding}">
@@ -536,18 +536,18 @@
         </Grid>
 
         <StatusBar Grid.Row="2"
-                   Background="{DynamicResource Brush.StatusBar}"
-                   BorderBrush="{DynamicResource Brush.PanelBorder}"
+                   Background="{DynamicResource App.StatusBarBackground}"
+                   BorderBrush="{DynamicResource App.Surface2Border}"
                    BorderThickness="0,1,0,0">
             <StatusBarItem>
                 <TextBlock Text="Ready"
                            FontSize="11"
-                           Foreground="{DynamicResource Brush.TextSecondary}"/>
+                           Foreground="{DynamicResource App.TextSecondary}"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <TextBlock Text="{Binding SelectedModule.Title}"
                            FontSize="11"
-                           Foreground="{DynamicResource Brush.TextSecondary}"/>
+                           Foreground="{DynamicResource App.TextSecondary}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
