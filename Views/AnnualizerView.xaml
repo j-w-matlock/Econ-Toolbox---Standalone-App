@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:EconToolbox.Desktop.Converters"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              Background="{DynamicResource App.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
@@ -292,7 +292,7 @@
                                                 </StackPanel>
                                             </DataGridComboBoxColumn.Header>
                                             <DataGridComboBoxColumn.ItemsSource>
-                                                <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                                <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=System.Runtime">
                                                     <sys:String>beginning</sys:String>
                                                     <sys:String>midpoint</sys:String>
                                                     <sys:String>end</sys:String>
@@ -352,7 +352,7 @@
                                                 </StackPanel>
                                             </DataGridComboBoxColumn.Header>
                                             <DataGridComboBoxColumn.ItemsSource>
-                                                <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                                <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=System.Runtime">
                                                     <sys:String>beginning</sys:String>
                                                     <sys:String>midpoint</sys:String>
                                                     <sys:String>end</sys:String>
