@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:EconToolbox.Desktop.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             Background="{StaticResource Brush.SurfaceAlt}"
+             Background="{DynamicResource App.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <Grid>
@@ -26,13 +26,13 @@
                                 <TextBlock FontFamily="Segoe MDL2 Assets"
                                            Text=""
                                            FontSize="18"
-                                           Foreground="{StaticResource Brush.Primary}"
+                                           Foreground="{DynamicResource App.Accent}"
                                            Margin="0,0,8,0"/>
                                 <TextBlock Grid.Column="1"
                                            Text="Cost Annualization Workflow"
                                            FontWeight="Bold"
                                            FontSize="16"
-                                           Foreground="{StaticResource Brush.Primary}"
+                                           Foreground="{DynamicResource App.Accent}"
                                            TextWrapping="Wrap"/>
                             </Grid>
                                 <TextBlock TextWrapping="Wrap"
@@ -48,10 +48,10 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{StaticResource Brush.Surface}"
+                        <Border Background="{DynamicResource App.Surface}"
                                 CornerRadius="8"
                                 Padding="{StaticResource Padding.Card}"
-                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
                                 Margin="0,16,0,0">
                             <StackPanel>
@@ -169,10 +169,10 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{StaticResource Brush.Surface}"
+                        <Border Background="{DynamicResource App.Surface}"
                                 CornerRadius="8"
                                 Padding="{StaticResource Padding.Card}"
-                                BorderBrush="{StaticResource Brush.Border}"
+                                BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
                                 Margin="0,16,0,0">
                             <StackPanel>
@@ -259,7 +259,7 @@
                                                 ToolTip="List construction outlays by month and timing so the tool can compute interest during construction."/>
                                 <TextBlock Text="IDC Schedule" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
-                            <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
+                            <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
                                 <DataGrid x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn>
@@ -319,7 +319,7 @@
                                                 ToolTip="Add future capital expenses in the year and timing they occur to include their present value."/>
                                 <TextBlock Text="Future Costs" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
-                            <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
+                            <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
                                 <DataGrid x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn>
@@ -380,11 +380,11 @@
                                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                                    Text=""
                                                    FontSize="18"
-                                                   Foreground="{StaticResource Brush.Primary}"
+                                                   Foreground="{DynamicResource App.Accent}"
                                                    Margin="0,0,8,0"/>
                                         <TextBlock Text="Result guidance"
                                                    FontWeight="Bold"
-                                                   Foreground="{StaticResource Brush.Primary}"/>
+                                                   Foreground="{DynamicResource App.Accent}"/>
                                     </StackPanel>
                                     <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
                                         IDC, Total Investment, CRF, Annual Cost, and BCR update together. Confirm IDC before reviewing total investment, then use CRF and Annual Cost to explain how first cost, future costs, and O&amp;M translate into an annualized value and economic justification.
@@ -397,11 +397,11 @@
                                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                                    Text=""
                                                    FontSize="18"
-                                                   Foreground="{StaticResource Brush.Primary}"
+                                                   Foreground="{DynamicResource App.Accent}"
                                                    Margin="0,0,8,0"/>
                                         <TextBlock Text="Formula Reference"
                                                    FontWeight="Bold"
-                                                   Foreground="{StaticResource Brush.Primary}"/>
+                                                   Foreground="{DynamicResource App.Accent}"/>
                                     </StackPanel>
                                     <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
                                         <Run Text="• Future cost present values use PV = cost × (1 + r)⁻ⁿ where n equals the year offset plus the timing fraction (0 for beginning, 0.5 for middle, 1 for end)."/>

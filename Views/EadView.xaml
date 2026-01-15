@@ -4,7 +4,7 @@
              xmlns:behaviors="clr-namespace:EconToolbox.Desktop.Behaviors"
              xmlns:controls="clr-namespace:EconToolbox.Desktop.Views.Controls"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             Background="{StaticResource Brush.SurfaceAlt}"
+             Background="{DynamicResource App.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <Grid>
@@ -20,13 +20,13 @@
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text=""
                                        FontSize="18"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        Margin="0,0,8,0"/>
                             <TextBlock Grid.Column="1"
                                        Text="Expected Annual Damage"
                                        FontSize="16"
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource Brush.Primary}"
+                                       Foreground="{DynamicResource App.Accent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock TextWrapping="Wrap"
@@ -101,7 +101,7 @@
                         <TextBlock Text="Graph shows frequency-damage or stage-damage curves for each column so you can visually confirm the inputs."
                                    TextWrapping="Wrap"
                                    Margin="0,0,0,12"
-                                   Foreground="{StaticResource Brush.TextSecondary}"/>
+                                   Foreground="{DynamicResource App.TextSecondary}"/>
                         <ItemsControl ItemsSource="{Binding LegendItems}"
                                       Margin="0,0,0,12">
                             <ItemsControl.ItemsPanel>
@@ -115,7 +115,7 @@
                                         <Ellipse Width="12"
                                                  Height="12"
                                                  Fill="{Binding Color}"
-                                                 Stroke="{StaticResource Brush.Border}"
+                                                 Stroke="{DynamicResource App.Border}"
                                                  StrokeThickness="0.5"
                                                  Margin="0,0,6,0"/>
                                         <TextBlock Text="{Binding Name}"
@@ -124,8 +124,8 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Border Background="{StaticResource Brush.ChartFill}"
-                                BorderBrush="{StaticResource Brush.Border}"
+                        <Border Background="{DynamicResource App.ChartFill}"
+                                BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
                                 CornerRadius="8"
                                 Padding="8">

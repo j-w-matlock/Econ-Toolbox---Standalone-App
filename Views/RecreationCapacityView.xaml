@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
              mc:Ignorable="d"
-             Background="{StaticResource Brush.SurfaceAlt}"
+             Background="{DynamicResource App.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True"
              d:DataContext="{d:DesignInstance Type=vm:RecreationCapacityViewModel}">
@@ -23,13 +23,13 @@
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text=""
                                    FontSize="18"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    Margin="0,0,8,0"/>
                         <TextBlock Grid.Column="1"
                                    Text="Recreation capacity study"
                                    FontWeight="Bold"
                                    FontSize="16"
-                                   Foreground="{StaticResource Brush.Primary}"
+                                   Foreground="{DynamicResource App.Accent}"
                                    TextWrapping="Wrap"/>
                     </Grid>
                     <TextBlock Margin="0,6,0,0"
@@ -349,8 +349,8 @@
         <Border Style="{StaticResource Border.ResultInfo}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap"
                            Margin="{StaticResource Margin.TopSmall}">
@@ -361,8 +361,8 @@
         <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
                 </StackPanel>
                 <TextBlock Margin="{StaticResource Margin.TopSmall}" TextWrapping="Wrap">
                     <Run Text="• Double-check group size, turnover, and season length before comparing activities."/>
@@ -376,8 +376,8 @@
         <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{StaticResource Brush.Primary}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{StaticResource Brush.Primary}"/>
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
+                    <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap"
                            Margin="{StaticResource Margin.TopSmall}">
