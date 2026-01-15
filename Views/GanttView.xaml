@@ -6,13 +6,8 @@
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/Design.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-            <converters:GanttLinkGeometryConverter x:Key="GanttLinkGeometryConverter"
-                                                   DayScale="18"/>
-        </ResourceDictionary>
+        <converters:GanttLinkGeometryConverter x:Key="GanttLinkGeometryConverter"
+                                               DayScale="18"/>
     </UserControl.Resources>
     <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
         <Grid>

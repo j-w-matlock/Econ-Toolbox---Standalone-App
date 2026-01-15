@@ -4,13 +4,6 @@
              Background="{StaticResource Brush.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/Design.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Auto"
                   Padding="{StaticResource Padding.Card}">
@@ -195,7 +188,7 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                             <DataGridTextColumn.EditingElementStyle>
-                                                <Style TargetType="TextBox">
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
                                                     <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet)."/>
                                                 </Style>
@@ -210,7 +203,7 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                             <DataGridTextColumn.EditingElementStyle>
-                                                <Style TargetType="TextBox">
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
                                                     <Setter Property="ToolTip" Value="Length of inundation represented by the row (days)."/>
                                                 </Style>
@@ -225,7 +218,7 @@
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                             <DataGridTextColumn.EditingElementStyle>
-                                                <Style TargetType="TextBox">
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
                                                     <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1)."/>
                                                 </Style>

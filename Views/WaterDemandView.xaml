@@ -6,13 +6,6 @@
              Background="{StaticResource Brush.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/Design.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
         <Grid>
             <Grid.RowDefinitions>
@@ -131,7 +124,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.Resources>
-                                        <Style TargetType="TextBox">
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                             <Setter Property="MinWidth" Value="120"/>
                                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
                                             <Setter Property="Margin" Value="0,0,10,0"/>
