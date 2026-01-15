@@ -237,7 +237,10 @@ namespace EconToolbox.Desktop.ViewModels
 
         private static string Escape(string value)
         {
-            if (value.Contains(',') || value.Contains('"'))
+            if (value.Contains(',')
+                || value.Contains('"')
+                || value.Contains('\n')
+                || value.Contains('\r'))
             {
                 return $"\"{value.Replace("\"", "\"\"")}\"";
             }
