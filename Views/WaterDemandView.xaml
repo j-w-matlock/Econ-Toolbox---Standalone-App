@@ -13,9 +13,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Auto"
-                  Padding="{StaticResource Padding.Card}">
+    <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -77,11 +75,7 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <Border Grid.Row="0"
-                                        Background="{StaticResource Brush.Surface}"
-                                        BorderBrush="{StaticResource Brush.Border}"
-                                        BorderThickness="1"
-                                        CornerRadius="8"
-                                        Padding="12"
+                                        Style="{StaticResource Border.Card}"
                                         Margin="0,0,0,8">
                                     <StackPanel>
                                         <TextBlock Text="Historical Demand"
@@ -320,7 +314,8 @@
                                         </Grid>
                                     </Border>
                                 </Grid>
-                                <Border Grid.Row="2" Background="{StaticResource Brush.Surface}" CornerRadius="8" Padding="12" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+                                <Border Grid.Row="2"
+                                        Style="{StaticResource Border.Card}">
                                     <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0" ColumnWidth="SizeToHeader">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
@@ -385,11 +380,7 @@
                                 </Border>
                             </Grid>
                             <Border Grid.Row="1"
-                                    Background="{StaticResource Brush.Surface}"
-                                    CornerRadius="8"
-                                    Padding="16"
-                                    BorderBrush="{StaticResource Brush.Border}"
-                                    BorderThickness="1"
+                                    Style="{StaticResource Border.Card}"
                                     Margin="0,10,0,0">
                                 <StackPanel>
                                     <TextBox Text="{Binding DataContext.ChartTitle, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

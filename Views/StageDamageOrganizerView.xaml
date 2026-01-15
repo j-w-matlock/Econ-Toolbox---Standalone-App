@@ -10,16 +10,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Themes/Design.xaml"/>
              </ResourceDictionary.MergedDictionaries>
-            <Style x:Key="StageDamageOrganizerButtonStyle"
-                   TargetType="Button">
-                <Setter Property="Width" Value="160"/>
-                <Setter Property="Height" Value="36"/>
-            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Auto"
-                  Padding="{StaticResource Padding.Card}">
+    <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -63,15 +56,11 @@
 
                 <Grid Grid.Column="0"
                       Margin="0,0,12,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Border Background="{StaticResource Brush.Surface}"
-                            BorderBrush="{StaticResource Brush.Border}"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="12">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                    <Border Style="{StaticResource Border.Card}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -83,7 +72,7 @@
                                         Grid.Column="0"
                                         Margin="0,0,12,0">
                                 <Button Command="{Binding ImportCsvCommand}"
-                                        Style="{StaticResource StageDamageOrganizerButtonStyle}"
+                                        Style="{StaticResource Button.Action}"
                                         IsEnabled="{Binding IsBusy, Converter={StaticResource BoolInverseConverter}}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
@@ -91,7 +80,7 @@
                                     </StackPanel>
                                 </Button>
                                 <Button Command="{Binding ClearCommand}"
-                                        Style="{StaticResource StageDamageOrganizerButtonStyle}"
+                                        Style="{StaticResource Button.Action}"
                                         Margin="8,0,0,0"
                                         IsEnabled="{Binding HasRecords}">
                                     <StackPanel Orientation="Horizontal">
@@ -130,7 +119,7 @@
 
                             <Button Grid.Column="2"
                                     Command="{Binding SaveSummaryCommand}"
-                                    Style="{StaticResource StageDamageOrganizerButtonStyle}"
+                                    Style="{StaticResource Button.Action}"
                                     IsEnabled="{Binding HasRecords}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
@@ -161,42 +150,34 @@
                             </Grid.RowDefinitions>
 
                             <Border Grid.Row="0"
-                                    Background="{StaticResource Brush.Surface}"
-                                    BorderBrush="{StaticResource Brush.Border}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="12"
+                                    Style="{StaticResource Border.Card}"
                                     Margin="0,0,0,12">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="DamageCategory summary"
-                                           FontWeight="SemiBold"
-                                           Margin="0,0,0,8"/>
-                                <DataGrid x:Name="CategorySummaryGrid"
-                                          Grid.Row="1"
-                                          ItemsSource="{Binding CategorySummaries}"
-                                          AutoGenerateColumns="False"
-                                          CanUserAddRows="False"
-                                          CanUserDeleteRows="False"
-                                          IsReadOnly="True"
-                                          HeadersVisibility="Column"
-                                          ColumnWidth="SizeToHeader"
-                                          MinHeight="220"
-                                          MaxHeight="360"
-                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                          ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="DamageCategory summary"
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,0,8"/>
+                                    <DataGrid x:Name="CategorySummaryGrid"
+                                              Grid.Row="1"
+                                              ItemsSource="{Binding CategorySummaries}"
+                                              AutoGenerateColumns="False"
+                                              CanUserAddRows="False"
+                                              CanUserDeleteRows="False"
+                                              IsReadOnly="True"
+                                              HeadersVisibility="Column"
+                                              ColumnWidth="SizeToHeader"
+                                              MinHeight="220"
+                                              MaxHeight="360"
+                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
                                 </Grid>
                             </Border>
 
                             <Border Grid.Row="1"
-                                    Background="{StaticResource Brush.Surface}"
-                                    BorderBrush="{StaticResource Brush.Border}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="12"
+                                    Style="{StaticResource Border.Card}"
                                     Margin="0">
                                 <Grid>
                                     <Grid.RowDefinitions>
