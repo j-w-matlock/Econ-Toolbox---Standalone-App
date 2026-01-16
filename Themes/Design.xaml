@@ -654,6 +654,7 @@
     <Style TargetType="ScrollBar">
         <Setter Property="Background" Value="{DynamicResource App.ScrollBarTrack}"/>
         <Setter Property="Width" Value="10"/>
+        <Setter Property="IsDirectionReversed" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
@@ -715,6 +716,7 @@
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="Height" Value="10"/>
                 <Setter Property="Width" Value="{x:Static sys:Double.NaN}"/>
+                <Setter Property="IsDirectionReversed" Value="False"/>
             </Trigger>
         </Style.Triggers>
     </Style>
