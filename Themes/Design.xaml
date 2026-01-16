@@ -25,12 +25,12 @@
     <sys:Double x:Key="Space.XL">32</sys:Double>
 
     <!-- Corner radius tokens -->
-    <sys:Double x:Key="Radius.XS">4</sys:Double>
-    <sys:Double x:Key="Radius.SM">6</sys:Double>
-    <sys:Double x:Key="Radius.MD">8</sys:Double>
-    <sys:Double x:Key="Radius.LG">10</sys:Double>
-    <sys:Double x:Key="Radius.XL">14</sys:Double>
-    <sys:Double x:Key="Radius.Switch">11</sys:Double>
+    <CornerRadius x:Key="Radius.XS">4</CornerRadius>
+    <CornerRadius x:Key="Radius.SM">6</CornerRadius>
+    <CornerRadius x:Key="Radius.MD">8</CornerRadius>
+    <CornerRadius x:Key="Radius.LG">10</CornerRadius>
+    <CornerRadius x:Key="Radius.XL">14</CornerRadius>
+    <CornerRadius x:Key="Radius.Switch">11</CornerRadius>
     <CornerRadius x:Key="CornerRadius.TabTop">4,4,0,0</CornerRadius>
 
     <!-- Border thickness tokens -->
