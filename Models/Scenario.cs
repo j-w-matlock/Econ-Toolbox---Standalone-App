@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.Models
 {
@@ -146,7 +147,7 @@ namespace EconToolbox.Desktop.Models
             set { _chartPoints = value; OnPropertyChanged(); }
         }
 
-        private Brush _lineBrush = Brushes.Blue;
+        private Brush _lineBrush = ThemeResourceHelper.GetBrush("App.Chart.Series1", Brushes.Blue);
         public Brush LineBrush
         {
             get => _lineBrush;

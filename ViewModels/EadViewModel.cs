@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using EconToolbox.Desktop.Behaviors;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -88,6 +89,15 @@ namespace EconToolbox.Desktop.ViewModels
 
         private readonly RelayCommand _removeDamageColumnCommand;
         private readonly IExcelExportService _excelExportService;
+        private static readonly string[] ChartSeriesBrushKeys =
+        {
+            "App.Chart.Series1",
+            "App.Chart.Series2",
+            "App.Chart.Series3",
+            "App.Chart.Series4",
+            "App.Chart.Series5",
+            "App.Chart.Series6"
+        };
 
         public EadViewModel(IExcelExportService excelExportService)
         {
@@ -428,17 +438,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         private Brush GetSeriesBrush(int index)
         {
-            Brush[] palette =
-            {
-                Brushes.SteelBlue,
-                Brushes.OrangeRed,
-                Brushes.SeaGreen,
-                Brushes.MediumPurple,
-                Brushes.Goldenrod,
-                Brushes.Firebrick
-            };
-
-            return palette[index % palette.Length];
+            string key = ChartSeriesBrushKeys[index % ChartSeriesBrushKeys.Length];
+            return ThemeResourceHelper.GetBrush(key, Brushes.SteelBlue);
         }
 
         private void DamageColumn_PropertyChanged(object? sender, PropertyChangedEventArgs e)

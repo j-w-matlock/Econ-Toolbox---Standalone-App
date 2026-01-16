@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.Views.Controls
 {
@@ -104,9 +105,11 @@ namespace EconToolbox.Desktop.Views.Controls
             double plotHeight = Math.Max(0, height - marginTop - marginBottom);
 
             double dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            var axisPen = new Pen(new SolidColorBrush(Color.FromRgb(160, 160, 170)), 1);
-            var gridPen = new Pen(new SolidColorBrush(Color.FromRgb(210, 210, 220)), 1) { DashStyle = DashStyles.Dot };
-            var labelBrush = new SolidColorBrush(Color.FromRgb(90, 90, 100));
+            var axisBrush = ThemeResourceHelper.GetBrush("App.Border", new SolidColorBrush(Color.FromRgb(160, 160, 170)));
+            var gridBrush = ThemeResourceHelper.GetBrush("App.ChartGrid", new SolidColorBrush(Color.FromRgb(210, 210, 220)));
+            var labelBrush = ThemeResourceHelper.GetBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(90, 90, 100)));
+            var axisPen = new Pen(axisBrush, 1);
+            var gridPen = new Pen(gridBrush, 1) { DashStyle = DashStyles.Dot };
 
             var categories = new List<string>();
             var seenCategories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -170,7 +173,8 @@ namespace EconToolbox.Desktop.Views.Controls
                     double segmentHeight = Math.Min(plotHeight, point.Y * heightScale);
                     double barTop = marginTop + plotHeight - cumulativeHeight - segmentHeight;
 
-                    Brush barBrush = series.Series?.Stroke ?? new SolidColorBrush(Color.FromRgb(45, 106, 142));
+                    Brush barBrush = series.Series?.Stroke
+                                     ?? ThemeResourceHelper.GetBrush("App.Chart.Series1", new SolidColorBrush(Color.FromRgb(45, 106, 142)));
                     dc.DrawRoundedRectangle(barBrush, null, new Rect(barLeft, barTop, barWidth, segmentHeight), 4, 4);
 
                     cumulativeHeight += segmentHeight;
@@ -197,7 +201,7 @@ namespace EconToolbox.Desktop.Views.Controls
                 FlowDirection.LeftToRight,
                 new Typeface("Segoe UI"),
                 12,
-                new SolidColorBrush(Color.FromRgb(90, 90, 100)),
+                ThemeResourceHelper.GetBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(90, 90, 100))),
                 VisualTreeHelper.GetDpi(this).PixelsPerDip)
             {
                 TextAlignment = TextAlignment.Center,

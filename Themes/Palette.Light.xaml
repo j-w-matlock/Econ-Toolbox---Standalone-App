@@ -50,6 +50,12 @@
     <!-- Charts/selection -->
     <Color x:Key="App.ChartGrid.Color">#D0D0D0</Color>
     <Color x:Key="App.ChartFill.Color">#FFFFFF</Color>
+    <Color x:Key="App.Chart.Series1.Color">#2D6A8E</Color>
+    <Color x:Key="App.Chart.Series2.Color">#1ABC9C</Color>
+    <Color x:Key="App.Chart.Series3.Color">#7F56D9</Color>
+    <Color x:Key="App.Chart.Series4.Color">#F39C12</Color>
+    <Color x:Key="App.Chart.Series5.Color">#3498DB</Color>
+    <Color x:Key="App.Chart.Series6.Color">#E74C3C</Color>
     <Color x:Key="App.SelectionBackground.Color">#D1F0EA</Color>
     <Color x:Key="App.SelectionBorder.Color">#00A189</Color>
     <Color x:Key="App.SelectionHoverBackground.Color">#E3F7F2</Color>
@@ -134,6 +140,12 @@
 
     <SolidColorBrush x:Key="App.ChartGrid" Color="{DynamicResource App.ChartGrid.Color}"/>
     <SolidColorBrush x:Key="App.ChartFill" Color="{DynamicResource App.ChartFill.Color}"/>
+    <SolidColorBrush x:Key="App.Chart.Series1" Color="{DynamicResource App.Chart.Series1.Color}"/>
+    <SolidColorBrush x:Key="App.Chart.Series2" Color="{DynamicResource App.Chart.Series2.Color}"/>
+    <SolidColorBrush x:Key="App.Chart.Series3" Color="{DynamicResource App.Chart.Series3.Color}"/>
+    <SolidColorBrush x:Key="App.Chart.Series4" Color="{DynamicResource App.Chart.Series4.Color}"/>
+    <SolidColorBrush x:Key="App.Chart.Series5" Color="{DynamicResource App.Chart.Series5.Color}"/>
+    <SolidColorBrush x:Key="App.Chart.Series6" Color="{DynamicResource App.Chart.Series6.Color}"/>
     <SolidColorBrush x:Key="App.SelectionBackground" Color="{DynamicResource App.SelectionBackground.Color}"/>
     <SolidColorBrush x:Key="App.SelectionBorder" Color="{DynamicResource App.SelectionBorder.Color}"/>
     <SolidColorBrush x:Key="App.SelectionHoverBackground" Color="{DynamicResource App.SelectionHoverBackground.Color}"/>

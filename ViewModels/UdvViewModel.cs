@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -335,23 +336,25 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            var scaleBrush = ThemeResourceHelper.GetBrush("App.Chart.Series1", new SolidColorBrush(Color.FromRgb(33, 150, 243)));
             ChartSeries.Add(new ChartSeries
             {
                 Name = $"{column} scale",
-                Stroke = new SolidColorBrush(Color.FromRgb(33, 150, 243)),
+                Stroke = scaleBrush,
                 Points = points
             });
-            LegendItems.Add(new LegendItem { Name = $"{column} scale", Color = new SolidColorBrush(Color.FromRgb(33, 150, 243)) });
+            LegendItems.Add(new LegendItem { Name = $"{column} scale", Color = scaleBrush });
 
             if (double.IsFinite(selectedPoint.X) && double.IsFinite(selectedPoint.Y))
             {
+                var selectedBrush = ThemeResourceHelper.GetBrush("App.Chart.Series4", new SolidColorBrush(Color.FromRgb(255, 152, 0)));
                 ChartSeries.Add(new ChartSeries
                 {
                     Name = "Selected point",
-                    Stroke = new SolidColorBrush(Color.FromRgb(255, 152, 0)),
+                    Stroke = selectedBrush,
                     Points = new List<ChartDataPoint> { selectedPoint }
                 });
-                LegendItems.Add(new LegendItem { Name = "Selected point", Color = new SolidColorBrush(Color.FromRgb(255, 152, 0)) });
+                LegendItems.Add(new LegendItem { Name = "Selected point", Color = selectedBrush });
             }
 
             ChartStatusMessage = string.Empty;

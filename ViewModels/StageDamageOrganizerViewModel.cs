@@ -8,8 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Windows.Media;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Themes;
 using Microsoft.VisualBasic.FileIO;
 
 namespace EconToolbox.Desktop.ViewModels
@@ -22,14 +22,14 @@ namespace EconToolbox.Desktop.ViewModels
         private string _statusMessage = "Load one or more Stage Damage Functions_StructureStageDamageDetails.csv files to summarize damages by category.";
         private bool _isBusy;
 
-        private static readonly Color[] ChartPalette =
+        private static readonly string[] ChartSeriesBrushKeys =
         {
-            Color.FromRgb(45, 106, 142),
-            Color.FromRgb(26, 188, 156),
-            Color.FromRgb(127, 86, 217),
-            Color.FromRgb(243, 156, 18),
-            Color.FromRgb(52, 152, 219),
-            Color.FromRgb(231, 76, 60)
+            "App.Chart.Series1",
+            "App.Chart.Series2",
+            "App.Chart.Series3",
+            "App.Chart.Series4",
+            "App.Chart.Series5",
+            "App.Chart.Series6"
         };
 
         public ObservableCollection<StageDamageRecord> Records => _records;
@@ -323,7 +323,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             foreach (var bundle in summaryBundles)
             {
-                var color = ChartPalette[paletteIndex % ChartPalette.Length];
+                string brushKey = ChartSeriesBrushKeys[paletteIndex % ChartSeriesBrushKeys.Length];
                 var points = categoryOrder
                     .Select((category, index) =>
                     {
@@ -340,7 +340,7 @@ namespace EconToolbox.Desktop.ViewModels
                 var chartSeries = new ChartSeries
                 {
                     Name = bundle.SummaryName,
-                    Stroke = new SolidColorBrush(color),
+                    Stroke = ThemeResourceHelper.GetBrush(brushKey, System.Windows.Media.Brushes.SteelBlue),
                     Points = points
                 };
 
