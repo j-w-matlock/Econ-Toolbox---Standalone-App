@@ -74,7 +74,7 @@
                         <TextBlock Text="Stage / Frequency / Damage Inputs"
                                    FontWeight="SemiBold"
                                    Margin="0,0,0,8"/>
-                        <DataGrid ItemsSource="{Binding Rows}"
+                        <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Rows}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="True"
                                   CanUserDeleteRows="True"
@@ -143,7 +143,7 @@
                         <TextBlock Text="Expected Annual Damage Results"
                                    FontWeight="SemiBold"
                                    Margin="0,0,0,8"/>
-                        <DataGrid ItemsSource="{Binding Results}"
+                        <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Results}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"

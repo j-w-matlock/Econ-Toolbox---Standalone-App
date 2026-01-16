@@ -172,7 +172,7 @@
                 <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopXSmall}">
                     Provide historic visitation observations in the table. You can type directly or paste multiple rows from a spreadsheet. The median of these values will replace the visitation input above.
                 </TextBlock>
-                <DataGrid ItemsSource="{Binding HistoricalVisitationRows}"
+                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding HistoricalVisitationRows}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="True"
                           CanUserDeleteRows="True"
@@ -297,7 +297,7 @@
                 <TextBlock TextWrapping="Wrap" FontSize="12" Margin="{StaticResource Margin.Stack}">
                     Reference this table to ensure your point selection matches the published ranges. The highlighted unit day value is chosen by matching your point entry to the correct column.
                 </TextBlock>
-                <DataGrid ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ColumnWidth="SizeToHeader">
+                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ColumnWidth="SizeToHeader">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Points" Binding="{Binding Points}"/>
                         <DataGridTextColumn Header="General Recreation">
