@@ -457,7 +457,7 @@
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
         <Setter Property="RowHeaderWidth" Value="0"/>
-        <Setter Property="ColumnHeaderHeight" Value="Auto"/>
+        <Setter Property="ColumnHeaderHeight" Value="NaN"/>
         <Setter Property="RowHeight" Value="32"/>
         <Setter Property="ColumnHeaderStyle" Value="{DynamicResource DataGridColumnHeaderStyle}"/>
         <Setter Property="CellStyle" Value="{DynamicResource DataGridCellStyle}"/>
