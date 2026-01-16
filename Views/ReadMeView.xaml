@@ -16,8 +16,8 @@
                     Padding="{StaticResource Padding.Section}">
                 <md:MarkdownScrollViewer x:Name="MarkdownViewer"
                                          Markdown="{Binding MarkdownContent}"
-                                         VerticalScrollBarVisibility="Auto"
-                                         HorizontalScrollBarVisibility="Auto"
+                                         VerticalScrollBarVisibility="Disabled"
+                                         HorizontalScrollBarVisibility="Disabled"
                                          Background="Transparent"
                                          Foreground="{DynamicResource App.TextPrimary}"
                                          FontSize="14"/>

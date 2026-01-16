@@ -8,9 +8,7 @@
              UseLayoutRounding="True">
     <Grid>
         <ScrollViewer Focusable="False"
-                      HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Auto"
-                      Padding="{StaticResource Padding.Card}">
+                      Style="{StaticResource ScrollViewer.Page}">
             <TabControl Margin="0"
                         Padding="0"
                         HorizontalContentAlignment="Stretch">
