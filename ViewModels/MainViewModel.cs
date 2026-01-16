@@ -46,19 +46,13 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private ModuleDefinition? _explorerSelectedModule;
         public ModuleDefinition? ExplorerSelectedModule
         {
-            get => _explorerSelectedModule;
+            get => SelectedModule != null && Modules.Contains(SelectedModule) ? SelectedModule : null;
             set
             {
-                if (_explorerSelectedModule == value) return;
-                _explorerSelectedModule = value;
-                OnPropertyChanged();
-                if (value != null)
-                {
-                    SelectedModule = value;
-                }
+                if (value == null || ReferenceEquals(value, SelectedModule)) return;
+                SelectedModule = value;
             }
         }
 
