@@ -38,6 +38,7 @@ namespace EconToolbox.Desktop.ViewModels
                 if (_selectedModule == value) return;
                 _selectedModule = value;
                 OnPropertyChanged();
+                SyncExplorerSelection(value);
                 OnPropertyChanged(nameof(IsCalculateVisible));
                 OnPropertyChanged(nameof(PrimaryActionLabel));
                 OnPropertyChanged(nameof(CurrentViewModel));
@@ -58,6 +59,27 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     SelectedModule = value;
                 }
+            }
+        }
+
+        private void SyncExplorerSelection(ModuleDefinition? selected)
+        {
+            if (selected == null)
+            {
+                return;
+            }
+
+            if (selected == ReadMeModule && _explorerSelectedModule != null)
+            {
+                _explorerSelectedModule = null;
+                OnPropertyChanged(nameof(ExplorerSelectedModule));
+                return;
+            }
+
+            if (selected != ReadMeModule && !ReferenceEquals(_explorerSelectedModule, selected))
+            {
+                _explorerSelectedModule = selected;
+                OnPropertyChanged(nameof(ExplorerSelectedModule));
             }
         }
 
