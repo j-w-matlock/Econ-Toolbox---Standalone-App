@@ -10,9 +10,9 @@ namespace EconToolbox.Desktop.Converters
     {
         public double DayScale { get; set; } = 18.0;
 
-        public object? Convert(object[] values, Type targetType, object? parameter, CultureInfo culture)
+        public object? Convert(object[]? values, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (values.Length < 4 ||
+            if (values is null || values.Length < 4 ||
                 !TryParse(values[0], out double fromDay) ||
                 !TryParse(values[1], out double toDay) ||
                 !TryParse(values[2], out double fromY) ||
@@ -47,10 +47,23 @@ namespace EconToolbox.Desktop.Converters
             return new PathGeometry(new[] { figure });
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) =>
-            Array.Empty<object>();
+        public object[] ConvertBack(object? value, Type[]? targetTypes, object? parameter, CultureInfo culture)
+        {
+            if (targetTypes is null || targetTypes.Length == 0)
+            {
+                return Array.Empty<object>();
+            }
 
-        private static bool TryParse(object value, out double result)
+            var results = new object[targetTypes.Length];
+            for (var i = 0; i < targetTypes.Length; i++)
+            {
+                results[i] = Binding.DoNothing;
+            }
+
+            return results;
+        }
+
+        private static bool TryParse(object? value, out double result)
         {
             if (value is double d)
             {
