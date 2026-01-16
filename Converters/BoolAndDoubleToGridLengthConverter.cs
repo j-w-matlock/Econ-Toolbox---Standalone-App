@@ -7,8 +7,13 @@ namespace EconToolbox.Desktop.Converters
 {
     public sealed class BoolAndDoubleToGridLengthConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[]? values, Type targetType, object? parameter, CultureInfo culture)
         {
+            if (values is null)
+            {
+                return new GridLength(0);
+            }
+
             var isVisible = values.Length > 0 && values[0] is bool value && value;
             if (!isVisible)
             {
@@ -37,9 +42,20 @@ namespace EconToolbox.Desktop.Converters
             return new GridLength(0);
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object? value, Type[]? targetTypes, object? parameter, CultureInfo culture)
         {
-            return new[] { Binding.DoNothing, Binding.DoNothing };
+            if (targetTypes is null || targetTypes.Length == 0)
+            {
+                return Array.Empty<object>();
+            }
+
+            var results = new object[targetTypes.Length];
+            for (var i = 0; i < targetTypes.Length; i++)
+            {
+                results[i] = Binding.DoNothing;
+            }
+
+            return results;
         }
     }
 }
