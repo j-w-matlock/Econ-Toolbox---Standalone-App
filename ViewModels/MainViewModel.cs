@@ -60,27 +60,6 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void SyncExplorerSelection(ModuleDefinition? selected)
         {
-            if (selected == null)
-            {
-                return;
-            }
-
-            if (selected == ReadMeModule && _explorerSelectedModule != null)
-            {
-                _explorerSelectedModule = null;
-                OnPropertyChanged(nameof(ExplorerSelectedModule));
-                return;
-            }
-
-            if (selected != ReadMeModule && !ReferenceEquals(_explorerSelectedModule, selected))
-            {
-                _explorerSelectedModule = selected;
-                OnPropertyChanged(nameof(ExplorerSelectedModule));
-            }
-        }
-
-        private void SyncExplorerSelection(ModuleDefinition? selected)
-        {
             if (_isSyncingSelection)
             {
                 return;
