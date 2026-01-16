@@ -170,7 +170,7 @@
                                                  ToolTip="Narrative description that will appear beneath the region selector."/>
                                     </StackPanel>
                                 </Grid>
-                                <DataGrid ItemsSource="{Binding SelectedRegion.DepthDuration}"
+                                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding SelectedRegion.DepthDuration}"
                                           SelectedItem="{Binding SelectedRegionPoint}"
                                           AutoGenerateColumns="False"
                                           CanUserAddRows="False"
@@ -346,7 +346,7 @@
                                 <TextBlock Text="{Binding CropScapeTotalAcreageDisplay, Mode=OneWay}"
                                            FontWeight="SemiBold"
                                            Margin="{StaticResource Margin.StackSmall}"/>
-                                <DataGrid ItemsSource="{Binding CropScapeSummaries}"
+                                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding CropScapeSummaries}"
                                           AutoGenerateColumns="False"
                                           CanUserAddRows="False"
                                           CanUserDeleteRows="False"
@@ -559,7 +559,7 @@
                                    FontWeight="SemiBold"
                                    FontSize="15"
                                    Margin="{StaticResource Margin.Stack}"/>
-                        <DataGrid ItemsSource="{Binding DepthDurationRows}"
+                        <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding DepthDurationRows}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
@@ -670,7 +670,7 @@
                                 <TextBlock Text="Damage table"
                                            FontWeight="SemiBold"
                                            Margin="0,0,0,8"/>
-                                <DataGrid ItemsSource="{Binding CropScapeDamageRows}"
+                                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding CropScapeDamageRows}"
                                           AutoGenerateColumns="False"
                                           CanUserAddRows="False"
                                           CanUserDeleteRows="False"

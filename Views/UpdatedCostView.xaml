@@ -396,7 +396,7 @@
                         Matched colors now show which table columns draw from the inputs above. Highlighted cells mark fields that need values before the update calculation can run.
                     </TextBlock>
                 </Border>
-                <DataGrid ItemsSource="{Binding UpdatedCostItems}"
+                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding UpdatedCostItems}"
                           AutoGenerateColumns="False"
                           Height="220"
                           Margin="0,0,0,5"
@@ -752,7 +752,7 @@
                         <Run Text="Base Year"/>
                     </TextBlock>
                     <TextBox Text="{Binding RrrBaseYear}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
-                    <DataGrid ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ColumnWidth="SizeToHeader">
+                    <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" ColumnWidth="SizeToHeader">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Item}">
                                 <DataGridTextColumn.Header>

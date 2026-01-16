@@ -180,10 +180,9 @@
                                 <TextBlock Style="{StaticResource Text.Body}" Margin="0,4,0,8" TextWrapping="Wrap">
                                     Enter all annualization inputs in one table. Add rows for alternative scenarios and select a row to update the rest of the worksheet.
                                 </TextBlock>
-                                <DataGrid ItemsSource="{Binding ScenarioComparisons}"
+                                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding ScenarioComparisons}"
                                           SelectedItem="{Binding SelectedScenario, Mode=TwoWay}"
                                           AutoGenerateColumns="False"
-                                          CanUserResizeColumns="True"
                                           HeadersVisibility="All"
                                           ColumnWidth="SizeToHeader"
                                           Margin="0,8,0,0">
@@ -258,7 +257,7 @@
                                 <TextBlock Text="IDC Schedule" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
-                                <DataGrid x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
+                                <DataGrid CanUserResizeColumns="True" x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn>
                                             <DataGridTextColumn.Binding>
@@ -318,7 +317,7 @@
                                 <TextBlock Text="Future Costs" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
-                                <DataGrid x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
+                                <DataGrid CanUserResizeColumns="True" x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn>
                                             <DataGridTextColumn.Binding>
