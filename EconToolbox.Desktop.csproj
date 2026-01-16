@@ -33,6 +33,7 @@
     <Compile Include="Converters\**\*.cs" />
     <Compile Include="Models\**\*.cs" />
     <Compile Include="Services\**\*.cs" />
+    <Compile Include="Themes\**\*.cs" />
     <Compile Include="ViewModels\**\*.cs" />
     <Compile Include="Views\**\*.cs" />
   </ItemGroup>
