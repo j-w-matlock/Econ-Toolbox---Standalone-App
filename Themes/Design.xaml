@@ -14,6 +14,7 @@
     <converters:BoolAndDoubleToGridLengthConverter x:Key="BoolAndDoubleToGridLengthConverter"/>
     <converters:BoolToDoubleConverter x:Key="BoolToDoubleConverter"/>
     <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"/>
+    <converters:OrientationToIsDirectionReversedConverter x:Key="OrientationToIsDirectionReversedConverter"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <!-- Spacing tokens -->
@@ -673,7 +674,7 @@
                                       Background="Transparent"
                                       Focusable="False"/>
                         <Track x:Name="PART_Track"
-                               IsDirectionReversed="{Binding IsDirectionReversed, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}"
+                               IsDirectionReversed="{Binding Orientation, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource OrientationToIsDirectionReversedConverter}}"
                                Minimum="{TemplateBinding Minimum}"
                                Maximum="{TemplateBinding Maximum}"
                                Value="{TemplateBinding Value}"
