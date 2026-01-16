@@ -648,7 +648,7 @@
                 <ControlTemplate TargetType="ScrollBar">
                     <Grid Background="{TemplateBinding Background}">
                         <Track x:Name="PART_Track"
-                               IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                               IsDirectionReversed="{Binding IsDirectionReversed, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}"
                                Minimum="{TemplateBinding Minimum}"
                                Maximum="{TemplateBinding Maximum}"
                                Value="{TemplateBinding Value}"
