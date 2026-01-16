@@ -14,6 +14,7 @@
     <converters:BoolAndDoubleToGridLengthConverter x:Key="BoolAndDoubleToGridLengthConverter"/>
     <converters:BoolToDoubleConverter x:Key="BoolToDoubleConverter"/>
     <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"/>
+    <converters:OrientationToIsDirectionReversedConverter x:Key="OrientationToIsDirectionReversedConverter"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <!-- Spacing tokens -->
