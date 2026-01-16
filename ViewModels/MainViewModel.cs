@@ -50,18 +50,32 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ModuleDefinition? ExplorerSelectedModule
         {
-            get => _explorerSelectedModule;
+            get => SelectedModule != null && Modules.Contains(SelectedModule) ? SelectedModule : null;
             set
             {
-                if (ReferenceEquals(_explorerSelectedModule, value)) return;
-                _explorerSelectedModule = value;
-                OnPropertyChanged();
-                if (_isSyncingSelection || value == null)
-                {
-                    return;
-                }
-
+                if (value == null || ReferenceEquals(value, SelectedModule)) return;
                 SelectedModule = value;
+            }
+        }
+
+        private void SyncExplorerSelection(ModuleDefinition? selected)
+        {
+            if (selected == null)
+            {
+                return;
+            }
+
+            if (selected == ReadMeModule && _explorerSelectedModule != null)
+            {
+                _explorerSelectedModule = null;
+                OnPropertyChanged(nameof(ExplorerSelectedModule));
+                return;
+            }
+
+            if (selected != ReadMeModule && !ReferenceEquals(_explorerSelectedModule, selected))
+            {
+                _explorerSelectedModule = selected;
+                OnPropertyChanged(nameof(ExplorerSelectedModule));
             }
         }
 
