@@ -706,8 +706,8 @@
                             <Setter TargetName="PART_IncreaseButton" Property="Command" Value="ScrollBar.LineRightCommand"/>
                             <Setter TargetName="PART_DecreaseButton" Property="Width" Value="14"/>
                             <Setter TargetName="PART_IncreaseButton" Property="Width" Value="14"/>
-                            <Setter TargetName="PART_DecreaseButton" Property="Height" Value="{x:Static sys:Double.NaN}"/>
-                            <Setter TargetName="PART_IncreaseButton" Property="Height" Value="{x:Static sys:Double.NaN}"/>
+                            <Setter TargetName="PART_DecreaseButton" Property="Height" Value="Auto"/>
+                            <Setter TargetName="PART_IncreaseButton" Property="Height" Value="Auto"/>
                             <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -717,7 +717,7 @@
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="Height" Value="10"/>
-                <Setter Property="Width" Value="{x:Static sys:Double.NaN}"/>
+                <Setter Property="Width" Value="Auto"/>
                 <Setter Property="IsDirectionReversed" Value="False"/>
             </Trigger>
         </Style.Triggers>
