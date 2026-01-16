@@ -655,6 +655,7 @@
     <Style TargetType="ScrollBar">
         <Setter Property="Background" Value="{DynamicResource App.ScrollBarTrack}"/>
         <Setter Property="Width" Value="10"/>
+        <Setter Property="IsDirectionReversed" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
@@ -674,7 +675,7 @@
                                       Background="Transparent"
                                       Focusable="False"/>
                         <Track x:Name="PART_Track"
-                               IsDirectionReversed="{Binding Orientation, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource OrientationToIsDirectionReversedConverter}}"
+                               IsDirectionReversed="True"
                                Minimum="{TemplateBinding Minimum}"
                                Maximum="{TemplateBinding Maximum}"
                                Value="{TemplateBinding Value}"
@@ -707,6 +708,7 @@
                             <Setter TargetName="PART_IncreaseButton" Property="Width" Value="14"/>
                             <Setter TargetName="PART_DecreaseButton" Property="Height" Value="{x:Static sys:Double.NaN}"/>
                             <Setter TargetName="PART_IncreaseButton" Property="Height" Value="{x:Static sys:Double.NaN}"/>
+                            <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -716,6 +718,7 @@
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="Height" Value="10"/>
                 <Setter Property="Width" Value="{x:Static sys:Double.NaN}"/>
+                <Setter Property="IsDirectionReversed" Value="False"/>
             </Trigger>
         </Style.Triggers>
     </Style>
