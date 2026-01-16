@@ -674,7 +674,7 @@
                                       Background="Transparent"
                                       Focusable="False"/>
                         <Track x:Name="PART_Track"
-                               IsDirectionReversed="{Binding IsDirectionReversed, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}"
+                               IsDirectionReversed="True"
                                Minimum="{TemplateBinding Minimum}"
                                Maximum="{TemplateBinding Maximum}"
                                Value="{TemplateBinding Value}"
@@ -707,6 +707,7 @@
                             <Setter TargetName="PART_IncreaseButton" Property="Width" Value="14"/>
                             <Setter TargetName="PART_DecreaseButton" Property="Height" Value="{x:Static sys:Double.NaN}"/>
                             <Setter TargetName="PART_IncreaseButton" Property="Height" Value="{x:Static sys:Double.NaN}"/>
+                            <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
