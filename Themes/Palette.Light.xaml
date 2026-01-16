@@ -5,6 +5,7 @@
     <Color x:Key="App.Surface.Color">#FFFFFF</Color>
     <Color x:Key="App.SurfaceAlt.Color">#F3F3F3</Color>
     <Color x:Key="App.Surface2.Color">#F8F8F8</Color>
+    <Color x:Key="App.Surface2Border.Color">#DCDCDC</Color>
     <Color x:Key="App.Border.Color">#D0D0D0</Color>
     <Color x:Key="App.Divider.Color">#D0D0D0</Color>
     <Color x:Key="App.TextPrimary.Color">#1E1E1E</Color>
@@ -99,6 +100,7 @@
     <SolidColorBrush x:Key="App.Surface" Color="{DynamicResource App.Surface.Color}"/>
     <SolidColorBrush x:Key="App.SurfaceAlt" Color="{DynamicResource App.SurfaceAlt.Color}"/>
     <SolidColorBrush x:Key="App.Surface2" Color="{DynamicResource App.Surface2.Color}"/>
+    <SolidColorBrush x:Key="App.Surface2Border" Color="{DynamicResource App.Surface2Border.Color}"/>
     <SolidColorBrush x:Key="App.Border" Color="{DynamicResource App.Border.Color}"/>
     <SolidColorBrush x:Key="App.Divider" Color="{DynamicResource App.Divider.Color}"/>
     <SolidColorBrush x:Key="App.TextPrimary" Color="{DynamicResource App.TextPrimary.Color}"/>
