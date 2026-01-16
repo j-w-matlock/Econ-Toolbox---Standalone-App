@@ -274,6 +274,17 @@
                             <TextBlock Text="Details"/>
                         </StackPanel>
                     </Button>
+                    <Button Command="{Binding ShowReadMeCommand}"
+                            Padding="10,4"
+                            Margin="8,0,0,0"
+                            ToolTip="Open README">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE82D;"
+                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="README"/>
+                        </StackPanel>
+                    </Button>
                 </ToolBar>
             </DockPanel>
         </Border>
@@ -344,7 +355,7 @@
                                    Margin="0,0,0,8"/>
                     </StackPanel>
                     <ListBox ItemsSource="{Binding Modules}"
-                             SelectedIndex="{Binding SelectedIndex}"
+                             SelectedItem="{Binding ExplorerSelectedModule}"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                              ScrollViewer.CanContentScroll="True"

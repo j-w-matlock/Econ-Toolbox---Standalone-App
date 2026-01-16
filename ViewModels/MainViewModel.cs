@@ -25,23 +25,39 @@ namespace EconToolbox.Desktop.ViewModels
         public GanttViewModel Gantt { get; }
         public StageDamageOrganizerViewModel StageDamageOrganizer { get; }
 
+        public ModuleDefinition ReadMeModule { get; }
         public IReadOnlyList<ModuleDefinition> Modules { get; }
         public ObservableCollection<DiagnosticItem> Diagnostics { get; } = new();
 
-        private int _selectedIndex;
-        public int SelectedIndex
+        private ModuleDefinition? _selectedModule;
+        public ModuleDefinition? SelectedModule
         {
-            get => _selectedIndex;
+            get => _selectedModule;
             set
             {
-                if (_selectedIndex == value) return;
-                _selectedIndex = value;
+                if (_selectedModule == value) return;
+                _selectedModule = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsCalculateVisible));
-                OnPropertyChanged(nameof(SelectedModule));
                 OnPropertyChanged(nameof(PrimaryActionLabel));
                 OnPropertyChanged(nameof(CurrentViewModel));
                 UpdateDiagnostics();
+            }
+        }
+
+        private ModuleDefinition? _explorerSelectedModule;
+        public ModuleDefinition? ExplorerSelectedModule
+        {
+            get => _explorerSelectedModule;
+            set
+            {
+                if (_explorerSelectedModule == value) return;
+                _explorerSelectedModule = value;
+                OnPropertyChanged();
+                if (value != null)
+                {
+                    SelectedModule = value;
+                }
             }
         }
 
@@ -49,6 +65,7 @@ namespace EconToolbox.Desktop.ViewModels
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ToggleLeftPaneCommand { get; }
         public IRelayCommand ToggleRightPaneCommand { get; }
+        public IRelayCommand ShowReadMeCommand { get; }
 
         private bool _isDetailsPaneVisible = true;
         public bool IsDetailsPaneVisible
@@ -112,10 +129,6 @@ namespace EconToolbox.Desktop.ViewModels
 
         public BaseViewModel? CurrentViewModel => SelectedModule?.ContentViewModel;
 
-        public ModuleDefinition? SelectedModule => SelectedIndex >= 0 && SelectedIndex < Modules.Count
-            ? Modules[SelectedIndex]
-            : null;
-
         public bool IsCalculateVisible => SelectedModule?.ComputeCommand?.CanExecute(null) == true;
 
         public string PrimaryActionLabel => SelectedModule?.Title switch
@@ -163,28 +176,30 @@ namespace EconToolbox.Desktop.ViewModels
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ToggleLeftPaneCommand = new RelayCommand(ToggleExplorerPane);
             ToggleRightPaneCommand = new RelayCommand(ToggleDetailsPane);
+            ShowReadMeCommand = new RelayCommand(ShowReadMe);
+
+            ReadMeModule = new ModuleDefinition(
+                "Project README",
+                "Review onboarding tips, module descriptions, and build instructions without leaving the toolbox.",
+                "Centralizes documentation and onboarding guidance inside the desktop shell.",
+                new[]
+                {
+                    "Browse the introduction to understand the toolkit's purpose and architecture.",
+                    "Follow the build and publish instructions before sharing the desktop app with teammates.",
+                    "Reference the calculator summaries to confirm which module fits your analysis need."
+                },
+                new[]
+                {
+                    "Shows the repository's README rendered with headings, lists, and syntax highlighting.",
+                    "Keeps the latest project documentation available offline inside the application shell.",
+                    "Supports opening external links in your default browser for deeper references."
+                },
+                "Example: Quickly scan the packaging checklist before exporting deliverables for a stakeholder workshop.",
+                ReadMe,
+                null);
 
             Modules = new List<ModuleDefinition>
             {
-                new ModuleDefinition(
-                    "Project README",
-                    "Review onboarding tips, module descriptions, and build instructions without leaving the toolbox.",
-                    "Centralizes documentation and onboarding guidance inside the desktop shell.",
-                    new[]
-                    {
-                        "Browse the introduction to understand the toolkit's purpose and architecture.",
-                        "Follow the build and publish instructions before sharing the desktop app with teammates.",
-                        "Reference the calculator summaries to confirm which module fits your analysis need."
-                    },
-                    new[]
-                    {
-                        "Shows the repository's README rendered with headings, lists, and syntax highlighting.",
-                        "Keeps the latest project documentation available offline inside the application shell.",
-                        "Supports opening external links in your default browser for deeper references."
-                    },
-                    "Example: Quickly scan the packaging checklist before exporting deliverables for a stakeholder workshop.",
-                    ReadMe,
-                    null),
                 new ModuleDefinition(
                     "Expected Annual Damage (EAD)",
                     "Quantify how frequently damages occur by pairing exceedance probabilities with damage estimates.",
@@ -364,7 +379,12 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             ApplyLayoutSettings();
-            UpdateDiagnostics();
+            ExplorerSelectedModule = Modules.Count > 0 ? Modules[0] : null;
+            SelectedModule ??= ExplorerSelectedModule;
+            if (SelectedModule == null)
+            {
+                UpdateDiagnostics();
+            }
         }
 
         private void ApplyLayoutSettings()
@@ -417,6 +437,11 @@ namespace EconToolbox.Desktop.ViewModels
 
             IsExplorerPaneVisible = true;
             ExplorerPaneWidth = _explorerPaneWidthBeforeCollapse > 0 ? _explorerPaneWidthBeforeCollapse : DefaultExplorerPaneWidth;
+        }
+
+        private void ShowReadMe()
+        {
+            SelectedModule = ReadMeModule;
         }
 
         private void Calculate()
