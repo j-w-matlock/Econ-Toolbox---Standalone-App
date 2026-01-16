@@ -818,8 +818,6 @@
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Header}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
-        <Setter Property="TextBlock.TextTrimming" Value="CharacterEllipsis"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DataGridColumnHeader">
