@@ -6,7 +6,7 @@ namespace EconToolbox.Desktop.Converters
 {
     public class BooleanInverseConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is bool boolean)
             {
@@ -16,7 +16,7 @@ namespace EconToolbox.Desktop.Converters
             return true;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is bool boolean)
             {

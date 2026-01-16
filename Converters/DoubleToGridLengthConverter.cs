@@ -7,7 +7,7 @@ namespace EconToolbox.Desktop.Converters
 {
     public sealed class DoubleToGridLengthConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is GridLength gridLength)
             {
@@ -22,7 +22,7 @@ namespace EconToolbox.Desktop.Converters
             return new GridLength(0);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is GridLength gridLength)
             {

@@ -6,7 +6,7 @@ namespace EconToolbox.Desktop.Converters
 {
     public sealed class BoolToDoubleConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is not bool isVisible || !isVisible)
             {
@@ -27,7 +27,7 @@ namespace EconToolbox.Desktop.Converters
             return 0d;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return Binding.DoNothing;
         }
