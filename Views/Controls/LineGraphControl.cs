@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.Views.Controls
 {
@@ -186,9 +187,11 @@ namespace EconToolbox.Desktop.Views.Controls
             double plotHeight = Math.Max(0, height - marginTop - marginBottom);
 
             double dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            var axisPen = new Pen(new SolidColorBrush(Color.FromRgb(160, 160, 170)), 1);
-            var gridPen = new Pen(new SolidColorBrush(Color.FromRgb(210, 210, 220)), 1) { DashStyle = DashStyles.Dot };
-            var labelBrush = new SolidColorBrush(Color.FromRgb(90, 90, 100));
+            var axisBrush = ThemeResourceHelper.GetBrush("App.Border", new SolidColorBrush(Color.FromRgb(160, 160, 170)));
+            var gridBrush = ThemeResourceHelper.GetBrush("App.ChartGrid", new SolidColorBrush(Color.FromRgb(210, 210, 220)));
+            var labelBrush = ThemeResourceHelper.GetBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(90, 90, 100)));
+            var axisPen = new Pen(axisBrush, 1);
+            var gridPen = new Pen(gridBrush, 1) { DashStyle = DashStyles.Dot };
 
             // Axes
             Point origin = new(marginLeft, marginTop + plotHeight);
@@ -233,7 +236,7 @@ namespace EconToolbox.Desktop.Views.Controls
                     continue;
                 }
 
-                var stroke = series.Stroke ?? GetResourceBrush("App.Accent", Brushes.SteelBlue);
+                var stroke = series.Stroke ?? ThemeResourceHelper.GetBrush("App.Accent", Brushes.SteelBlue);
                 var polyPen = new Pen(stroke, 2.5);
                 var geometry = new StreamGeometry();
                 using (var context = geometry.Open())
@@ -257,7 +260,7 @@ namespace EconToolbox.Desktop.Views.Controls
                 geometry.Freeze();
                 dc.DrawGeometry(null, polyPen, geometry);
 
-                var pointFill = GetResourceBrush("App.Surface", Brushes.White);
+                var pointFill = ThemeResourceHelper.GetBrush("App.Surface", Brushes.White);
                 foreach (var pt in series.Points)
                 {
                     double x = marginLeft + ((pt.X - minX) / (maxX - minX)) * plotWidth;
@@ -274,13 +277,8 @@ namespace EconToolbox.Desktop.Views.Controls
                 : EmptyMessage;
 
             double dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            var text = CreateLabel(message, dpi, GetResourceBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(100, 100, 110))));
+            var text = CreateLabel(message, dpi, ThemeResourceHelper.GetBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(100, 100, 110))));
             dc.DrawText(text, new Point((width - text.Width) / 2, (height - text.Height) / 2));
-        }
-
-        private static Brush GetResourceBrush(string key, Brush fallback)
-        {
-            return Application.Current?.Resources[key] as Brush ?? fallback;
         }
 
         private static FormattedText CreateLabel(string text, double dpi, Brush brush)

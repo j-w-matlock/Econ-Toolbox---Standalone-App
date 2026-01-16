@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Collections.Specialized;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -289,19 +290,19 @@ namespace EconToolbox.Desktop.ViewModels
             Scenarios.Add(new Scenario
             {
                 Name = "Baseline",
-                LineBrush = Brushes.Blue,
+                LineBrush = ThemeResourceHelper.GetBrush("App.Chart.Series1", Brushes.Blue),
                 Description = "Most likely projection based on expected population and demand changes"
             });
             Scenarios.Add(new Scenario
             {
                 Name = "Alternative Forecast 1",
-                LineBrush = Brushes.Green,
+                LineBrush = ThemeResourceHelper.GetBrush("App.Chart.Series2", Brushes.Green),
                 Description = "User-adjustable alternative that scales baseline assumptions upward"
             });
             Scenarios.Add(new Scenario
             {
                 Name = "Alternative Forecast 2",
-                LineBrush = Brushes.Red,
+                LineBrush = ThemeResourceHelper.GetBrush("App.Chart.Series4", Brushes.Red),
                 Description = "User-adjustable alternative that scales baseline assumptions downward"
             });
 

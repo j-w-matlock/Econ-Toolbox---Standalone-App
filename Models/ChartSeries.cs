@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Windows.Media;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.Models
 {
     public class ChartSeries
     {
         public string Name { get; set; } = string.Empty;
-        public Brush Stroke { get; set; } = Brushes.SteelBlue;
+        public Brush Stroke { get; set; } = ThemeResourceHelper.GetBrush("App.Chart.Series1", Brushes.SteelBlue);
         public List<ChartDataPoint> Points { get; set; } = new();
     }
 

@@ -13,26 +13,32 @@ using System.Windows.Media.Imaging;
 using System.Globalization;
 using System.Threading;
 using static EconToolbox.Desktop.Services.ExcelNamingPolicy;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.Services
 {
     public sealed class ExcelExportService : IExcelExportService
     {
 
-        private static readonly Color ChartBlue = (Color)ColorConverter.ConvertFromString("#2D6A8E");
-        private static readonly Color ChartTeal = (Color)ColorConverter.ConvertFromString("#1ABC9C");
-        private static readonly Color ChartOrange = (Color)ColorConverter.ConvertFromString("#F39C12");
-        private static readonly Color ChartPlum = (Color)ColorConverter.ConvertFromString("#7F56D9");
-        private static readonly Color ChartGray = (Color)ColorConverter.ConvertFromString("#6B7280");
+        private static Color ChartBlue => ThemeResourceHelper.GetColor("App.Chart.Series1.Color", (Color)ColorConverter.ConvertFromString("#2D6A8E"));
+        private static Color ChartTeal => ThemeResourceHelper.GetColor("App.Chart.Series2.Color", (Color)ColorConverter.ConvertFromString("#1ABC9C"));
+        private static Color ChartOrange => ThemeResourceHelper.GetColor("App.Chart.Series4.Color", (Color)ColorConverter.ConvertFromString("#F39C12"));
+        private static Color ChartPlum => ThemeResourceHelper.GetColor("App.Chart.Series3.Color", (Color)ColorConverter.ConvertFromString("#7F56D9"));
+        private static Color ChartGray => ThemeResourceHelper.GetColor("App.TextSecondary.Color", (Color)ColorConverter.ConvertFromString("#6B7280"));
 
-        private static readonly XLColor DashboardHeaderFill = XLColor.FromHtml("#2D6A8E");
-        private static readonly XLColor DashboardHeaderText = XLColor.White;
-        private static readonly XLColor DashboardSubHeaderFill = XLColor.FromHtml("#EFF5FB");
-        private static readonly XLColor DashboardRowLight = XLColor.FromHtml("#FFFFFF");
-        private static readonly XLColor DashboardRowAlt = XLColor.FromHtml("#F6F9FC");
-        private static readonly XLColor DashboardBorder = XLColor.FromHtml("#D0D7E5");
-        private static readonly XLColor DashboardAccentText = XLColor.FromHtml("#2D6A8E");
-        private static readonly XLColor DashboardPrimaryText = XLColor.FromHtml("#1F2937");
+        private static XLColor DashboardHeaderFill => ToXLColor(ThemeResourceHelper.GetColor("App.Chart.Series1.Color", (Color)ColorConverter.ConvertFromString("#2D6A8E")));
+        private static XLColor DashboardHeaderText => ToXLColor(ThemeResourceHelper.GetColor("App.OnAccent.Color", Colors.White));
+        private static XLColor DashboardSubHeaderFill => ToXLColor(ThemeResourceHelper.GetColor("App.HighlightBackground.Color", (Color)ColorConverter.ConvertFromString("#EFF5FB")));
+        private static XLColor DashboardRowLight => ToXLColor(ThemeResourceHelper.GetColor("App.Surface.Color", Colors.White));
+        private static XLColor DashboardRowAlt => ToXLColor(ThemeResourceHelper.GetColor("App.SurfaceAlt.Color", (Color)ColorConverter.ConvertFromString("#F6F9FC")));
+        private static XLColor DashboardBorder => ToXLColor(ThemeResourceHelper.GetColor("App.Border.Color", (Color)ColorConverter.ConvertFromString("#D0D7E5")));
+        private static XLColor DashboardAccentText => ToXLColor(ThemeResourceHelper.GetColor("App.Accent.Color", (Color)ColorConverter.ConvertFromString("#2D6A8E")));
+        private static XLColor DashboardPrimaryText => ToXLColor(ThemeResourceHelper.GetColor("App.TextPrimary.Color", (Color)ColorConverter.ConvertFromString("#1F2937")));
+
+        private static XLColor ToXLColor(Color color)
+        {
+            return XLColor.FromArgb(color.A, color.R, color.G, color.B);
+        }
 
         private static void LogWarning(string message)
         {
@@ -1601,10 +1607,13 @@ namespace EconToolbox.Desktop.Services
             DrawingVisual visual = new();
             using (DrawingContext dc = visual.RenderOpen())
             {
-                dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+                var surfaceBrush = ThemeResourceHelper.GetBrush("App.Surface", Brushes.White);
+                var axisBrush = ThemeResourceHelper.GetBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(80, 80, 80)));
+                var textBrush = ThemeResourceHelper.GetBrush("App.TextPrimary", Brushes.Black);
+                dc.DrawRectangle(surfaceBrush, null, new Rect(0, 0, width, height));
 
                 // Axis
-                Pen axisPen = new(new SolidColorBrush(Color.FromRgb(80, 80, 80)), 1);
+                Pen axisPen = new(axisBrush, 1);
                 dc.DrawLine(axisPen, new Point(originX, 20), new Point(originX, originY));
                 dc.DrawLine(axisPen, new Point(originX, originY), new Point(width - 20, originY));
 
@@ -1619,13 +1628,13 @@ namespace EconToolbox.Desktop.Services
                 dc.DrawRectangle(new SolidColorBrush(ChartOrange), null, costRect);
 
                 // Labels
-                FormattedText benefitsLabel = new($"Benefits: {annualBenefits:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                FormattedText benefitsLabel = new($"Benefits: {annualBenefits:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, textBrush, 1.0);
                 dc.DrawText(benefitsLabel, new Point(benefitsRect.X, originY + 5));
 
-                FormattedText costLabel = new($"Costs: {annualCost:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                FormattedText costLabel = new($"Costs: {annualCost:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal), 12, textBrush, 1.0);
                 dc.DrawText(costLabel, new Point(costRect.X, originY + 5));
 
-                FormattedText bcrLabel = new($"BCR: {bcr:0.00}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 14, Brushes.Black, 1.0);
+                FormattedText bcrLabel = new($"BCR: {bcr:0.00}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 14, textBrush, 1.0);
                 dc.DrawText(bcrLabel, new Point(width - 120, 25));
             }
 
@@ -1649,9 +1658,12 @@ namespace EconToolbox.Desktop.Services
             DrawingVisual visual = new();
             using (DrawingContext dc = visual.RenderOpen())
             {
-                dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+                var surfaceBrush = ThemeResourceHelper.GetBrush("App.Surface", Brushes.White);
+                var axisBrush = ThemeResourceHelper.GetBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(80, 80, 80)));
+                var textBrush = ThemeResourceHelper.GetBrush("App.TextPrimary", Brushes.Black);
+                dc.DrawRectangle(surfaceBrush, null, new Rect(0, 0, width, height));
 
-                Pen axisPen = new(new SolidColorBrush(Color.FromRgb(80, 80, 80)), 1);
+                Pen axisPen = new(axisBrush, 1);
                 Point origin = new(margin, height - margin);
                 dc.DrawLine(axisPen, origin, new Point(width - margin, origin.Y));
                 dc.DrawLine(axisPen, origin, new Point(origin.X, margin));
@@ -1669,11 +1681,11 @@ namespace EconToolbox.Desktop.Services
                     double y = origin.Y - (eadValue.Value / maxDamage) * plotHeight;
                     Pen dashed = new(new SolidColorBrush(ChartOrange), 1) { DashStyle = DashStyles.Dash };
                     dc.DrawLine(dashed, new Point(origin.X, y), new Point(width - margin, y));
-                    FormattedText eadLabel = new($"EAD: {eadValue.Value:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 12, Brushes.Black, 1.0);
+                    FormattedText eadLabel = new($"EAD: {eadValue.Value:N0}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 12, textBrush, 1.0);
                     dc.DrawText(eadLabel, new Point(origin.X + 5, y - 18));
                 }
 
-                FormattedText title = new(curveName ?? "Damage Curve", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal), 13, Brushes.Black, 1.0);
+                FormattedText title = new(curveName ?? "Damage Curve", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal), 13, textBrush, 1.0);
                 dc.DrawText(title, new Point(margin, 10));
             }
 
@@ -1701,8 +1713,10 @@ namespace EconToolbox.Desktop.Services
             DrawingVisual visual = new();
             using (DrawingContext dc = visual.RenderOpen())
             {
-                dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
-                Pen axisPen = new(new SolidColorBrush(Color.FromRgb(80, 80, 80)), 1);
+                var surfaceBrush = ThemeResourceHelper.GetBrush("App.Surface", Brushes.White);
+                var axisBrush = ThemeResourceHelper.GetBrush("App.TextSecondary", new SolidColorBrush(Color.FromRgb(80, 80, 80)));
+                dc.DrawRectangle(surfaceBrush, null, new Rect(0, 0, width, height));
+                Pen axisPen = new(axisBrush, 1);
                 Point origin = new(margin, height - margin);
                 dc.DrawLine(axisPen, origin, new Point(width - margin, origin.Y));
                 dc.DrawLine(axisPen, origin, new Point(origin.X, margin));
@@ -1775,7 +1789,9 @@ namespace EconToolbox.Desktop.Services
             DrawingVisual dv = new();
             using var dc = dv.RenderOpen();
 
-            var background = new LinearGradientBrush(Color.FromRgb(248, 251, 255), Color.FromRgb(230, 239, 252), new Point(0, 0), new Point(0, 1));
+            var highlightColor = ThemeResourceHelper.GetColor("App.HighlightBackground.Color", Color.FromRgb(248, 251, 255));
+            var surfaceColor = ThemeResourceHelper.GetColor("App.Surface.Color", Color.FromRgb(230, 239, 252));
+            var background = new LinearGradientBrush(highlightColor, surfaceColor, new Point(0, 0), new Point(0, 1));
             background.Freeze();
             dc.DrawRectangle(background, null, new Rect(0, 0, width, height));
 
@@ -1887,7 +1903,7 @@ namespace EconToolbox.Desktop.Services
             title.SetFontWeight(FontWeights.SemiBold);
             dc.DrawText(title, new Point(marginLeft, marginTop - title.Height - 14));
 
-            var highlightLabel = new FormattedText($"Selected UDV: {udv.UnitDayValue:C2}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, Brushes.White, 1.0);
+            var highlightLabel = new FormattedText($"Selected UDV: {udv.UnitDayValue:C2}", CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 11, ThemeResourceHelper.GetBrush("App.OnAccent", Brushes.White), 1.0);
             highlightLabel.SetFontWeight(FontWeights.SemiBold);
             var badgeRect = new Rect(origin.X + plotWidth - highlightLabel.Width - 24, marginTop - highlightLabel.Height - 16, highlightLabel.Width + 20, highlightLabel.Height + 10);
             var badgeBrush = new SolidColorBrush(ChartPlum) { Opacity = 0.9 };
@@ -2026,8 +2042,8 @@ namespace EconToolbox.Desktop.Services
             DrawingVisual dv = new();
             using (var dc = dv.RenderOpen())
             {
-                dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
-                DrawPolyline(dc, scaledPoints, new Pen(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2D6A8E")), 2));
+                dc.DrawRectangle(ThemeResourceHelper.GetBrush("App.Surface", Brushes.White), null, new Rect(0, 0, width, height));
+                DrawPolyline(dc, scaledPoints, new Pen(new SolidColorBrush(ChartBlue), 2));
             }
             RenderTargetBitmap rtb = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
             rtb.Render(dv);
