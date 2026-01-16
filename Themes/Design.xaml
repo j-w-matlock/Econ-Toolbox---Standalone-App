@@ -457,7 +457,7 @@
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
         <Setter Property="RowHeaderWidth" Value="0"/>
-        <Setter Property="ColumnHeaderHeight" Value="32"/>
+        <Setter Property="ColumnHeaderHeight" Value="Auto"/>
         <Setter Property="RowHeight" Value="32"/>
         <Setter Property="ColumnHeaderStyle" Value="{DynamicResource DataGridColumnHeaderStyle}"/>
         <Setter Property="CellStyle" Value="{DynamicResource DataGridCellStyle}"/>
@@ -470,10 +470,19 @@
         <Setter Property="Background" Value="{DynamicResource App.SurfaceAlt}"/>
         <Setter Property="Foreground" Value="{DynamicResource App.TextSecondary}"/>
         <Setter Property="Padding" Value="10,6"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
-        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Divider}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}"
+                               TextWrapping="Wrap"
+                               TextTrimming="CharacterEllipsis"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DataGridColumnHeader">
@@ -507,8 +516,8 @@
 
     <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
         <Setter Property="Padding" Value="8,4"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Divider}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,0"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
