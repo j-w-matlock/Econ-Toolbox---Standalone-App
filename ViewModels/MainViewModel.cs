@@ -30,6 +30,8 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<DiagnosticItem> Diagnostics { get; } = new();
 
         private ModuleDefinition? _selectedModule;
+        private ModuleDefinition? _explorerSelectedModule;
+        private bool _isSyncingSelection;
         public ModuleDefinition? SelectedModule
         {
             get => _selectedModule;
@@ -75,6 +77,27 @@ namespace EconToolbox.Desktop.ViewModels
                 _explorerSelectedModule = selected;
                 OnPropertyChanged(nameof(ExplorerSelectedModule));
             }
+        }
+
+        private void SyncExplorerSelection(ModuleDefinition? selected)
+        {
+            if (_isSyncingSelection)
+            {
+                return;
+            }
+
+            _isSyncingSelection = true;
+            if (selected != null && Modules.Contains(selected))
+            {
+                _explorerSelectedModule = selected;
+            }
+            else
+            {
+                _explorerSelectedModule = null;
+            }
+
+            OnPropertyChanged(nameof(ExplorerSelectedModule));
+            _isSyncingSelection = false;
         }
 
         public IRelayCommand CalculateCommand { get; }
