@@ -175,7 +175,19 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<DemandEntry> HistoricalData
         {
             get => _historicalData;
-            set { _historicalData = value; OnPropertyChanged(); }
+            set
+            {
+                if (ReferenceEquals(_historicalData, value))
+                {
+                    return;
+                }
+
+                DetachHistoricalHandlers(_historicalData);
+                _historicalData = value ?? new ObservableCollection<DemandEntry>();
+                AttachHistoricalHandlers(_historicalData);
+                OnPropertyChanged();
+                AutoPopulateBaseline();
+            }
         }
 
         public int ForecastYears
@@ -305,7 +317,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             ApplyScenarioAdjustments();
 
-            HistoricalData.CollectionChanged += HistoricalData_CollectionChanged;
+            AttachHistoricalHandlers(HistoricalData);
 
             ForecastCommand = new RelayCommand(Forecast);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
@@ -314,6 +326,22 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void HistoricalData_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                DetachHistoricalHandlers(HistoricalData);
+                AttachHistoricalHandlers(HistoricalData);
+                AutoPopulateBaseline();
+                return;
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (DemandEntry entry in e.OldItems)
+                {
+                    entry.PropertyChanged -= HistoricalEntryChanged;
+                }
+            }
+
             if (e.NewItems != null)
             {
                 foreach (DemandEntry d in e.NewItems)
@@ -326,6 +354,24 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.PropertyName == nameof(DemandEntry.Demand) || e.PropertyName == nameof(DemandEntry.Year))
                 AutoPopulateBaseline();
+        }
+
+        private void AttachHistoricalHandlers(ObservableCollection<DemandEntry> entries)
+        {
+            entries.CollectionChanged += HistoricalData_CollectionChanged;
+            foreach (var entry in entries)
+            {
+                entry.PropertyChanged += HistoricalEntryChanged;
+            }
+        }
+
+        private void DetachHistoricalHandlers(ObservableCollection<DemandEntry> entries)
+        {
+            entries.CollectionChanged -= HistoricalData_CollectionChanged;
+            foreach (var entry in entries)
+            {
+                entry.PropertyChanged -= HistoricalEntryChanged;
+            }
         }
 
         private void AutoPopulateBaseline()
