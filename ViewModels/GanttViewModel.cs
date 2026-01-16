@@ -179,6 +179,7 @@ namespace EconToolbox.Desktop.ViewModels
                 task.PropertyChanged -= OnTaskPropertyChanged;
             }
             Tasks.Clear();
+            SelectedTask = null;
             Bars.Clear();
             Links.Clear();
             ScheduleSummary = string.Empty;
