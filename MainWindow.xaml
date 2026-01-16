@@ -301,17 +301,6 @@
                         </MultiBinding>
                     </ColumnDefinition.Width>
                 </ColumnDefinition>
-                <ColumnDefinition x:Name="CenterColumn"
-                                  Width="*"
-                                  MinWidth="420"/>
-                <ColumnDefinition x:Name="DetailsSplitterColumn">
-                    <ColumnDefinition.Width>
-                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
-                            <Binding Path="IsDetailsPaneVisible"/>
-                            <Binding Source="6"/>
-                        </MultiBinding>
-                    </ColumnDefinition.Width>
-                </ColumnDefinition>
                 <ColumnDefinition x:Name="DetailsColumn">
                     <ColumnDefinition.Width>
                         <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
@@ -325,6 +314,17 @@
                                  ConverterParameter="260"/>
                     </ColumnDefinition.MinWidth>
                 </ColumnDefinition>
+                <ColumnDefinition x:Name="DetailsSplitterColumn">
+                    <ColumnDefinition.Width>
+                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
+                            <Binding Path="IsDetailsPaneVisible"/>
+                            <Binding Source="6"/>
+                        </MultiBinding>
+                    </ColumnDefinition.Width>
+                </ColumnDefinition>
+                <ColumnDefinition x:Name="CenterColumn"
+                                  Width="*"
+                                  MinWidth="420"/>
             </Grid.ColumnDefinitions>
 
             <Border x:Name="ExplorerPane"
@@ -385,30 +385,12 @@
                           ResizeBehavior="PreviousAndNext"
                           ResizeDirection="Columns"/>
 
-            <Border Grid.Column="2"
-                    Background="{DynamicResource App.EditorBackground}"
-                    BorderBrush="{DynamicResource App.Surface2Border}"
-                    BorderThickness="0">
-                <ContentControl Content="{Binding CurrentViewModel}"
-                                Margin="{StaticResource Padding.Section}"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                TextElement.FontSize="12"/>
-            </Border>
-
-            <GridSplitter x:Name="DetailsSplitter"
-                          Grid.Column="3"
-                          Style="{StaticResource GridSplitter.Pane}"
-                          Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                          ResizeBehavior="PreviousAndNext"
-                          ResizeDirection="Columns"/>
-
             <Border x:Name="DetailsPane"
-                    Grid.Column="4"
+                    Grid.Column="2"
                     Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                     Background="{DynamicResource App.Surface2}"
                     BorderBrush="{DynamicResource App.Surface2Border}"
-                    BorderThickness="1,0,0,0"
+                    BorderThickness="0,0,1,0"
                     Padding="{StaticResource Padding.Content}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -522,6 +504,24 @@
                         </ContentControl>
                     </Border>
                 </Grid>
+            </Border>
+
+            <GridSplitter x:Name="DetailsSplitter"
+                          Grid.Column="3"
+                          Style="{StaticResource GridSplitter.Pane}"
+                          Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                          ResizeBehavior="PreviousAndNext"
+                          ResizeDirection="Columns"/>
+
+            <Border Grid.Column="4"
+                    Background="{DynamicResource App.EditorBackground}"
+                    BorderBrush="{DynamicResource App.Surface2Border}"
+                    BorderThickness="0">
+                <ContentControl Content="{Binding CurrentViewModel}"
+                                Margin="{StaticResource Padding.Section}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                TextElement.FontSize="12"/>
             </Border>
         </Grid>
 
