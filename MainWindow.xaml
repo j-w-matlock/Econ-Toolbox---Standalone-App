@@ -59,63 +59,18 @@
                 <views:StageDamageOrganizerView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:DiagnosticItem}">
-                <DataTemplate.Resources>
-                    <Style x:Key="DiagnosticBorderStyle" TargetType="Border">
-                        <Setter Property="Padding" Value="10"/>
-                        <Setter Property="Margin" Value="0,0,0,8"/>
-                        <Setter Property="CornerRadius" Value="6"/>
-                        <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="Background" Value="{DynamicResource App.Diagnostic.InfoBackground}"/>
-                        <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.InfoBorder}"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Level}" Value="Warning">
-                                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.WarningBackground}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.WarningBorder}"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Level}" Value="Advisory">
-                                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.AdvisoryBackground}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.AdvisoryBorder}"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Level}" Value="Error">
-                                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.ErrorBackground}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.ErrorBorder}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                    <Style x:Key="DiagnosticDotStyle" TargetType="Ellipse">
-                        <Setter Property="Width" Value="8"/>
-                        <Setter Property="Height" Value="8"/>
-                        <Setter Property="Margin" Value="0,4,8,0"/>
-                        <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.InfoIcon}"/>
-                        <Setter Property="VerticalAlignment" Value="Top"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Level}" Value="Warning">
-                                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.WarningIcon}"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Level}" Value="Advisory">
-                                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.AdvisoryIcon}"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Level}" Value="Error">
-                                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.ErrorIcon}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataTemplate.Resources>
-                <Border Style="{StaticResource DiagnosticBorderStyle}">
+                <Border Style="{StaticResource Diagnostic.Border}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Ellipse Style="{StaticResource DiagnosticDotStyle}"/>
+                        <Ellipse Style="{StaticResource Diagnostic.Dot}"/>
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="{Binding Title}"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource App.TextPrimary}"/>
+                                       Style="{StaticResource Text.SectionHeader}"/>
                             <TextBlock Text="{Binding Description}"
-                                       FontSize="12"
-                                       TextWrapping="Wrap"
-                                       Foreground="{DynamicResource App.TextSecondary}"/>
+                                       Style="{StaticResource Text.BodySmall}"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -131,33 +86,29 @@
                             Grid.Column="0"
                             Command="{Binding CalculateCommand}"
                             Margin="0,0,12,0"
-                            Height="40"
+                            Style="{StaticResource Button.ActionLarge}"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8EF;"
-                                       Margin="0,0,8,0"
-                                       FontSize="16"/>
+                            <TextBlock Text="&#xE8EF;"
+                                       Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="{Binding PrimaryActionLabel, Converter={StaticResource NullOrEmptyToValueConverter}, ConverterParameter=Calculate}"
-                                       FontSize="14"/>
+                                       Style="{StaticResource Text.ActionLabel}"/>
                         </StackPanel>
                     </Button>
                     <Button Grid.Column="1"
                             Command="{Binding ExportCommand}"
-                            Margin="0"
-                            Height="40">
+                            Margin="{StaticResource Margin.None}"
+                            Style="{StaticResource Button.ActionLarge}">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xEDE1;"
-                                       Margin="0,0,8,0"
-                                       FontSize="16"/>
+                            <TextBlock Text="&#xEDE1;"
+                                       Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="Export"
-                                       FontSize="14"/>
+                                       Style="{StaticResource Text.ActionLabel}"/>
                         </StackPanel>
                     </Button>
                 </Grid>
@@ -167,32 +118,28 @@
                 <StackPanel>
                     <Button Command="{Binding CalculateCommand}"
                             Margin="0,0,0,8"
-                            Height="38"
+                            Style="{StaticResource Button.ActionCompact}"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8EF;"
-                                       Margin="0,0,8,0"
-                                       FontSize="16"/>
+                            <TextBlock Text="&#xE8EF;"
+                                       Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="{Binding PrimaryActionLabel, Converter={StaticResource NullOrEmptyToValueConverter}, ConverterParameter=Calculate}"
-                                       FontSize="14"/>
+                                       Style="{StaticResource Text.ActionLabel}"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ExportCommand}"
-                            Margin="0"
-                            Height="38">
+                            Margin="{StaticResource Margin.None}"
+                            Style="{StaticResource Button.ActionCompact}">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xEDE1;"
-                                       Margin="0,0,8,0"
-                                       FontSize="16"/>
+                            <TextBlock Text="&#xEDE1;"
+                                       Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="Export"
-                                       FontSize="14"/>
+                                       Style="{StaticResource Text.ActionLabel}"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -208,80 +155,64 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
-                Background="{DynamicResource App.TitleBarBackground}"
-                BorderBrush="{DynamicResource App.Surface2Border}"
-                BorderThickness="0,0,0,1"
-                Padding="12,8">
+                Style="{StaticResource Border.TitleBar}">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal"
                             DockPanel.Dock="Left">
                     <TextBlock Text="ECON TOOLBOX"
-                               FontSize="14"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource App.TextPrimary}"/>
+                               Style="{StaticResource Text.TitleBarBrand}"/>
                     <TextBlock Text="{Binding SelectedModule.Title}"
-                               FontSize="13"
-                               Margin="12,0,0,0"
-                               Foreground="{DynamicResource App.TextSecondary}"/>
+                               Margin="{StaticResource Margin.InlineTight}"
+                               Style="{StaticResource Text.TitleBarModule}"/>
                 </StackPanel>
                 <ToolBar DockPanel.Dock="Right"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         Padding="0"
                          VerticalAlignment="Center">
                     <Button Command="{Binding CalculateCommand}"
-                            Padding="10,4"
-                            Margin="0,0,8,0"
+                            Style="{StaticResource Button.TitleBar}"
                             ToolTip="{Binding PrimaryActionLabel, StringFormat=Run {0}}"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8EF;"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE8EF;"
+                                       Style="{StaticResource Text.Icon.Toolbar}"/>
                             <TextBlock Text="{Binding PrimaryActionLabel}"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ExportCommand}"
-                            Padding="10,4"
-                            Margin="0,0,8,0"
+                            Style="{StaticResource Button.TitleBar}"
                             ToolTip="Export results">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xEDE1;"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xEDE1;"
+                                       Style="{StaticResource Text.Icon.Toolbar}"/>
                             <TextBlock Text="Export"/>
                         </StackPanel>
                     </Button>
                     <Separator/>
                     <Button Command="{Binding ToggleLeftPaneCommand}"
-                            Padding="10,4"
+                            Style="{StaticResource Button.TitleBar}"
                             ToolTip="Toggle Explorer (Ctrl+Alt+E)">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8B7;"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE8B7;"
+                                       Style="{StaticResource Text.Icon.Toolbar}"/>
                             <TextBlock Text="Explorer"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ToggleRightPaneCommand}"
-                            Padding="10,4"
+                            Style="{StaticResource Button.TitleBar}"
                             ToolTip="Toggle Details (Ctrl+Alt+D)">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8FD;"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE8FD;"
+                                       Style="{StaticResource Text.Icon.Toolbar}"/>
                             <TextBlock Text="Details"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ShowReadMeCommand}"
-                            Padding="10,4"
+                            Style="{StaticResource Button.TitleBar}"
                             Margin="8,0,0,0"
                             ToolTip="Open README">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE82D;"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE82D;"
+                                       Style="{StaticResource Text.Icon.Toolbar}"/>
                             <TextBlock Text="README"/>
                         </StackPanel>
                     </Button>
@@ -341,10 +272,7 @@
             <Border x:Name="ExplorerPane"
                     Grid.Column="0"
                     Visibility="{Binding IsExplorerPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Background="{DynamicResource App.NavigationBackground}"
-                    BorderBrush="{DynamicResource App.Surface2Border}"
-                    BorderThickness="0,0,1,0"
-                    Padding="{StaticResource Padding.Content}">
+                    Style="{StaticResource Border.ExplorerPane}">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top">
                         <TextBlock Text="EXPLORER"
@@ -399,10 +327,7 @@
             <Border x:Name="DetailsPane"
                     Grid.Column="2"
                     Visibility="{Binding IsDetailsPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Background="{DynamicResource App.Surface2}"
-                    BorderBrush="{DynamicResource App.Surface2Border}"
-                    BorderThickness="0,0,1,0"
-                    Padding="{StaticResource Padding.Content}">
+                    Style="{StaticResource Border.DetailsPane}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -419,23 +344,17 @@
                                        DockPanel.Dock="Left"/>
                             <Button Command="{Binding ToggleRightPaneCommand}"
                                     DockPanel.Dock="Right"
-                                    Padding="6,2"
-                                    Margin="8,0,0,6">
+                                    Style="{StaticResource Button.PaneToggle}">
                                 <TextBlock Text="Hide"
-                                           FontSize="11"
-                                           Foreground="{DynamicResource App.TextSecondary}"/>
+                                           Style="{StaticResource Text.StatusBar}"/>
                             </Button>
                         </DockPanel>
                         <TextBlock Text="{Binding SelectedModule.Title}"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource App.TextPrimary}"
+                                   Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,6"
                                    TextWrapping="Wrap"/>
                         <TextBlock Text="{Binding SelectedModule.Description}"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource App.TextSecondary}"
-                                   TextWrapping="Wrap"/>
+                                   Style="{StaticResource Text.BodySmall}"/>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1"
@@ -443,63 +362,47 @@
                                   VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <TextBlock Text="Summary"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource App.TextPrimary}"
+                                       Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
                             <TextBlock Text="{Binding SelectedModule.FunctionSummary}"
-                                       FontSize="12"
-                                       Foreground="{DynamicResource App.TextSecondary}"
-                                       TextWrapping="Wrap"
+                                       Style="{StaticResource Text.BodySmall}"
                                        Margin="0,0,0,12"/>
 
                             <TextBlock Text="Inputs"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource App.TextPrimary}"
+                                       Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
                             <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding StringFormat=• {0}}"
-                                                   FontSize="12"
-                                                   TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource App.TextSecondary}"
+                                                   Style="{StaticResource Text.BodySmall}"
                                                    Margin="0,0,0,6"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
                             <TextBlock Text="Outputs"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource App.TextPrimary}"
+                                       Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,8,0,6"/>
                             <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding StringFormat=• {0}}"
-                                                   FontSize="12"
-                                                   TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource App.TextSecondary}"
+                                                   Style="{StaticResource Text.BodySmall}"
                                                    Margin="0,0,0,6"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
                             <TextBlock Text="Diagnostics"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource App.TextPrimary}"
+                                       Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,12,0,6"/>
                             <ItemsControl ItemsSource="{Binding Diagnostics}"/>
                         </StackPanel>
                     </ScrollViewer>
 
                     <Border Grid.Row="2"
-                            BorderBrush="{DynamicResource App.Surface2Border}"
-                            BorderThickness="0,1,0,0"
-                            Padding="0,8,0,0">
+                            Style="{StaticResource Border.PaneFooter}">
                         <ContentControl Content="{Binding}">
                             <ContentControl.Style>
                                 <Style TargetType="ContentControl">
@@ -525,9 +428,7 @@
                           ResizeDirection="Columns"/>
 
             <Border Grid.Column="4"
-                    Background="{DynamicResource App.EditorBackground}"
-                    BorderBrush="{DynamicResource App.Surface2Border}"
-                    BorderThickness="0">
+                    Style="{StaticResource Border.EditorPane}">
                 <ContentControl Content="{Binding CurrentViewModel}"
                                 Margin="{StaticResource Padding.Section}"
                                 HorizontalAlignment="Stretch"
@@ -537,18 +438,14 @@
         </Grid>
 
         <StatusBar Grid.Row="2"
-                   Background="{DynamicResource App.StatusBarBackground}"
-                   BorderBrush="{DynamicResource App.Surface2Border}"
-                   BorderThickness="0,1,0,0">
+                   Style="{StaticResource StatusBar.App}">
             <StatusBarItem>
                 <TextBlock Text="Ready"
-                           FontSize="11"
-                           Foreground="{DynamicResource App.TextSecondary}"/>
+                           Style="{StaticResource Text.StatusBar}"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
                 <TextBlock Text="{Binding SelectedModule.Title}"
-                           FontSize="11"
-                           Foreground="{DynamicResource App.TextSecondary}"/>
+                           Style="{StaticResource Text.StatusBar}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

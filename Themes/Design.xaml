@@ -43,6 +43,8 @@
     <Thickness x:Key="Padding.Card">16</Thickness>
     <Thickness x:Key="Padding.Section">20</Thickness>
     <Thickness x:Key="Padding.Content">12</Thickness>
+    <Thickness x:Key="Padding.TitleBar">12,8</Thickness>
+    <Thickness x:Key="Padding.TitleBarButton">10,4</Thickness>
     <Thickness x:Key="Margin.Container">16</Thickness>
     <Thickness x:Key="Margin.StackSmall">0,0,0,4</Thickness>
     <Thickness x:Key="Margin.Stack">0,0,0,8</Thickness>
@@ -50,6 +52,8 @@
     <Thickness x:Key="Margin.Inline">0,0,8,0</Thickness>
     <Thickness x:Key="Margin.InlineLarge">0,0,24,0</Thickness>
     <Thickness x:Key="Margin.InlineMedium">0,0,16,0</Thickness>
+    <Thickness x:Key="Margin.InlineTight">0,0,12,0</Thickness>
+    <Thickness x:Key="Margin.IconSmall">0,0,6,0</Thickness>
     <Thickness x:Key="Margin.TopSmall">0,8,0,0</Thickness>
     <Thickness x:Key="Margin.TopLarge">0,16,0,0</Thickness>
     <Thickness x:Key="Margin.TopXSmall">0,4,0,0</Thickness>
@@ -115,6 +119,24 @@
         <Setter Property="Padding" Value="12,6"/>
     </Style>
 
+    <Style x:Key="Button.ActionLarge" TargetType="Button" BasedOn="{StaticResource Button.Action}">
+        <Setter Property="Height" Value="40"/>
+    </Style>
+
+    <Style x:Key="Button.ActionCompact" TargetType="Button" BasedOn="{StaticResource Button.Action}">
+        <Setter Property="Height" Value="38"/>
+    </Style>
+
+    <Style x:Key="Button.TitleBar" TargetType="Button">
+        <Setter Property="Padding" Value="{StaticResource Padding.TitleBarButton}"/>
+        <Setter Property="Margin" Value="{StaticResource Margin.Inline}"/>
+    </Style>
+
+    <Style x:Key="Button.PaneToggle" TargetType="Button">
+        <Setter Property="Padding" Value="6,2"/>
+        <Setter Property="Margin" Value="8,0,0,6"/>
+    </Style>
+
     <!-- Type ramp -->
     <Style x:Key="Text.Caption" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI"/>
@@ -140,6 +162,64 @@
         <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
 
+    <Style x:Key="Text.TitleBarBrand" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
+    </Style>
+
+    <Style x:Key="Text.TitleBarModule" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextSecondary}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <Style x:Key="Text.SectionTitle" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <Style x:Key="Text.SectionHeader" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
+    </Style>
+
+    <Style x:Key="Text.BodySmall" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextSecondary}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <Style x:Key="Text.StatusBar" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextSecondary}"/>
+    </Style>
+
+    <Style x:Key="Text.ActionLabel" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+
+    <Style x:Key="Text.Icon.Toolbar" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="Margin" Value="{StaticResource Margin.IconSmall}"/>
+    </Style>
+
+    <Style x:Key="Text.Icon.Action" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="Margin" Value="{StaticResource Margin.Inline}"/>
+    </Style>
+
     <Style x:Key="Text.Body" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontSize" Value="14"/>
@@ -159,6 +239,87 @@
         <Setter Property="FontSize" Value="18"/>
         <Setter Property="Foreground" Value="{DynamicResource App.OnAccent}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+
+    <Style x:Key="Border.TitleBar" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource App.TitleBarBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="Padding" Value="{StaticResource Padding.TitleBar}"/>
+    </Style>
+
+    <Style x:Key="Border.ExplorerPane" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource App.NavigationBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+        <Setter Property="Padding" Value="{StaticResource Padding.Content}"/>
+    </Style>
+
+    <Style x:Key="Border.DetailsPane" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource App.Surface2}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,0"/>
+        <Setter Property="Padding" Value="{StaticResource Padding.Content}"/>
+    </Style>
+
+    <Style x:Key="Border.PaneFooter" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
+        <Setter Property="BorderThickness" Value="0,1,0,0"/>
+        <Setter Property="Padding" Value="0,8,0,0"/>
+    </Style>
+
+    <Style x:Key="Border.EditorPane" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource App.EditorBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style x:Key="StatusBar.App" TargetType="StatusBar">
+        <Setter Property="Background" Value="{DynamicResource App.StatusBarBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
+        <Setter Property="BorderThickness" Value="0,1,0,0"/>
+    </Style>
+
+    <Style x:Key="Diagnostic.Border" TargetType="Border">
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource App.Diagnostic.InfoBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.InfoBorder}"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Level}" Value="Warning">
+                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.WarningBackground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.WarningBorder}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Level}" Value="Advisory">
+                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.AdvisoryBackground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.AdvisoryBorder}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Level}" Value="Error">
+                <Setter Property="Background" Value="{DynamicResource App.Diagnostic.ErrorBackground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource App.Diagnostic.ErrorBorder}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Diagnostic.Dot" TargetType="Ellipse">
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="Height" Value="8"/>
+        <Setter Property="Margin" Value="0,4,8,0"/>
+        <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.InfoIcon}"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Level}" Value="Warning">
+                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.WarningIcon}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Level}" Value="Advisory">
+                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.AdvisoryIcon}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Level}" Value="Error">
+                <Setter Property="Fill" Value="{DynamicResource App.Diagnostic.ErrorIcon}"/>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <!-- Default text styling -->
