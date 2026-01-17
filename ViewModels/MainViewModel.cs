@@ -50,11 +50,21 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ModuleDefinition? ExplorerSelectedModule
         {
-            get => SelectedModule != null && Modules.Contains(SelectedModule) ? SelectedModule : null;
+            get => _explorerSelectedModule;
             set
             {
-                if (value == null || ReferenceEquals(value, SelectedModule)) return;
-                SelectedModule = value;
+                if (ReferenceEquals(value, _explorerSelectedModule))
+                {
+                    return;
+                }
+
+                _explorerSelectedModule = value;
+                OnPropertyChanged();
+
+                if (value != null && !ReferenceEquals(value, SelectedModule))
+                {
+                    SelectedModule = value;
+                }
             }
         }
 
@@ -70,9 +80,13 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 _explorerSelectedModule = selected;
             }
-            else
+            else if (selected == null)
             {
                 _explorerSelectedModule = null;
+            }
+            else
+            {
+                // Keep the last explorer selection when switching to modules outside the explorer list (e.g., ReadMe).
             }
 
             OnPropertyChanged(nameof(ExplorerSelectedModule));
