@@ -249,11 +249,11 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="ButtonBackgroundBrush"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.AccentHover}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.AccentHover}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                         <ColorAnimation Storyboard.TargetName="ButtonBorderBrush"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.AccentHover}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.AccentHover}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                     </Storyboard>
                                 </VisualState>
@@ -261,11 +261,11 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="ButtonBackgroundBrush"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.AccentPressed}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.AccentPressed}, Path=Color}"
                                                         Duration="0:0:0.08"/>
                                         <ColorAnimation Storyboard.TargetName="ButtonBorderBrush"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.AccentPressed}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.AccentPressed}, Path=Color}"
                                                         Duration="0:0:0.08"/>
                                     </Storyboard>
                                 </VisualState>
@@ -299,7 +299,7 @@
                                                             Duration="0:0:0.12"/>
                                         <ColorAnimation Storyboard.TargetName="ButtonBorderBrush"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.Focus}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.Focus}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                     </Storyboard>
                                 </VisualState>
@@ -481,7 +481,7 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="ComboBoxItemBackground"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.ControlHover}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.ControlHover}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                     </Storyboard>
                                 </VisualState>
@@ -500,7 +500,7 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="ComboBoxItemBackground"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.ControlPressed}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.ControlPressed}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                     </Storyboard>
                                 </VisualState>
@@ -508,7 +508,7 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="ComboBoxItemBackground"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.ControlPressed}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.ControlPressed}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                     </Storyboard>
                                 </VisualState>
@@ -563,7 +563,7 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="ListBoxItemBackground"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.ControlHover}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.ControlHover}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                     </Storyboard>
                                 </VisualState>
@@ -582,11 +582,11 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="ListBoxItemBackground"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.SelectionBackground}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.SelectionBackground}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                         <ColorAnimation Storyboard.TargetName="ListBoxItemBorder"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.SelectionBorder}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.SelectionBorder}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                     </Storyboard>
                                 </VisualState>
@@ -594,11 +594,11 @@
                                     <Storyboard>
                                         <ColorAnimation Storyboard.TargetName="ListBoxItemBackground"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.SelectionBackground}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.SelectionBackground}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                         <ColorAnimation Storyboard.TargetName="ListBoxItemBorder"
                                                         Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={DynamicResource App.SelectionBorder}, Path=Color}"
+                                                        To="{Binding Source={StaticResource App.SelectionBorder}, Path=Color}"
                                                         Duration="0:0:0.12"/>
                                     </Storyboard>
                                 </VisualState>
