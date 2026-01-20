@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class AnnualizerViewModel : BaseViewModel, IComputeModule
+    public class AnnualizerViewModel : DiagnosticViewModelBase, IComputeModule
     {
         private double _firstCost;
         private double _rate = 5.0;
@@ -282,6 +282,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             TryInitializeExampleAnnualizerData();
             TryAddScenarioComparison();
+            RefreshDiagnostics();
         }
 
         private void TryInitializeExampleAnnualizerData()
@@ -426,6 +427,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
             UpdatePvFactors();
             Compute();
+            RefreshDiagnostics();
         }
 
         private void EntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -438,6 +440,7 @@ namespace EconToolbox.Desktop.ViewModels
                 UpdatePvFactors();
                 Compute();
             }
+            RefreshDiagnostics();
         }
 
         private static double GetTimingOffset(string? timing)
@@ -814,6 +817,82 @@ namespace EconToolbox.Desktop.ViewModels
                 "end" => "end",
                 _ => "midpoint"
             };
+        }
+
+        protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+        {
+            var diagnostics = new List<DiagnosticItem>();
+
+            if (AnalysisPeriod <= 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Invalid analysis period",
+                    "The analysis period must be greater than zero years."));
+            }
+
+            if (Rate < 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Negative discount rate",
+                    "Enter a non-negative discount rate for annualization."));
+            }
+            else if (Rate > 100)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "High discount rate",
+                    "The discount rate exceeds 100%. Verify the rate is entered as a percent."));
+            }
+
+            if (ConstructionMonths <= 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Construction duration missing",
+                    "Construction months should be greater than zero for IDC calculations."));
+            }
+
+            if (IdcEntries.Any(e => e.Month < 1 || e.Month > 12))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "IDC month out of range",
+                    "IDC entries must use a month between 1 and 12."));
+            }
+
+            if (FutureCosts.Any(f => f.Year < BaseYear))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Future cost year before base year",
+                    "Check future cost years; they should be on or after the base year."));
+            }
+
+            bool hasCostInputs = Math.Abs(FirstCost) > 0.0001
+                || Math.Abs(AnnualOm) > 0.0001
+                || Math.Abs(AnnualBenefits) > 0.0001
+                || FutureCosts.Any(f => Math.Abs(f.Cost) > 0.0001)
+                || IdcEntries.Any(f => Math.Abs(f.Cost) > 0.0001);
+
+            if (!hasCostInputs)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "No cost inputs",
+                    "Enter first cost, O&M, benefits, or future costs to run annualization."));
+            }
+
+            if (diagnostics.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "Annualizer inputs look good",
+                    "Inputs are ready for annual cost calculations."));
+            }
+
+            return diagnostics;
         }
     }
 }

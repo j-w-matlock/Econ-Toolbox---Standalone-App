@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -6,7 +7,7 @@ using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class UpdatedCostViewModel : BaseViewModel, IComputeModule
+    public class UpdatedCostViewModel : DiagnosticViewModelBase, IComputeModule
     {
         private double _totalStorage;
         private double _storageRecommendation;
@@ -91,7 +92,18 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<UpdatedCostEntry> UpdatedCostItems
         {
             get => _updatedCostItems;
-            set { _updatedCostItems = value; OnPropertyChanged(); }
+            set
+            {
+                if (ReferenceEquals(_updatedCostItems, value))
+                {
+                    return;
+                }
+
+                DetachUpdatedCostHandlers(_updatedCostItems);
+                _updatedCostItems = value ?? new ObservableCollection<UpdatedCostEntry>();
+                AttachUpdatedCostHandlers(_updatedCostItems);
+                OnPropertyChanged();
+            }
         }
 
         public double TotalUpdatedCost
@@ -340,7 +352,18 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<RrrCostEntry> RrrCostItems
         {
             get => _rrrCostItems;
-            set { _rrrCostItems = value; OnPropertyChanged(); }
+            set
+            {
+                if (ReferenceEquals(_rrrCostItems, value))
+                {
+                    return;
+                }
+
+                DetachRrrHandlers(_rrrCostItems);
+                _rrrCostItems = value ?? new ObservableCollection<RrrCostEntry>();
+                AttachRrrHandlers(_rrrCostItems);
+                OnPropertyChanged();
+            }
         }
 
         public double RrrTotalPv
@@ -459,6 +482,98 @@ namespace EconToolbox.Desktop.ViewModels
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Dam" });
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Roads, Railroads, & Bridges" });
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Channels & Canals" });
+
+            AttachUpdatedCostHandlers(UpdatedCostItems);
+            AttachRrrHandlers(RrrCostItems);
+            RefreshDiagnostics();
+        }
+
+        private void AttachUpdatedCostHandlers(ObservableCollection<UpdatedCostEntry> entries)
+        {
+            entries.CollectionChanged += UpdatedCostItems_CollectionChanged;
+            foreach (var entry in entries)
+            {
+                entry.PropertyChanged += UpdatedCostItem_PropertyChanged;
+            }
+        }
+
+        private void DetachUpdatedCostHandlers(ObservableCollection<UpdatedCostEntry> entries)
+        {
+            entries.CollectionChanged -= UpdatedCostItems_CollectionChanged;
+            foreach (var entry in entries)
+            {
+                entry.PropertyChanged -= UpdatedCostItem_PropertyChanged;
+            }
+        }
+
+        private void UpdatedCostItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (UpdatedCostEntry entry in e.OldItems)
+                {
+                    entry.PropertyChanged -= UpdatedCostItem_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (UpdatedCostEntry entry in e.NewItems)
+                {
+                    entry.PropertyChanged += UpdatedCostItem_PropertyChanged;
+                }
+            }
+
+            RefreshDiagnostics();
+        }
+
+        private void UpdatedCostItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            RefreshDiagnostics();
+        }
+
+        private void AttachRrrHandlers(ObservableCollection<RrrCostEntry> entries)
+        {
+            entries.CollectionChanged += RrrCostItems_CollectionChanged;
+            foreach (var entry in entries)
+            {
+                entry.PropertyChanged += RrrCostItem_PropertyChanged;
+            }
+        }
+
+        private void DetachRrrHandlers(ObservableCollection<RrrCostEntry> entries)
+        {
+            entries.CollectionChanged -= RrrCostItems_CollectionChanged;
+            foreach (var entry in entries)
+            {
+                entry.PropertyChanged -= RrrCostItem_PropertyChanged;
+            }
+        }
+
+        private void RrrCostItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (RrrCostEntry entry in e.OldItems)
+                {
+                    entry.PropertyChanged -= RrrCostItem_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (RrrCostEntry entry in e.NewItems)
+                {
+                    entry.PropertyChanged += RrrCostItem_PropertyChanged;
+                }
+            }
+
+            RefreshDiagnostics();
+        }
+
+        private void RrrCostItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            RefreshDiagnostics();
         }
 
         private void ComputeStorage()
@@ -560,6 +675,69 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             return value;
+        }
+
+        protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+        {
+            var diagnostics = new List<DiagnosticItem>();
+
+            if (TotalStorage <= 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Total storage missing",
+                    "Enter total storage to compute the storage percentage recommendation."));
+            }
+
+            if (StorageRecommendation < 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Negative recommendation",
+                    "Storage recommendation values must be zero or greater."));
+            }
+
+            if (UpdatedCostItems.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "No updated cost items",
+                    "Add updated cost rows before running the update calculations."));
+            }
+
+            if (RrrRate < 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Negative RRR rate",
+                    "RRR discount rate must be zero or greater."));
+            }
+
+            if (RrrPeriods <= 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "RRR periods missing",
+                    "RRR period count must be greater than zero."));
+            }
+
+            if (RrrCostItems.Any(item => item.Year < RrrBaseYear))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "RRR year before base year",
+                    "RRR future cost years should be on or after the base year."));
+            }
+
+            if (diagnostics.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "Updated cost inputs look good",
+                    "Inputs are ready for the updated cost and RRR calculations."));
+            }
+
+            return diagnostics;
         }
 
         private static double CalculateRatio(double numerator, double denominator)

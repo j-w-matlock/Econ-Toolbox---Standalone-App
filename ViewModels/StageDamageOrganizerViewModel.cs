@@ -14,7 +14,7 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class StageDamageOrganizerViewModel : BaseViewModel
+    public class StageDamageOrganizerViewModel : DiagnosticViewModelBase
     {
         private readonly ObservableCollection<StageDamageRecord> _records = new();
         private readonly ObservableCollection<string> _aepHeaders = new();
@@ -91,10 +91,16 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(HasRecords));
                 (ClearCommand as RelayCommand)?.NotifyCanExecuteChanged();
                 (SaveSummaryCommand as AsyncRelayCommand)?.NotifyCanExecuteChanged();
+                RefreshDiagnostics();
             };
 
-            AepHeaders.CollectionChanged += (_, _) => OnPropertyChanged(nameof(FrequentAepLabelSummary));
+            AepHeaders.CollectionChanged += (_, _) =>
+            {
+                OnPropertyChanged(nameof(FrequentAepLabelSummary));
+                RefreshDiagnostics();
+            };
             Summaries.CollectionChanged += OnSummariesChanged;
+            RefreshDiagnostics();
         }
 
         private void ClearAll()
@@ -107,6 +113,7 @@ namespace EconToolbox.Desktop.ViewModels
             Summaries.Clear();
             _aepColumns.Clear();
             StatusMessage = "Cleared results. Load new CSV files to regenerate summaries.";
+            RefreshDiagnostics();
         }
 
         private async Task ImportCsvAsync()
@@ -150,10 +157,12 @@ namespace EconToolbox.Desktop.ViewModels
 
                 ComputeSummaries();
                 StatusMessage = $"Loaded {Records.Count} rows from {dialog.FileNames.Length} file(s).";
+                RefreshDiagnostics();
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Failed to load CSV data: {ex.Message}";
+                RefreshDiagnostics();
             }
             finally
             {
@@ -190,6 +199,47 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 StatusMessage = $"Failed to save summary: {ex.Message}";
             }
+            RefreshDiagnostics();
+        }
+
+        protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+        {
+            var diagnostics = new List<DiagnosticItem>();
+
+            if (Records.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "No CSV data loaded",
+                    "Import Stage Damage Functions CSV files to generate summaries."));
+                return diagnostics;
+            }
+
+            if (AepHeaders.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Missing AEP headers",
+                    "No AEP columns were detected. Confirm the CSV files contain AEP damage columns."));
+            }
+
+            if (Summaries.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "No summaries generated",
+                    "Imported records did not produce any summary totals. Check file contents."));
+            }
+
+            if (diagnostics.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "Stage damage inputs look good",
+                    "Records and AEP columns are ready for review and export."));
+            }
+
+            return diagnostics;
         }
 
         private void WriteSummaryCsv(string filePath)
@@ -594,6 +644,7 @@ namespace EconToolbox.Desktop.ViewModels
                     }
                 }
             }
+            RefreshDiagnostics();
         }
 
         private void AttachSummaryHandlers(StageDamageSummaryInfo info)
@@ -616,6 +667,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             ComputeSummaries();
+            RefreshDiagnostics();
         }
 
         private record StageDamageLoadResult(IReadOnlyList<StageDamageRecord> Records, IReadOnlyList<StageDamageSummaryInfo> Summaries);

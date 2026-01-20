@@ -21,7 +21,7 @@ namespace EconToolbox.Desktop.ViewModels
     /// frequency, optional stage data and any number of damage columns
     /// using a grid. Results can be charted against stage and frequency.
     /// </summary>
-    public class EadViewModel : BaseViewModel, IComputeModule
+    public class EadViewModel : DiagnosticViewModelBase, IComputeModule
     {
         public ObservableCollection<EadRow> Rows { get; } = new();
         public ObservableCollection<DamageColumn> DamageColumns { get; } = new();
@@ -121,6 +121,7 @@ namespace EconToolbox.Desktop.ViewModels
             InitializeDefaultRows();
             UpdateColumnDefinitions();
             Compute();
+            RefreshDiagnostics();
         }
 
         private void InitializeDefaultRows()
@@ -192,6 +193,7 @@ namespace EconToolbox.Desktop.ViewModels
             _removeDamageColumnCommand.NotifyCanExecuteChanged();
             UpdateColumnDefinitions();
             Compute();
+            RefreshDiagnostics();
         }
 
         private void Rows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -219,6 +221,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 ScheduleCompute();
             }
+            RefreshDiagnostics();
         }
 
         private void AddDamageColumn()
@@ -269,24 +272,12 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
-                // Sort rows by probability in descending order to enforce monotonicity
                 var sortedRows = Rows.OrderByDescending(r => r.Probability).ToList();
-                if (!sortedRows.SequenceEqual(Rows))
-                {
-                    _suppressAutoCompute = true;
-                    Rows.Clear();
-                    foreach (var r in sortedRows)
-                    {
-                        Rows.Add(r);
-                    }
-                    _suppressAutoCompute = false;
-                }
-
-                var probabilities = Rows.Select(r => r.Probability).ToArray();
+                var probabilities = sortedRows.Select(r => r.Probability).ToArray();
                 var results = new System.Collections.Generic.List<EadResultRow>();
                 for (int i = 0; i < DamageColumns.Count; i++)
                 {
-                    var damages = Rows.Select(r => r.Damages[i]).ToArray();
+                    var damages = sortedRows.Select(r => r.Damages[i]).ToArray();
                     double ead = EadModel.Compute(probabilities, damages);
                     results.Add(new EadResultRow
                     {
@@ -447,6 +438,7 @@ namespace EconToolbox.Desktop.ViewModels
             if (e.PropertyName == nameof(DamageColumn.Name))
             {
                 ScheduleCompute();
+                RefreshDiagnostics();
             }
         }
 
@@ -468,11 +460,13 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 ScheduleCompute();
             }
+            RefreshDiagnostics();
         }
 
         private void RowDamages_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             ScheduleCompute();
+            RefreshDiagnostics();
         }
 
         private void ScheduleCompute()
@@ -489,6 +483,73 @@ namespace EconToolbox.Desktop.ViewModels
         public void ForceCompute()
         {
             Compute();
+        }
+
+        protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+        {
+            var diagnostics = new List<DiagnosticItem>();
+
+            if (Rows.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Missing probabilities",
+                    "Add at least one probability row before calculating Expected Annual Damage."));
+                return diagnostics;
+            }
+
+            if (Rows.Any(r => !double.IsFinite(r.Probability)))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Invalid probability input",
+                    "One or more probability values are not valid numbers. Enter values between 0 and 1."));
+            }
+
+            if (Rows.Any(r => r.Probability < 0 || r.Probability > 1))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Probability out of range",
+                    "Ensure all probabilities are between 0 and 1."));
+            }
+
+            bool outOfOrder = Rows
+                .Zip(Rows.Skip(1), (current, next) => next.Probability > current.Probability)
+                .Any(isOutOfOrder => isOutOfOrder);
+            if (outOfOrder)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Probabilities not descending",
+                    "List exceedance probabilities in descending order (largest to smallest) for accurate integration."));
+            }
+
+            if (UseStage && Rows.Any(r => !r.Stage.HasValue))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Missing stage values",
+                    "Stage mode is enabled, but one or more rows are missing stage inputs."));
+            }
+
+            if (Rows.Any(r => r.Damages.Any(d => d < 0)))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Negative damage values",
+                    "One or more damage entries are negative. Verify that all damage estimates are non-negative."));
+            }
+
+            if (diagnostics.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "EAD inputs look good",
+                    "Probabilities and damage inputs are ready for calculation."));
+            }
+
+            return diagnostics;
         }
 
         public class EadRow : BaseViewModel
