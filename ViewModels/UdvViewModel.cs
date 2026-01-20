@@ -231,6 +231,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 row.PropertyChanged += (_, __) =>
                 {
+                    MarkDirty();
                     UpdateUnitDayValue();
                     UpdateChart();
                     RefreshDiagnostics();
@@ -249,6 +250,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void HistoricalVisitationRows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             if (e.NewItems != null)
             {
                 foreach (HistoricalVisitationRow row in e.NewItems)
@@ -269,6 +271,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void HistoricalRow_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            MarkDirty();
             HistoricalDataError = string.Empty;
             RefreshDiagnostics();
         }
@@ -383,6 +386,7 @@ namespace EconToolbox.Desktop.ViewModels
             RecalculateUserDays();
             double benefit = UdvModel.ComputeBenefit(UnitDayValue, TotalUserDays);
             AnnualRecreationBenefit = double.IsFinite(benefit) ? benefit : 0.0;
+            MarkClean();
         }
 
         private void ComputeMedianFromHistoricalData()

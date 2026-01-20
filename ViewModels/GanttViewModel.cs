@@ -198,6 +198,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 Bars.Clear();
                 ScheduleSummary = "Add tasks to build your schedule.";
+                MarkClean();
                 return;
             }
 
@@ -275,6 +276,7 @@ namespace EconToolbox.Desktop.ViewModels
                 : $"Project spans {(int)Math.Ceiling(totalDays)} days across {Tasks.Count} activities.";
             OnPropertyChanged(nameof(TotalLaborCost));
             RefreshDiagnostics();
+            MarkClean();
         }
 
         private static List<string> ParseDependencies(string dependencies)
@@ -288,6 +290,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void OnTasksCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 foreach (var task in Tasks)
@@ -319,6 +322,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void OnTaskPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            MarkDirty();
             if (e.PropertyName == nameof(GanttTask.TotalCost) || e.PropertyName == nameof(GanttTask.DurationDays))
             {
                 OnPropertyChanged(nameof(TotalLaborCost));

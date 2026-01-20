@@ -548,7 +548,10 @@ namespace EconToolbox.Desktop.ViewModels
                     var recreationCapacity = GetModuleViewModel<RecreationCapacityViewModel>();
                     var gantt = GetModuleViewModel<GanttViewModel>();
 
-                    ead.ForceCompute();
+                    if (ead.IsDirty)
+                    {
+                        ead.ForceCompute();
+                    }
                     RefreshExportData(
                         agricultureDepthDamage,
                         updatedCost,
@@ -585,13 +588,40 @@ namespace EconToolbox.Desktop.ViewModels
             RecreationCapacityViewModel recreationCapacity,
             GanttViewModel gantt)
         {
-            ExecuteComputeCommand(agricultureDepthDamage.ComputeCommand);
-            ExecuteComputeCommand(updatedCost.ComputeCommand);
-            ExecuteComputeCommand(annualizer.ComputeCommand);
-            ExecuteComputeCommand(waterDemand.ComputeCommand);
-            ExecuteComputeCommand(udv.ComputeCommand);
-            ExecuteComputeCommand(recreationCapacity.ComputeCommand);
-            ExecuteComputeCommand(gantt.ComputeCommand);
+            if (agricultureDepthDamage.IsDirty)
+            {
+                ExecuteComputeCommand(agricultureDepthDamage.ComputeCommand);
+            }
+
+            if (updatedCost.IsDirty)
+            {
+                ExecuteComputeCommand(updatedCost.ComputeCommand);
+            }
+
+            if (annualizer.IsDirty)
+            {
+                ExecuteComputeCommand(annualizer.ComputeCommand);
+            }
+
+            if (waterDemand.IsDirty)
+            {
+                ExecuteComputeCommand(waterDemand.ComputeCommand);
+            }
+
+            if (udv.IsDirty)
+            {
+                ExecuteComputeCommand(udv.ComputeCommand);
+            }
+
+            if (recreationCapacity.IsDirty)
+            {
+                ExecuteComputeCommand(recreationCapacity.ComputeCommand);
+            }
+
+            if (gantt.IsDirty)
+            {
+                ExecuteComputeCommand(gantt.ComputeCommand);
+            }
         }
 
         private static void ExecuteComputeCommand(ICommand? command)

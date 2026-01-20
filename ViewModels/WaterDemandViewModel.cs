@@ -328,6 +328,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void HistoricalData_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 DetachHistoricalHandlers(HistoricalData);
@@ -356,6 +357,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void HistoricalEntryChanged(object? sender, PropertyChangedEventArgs e)
         {
+            MarkDirty();
             if (e.PropertyName == nameof(DemandEntry.Demand) || e.PropertyName == nameof(DemandEntry.Year))
                 AutoPopulateBaseline();
             RefreshDiagnostics();
@@ -416,6 +418,7 @@ namespace EconToolbox.Desktop.ViewModels
             if (!ReferenceEquals(scenario, _baselineScenario))
                 return;
 
+            MarkDirty();
             if (e.PropertyName == nameof(Scenario.PopulationGrowthRate) ||
                 e.PropertyName == nameof(Scenario.PerCapitaDemandChangeRate) ||
                 e.PropertyName == nameof(Scenario.SystemImprovementsPercent) ||
@@ -490,6 +493,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void UpdateResidualShares(Scenario scenario)
         {
+            MarkDirty();
             var residual = scenario.Sectors.FirstOrDefault(se => se.IsResidual);
             if (residual == null) return;
             residual.CurrentPercent = Math.Max(0, 100 - scenario.Sectors.Where(se => !se.IsResidual).Sum(se => se.CurrentPercent));
@@ -728,6 +732,10 @@ namespace EconToolbox.Desktop.ViewModels
                 LegendItems.Clear();
                 ChartStatusMessage = "Unable to compute forecast with the provided inputs.";
             }
+            finally
+            {
+                MarkClean();
+            }
         }
 
         private void AttachResultHandlers(Scenario scenario)
@@ -741,6 +749,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void Entry_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            MarkDirty();
             if (e.PropertyName == nameof(DemandEntry.GrowthRate) && sender is DemandEntry entry)
             {
                 bool recalculated = false;

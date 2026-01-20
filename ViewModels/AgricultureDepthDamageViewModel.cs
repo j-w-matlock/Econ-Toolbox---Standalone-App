@@ -373,6 +373,7 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            MarkDirty();
             if (e.PropertyName == nameof(RegionDefinition.Description) || e.PropertyName == nameof(RegionDefinition.Name))
             {
                 OnPropertyChanged(nameof(SelectedRegionDescription));
@@ -420,6 +421,7 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            MarkDirty();
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
             RefreshDiagnostics();
         }
@@ -431,6 +433,7 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            MarkDirty();
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
             RefreshDiagnostics();
         }
@@ -462,6 +465,7 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            MarkDirty();
             if (e.PropertyName == nameof(CropDefinition.Description) || e.PropertyName == nameof(CropDefinition.Name))
             {
                 OnPropertyChanged(nameof(SelectedCropDescription));
@@ -478,6 +482,7 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            MarkDirty();
             if (e.PropertyName == nameof(StageExposure.TimingModifier)
                 || e.PropertyName == nameof(StageExposure.OverlapFraction)
                 || e.PropertyName == nameof(StageExposure.ShiftedStartDayOfYear)
@@ -588,6 +593,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void CropScapeSummaries_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             OnPropertyChanged(nameof(HasCropScapeSummary));
             _clearCropScapeSummaryCommand.NotifyCanExecuteChanged();
             RefreshDiagnostics();
@@ -595,6 +601,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void CropScapeDamageRows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             OnPropertyChanged(nameof(HasCropScapeDamage));
             RefreshDiagnostics();
         }
@@ -669,35 +676,38 @@ namespace EconToolbox.Desktop.ViewModels
                 ImpactSummary = "Select a region and crop to calculate flood impacts.";
                 CropInsight = "";
                 _exportCommand.NotifyCanExecuteChanged();
+                MarkClean();
                 return;
             }
 
-            double totalWeight = StageExposures.Sum(s => s.Stage.Weight);
-            double weightedStress = 0.0;
-
-            foreach (var stageExposure in StageExposures)
+            try
             {
-                var timing = EvaluateStageTiming(stageExposure.Stage, SelectedRegion!);
-                stageExposure.ApplyTiming(
-                    timing.shiftedStartDay,
-                    timing.shiftedEndDay,
-                    timing.wrapsYear,
-                    timing.overlapFraction,
-                    timing.timingModifier,
-                    SelectedRegion!.SeasonShiftDays);
+                double totalWeight = StageExposures.Sum(s => s.Stage.Weight);
+                double weightedStress = 0.0;
 
-                double stageStress = stageExposure.GetStressRatio() * timing.timingModifier;
-                weightedStress += stageExposure.Stage.Weight * stageStress;
-            }
+                foreach (var stageExposure in StageExposures)
+                {
+                    var timing = EvaluateStageTiming(stageExposure.Stage, SelectedRegion!);
+                    stageExposure.ApplyTiming(
+                        timing.shiftedStartDay,
+                        timing.shiftedEndDay,
+                        timing.wrapsYear,
+                        timing.overlapFraction,
+                        timing.timingModifier,
+                        SelectedRegion!.SeasonShiftDays);
 
-            double normalizedStress = totalWeight > 0 ? weightedStress / totalWeight : 0;
-            normalizedStress = Math.Clamp(normalizedStress, 0.0, 2.0);
+                    double stageStress = stageExposure.GetStressRatio() * timing.timingModifier;
+                    weightedStress += stageExposure.Stage.Weight * stageStress;
+                }
 
-            double responseScaling = Math.Clamp(AverageResponse, 0.1, 5.0);
-            double baselineAep = Math.Clamp(SelectedRegion!.AnnualExceedanceProbability, 0.0, 1.0);
-            double probabilityMultiplier = normalizedStress * SelectedRegion.ImpactModifier * SelectedCrop!.ImpactModifier * responseScaling;
-            double probability = baselineAep * probabilityMultiplier;
-            ModeledImpactProbability = Math.Clamp(probability, 0.0, 1.0);
+                double normalizedStress = totalWeight > 0 ? weightedStress / totalWeight : 0;
+                normalizedStress = Math.Clamp(normalizedStress, 0.0, 2.0);
+
+                double responseScaling = Math.Clamp(AverageResponse, 0.1, 5.0);
+                double baselineAep = Math.Clamp(SelectedRegion!.AnnualExceedanceProbability, 0.0, 1.0);
+                double probabilityMultiplier = normalizedStress * SelectedRegion.ImpactModifier * SelectedCrop!.ImpactModifier * responseScaling;
+                double probability = baselineAep * probabilityMultiplier;
+                ModeledImpactProbability = Math.Clamp(probability, 0.0, 1.0);
 
 #if DEBUG
             if (baselineAep > 0.0 && probabilityMultiplier > 0.0 && ModeledImpactProbability < 1.0)
@@ -743,8 +753,13 @@ namespace EconToolbox.Desktop.ViewModels
             CropInsight =
                 $"Average expected damage across representative depth-duration events is {MeanDamageDisplay}. Seasonal alignment considers the flood window (days {SelectedRegion!.FloodWindowStartDay}–{SelectedRegion.FloodWindowEndDay}) and any {SelectedRegion.SeasonShiftDays:+#;-#;0}-day shift.{alignmentInsight} Adjust exposure days or tolerance to explore resilience.";
 
-            UpdateCropScapeDamageOutputs();
-            _exportCommand.NotifyCanExecuteChanged();
+                UpdateCropScapeDamageOutputs();
+                _exportCommand.NotifyCanExecuteChanged();
+            }
+            finally
+            {
+                MarkClean();
+            }
         }
 
         private void Export()
