@@ -509,6 +509,7 @@ namespace EconToolbox.Desktop.ViewModels
                 try
                 {
                     Ead.ForceCompute();
+                    RefreshExportData();
                     await Task.Run(() => _excelExportService.ExportAll(
                         Ead,
                         AgricultureDepthDamage,
@@ -525,6 +526,25 @@ namespace EconToolbox.Desktop.ViewModels
                     Debug.WriteLine(ex);
                     MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+        }
+
+        private void RefreshExportData()
+        {
+            ExecuteComputeCommand(AgricultureDepthDamage?.ComputeCommand);
+            ExecuteComputeCommand(UpdatedCost?.ComputeCommand);
+            ExecuteComputeCommand(Annualizer?.ComputeCommand);
+            ExecuteComputeCommand(WaterDemand?.ComputeCommand);
+            ExecuteComputeCommand(Udv?.ComputeCommand);
+            ExecuteComputeCommand(RecreationCapacity?.ComputeCommand);
+            ExecuteComputeCommand(Gantt?.ComputeCommand);
+        }
+
+        private static void ExecuteComputeCommand(ICommand? command)
+        {
+            if (command?.CanExecute(null) == true)
+            {
+                command.Execute(null);
             }
         }
 

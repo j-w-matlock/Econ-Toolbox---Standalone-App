@@ -122,6 +122,36 @@ namespace EconToolbox.Desktop.Services
             return sanitizedHeaders;
         }
 
+        private static int WriteCalculationNotes(IXLWorksheet ws, int startRow, int startColumn, int columnSpan, string title, IEnumerable<string> lines)
+        {
+            int lastColumn = startColumn + Math.Max(1, columnSpan) - 1;
+
+            var titleRange = ws.Range(startRow, startColumn, startRow, lastColumn);
+            titleRange.Merge();
+            titleRange.Value = title;
+            titleRange.Style.Font.SetBold();
+            titleRange.Style.Fill.BackgroundColor = DashboardSubHeaderFill;
+            titleRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+            titleRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+            int row = startRow + 1;
+            int index = 0;
+            foreach (var line in lines)
+            {
+                var lineRange = ws.Range(row, startColumn, row, lastColumn);
+                lineRange.Merge();
+                lineRange.Value = line;
+                lineRange.Style.Alignment.WrapText = true;
+                lineRange.Style.Fill.BackgroundColor = index % 2 == 0 ? DashboardRowLight : DashboardRowAlt;
+                lineRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                lineRange.Style.Border.OutsideBorderColor = DashboardBorder;
+                row++;
+                index++;
+            }
+
+            return row + 1;
+        }
+
         private static string JoinOrEmpty(string separator, IEnumerable<string>? values)
         {
             if (values == null)
@@ -200,6 +230,13 @@ namespace EconToolbox.Desktop.Services
                     noteRange.Style.Fill.BackgroundColor = DashboardRowLight;
                     noteRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
                     noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+                    WriteCalculationNotes(ws, nextRow + 2, 1, 2, "Calculation Notes", new[]
+                    {
+                        "Capital Recovery Factor = r(1+r)^n / ((1+r)^n - 1)",
+                        "Interest Rate = discount rate (decimal) used for compounding.",
+                        "Number of Periods = total compounding periods applied."
+                    });
 
                     ws.Columns(1, 2).AdjustToContents();
                     context.Save(filePath);
@@ -299,9 +336,16 @@ namespace EconToolbox.Desktop.Services
 
                     ws.Columns(1, headers.Count).AdjustToContents();
 
+                    row = WriteCalculationNotes(ws, row + 1, 1, headers.Count, "Calculation Notes", new[]
+                    {
+                        "Demand = Prior Demand × (1 + Growth Rate)",
+                        "Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)",
+                        "Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851"
+                    });
+
                     if (scenario.Results.Count >= 2)
                     {
-                        AddWaterDemandChart(ws, new[] { scenario }, row + 1, 1, context);
+                        AddWaterDemandChart(ws, new[] { scenario }, row, 1, context);
                     }
 
                     scenarioIndex++;
@@ -346,6 +390,16 @@ namespace EconToolbox.Desktop.Services
             noteRange.Style.Fill.BackgroundColor = DashboardRowAlt;
             noteRange.Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
             noteRange.Style.Border.OutsideBorderColor = DashboardBorder;
+
+            int calculationStart = WriteCalculationNotes(summary, nextRow + 2, 1, 2, "Calculation Notes", new[]
+            {
+                "Capital Recovery Factor = r(1+r)^n / ((1+r)^n - 1)",
+                "Total Investment = First Cost + IDC + PV of Future Costs",
+                "Annual Cost = Total Investment × CRF + Annual O&M",
+                "Benefit-Cost Ratio = Annual Benefits ÷ Annual Cost"
+            });
+
+            summary.Range(calculationStart, 1, calculationStart, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
 
             var futureSheet = context.CreateWorksheet("FutureCosts");
 
@@ -461,7 +515,12 @@ namespace EconToolbox.Desktop.Services
                     }
 
                     int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, context);
-                    AddEadChart(summary, BuildEadPlotPoints(rowList, useStage), summaryNextRow, 1, context);
+                    int notesRow = WriteCalculationNotes(summary, summaryNextRow, 1, 2, "Calculation Notes", new[]
+                    {
+                        "EAD = ∑(Damage × ΔProbability) using the trapezoidal area under the curve.",
+                        "Stage values are retained with each probability when provided."
+                    });
+                    AddEadChart(summary, BuildEadPlotPoints(rowList, useStage), notesRow, 1, context);
 
                     context.Save(filePath);
                 });
@@ -510,7 +569,12 @@ namespace EconToolbox.Desktop.Services
             eadSheet.Range(rowIdx + 1, 1, rowIdx + 1, Math.Max(2, eadColumnCount)).Merge();
             eadSheet.Range(1, 1, 1, eadColumnCount).Style.Font.SetBold();
             eadSheet.Columns(1, eadColumnCount).AdjustToContents();
-            AddEadChart(eadSheet, BuildEadPlotPoints(ead.Rows, ead.UseStage), rowIdx + 3, 1, context);
+            int eadNotesRow = WriteCalculationNotes(eadSheet, rowIdx + 3, 1, Math.Max(2, eadColumnCount), "Calculation Notes", new[]
+            {
+                "EAD = ∑(Damage × ΔProbability) using the trapezoidal area under the curve.",
+                "Stage values remain attached to each probability when enabled."
+            });
+            AddEadChart(eadSheet, BuildEadPlotPoints(ead.Rows, ead.UseStage), eadNotesRow, 1, context);
 
             // Agriculture Depth-Damage Sheet
             var agSheet = context.CreateWorksheet("Agriculture");
@@ -724,6 +788,12 @@ namespace EconToolbox.Desktop.Services
                 annTable.Theme = XLTableTheme.TableStyleLight11;
                 annSummary.Columns(1, 2).AdjustToContents();
             }
+            WriteCalculationNotes(annSummary, rowIdx + 1, 1, 2, "Calculation Notes", new[]
+            {
+                "CRF = r(1+r)^n / ((1+r)^n - 1)",
+                "Annual Cost = Total Investment × CRF + Annual O&M",
+                "Benefit-Cost Ratio = Annual Benefits ÷ Annual Cost"
+            });
             var annFc = context.CreateWorksheet("FutureCosts");
             annFc.Cell(1,1).Value = "Cost";
             annFc.Cell(1,2).Value = "Year";
@@ -787,6 +857,12 @@ namespace EconToolbox.Desktop.Services
                     var wdTable = wdRange.CreateTable(context.GetTableName($"WaterDemand_{scenario.Name}"));
                     wdTable.Theme = XLTableTheme.TableStyleMedium4;
                 }
+                WriteCalculationNotes(wdSheet, rowIdx + 1, 1, 9, "Calculation Notes", new[]
+                {
+                    "Demand = Prior Demand × (1 + Growth Rate)",
+                    "Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)",
+                    "Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851"
+                });
                 wdSheet.Columns(1, 9).AdjustToContents();
             }
 
