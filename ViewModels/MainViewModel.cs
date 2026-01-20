@@ -34,13 +34,25 @@ namespace EconToolbox.Desktop.ViewModels
             get => _selectedModule;
             set
             {
-                if (_selectedModule == value) return;
-                _selectedModule = value;
-                OnPropertyChanged();
-                SyncExplorerSelection(value);
-                OnPropertyChanged(nameof(PrimaryActionLabel));
-                LoadSelectedModule(value);
-                UpdateDiagnostics();
+                if (CurrentViewModel is DiagnosticViewModelBase oldVm)
+                {
+                    oldVm.PropertyChanged -= OnCurrentViewModelPropertyChanged;
+                }
+
+                if (SetProperty(ref _selectedModule, value))
+                {
+                    SyncExplorerSelection(value);
+                    LoadSelectedModule(value);
+                    OnPropertyChanged(nameof(IsCalculateVisible));
+                    OnPropertyChanged(nameof(PrimaryActionLabel));
+                    OnPropertyChanged(nameof(CurrentViewModel));
+                    UpdateDiagnostics();
+
+                    if (CurrentViewModel is DiagnosticViewModelBase newVm)
+                    {
+                        newVm.PropertyChanged += OnCurrentViewModelPropertyChanged;
+                    }
+                }
             }
         }
 
@@ -730,7 +742,9 @@ namespace EconToolbox.Desktop.ViewModels
         {
             Diagnostics.Clear();
 
-            if (SelectedModule == null)
+            var currentDiagnosticVm = CurrentViewModel as DiagnosticViewModelBase;
+
+            if (currentDiagnosticVm == null)
             {
                 Diagnostics.Add(new DiagnosticItem(
                     DiagnosticLevel.Info,
@@ -739,9 +753,10 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            if (_diagnosticsProvider != null && _diagnosticsProvider.Diagnostics.Count > 0)
+            var validationResults = currentDiagnosticVm.RunDiagnostics();
+            if (validationResults.Any())
             {
-                foreach (var item in _diagnosticsProvider.Diagnostics)
+                foreach (var item in validationResults)
                 {
                     Diagnostics.Add(item);
                 }
@@ -751,8 +766,14 @@ namespace EconToolbox.Desktop.ViewModels
 
             Diagnostics.Add(new DiagnosticItem(
                 DiagnosticLevel.Info,
-                "Diagnostics unavailable",
-                $"No diagnostic messages are available for {SelectedModule.Title}."));
+                "Ready to Calculate",
+                $"All inputs for {SelectedModule?.Title} appear valid. You can now run the calculation."));
+        }
+
+        private void OnCurrentViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            UpdateDiagnostics();
+            OnPropertyChanged(nameof(IsCalculateVisible));
         }
 
         private void UpdateLayoutSettings()
