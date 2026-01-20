@@ -116,6 +116,86 @@ namespace EconToolbox.Desktop.ViewModels
             RefreshDiagnostics();
         }
 
+        public StageDamageOrganizerProjectData ExportProjectData()
+        {
+            return new StageDamageOrganizerProjectData
+            {
+                StatusMessage = StatusMessage,
+                AepHeaders = AepHeaders.ToList(),
+                Summaries = Summaries.Select(summary => new StageDamageSummaryInfoData
+                {
+                    SourceKey = summary.SourceKey,
+                    SourceLabel = summary.SourceLabel,
+                    Name = summary.Name
+                }).ToList(),
+                Records = Records.Select(record => new StageDamageRecordData
+                {
+                    StructureFid = record.StructureFid,
+                    DamageCategory = record.DamageCategory,
+                    Description = record.Description,
+                    ImpactArea = record.ImpactArea,
+                    OccTypeName = record.OccTypeName,
+                    SummaryName = record.SummaryName,
+                    SourceKey = record.SourceKey,
+                    AepDamages = record.AepDamages.Select(aep => new StageDamageAepValueData
+                    {
+                        Label = aep.Label,
+                        Value = aep.Value
+                    }).ToList()
+                }).ToList()
+            };
+        }
+
+        public void ImportProjectData(StageDamageOrganizerProjectData? data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            ClearAll();
+
+            _aepColumns = data.AepHeaders
+                .Select(label => new AepColumn(NormalizeHeader(label), label))
+                .ToList();
+
+            foreach (var header in data.AepHeaders)
+            {
+                AepHeaders.Add(header);
+            }
+
+            foreach (var summary in data.Summaries)
+            {
+                var info = new StageDamageSummaryInfo(summary.SourceKey, summary.SourceLabel)
+                {
+                    Name = summary.Name
+                };
+                AttachSummaryHandlers(info);
+                Summaries.Add(info);
+            }
+
+            foreach (var recordData in data.Records)
+            {
+                Records.Add(new StageDamageRecord
+                {
+                    StructureFid = recordData.StructureFid,
+                    DamageCategory = recordData.DamageCategory,
+                    Description = recordData.Description,
+                    ImpactArea = recordData.ImpactArea,
+                    OccTypeName = recordData.OccTypeName,
+                    SummaryName = recordData.SummaryName,
+                    SourceKey = recordData.SourceKey,
+                    AepDamages = recordData.AepDamages.Select(aep => new StageDamageAepValue(aep.Label, aep.Value)).ToList()
+                });
+            }
+
+            ComputeSummaries();
+            StatusMessage = string.IsNullOrWhiteSpace(data.StatusMessage)
+                ? "Project data loaded."
+                : data.StatusMessage;
+            RefreshDiagnostics();
+        }
+
         private async Task ImportCsvAsync()
         {
             var dialog = new Microsoft.Win32.OpenFileDialog

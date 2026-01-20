@@ -31,6 +31,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<Scenario> Scenarios { get; } = new();
         private Scenario? _selectedScenario;
         private Scenario? _baselineScenario;
+        private bool _isImportingProject;
         private readonly ObservableCollection<ChartSeries> _chartSeries = new();
         public ObservableCollection<ChartSeries> ChartSeries
         {
@@ -383,6 +384,11 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void AutoPopulateBaseline()
         {
+            if (_isImportingProject)
+            {
+                return;
+            }
+
             if (HistoricalData.Count == 0) return;
             var last = HistoricalData[^1];
             foreach (var s in Scenarios)
@@ -412,6 +418,11 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void Scenario_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            if (_isImportingProject)
+            {
+                return;
+            }
+
             if (sender is not Scenario scenario)
                 return;
 
@@ -429,6 +440,141 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 ApplyScenarioAdjustments();
             }
+            RefreshDiagnostics();
+        }
+
+        public WaterDemandProjectData ExportProjectData()
+        {
+            return new WaterDemandProjectData
+            {
+                ForecastYears = ForecastYears,
+                ChartTitle = ChartTitle,
+                Alternative1PopulationAdjustment = Alternative1PopulationAdjustment,
+                Alternative1PerCapitaAdjustment = Alternative1PerCapitaAdjustment,
+                Alternative1ImprovementsAdjustment = Alternative1ImprovementsAdjustment,
+                Alternative1LossesAdjustment = Alternative1LossesAdjustment,
+                Alternative2PopulationAdjustment = Alternative2PopulationAdjustment,
+                Alternative2PerCapitaAdjustment = Alternative2PerCapitaAdjustment,
+                Alternative2ImprovementsAdjustment = Alternative2ImprovementsAdjustment,
+                Alternative2LossesAdjustment = Alternative2LossesAdjustment,
+                HistoricalData = HistoricalData.Select(entry => new WaterDemandEntryData
+                {
+                    Year = entry.Year,
+                    Demand = entry.Demand
+                }).ToList(),
+                Scenarios = Scenarios.Select(scenario => new WaterDemandScenarioData
+                {
+                    Name = scenario.Name,
+                    Description = scenario.Description,
+                    BaseYear = scenario.BaseYear,
+                    BasePopulation = scenario.BasePopulation,
+                    BasePerCapitaDemand = scenario.BasePerCapitaDemand,
+                    PopulationGrowthRate = scenario.PopulationGrowthRate,
+                    PerCapitaDemandChangeRate = scenario.PerCapitaDemandChangeRate,
+                    SystemImprovementsPercent = scenario.SystemImprovementsPercent,
+                    SystemLossesPercent = scenario.SystemLossesPercent,
+                    Sectors = scenario.Sectors.Select(sector => new WaterDemandSectorShareData
+                    {
+                        Name = sector.Name,
+                        CurrentPercent = sector.CurrentPercent,
+                        FuturePercent = sector.FuturePercent,
+                        IsResidual = sector.IsResidual
+                    }).ToList()
+                }).ToList(),
+                SelectedScenarioName = SelectedScenario?.Name
+            };
+        }
+
+        public void ImportProjectData(WaterDemandProjectData? data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            _isImportingProject = true;
+            try
+            {
+                ForecastYears = data.ForecastYears;
+                if (!string.IsNullOrWhiteSpace(data.ChartTitle))
+                {
+                    ChartTitle = data.ChartTitle;
+                }
+
+                Alternative1PopulationAdjustment = data.Alternative1PopulationAdjustment;
+                Alternative1PerCapitaAdjustment = data.Alternative1PerCapitaAdjustment;
+                Alternative1ImprovementsAdjustment = data.Alternative1ImprovementsAdjustment;
+                Alternative1LossesAdjustment = data.Alternative1LossesAdjustment;
+                Alternative2PopulationAdjustment = data.Alternative2PopulationAdjustment;
+                Alternative2PerCapitaAdjustment = data.Alternative2PerCapitaAdjustment;
+                Alternative2ImprovementsAdjustment = data.Alternative2ImprovementsAdjustment;
+                Alternative2LossesAdjustment = data.Alternative2LossesAdjustment;
+
+                DetachHistoricalHandlers(HistoricalData);
+                HistoricalData = new ObservableCollection<DemandEntry>(data.HistoricalData.Select(entry => new DemandEntry
+                {
+                    Year = entry.Year,
+                    Demand = entry.Demand
+                }));
+                AttachHistoricalHandlers(HistoricalData);
+
+                Scenarios.Clear();
+                int brushIndex = 0;
+                foreach (var scenarioData in data.Scenarios)
+                {
+                    var scenario = new Scenario
+                    {
+                        Name = scenarioData.Name,
+                        Description = scenarioData.Description,
+                        BaseYear = scenarioData.BaseYear,
+                        BasePopulation = scenarioData.BasePopulation,
+                        BasePerCapitaDemand = scenarioData.BasePerCapitaDemand,
+                        PopulationGrowthRate = scenarioData.PopulationGrowthRate,
+                        PerCapitaDemandChangeRate = scenarioData.PerCapitaDemandChangeRate,
+                        SystemImprovementsPercent = scenarioData.SystemImprovementsPercent,
+                        SystemLossesPercent = scenarioData.SystemLossesPercent,
+                        LineBrush = ThemeResourceHelper.GetBrush($"App.Chart.Series{Math.Min(brushIndex + 1, 6)}", Brushes.Blue)
+                    };
+
+                    InitializeScenario(scenario);
+                    scenario.PropertyChanged += Scenario_PropertyChanged;
+
+                    foreach (var sectorData in scenarioData.Sectors)
+                    {
+                        var sector = scenario.Sectors.FirstOrDefault(s =>
+                            string.Equals(s.Name, sectorData.Name, StringComparison.OrdinalIgnoreCase));
+                        if (sector == null)
+                        {
+                            sector = new SectorShare
+                            {
+                                Name = sectorData.Name,
+                                IsResidual = sectorData.IsResidual
+                            };
+                            scenario.Sectors.Add(sector);
+                        }
+
+                        sector.CurrentPercent = sectorData.CurrentPercent;
+                        sector.FuturePercent = sectorData.FuturePercent;
+                        sector.IsResidual = sectorData.IsResidual;
+                    }
+
+                    UpdateResidualShares(scenario);
+                    Scenarios.Add(scenario);
+                    brushIndex++;
+                }
+
+                _baselineScenario = Scenarios.FirstOrDefault(s => string.Equals(s.Name, "Baseline", StringComparison.OrdinalIgnoreCase));
+                SelectedScenario = Scenarios.FirstOrDefault(s =>
+                    string.Equals(s.Name, data.SelectedScenarioName, StringComparison.OrdinalIgnoreCase))
+                    ?? Scenarios.FirstOrDefault();
+            }
+            finally
+            {
+                _isImportingProject = false;
+            }
+
+            ApplyScenarioAdjustments();
+            Forecast();
             RefreshDiagnostics();
         }
 

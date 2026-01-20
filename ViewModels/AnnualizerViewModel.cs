@@ -655,6 +655,113 @@ namespace EconToolbox.Desktop.ViewModels
             return "Calculated";
         }
 
+        public AnnualizerProjectData ExportProjectData()
+        {
+            return new AnnualizerProjectData
+            {
+                FirstCost = FirstCost,
+                Rate = Rate,
+                AnalysisPeriod = AnalysisPeriod,
+                BaseYear = BaseYear,
+                ConstructionMonths = ConstructionMonths,
+                AnnualOm = AnnualOm,
+                AnnualBenefits = AnnualBenefits,
+                FutureCosts = FutureCosts.Select(entry => new AnnualizerFutureCostData
+                {
+                    Cost = entry.Cost,
+                    Year = entry.Year,
+                    Month = entry.Month,
+                    Timing = entry.Timing
+                }).ToList(),
+                IdcEntries = IdcEntries.Select(entry => new AnnualizerFutureCostData
+                {
+                    Cost = entry.Cost,
+                    Year = entry.Year,
+                    Month = entry.Month,
+                    Timing = entry.Timing
+                }).ToList(),
+                IdcTimingBasis = IdcTimingBasis,
+                CalculateInterestAtPeriod = CalculateInterestAtPeriod,
+                IdcFirstPaymentTiming = IdcFirstPaymentTiming,
+                IdcLastPaymentTiming = IdcLastPaymentTiming,
+                Scenarios = ScenarioComparisons.Select(scenario => new AnnualizerScenarioData
+                {
+                    Name = scenario.Name,
+                    FirstCost = scenario.FirstCost,
+                    AnnualOm = scenario.AnnualOm,
+                    AnnualBenefits = scenario.AnnualBenefits,
+                    Rate = scenario.Rate
+                }).ToList(),
+                SelectedScenarioName = SelectedScenario?.Name
+            };
+        }
+
+        public void ImportProjectData(AnnualizerProjectData? data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            FirstCost = data.FirstCost;
+            Rate = data.Rate;
+            AnalysisPeriod = data.AnalysisPeriod;
+            BaseYear = data.BaseYear;
+            ConstructionMonths = data.ConstructionMonths;
+            AnnualOm = data.AnnualOm;
+            AnnualBenefits = data.AnnualBenefits;
+            IdcTimingBasis = string.IsNullOrWhiteSpace(data.IdcTimingBasis) ? IdcTimingBasis : data.IdcTimingBasis;
+            CalculateInterestAtPeriod = data.CalculateInterestAtPeriod;
+            IdcFirstPaymentTiming = string.IsNullOrWhiteSpace(data.IdcFirstPaymentTiming) ? IdcFirstPaymentTiming : data.IdcFirstPaymentTiming;
+            IdcLastPaymentTiming = string.IsNullOrWhiteSpace(data.IdcLastPaymentTiming) ? IdcLastPaymentTiming : data.IdcLastPaymentTiming;
+
+            FutureCosts = new ObservableCollection<FutureCostEntry>(data.FutureCosts.Select(entry => new FutureCostEntry
+            {
+                Cost = entry.Cost,
+                Year = entry.Year,
+                Month = entry.Month,
+                Timing = entry.Timing
+            }));
+
+            IdcEntries = new ObservableCollection<FutureCostEntry>(data.IdcEntries.Select(entry => new FutureCostEntry
+            {
+                Cost = entry.Cost,
+                Year = entry.Year,
+                Month = entry.Month,
+                Timing = entry.Timing
+            }));
+
+            _suppressScenarioSync = true;
+            try
+            {
+                ScenarioComparisons.Clear();
+                foreach (var scenario in data.Scenarios)
+                {
+                    ScenarioComparisons.Add(new AnnualizerScenario
+                    {
+                        Name = scenario.Name,
+                        FirstCost = scenario.FirstCost,
+                        AnnualOm = scenario.AnnualOm,
+                        AnnualBenefits = scenario.AnnualBenefits,
+                        Rate = scenario.Rate
+                    });
+                }
+
+                _scenarioCounter = ScenarioComparisons.Count + 1;
+                SelectedScenario = ScenarioComparisons.FirstOrDefault(s =>
+                    string.Equals(s.Name, data.SelectedScenarioName, StringComparison.OrdinalIgnoreCase))
+                    ?? ScenarioComparisons.FirstOrDefault();
+            }
+            finally
+            {
+                _suppressScenarioSync = false;
+            }
+
+            UpdatePvFactors();
+            Compute();
+            RefreshDiagnostics();
+        }
+
         private async Task ExportAsync()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog

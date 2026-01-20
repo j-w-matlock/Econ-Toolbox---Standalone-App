@@ -491,6 +491,72 @@ namespace EconToolbox.Desktop.ViewModels
             Compute();
         }
 
+        public EadProjectData ExportProjectData()
+        {
+            return new EadProjectData
+            {
+                UseStage = UseStage,
+                ChartTitle = ChartTitle,
+                DamageColumns = DamageColumns.Select(column => new EadDamageColumnData
+                {
+                    Name = column.Name
+                }).ToList(),
+                Rows = Rows.Select(row => new EadRowData
+                {
+                    Probability = row.Probability,
+                    Stage = row.Stage,
+                    Damages = row.Damages.ToList()
+                }).ToList()
+            };
+        }
+
+        public void ImportProjectData(EadProjectData? data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            UseStage = data.UseStage;
+            if (!string.IsNullOrWhiteSpace(data.ChartTitle))
+            {
+                ChartTitle = data.ChartTitle;
+            }
+
+            DamageColumns.Clear();
+            foreach (var column in data.DamageColumns)
+            {
+                DamageColumns.Add(new DamageColumn { Name = column.Name });
+            }
+
+            if (DamageColumns.Count == 0)
+            {
+                DamageColumns.Add(new DamageColumn { Name = "Damage 1" });
+            }
+
+            Rows.Clear();
+            foreach (var row in data.Rows)
+            {
+                var newRow = new EadRow
+                {
+                    Probability = row.Probability,
+                    Stage = row.Stage
+                };
+
+                for (int i = 0; i < DamageColumns.Count; i++)
+                {
+                    double value = i < row.Damages.Count ? row.Damages[i] : 0d;
+                    newRow.Damages.Add(value);
+                }
+
+                Rows.Add(newRow);
+            }
+
+            UpdateColumnDefinitions();
+            Compute();
+            RefreshDiagnostics();
+        }
+
         protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
         {
             var diagnostics = new List<DiagnosticItem>();

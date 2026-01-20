@@ -310,6 +310,53 @@ public class RecreationCapacityViewModel : DiagnosticViewModelBase, IComputeModu
         Recalculate();
     }
 
+    public RecreationCapacityProjectData ExportProjectData()
+    {
+        return new RecreationCapacityProjectData
+        {
+            CampingCampsites = CampingCampsites,
+            CampingAverageGroupSize = CampingAverageGroupSize,
+            CampingDailyTurnover = CampingDailyTurnover,
+            CampingSeasonLengthDays = CampingSeasonLengthDays,
+            FishingAccessibleShorelineFeet = FishingAccessibleShorelineFeet,
+            FishingSpacingFeet = FishingSpacingFeet,
+            FishingAverageGroupSize = FishingAverageGroupSize,
+            FishingDailyTurnover = FishingDailyTurnover,
+            FishingSeasonLengthDays = FishingSeasonLengthDays,
+            BoatingWaterSurfaceAcres = BoatingWaterSurfaceAcres,
+            BoatingAcresPerVessel = BoatingAcresPerVessel,
+            BoatingPersonsPerVessel = BoatingPersonsPerVessel,
+            BoatingDailyTurnover = BoatingDailyTurnover,
+            BoatingSeasonLengthDays = BoatingSeasonLengthDays
+        };
+    }
+
+    public void ImportProjectData(RecreationCapacityProjectData? data)
+    {
+        if (data == null)
+        {
+            return;
+        }
+
+        CampingCampsites = data.CampingCampsites;
+        CampingAverageGroupSize = data.CampingAverageGroupSize;
+        CampingDailyTurnover = data.CampingDailyTurnover;
+        CampingSeasonLengthDays = data.CampingSeasonLengthDays;
+        FishingAccessibleShorelineFeet = data.FishingAccessibleShorelineFeet;
+        FishingSpacingFeet = data.FishingSpacingFeet;
+        FishingAverageGroupSize = data.FishingAverageGroupSize;
+        FishingDailyTurnover = data.FishingDailyTurnover;
+        FishingSeasonLengthDays = data.FishingSeasonLengthDays;
+        BoatingWaterSurfaceAcres = data.BoatingWaterSurfaceAcres;
+        BoatingAcresPerVessel = data.BoatingAcresPerVessel;
+        BoatingPersonsPerVessel = data.BoatingPersonsPerVessel;
+        BoatingDailyTurnover = data.BoatingDailyTurnover;
+        BoatingSeasonLengthDays = data.BoatingSeasonLengthDays;
+
+        Recalculate();
+        RefreshDiagnostics();
+    }
+
     private void Recalculate()
     {
         var activities = new List<RecreationCapacityActivity>

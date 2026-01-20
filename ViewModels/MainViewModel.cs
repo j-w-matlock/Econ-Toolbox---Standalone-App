@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -88,6 +91,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         public IRelayCommand CalculateCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
+        public IAsyncRelayCommand SaveProjectCommand { get; }
+        public IAsyncRelayCommand LoadProjectCommand { get; }
         public IRelayCommand ToggleLeftPaneCommand { get; }
         public IRelayCommand ToggleRightPaneCommand { get; }
         public IRelayCommand ShowReadMeCommand { get; }
@@ -182,6 +187,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             CalculateCommand = new RelayCommand(Calculate);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
+            SaveProjectCommand = new AsyncRelayCommand(SaveProjectAsync);
+            LoadProjectCommand = new AsyncRelayCommand(LoadProjectAsync);
             ToggleLeftPaneCommand = new RelayCommand(ToggleExplorerPane);
             ToggleRightPaneCommand = new RelayCommand(ToggleDetailsPane);
             ShowReadMeCommand = new RelayCommand(ShowReadMe);
@@ -577,6 +584,93 @@ namespace EconToolbox.Desktop.ViewModels
                     MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private async Task SaveProjectAsync()
+        {
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Econ Toolbox Project (*.econproj)|*.econproj|JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+                FileName = "econ_toolbox_project.econproj"
+            };
+
+            if (dlg.ShowDialog() != true)
+            {
+                return;
+            }
+
+            try
+            {
+                var project = new ProjectData
+                {
+                    Ead = GetModuleViewModel<EadViewModel>().ExportProjectData(),
+                    AgricultureDepthDamage = GetModuleViewModel<AgricultureDepthDamageViewModel>().ExportProjectData(),
+                    UpdatedCost = GetModuleViewModel<UpdatedCostViewModel>().ExportProjectData(),
+                    Annualizer = GetModuleViewModel<AnnualizerViewModel>().ExportProjectData(),
+                    WaterDemand = GetModuleViewModel<WaterDemandViewModel>().ExportProjectData(),
+                    Udv = GetModuleViewModel<UdvViewModel>().ExportProjectData(),
+                    RecreationCapacity = GetModuleViewModel<RecreationCapacityViewModel>().ExportProjectData(),
+                    Gantt = GetModuleViewModel<GanttViewModel>().ExportProjectData(),
+                    StageDamageOrganizer = GetModuleViewModel<StageDamageOrganizerViewModel>().ExportProjectData()
+                };
+
+                string json = JsonSerializer.Serialize(project, CreateProjectJsonOptions());
+                await File.WriteAllTextAsync(dlg.FileName, json);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                MessageBox.Show($"Save failed: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task LoadProjectAsync()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Econ Toolbox Project (*.econproj)|*.econproj|JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+                Title = "Open Econ Toolbox Project"
+            };
+
+            if (dlg.ShowDialog() != true)
+            {
+                return;
+            }
+
+            try
+            {
+                string json = await File.ReadAllTextAsync(dlg.FileName);
+                var project = JsonSerializer.Deserialize<ProjectData>(json, CreateProjectJsonOptions());
+                if (project == null)
+                {
+                    MessageBox.Show("Unable to read project data.", "Load Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                GetModuleViewModel<EadViewModel>().ImportProjectData(project.Ead);
+                GetModuleViewModel<AgricultureDepthDamageViewModel>().ImportProjectData(project.AgricultureDepthDamage);
+                GetModuleViewModel<UpdatedCostViewModel>().ImportProjectData(project.UpdatedCost);
+                GetModuleViewModel<AnnualizerViewModel>().ImportProjectData(project.Annualizer);
+                GetModuleViewModel<WaterDemandViewModel>().ImportProjectData(project.WaterDemand);
+                GetModuleViewModel<UdvViewModel>().ImportProjectData(project.Udv);
+                GetModuleViewModel<RecreationCapacityViewModel>().ImportProjectData(project.RecreationCapacity);
+                GetModuleViewModel<GanttViewModel>().ImportProjectData(project.Gantt);
+                GetModuleViewModel<StageDamageOrganizerViewModel>().ImportProjectData(project.StageDamageOrganizer);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                MessageBox.Show($"Load failed: {ex.Message}", "Load Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private static JsonSerializerOptions CreateProjectJsonOptions()
+        {
+            return new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals
+            };
         }
 
         private void RefreshExportData(
