@@ -309,7 +309,7 @@
                                 </Grid>
                                 <Border Grid.Row="2"
                                         Style="{StaticResource Border.Card}">
-                                    <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0" ColumnWidth="SizeToHeader">
+                                    <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Results}" AutoGenerateColumns="False" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" ColumnWidth="SizeToHeader">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
                                             <DataGridTextColumn Header="Growth Rate (%)" Binding="{Binding GrowthRate, Mode=TwoWay, StringFormat={}{0:N2}}">
