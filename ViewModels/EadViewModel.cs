@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using EconToolbox.Desktop.Behaviors;
@@ -84,7 +85,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         public IRelayCommand AddDamageColumnCommand { get; }
         public IRelayCommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
-        public IRelayCommand ComputeCommand { get; }
+        public ICommand ComputeCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
 
         private readonly RelayCommand _removeDamageColumnCommand;

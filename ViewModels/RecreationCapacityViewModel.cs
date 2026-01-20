@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels;
@@ -302,7 +303,7 @@ public class RecreationCapacityViewModel : DiagnosticViewModelBase, IComputeModu
     public double TotalDailyCapacity => Math.Round(CampingDailyCapacity + FishingDailyCapacity + BoatingDailyCapacity, 2);
     public double TotalSeasonCapacity => Math.Round(CampingSeasonCapacity + FishingSeasonCapacity + BoatingSeasonCapacity, 2);
 
-    public IRelayCommand ComputeCommand { get; }
+    public ICommand ComputeCommand { get; }
 
     public RecreationCapacityViewModel()
     {

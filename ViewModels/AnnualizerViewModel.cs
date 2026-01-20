@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 using System.Windows;
@@ -257,7 +258,7 @@ namespace EconToolbox.Desktop.ViewModels
             set { _unityFirstCostMessage = value; OnPropertyChanged(); }
         }
 
-        public IRelayCommand ComputeCommand { get; }
+        public ICommand ComputeCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
         public IRelayCommand ResetIdcCommand { get; }
         public IRelayCommand ResetFutureCostsCommand { get; }
