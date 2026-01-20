@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace EconToolbox.Desktop.Converters
@@ -34,6 +35,7 @@ namespace EconToolbox.Desktop.Converters
             return NonEmptyValue ?? value;
         }
 
-        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => value;
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+            => value ?? Binding.DoNothing;
     }
 }
