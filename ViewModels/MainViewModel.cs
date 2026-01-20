@@ -742,9 +742,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             Diagnostics.Clear();
 
-            var currentDiagnosticVm = CurrentViewModel as DiagnosticViewModelBase;
-
-            if (currentDiagnosticVm == null)
+            if (_diagnosticsProvider == null)
             {
                 Diagnostics.Add(new DiagnosticItem(
                     DiagnosticLevel.Info,
@@ -753,8 +751,8 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            var validationResults = currentDiagnosticVm.RunDiagnostics();
-            if (validationResults.Any())
+            var validationResults = _diagnosticsProvider.Diagnostics;
+            if (validationResults.Count > 0)
             {
                 foreach (var item in validationResults)
                 {
