@@ -17,7 +17,7 @@ using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class AgricultureDepthDamageViewModel : BaseViewModel, IComputeModule
+    public class AgricultureDepthDamageViewModel : DiagnosticViewModelBase, IComputeModule
     {
         private const int DaysInYear = 365;
 
@@ -333,6 +333,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             _isInitializing = false;
             Compute();
+            RefreshDiagnostics();
         }
 
         private void AttachRegionHandlers(RegionDefinition? region)
@@ -376,6 +377,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 OnPropertyChanged(nameof(SelectedRegionDescription));
                 ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+                RefreshDiagnostics();
                 return;
             }
 
@@ -385,10 +387,12 @@ namespace EconToolbox.Desktop.ViewModels
                 || e.PropertyName == nameof(RegionDefinition.SeasonShiftDays))
             {
                 Compute();
+                RefreshDiagnostics();
                 return;
             }
 
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+            RefreshDiagnostics();
         }
 
         private void RegionDepthDuration_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -417,6 +421,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+            RefreshDiagnostics();
         }
 
         private void DepthDurationPoint_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -427,6 +432,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+            RefreshDiagnostics();
         }
 
         private void AttachCropHandlers(CropDefinition? crop)
@@ -462,6 +468,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+            RefreshDiagnostics();
         }
 
         private void Stage_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -484,6 +491,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             ImpactSummary = "Inputs updated. Press Calculate to refresh results.";
+            RefreshDiagnostics();
         }
 
         private bool CanCompute() => SelectedRegion != null && SelectedCrop != null;
@@ -582,11 +590,13 @@ namespace EconToolbox.Desktop.ViewModels
         {
             OnPropertyChanged(nameof(HasCropScapeSummary));
             _clearCropScapeSummaryCommand.NotifyCanExecuteChanged();
+            RefreshDiagnostics();
         }
 
         private void CropScapeDamageRows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(HasCropScapeDamage));
+            RefreshDiagnostics();
         }
 
         private void UpdateCropScapeDamageOutputs()
@@ -925,6 +935,61 @@ namespace EconToolbox.Desktop.ViewModels
         {
             int normalized = NormalizeDayOfYear(rawDay);
             return DaysInYear - normalized + 1;
+        }
+
+        protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+        {
+            var diagnostics = new List<DiagnosticItem>();
+
+            if (SelectedRegion == null)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Region not selected",
+                    "Choose a region to evaluate depth-duration impacts."));
+            }
+
+            if (SelectedCrop == null)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Crop not selected",
+                    "Choose a crop to evaluate damage sensitivity."));
+            }
+
+            if (SelectedRegion != null && SelectedRegion.DepthDuration.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "No depth-duration points",
+                    "Add depth-duration points for the selected region."));
+            }
+
+            if (StageExposures.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "No stage exposures",
+                    "Stage exposure definitions are missing. Add stages to compute seasonal impacts."));
+            }
+
+            if (CropScapeSummaries.Count == 0 && CropScapeTotalAcreage <= 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "CropScape data not loaded",
+                    "Import a CropScape raster if you want acreage-weighted damage estimates."));
+            }
+
+            if (diagnostics.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "Agriculture inputs look good",
+                    "Region, crop, and exposure inputs are ready for calculation."));
+            }
+
+            return diagnostics;
         }
 
         public class RegionDefinition : BaseViewModel

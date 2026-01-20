@@ -24,6 +24,7 @@ namespace EconToolbox.Desktop.ViewModels
         private bool _isSyncingSelection;
         private BaseViewModel? _currentViewModel;
         private ICommand? _currentComputeCommand;
+        private IDiagnosticsProvider? _diagnosticsProvider;
         private readonly Dictionary<Type, BaseViewModel> _moduleInstances = new();
         public ModuleDefinition? SelectedModule
         {
@@ -459,7 +460,35 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             _currentViewModel = viewModel;
+            SetDiagnosticsProvider(viewModel as IDiagnosticsProvider);
             OnPropertyChanged(nameof(CurrentViewModel));
+        }
+
+        private void SetDiagnosticsProvider(IDiagnosticsProvider? provider)
+        {
+            if (ReferenceEquals(_diagnosticsProvider, provider))
+            {
+                return;
+            }
+
+            if (_diagnosticsProvider != null)
+            {
+                _diagnosticsProvider.DiagnosticsChanged -= DiagnosticsProvider_DiagnosticsChanged;
+            }
+
+            _diagnosticsProvider = provider;
+
+            if (_diagnosticsProvider != null)
+            {
+                _diagnosticsProvider.DiagnosticsChanged += DiagnosticsProvider_DiagnosticsChanged;
+            }
+
+            UpdateDiagnostics();
+        }
+
+        private void DiagnosticsProvider_DiagnosticsChanged(object? sender, EventArgs e)
+        {
+            UpdateDiagnostics();
         }
 
         private void SetCurrentComputeCommand(ICommand? command)
@@ -586,20 +615,20 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            if (_diagnosticsProvider != null && _diagnosticsProvider.Diagnostics.Count > 0)
+            {
+                foreach (var item in _diagnosticsProvider.Diagnostics)
+                {
+                    Diagnostics.Add(item);
+                }
+
+                return;
+            }
+
             Diagnostics.Add(new DiagnosticItem(
                 DiagnosticLevel.Info,
-                "Module ready",
-                $"You are in {SelectedModule.Title}. Review inputs before running calculations."));
-
-            Diagnostics.Add(new DiagnosticItem(
-                DiagnosticLevel.Warning,
-                "Check required inputs",
-                "Ensure required tables are filled out and probabilities are listed in descending order where applicable."));
-
-            Diagnostics.Add(new DiagnosticItem(
-                DiagnosticLevel.Advisory,
-                "Export reminder",
-                "Use the Export action to capture a workbook snapshot after computing results."));
+                "Diagnostics unavailable",
+                $"No diagnostic messages are available for {SelectedModule.Title}."));
         }
 
         private void UpdateLayoutSettings()

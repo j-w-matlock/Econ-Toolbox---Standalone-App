@@ -10,7 +10,7 @@ using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class GanttViewModel : BaseViewModel, IComputeModule
+    public class GanttViewModel : DiagnosticViewModelBase, IComputeModule
     {
         private readonly RelayCommand _addTaskCommand;
         private readonly RelayCommand _removeTaskCommand;
@@ -95,6 +95,7 @@ namespace EconToolbox.Desktop.ViewModels
             SeedDefaultTasks();
             ComputeSchedule();
             OnPropertyChanged(nameof(TotalLaborCost));
+            RefreshDiagnostics();
         }
 
         private void SeedDefaultTasks()
@@ -188,6 +189,7 @@ namespace EconToolbox.Desktop.ViewModels
             _colorSequence = 0;
             OnPropertyChanged(nameof(TotalDurationDays));
             OnPropertyChanged(nameof(TotalLaborCost));
+            RefreshDiagnostics();
         }
 
         public void ComputeSchedule()
@@ -272,6 +274,7 @@ namespace EconToolbox.Desktop.ViewModels
                 ? "Schedule contains a single-day milestone sequence."
                 : $"Project spans {(int)Math.Ceiling(totalDays)} days across {Tasks.Count} activities.";
             OnPropertyChanged(nameof(TotalLaborCost));
+            RefreshDiagnostics();
         }
 
         private static List<string> ParseDependencies(string dependencies)
@@ -320,6 +323,66 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 OnPropertyChanged(nameof(TotalLaborCost));
             }
+            RefreshDiagnostics();
+        }
+
+        protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+        {
+            var diagnostics = new List<DiagnosticItem>();
+
+            if (Tasks.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "No tasks defined",
+                    "Add at least one task to build a schedule."));
+                return diagnostics;
+            }
+
+            if (Tasks.Any(t => string.IsNullOrWhiteSpace(t.Name)))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Missing task names",
+                    "One or more tasks are missing a name. Add names so dependencies resolve correctly."));
+            }
+
+            if (Tasks.Any(t => t.DurationDays < 0))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Negative durations",
+                    "Task durations must be zero or greater."));
+            }
+
+            var taskNames = Tasks
+                .Where(t => !string.IsNullOrWhiteSpace(t.Name))
+                .Select(t => t.Name.Trim())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var missingDependencies = Tasks
+                .SelectMany(t => ParseDependencies(t.Dependencies))
+                .Where(dep => !taskNames.Contains(dep))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (missingDependencies.Count > 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Missing dependency references",
+                    $"Dependencies not found: {string.Join(", ", missingDependencies)}."));
+            }
+
+            if (diagnostics.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "Schedule inputs look good",
+                    "Tasks and dependencies are ready for scheduling."));
+            }
+
+            return diagnostics;
         }
 
         public record GanttBar(GanttTask Task, int RowIndex, double OffsetDays, double DurationDays)

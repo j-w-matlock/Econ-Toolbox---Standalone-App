@@ -22,7 +22,7 @@ namespace EconToolbox.Desktop.ViewModels
     /// project future demand using either linear regression or growth
     /// rate methods. Results can be displayed in a simple chart.
     /// </summary>
-    public class WaterDemandViewModel : BaseViewModel, IComputeModule
+    public class WaterDemandViewModel : DiagnosticViewModelBase, IComputeModule
     {
         private ObservableCollection<DemandEntry> _historicalData = new();
         private int _forecastYears = 5;
@@ -323,6 +323,7 @@ namespace EconToolbox.Desktop.ViewModels
             ForecastCommand = new RelayCommand(Forecast);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             ComputeCommand = ForecastCommand;
+            RefreshDiagnostics();
         }
 
         private void HistoricalData_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -332,6 +333,7 @@ namespace EconToolbox.Desktop.ViewModels
                 DetachHistoricalHandlers(HistoricalData);
                 AttachHistoricalHandlers(HistoricalData);
                 AutoPopulateBaseline();
+                RefreshDiagnostics();
                 return;
             }
 
@@ -349,12 +351,14 @@ namespace EconToolbox.Desktop.ViewModels
                     d.PropertyChanged += HistoricalEntryChanged;
             }
             AutoPopulateBaseline();
+            RefreshDiagnostics();
         }
 
         private void HistoricalEntryChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(DemandEntry.Demand) || e.PropertyName == nameof(DemandEntry.Year))
                 AutoPopulateBaseline();
+            RefreshDiagnostics();
         }
 
         private void AttachHistoricalHandlers(ObservableCollection<DemandEntry> entries)
@@ -422,6 +426,66 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 ApplyScenarioAdjustments();
             }
+            RefreshDiagnostics();
+        }
+
+        protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+        {
+            var diagnostics = new List<DiagnosticItem>();
+
+            if (HistoricalData.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Missing historical demand data",
+                    "Add at least one year of historical demand data to build a forecast."));
+                return diagnostics;
+            }
+
+            if (HistoricalData.Any(h => h.Year <= 0))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Invalid year",
+                    "Historical entries must use a valid calendar year."));
+            }
+
+            if (HistoricalData.Any(h => h.Demand < 0))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Negative demand values",
+                    "One or more demand entries are negative. Verify the units and inputs."));
+            }
+
+            bool yearsOutOfOrder = HistoricalData
+                .Zip(HistoricalData.Skip(1), (current, next) => next.Year < current.Year)
+                .Any(isOutOfOrder => isOutOfOrder);
+            if (yearsOutOfOrder)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Years not ascending",
+                    "Sort historical demand rows by year from earliest to latest."));
+            }
+
+            if (Scenarios.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "No scenarios configured",
+                    "Add at least one scenario to forecast adjusted demand."));
+            }
+
+            if (diagnostics.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "Water demand inputs look good",
+                    "Historical data and scenario inputs are ready for forecasting."));
+            }
+
+            return diagnostics;
         }
 
         private void UpdateResidualShares(Scenario scenario)

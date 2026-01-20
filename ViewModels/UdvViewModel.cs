@@ -12,7 +12,7 @@ using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class UdvViewModel : BaseViewModel, IComputeModule
+    public class UdvViewModel : DiagnosticViewModelBase, IComputeModule
     {
         private string _recreationType = "General";
         private string _activityType = "General Recreation";
@@ -233,8 +233,10 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     UpdateUnitDayValue();
                     UpdateChart();
+                    RefreshDiagnostics();
                 };
             }
+            RefreshDiagnostics();
         }
 
         private void InitializeHistoricalRows()
@@ -262,11 +264,13 @@ namespace EconToolbox.Desktop.ViewModels
                     row.PropertyChanged -= HistoricalRow_PropertyChanged;
                 }
             }
+            RefreshDiagnostics();
         }
 
         private void HistoricalRow_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             HistoricalDataError = string.Empty;
+            RefreshDiagnostics();
         }
 
         private void UpdateActivityTypes()
@@ -410,6 +414,60 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             VisitationInput = median;
+        }
+
+        protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+        {
+            var diagnostics = new List<DiagnosticItem>();
+
+            if (!double.IsFinite(Points))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Invalid point score",
+                    "Point totals must be a valid number."));
+            }
+            else if (Points < 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Negative point score",
+                    "Point totals should be zero or greater."));
+            }
+
+            if (SeasonDays <= 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Season length required",
+                    "Season days must be greater than zero to calculate user days."));
+            }
+
+            if (VisitationInput < 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Negative visitation input",
+                    "Visitation inputs should be zero or greater."));
+            }
+
+            if (!string.IsNullOrWhiteSpace(HistoricalDataError))
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Historical data issue",
+                    HistoricalDataError));
+            }
+
+            if (diagnostics.Count == 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "UDV inputs look good",
+                    "Point values and visitation inputs are ready for benefit calculations."));
+            }
+
+            return diagnostics;
         }
 
         private static (List<double> values, int invalidCount) ParseHistoricalEntries(IEnumerable<HistoricalVisitationRow> rows)

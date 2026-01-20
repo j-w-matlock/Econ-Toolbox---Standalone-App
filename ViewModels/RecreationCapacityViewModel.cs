@@ -5,7 +5,7 @@ using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels;
 
-public class RecreationCapacityViewModel : BaseViewModel, IComputeModule
+public class RecreationCapacityViewModel : DiagnosticViewModelBase, IComputeModule
 {
     private double _campingCampsites = 80;
     public double CampingCampsites
@@ -379,4 +379,43 @@ public class RecreationCapacityViewModel : BaseViewModel, IComputeModule
 
     private static double ClampNonNegative(double value) => double.IsFinite(value) ? Math.Max(0, value) : 0;
     private static double ClampPositive(double value) => double.IsFinite(value) ? Math.Max(0.1, value) : 0.1;
+
+    protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
+    {
+        var diagnostics = new List<DiagnosticItem>();
+
+        if (CampingCampsites <= 0)
+        {
+            diagnostics.Add(new DiagnosticItem(
+                DiagnosticLevel.Warning,
+                "No camping sites",
+                "Camping campsites are zero. Add sites to estimate camping capacity."));
+        }
+
+        if (FishingAccessibleShorelineFeet <= 0)
+        {
+            diagnostics.Add(new DiagnosticItem(
+                DiagnosticLevel.Warning,
+                "No fishing shoreline",
+                "Accessible shoreline is zero, so fishing capacity will be zero."));
+        }
+
+        if (BoatingWaterSurfaceAcres <= 0)
+        {
+            diagnostics.Add(new DiagnosticItem(
+                DiagnosticLevel.Warning,
+                "No boating surface area",
+                "Water surface acres are zero, so boating capacity will be zero."));
+        }
+
+        if (diagnostics.Count == 0)
+        {
+            diagnostics.Add(new DiagnosticItem(
+                DiagnosticLevel.Info,
+                "Recreation inputs look good",
+                "Capacity inputs are ready for calculation."));
+        }
+
+        return diagnostics;
+    }
 }
