@@ -17,7 +17,7 @@ using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class AgricultureDepthDamageViewModel : BaseViewModel
+    public class AgricultureDepthDamageViewModel : BaseViewModel, IComputeModule
     {
         private const int DaysInYear = 365;
 
