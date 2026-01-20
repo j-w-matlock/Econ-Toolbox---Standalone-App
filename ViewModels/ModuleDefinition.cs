@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Input;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -14,8 +14,7 @@ namespace EconToolbox.Desktop.ViewModels
             IEnumerable<string> inputSteps,
             IEnumerable<string> outputHighlights,
             string example,
-            BaseViewModel contentViewModel,
-            ICommand? computeCommand)
+            Type viewModelType)
         {
             Title = title;
             Description = description;
@@ -23,8 +22,12 @@ namespace EconToolbox.Desktop.ViewModels
             InputSteps = new ReadOnlyCollection<string>(inputSteps.ToList());
             OutputHighlights = new ReadOnlyCollection<string>(outputHighlights.ToList());
             Example = example;
-            ContentViewModel = contentViewModel;
-            ComputeCommand = computeCommand;
+            if (!typeof(BaseViewModel).IsAssignableFrom(viewModelType))
+            {
+                throw new ArgumentException("Module view model types must derive from BaseViewModel.", nameof(viewModelType));
+            }
+
+            ViewModelType = viewModelType;
         }
 
         public string Title { get; }
@@ -39,8 +42,6 @@ namespace EconToolbox.Desktop.ViewModels
 
         public string Example { get; }
 
-        public BaseViewModel ContentViewModel { get; }
-
-        public ICommand? ComputeCommand { get; }
+        public Type ViewModelType { get; }
     }
 }

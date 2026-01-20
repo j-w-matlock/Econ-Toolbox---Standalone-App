@@ -10,7 +10,7 @@ using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class GanttViewModel : BaseViewModel
+    public class GanttViewModel : BaseViewModel, IComputeModule
     {
         private readonly RelayCommand _addTaskCommand;
         private readonly RelayCommand _removeTaskCommand;

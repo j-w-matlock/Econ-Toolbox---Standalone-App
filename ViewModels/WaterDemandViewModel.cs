@@ -22,7 +22,7 @@ namespace EconToolbox.Desktop.ViewModels
     /// project future demand using either linear regression or growth
     /// rate methods. Results can be displayed in a simple chart.
     /// </summary>
-    public class WaterDemandViewModel : BaseViewModel
+    public class WaterDemandViewModel : BaseViewModel, IComputeModule
     {
         private ObservableCollection<DemandEntry> _historicalData = new();
         private int _forecastYears = 5;

@@ -12,7 +12,7 @@ using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class UdvViewModel : BaseViewModel
+    public class UdvViewModel : BaseViewModel, IComputeModule
     {
         private string _recreationType = "General";
         private string _activityType = "General Recreation";

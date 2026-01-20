@@ -91,17 +91,18 @@ namespace EconToolbox.Desktop
                 {
                     services.AddSingleton<IExcelExportService, ExcelExportService>();
                     services.AddSingleton<ILayoutSettingsService, LayoutSettingsService>();
+                    services.AddSingleton<IViewModelFactory, ViewModelFactory>();
 
-                    services.AddSingleton<ReadMeViewModel>();
-                    services.AddSingleton<EadViewModel>();
-                    services.AddSingleton<AgricultureDepthDamageViewModel>();
-                    services.AddSingleton<UpdatedCostViewModel>();
-                    services.AddSingleton<AnnualizerViewModel>();
-                    services.AddSingleton<UdvViewModel>();
-                    services.AddSingleton<WaterDemandViewModel>();
-                    services.AddSingleton<RecreationCapacityViewModel>();
-                    services.AddSingleton<GanttViewModel>();
-                    services.AddSingleton<StageDamageOrganizerViewModel>();
+                    services.AddTransient<ReadMeViewModel>();
+                    services.AddTransient<EadViewModel>();
+                    services.AddTransient<AgricultureDepthDamageViewModel>();
+                    services.AddTransient<UpdatedCostViewModel>();
+                    services.AddTransient<AnnualizerViewModel>();
+                    services.AddTransient<UdvViewModel>();
+                    services.AddTransient<WaterDemandViewModel>();
+                    services.AddTransient<RecreationCapacityViewModel>();
+                    services.AddTransient<GanttViewModel>();
+                    services.AddTransient<StageDamageOrganizerViewModel>();
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<MainWindow>();

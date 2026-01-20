@@ -6,7 +6,7 @@ using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class UpdatedCostViewModel : BaseViewModel
+    public class UpdatedCostViewModel : BaseViewModel, IComputeModule
     {
         private double _totalStorage;
         private double _storageRecommendation;

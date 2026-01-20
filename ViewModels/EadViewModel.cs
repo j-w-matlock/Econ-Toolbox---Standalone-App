@@ -21,7 +21,7 @@ namespace EconToolbox.Desktop.ViewModels
     /// frequency, optional stage data and any number of damage columns
     /// using a grid. Results can be charted against stage and frequency.
     /// </summary>
-    public class EadViewModel : BaseViewModel
+    public class EadViewModel : BaseViewModel, IComputeModule
     {
         public ObservableCollection<EadRow> Rows { get; } = new();
         public ObservableCollection<DamageColumn> DamageColumns { get; } = new();

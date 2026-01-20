@@ -15,17 +15,6 @@ namespace EconToolbox.Desktop.ViewModels
     {
         private const double DefaultExplorerPaneWidth = 280;
         private const double DefaultDetailsPaneWidth = 340;
-        public ReadMeViewModel ReadMe { get; }
-        public EadViewModel Ead { get; }
-        public AgricultureDepthDamageViewModel AgricultureDepthDamage { get; }
-        public UpdatedCostViewModel UpdatedCost { get; }
-        public AnnualizerViewModel Annualizer { get; }
-        public UdvViewModel Udv { get; }
-        public WaterDemandViewModel WaterDemand { get; }
-        public RecreationCapacityViewModel RecreationCapacity { get; }
-        public GanttViewModel Gantt { get; }
-        public StageDamageOrganizerViewModel StageDamageOrganizer { get; }
-
         public ModuleDefinition ReadMeModule { get; }
         public IReadOnlyList<ModuleDefinition> Modules { get; }
         public ObservableCollection<DiagnosticItem> Diagnostics { get; } = new();
@@ -33,6 +22,9 @@ namespace EconToolbox.Desktop.ViewModels
         private ModuleDefinition? _selectedModule;
         private ModuleDefinition? _explorerSelectedModule;
         private bool _isSyncingSelection;
+        private BaseViewModel? _currentViewModel;
+        private ICommand? _currentComputeCommand;
+        private readonly Dictionary<Type, BaseViewModel> _moduleInstances = new();
         public ModuleDefinition? SelectedModule
         {
             get => _selectedModule;
@@ -42,9 +34,8 @@ namespace EconToolbox.Desktop.ViewModels
                 _selectedModule = value;
                 OnPropertyChanged();
                 SyncExplorerSelection(value);
-                OnPropertyChanged(nameof(IsCalculateVisible));
                 OnPropertyChanged(nameof(PrimaryActionLabel));
-                OnPropertyChanged(nameof(CurrentViewModel));
+                LoadSelectedModule(value);
                 UpdateDiagnostics();
             }
         }
@@ -160,9 +151,9 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public BaseViewModel? CurrentViewModel => SelectedModule?.ContentViewModel;
+        public BaseViewModel? CurrentViewModel => _currentViewModel;
 
-        public bool IsCalculateVisible => SelectedModule?.ComputeCommand?.CanExecute(null) == true;
+        public bool IsCalculateVisible => _currentComputeCommand?.CanExecute(null) == true;
 
         public string PrimaryActionLabel => SelectedModule?.Title switch
         {
@@ -173,35 +164,18 @@ namespace EconToolbox.Desktop.ViewModels
 
         private readonly IExcelExportService _excelExportService;
         private readonly ILayoutSettingsService _layoutSettingsService;
+        private readonly IViewModelFactory _viewModelFactory;
         private LayoutSettings _layoutSettings = new();
         private double _explorerPaneWidthBeforeCollapse = DefaultExplorerPaneWidth;
         private double _detailsPaneWidthBeforeCollapse = DefaultDetailsPaneWidth;
         private bool _isApplyingSettings;
 
         public MainViewModel(
-            ReadMeViewModel readMe,
-            EadViewModel ead,
-            AgricultureDepthDamageViewModel agricultureDepthDamage,
-            UpdatedCostViewModel updatedCost,
-            AnnualizerViewModel annualizer,
-            UdvViewModel udv,
-            WaterDemandViewModel waterDemand,
-            RecreationCapacityViewModel recreationCapacity,
-            GanttViewModel gantt,
-            StageDamageOrganizerViewModel stageDamageOrganizer,
+            IViewModelFactory viewModelFactory,
             IExcelExportService excelExportService,
             ILayoutSettingsService layoutSettingsService)
         {
-            ReadMe = readMe;
-            Ead = ead;
-            AgricultureDepthDamage = agricultureDepthDamage;
-            UpdatedCost = updatedCost;
-            Annualizer = annualizer;
-            Udv = udv;
-            WaterDemand = waterDemand;
-            RecreationCapacity = recreationCapacity;
-            Gantt = gantt;
-            StageDamageOrganizer = stageDamageOrganizer;
+            _viewModelFactory = viewModelFactory;
             _excelExportService = excelExportService;
             _layoutSettingsService = layoutSettingsService;
 
@@ -228,8 +202,7 @@ namespace EconToolbox.Desktop.ViewModels
                     "Supports opening external links in your default browser for deeper references."
                 },
                 "Example: Quickly scan the packaging checklist before exporting deliverables for a stakeholder workshop.",
-                ReadMe,
-                null);
+                typeof(ReadMeViewModel));
 
             Modules = new List<ModuleDefinition>
             {
@@ -250,8 +223,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Exports the full grid, summary text, and charts to Excel for documentation."
                     },
                     "Example: The Cedar River levee district pairs 0.5, 0.1, and 0.01 annual exceedance probabilities with $250K, $1.2M, and $6.8M structure damage estimates captured in its 2019 flood study.",
-                    Ead,
-                    Ead.ComputeCommand),
+                    typeof(EadViewModel)),
                 new ModuleDefinition(
                     "Agriculture Depth-Damage",
                     "Calibrate crop and structure damages for agricultural assets using custom depth-damage relationships.",
@@ -269,8 +241,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Plots the resulting depth-damage function so you can visually confirm curve behavior."
                     },
                     "Example: A delta farm pairs 0.5, 0.1, and 0.02 annual exceedance probabilities with 0 ft, 1.5 ft, and 3.5 ft flood depths causing 0%, 25%, and 75% damages respectively.",
-                    AgricultureDepthDamage,
-                    AgricultureDepthDamage.ComputeCommand),
+                    typeof(AgricultureDepthDamageViewModel)),
                 new ModuleDefinition(
                     "Updated Cost of Storage",
                     "Update historical costs and allocate joint expenses based on storage recommendations.",
@@ -288,8 +259,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Provides an export-ready workbook covering every sub-tab for auditability."
                     },
                     "Example: Modernizing the North Bay joint-use reservoir assigns 70% of its 850 acre-feet to the recommended diversion plan while escalating $2.3M of 2010 construction costs to FY24 dollars.",
-                    UpdatedCost,
-                    UpdatedCost.ComputeCommand),
+                    typeof(UpdatedCostViewModel)),
                 new ModuleDefinition(
                     "Cost Annualization",
                     "Translate capital outlays and future costs into comparable annual values.",
@@ -307,8 +277,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Exports a concise summary table and supporting detail to Excel."
                     },
                     "Example: Annualizing a $45M pump station replacement uses a 3.5% discount rate over 50 years, includes $250K in annual O&M, and captures a $1.1M mid-life rehab cost occurring in year 25.",
-                    Annualizer,
-                    Annualizer.ComputeCommand),
+                    typeof(AnnualizerViewModel)),
                 new ModuleDefinition(
                     "Water Demand Forecasting",
                     "Project future water demand scenarios from historical data and planning assumptions.",
@@ -326,8 +295,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Allows exporting to Excel with data tables and visualizations for stakeholder review."
                     },
                     "Example: Forecasting demand for a city of 180,000 residents that used 120 gallons per capita in 2023 while expecting 1.5% annual population growth and system improvements cutting losses by 8%.",
-                    WaterDemand,
-                    WaterDemand.ComputeCommand),
+                    typeof(WaterDemandViewModel)),
                 new ModuleDefinition(
                     "Unit Day Value",
                     "Calibrate recreational benefits and visitation patterns to compute annual unit day values.",
@@ -345,8 +313,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Supports exporting the evaluation for integration into economic reports."
                     },
                     "Example: Evaluating the Riverwalk trail system anticipates 42,000 annual user days split between day hiking and cycling with average facility quality scores of 27 points.",
-                    Udv,
-                    Udv.ComputeCommand),
+                    typeof(UdvViewModel)),
                 new ModuleDefinition(
                     "Recreation Capacity Study",
                     "Evaluate camping, shoreline fishing, and boating capacity using USACE design day standards.",
@@ -364,8 +331,7 @@ namespace EconToolbox.Desktop.ViewModels
                         "Captures key assumptions so stakeholders can review capacity drivers."
                     },
                     "Example: Updating a lake master plan with 120 campsites, 2,400 feet of managed shoreline, and 650 acres of usable water surface.",
-                    RecreationCapacity,
-                    RecreationCapacity.ComputeCommand),
+                    typeof(RecreationCapacityViewModel)),
                 new ModuleDefinition(
                     "Standard Gantt Planner",
                     "Organize project activities, dependencies, and milestones in a timeline consistent with industry schedules.",
@@ -378,13 +344,12 @@ namespace EconToolbox.Desktop.ViewModels
                     },
                     new[]
                     {
-                    "Automatically sequences start and finish dates based on dependency logic.",
-                    "Generates a bar chart showing duration, percent complete, and milestones.",
-                    "Exports both the task register and timeline graphic alongside other modules."
-                },
-                "Example: A feasibility study includes kickoff, stakeholder workshops, baseline analysis, and a design milestone with finish-to-start dependencies.",
-                    Gantt,
-                    Gantt.ComputeCommand),
+                        "Automatically sequences start and finish dates based on dependency logic.",
+                        "Generates a bar chart showing duration, percent complete, and milestones.",
+                        "Exports both the task register and timeline graphic alongside other modules."
+                    },
+                    "Example: A feasibility study includes kickoff, stakeholder workshops, baseline analysis, and a design milestone with finish-to-start dependencies.",
+                    typeof(GanttViewModel)),
                 new ModuleDefinition(
                     "Stage Damage Organizer",
                     "Compile FDA 2.0 Stage Damage Functions_StructureStageDamageDetails.csv files by damage category.",
@@ -402,14 +367,8 @@ namespace EconToolbox.Desktop.ViewModels
                         "Exports a concise CSV summary that includes category totals and highlighted structures."
                     },
                     "Example: Organize multiple impact areas and report which DamageCategory drives the highest frequent-AEP structure damages.",
-                    StageDamageOrganizer,
-                    null)
+                    typeof(StageDamageOrganizerViewModel))
             };
-
-            foreach (var module in Modules)
-            {
-                SubscribeToComputeCommand(module.ComputeCommand);
-            }
 
             ApplyLayoutSettings();
             ExplorerSelectedModule = Modules.Count > 0 ? Modules[0] : null;
@@ -477,23 +436,66 @@ namespace EconToolbox.Desktop.ViewModels
             SelectedModule = ReadMeModule;
         }
 
-        private void Calculate()
+        private void LoadSelectedModule(ModuleDefinition? module)
         {
-            var command = SelectedModule?.ComputeCommand;
-            if (command?.CanExecute(null) == true)
+            if (module == null)
             {
-                command.Execute(null);
+                SetCurrentViewModel(null);
+                SetCurrentComputeCommand(null);
+                return;
             }
+
+            var viewModel = _viewModelFactory.Create(module.ViewModelType);
+            _moduleInstances[module.ViewModelType] = viewModel;
+            SetCurrentViewModel(viewModel);
+            SetCurrentComputeCommand((viewModel as IComputeModule)?.ComputeCommand);
         }
 
-        private void SubscribeToComputeCommand(ICommand? command)
+        private void SetCurrentViewModel(BaseViewModel? viewModel)
         {
-            if (command == null)
+            if (ReferenceEquals(_currentViewModel, viewModel))
             {
                 return;
             }
 
-            command.CanExecuteChanged += (_, _) => OnPropertyChanged(nameof(IsCalculateVisible));
+            _currentViewModel = viewModel;
+            OnPropertyChanged(nameof(CurrentViewModel));
+        }
+
+        private void SetCurrentComputeCommand(ICommand? command)
+        {
+            if (ReferenceEquals(_currentComputeCommand, command))
+            {
+                return;
+            }
+
+            if (_currentComputeCommand != null)
+            {
+                _currentComputeCommand.CanExecuteChanged -= OnCurrentComputeCommandChanged;
+            }
+
+            _currentComputeCommand = command;
+
+            if (_currentComputeCommand != null)
+            {
+                _currentComputeCommand.CanExecuteChanged += OnCurrentComputeCommandChanged;
+            }
+
+            OnPropertyChanged(nameof(IsCalculateVisible));
+        }
+
+        private void OnCurrentComputeCommandChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(IsCalculateVisible));
+        }
+
+        private void Calculate()
+        {
+            var command = _currentComputeCommand;
+            if (command?.CanExecute(null) == true)
+            {
+                command.Execute(null);
+            }
         }
 
         private async Task ExportAsync()
@@ -508,17 +510,33 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 try
                 {
-                    Ead.ForceCompute();
-                    RefreshExportData();
+                    var ead = GetModuleViewModel<EadViewModel>();
+                    var agricultureDepthDamage = GetModuleViewModel<AgricultureDepthDamageViewModel>();
+                    var updatedCost = GetModuleViewModel<UpdatedCostViewModel>();
+                    var annualizer = GetModuleViewModel<AnnualizerViewModel>();
+                    var waterDemand = GetModuleViewModel<WaterDemandViewModel>();
+                    var udv = GetModuleViewModel<UdvViewModel>();
+                    var recreationCapacity = GetModuleViewModel<RecreationCapacityViewModel>();
+                    var gantt = GetModuleViewModel<GanttViewModel>();
+
+                    ead.ForceCompute();
+                    RefreshExportData(
+                        agricultureDepthDamage,
+                        updatedCost,
+                        annualizer,
+                        waterDemand,
+                        udv,
+                        recreationCapacity,
+                        gantt);
                     await Task.Run(() => _excelExportService.ExportAll(
-                        Ead,
-                        AgricultureDepthDamage,
-                        UpdatedCost,
-                        Annualizer,
-                        WaterDemand,
-                        Udv,
-                        RecreationCapacity,
-                        Gantt,
+                        ead,
+                        agricultureDepthDamage,
+                        updatedCost,
+                        annualizer,
+                        waterDemand,
+                        udv,
+                        recreationCapacity,
+                        gantt,
                         dlg.FileName));
                 }
                 catch (Exception ex)
@@ -529,15 +547,22 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private void RefreshExportData()
+        private void RefreshExportData(
+            AgricultureDepthDamageViewModel agricultureDepthDamage,
+            UpdatedCostViewModel updatedCost,
+            AnnualizerViewModel annualizer,
+            WaterDemandViewModel waterDemand,
+            UdvViewModel udv,
+            RecreationCapacityViewModel recreationCapacity,
+            GanttViewModel gantt)
         {
-            ExecuteComputeCommand(AgricultureDepthDamage?.ComputeCommand);
-            ExecuteComputeCommand(UpdatedCost?.ComputeCommand);
-            ExecuteComputeCommand(Annualizer?.ComputeCommand);
-            ExecuteComputeCommand(WaterDemand?.ComputeCommand);
-            ExecuteComputeCommand(Udv?.ComputeCommand);
-            ExecuteComputeCommand(RecreationCapacity?.ComputeCommand);
-            ExecuteComputeCommand(Gantt?.ComputeCommand);
+            ExecuteComputeCommand(agricultureDepthDamage.ComputeCommand);
+            ExecuteComputeCommand(updatedCost.ComputeCommand);
+            ExecuteComputeCommand(annualizer.ComputeCommand);
+            ExecuteComputeCommand(waterDemand.ComputeCommand);
+            ExecuteComputeCommand(udv.ComputeCommand);
+            ExecuteComputeCommand(recreationCapacity.ComputeCommand);
+            ExecuteComputeCommand(gantt.ComputeCommand);
         }
 
         private static void ExecuteComputeCommand(ICommand? command)
@@ -589,6 +614,18 @@ namespace EconToolbox.Desktop.ViewModels
             _layoutSettings.IsExplorerPaneVisible = IsExplorerPaneVisible;
             _layoutSettings.IsDetailsPaneVisible = IsDetailsPaneVisible;
             _layoutSettingsService.Save(_layoutSettings);
+        }
+
+        private T GetModuleViewModel<T>() where T : BaseViewModel
+        {
+            if (_moduleInstances.TryGetValue(typeof(T), out var cached) && cached is T typed)
+            {
+                return typed;
+            }
+
+            var created = _viewModelFactory.Create<T>();
+            _moduleInstances[typeof(T)] = created;
+            return created;
         }
     }
 }

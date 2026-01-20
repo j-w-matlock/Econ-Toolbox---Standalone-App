@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public class AnnualizerViewModel : BaseViewModel
+    public class AnnualizerViewModel : BaseViewModel, IComputeModule
     {
         private double _firstCost;
         private double _rate = 5.0;

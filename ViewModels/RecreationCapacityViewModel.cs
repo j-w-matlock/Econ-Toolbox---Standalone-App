@@ -5,7 +5,7 @@ using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels;
 
-public class RecreationCapacityViewModel : BaseViewModel
+public class RecreationCapacityViewModel : BaseViewModel, IComputeModule
 {
     private double _campingCampsites = 80;
     public double CampingCampsites
