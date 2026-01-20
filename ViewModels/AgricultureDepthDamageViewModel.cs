@@ -739,6 +739,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void Export()
         {
+            Compute();
+
             if (DepthDurationRows.Count == 0)
             {
                 return;
@@ -793,6 +795,15 @@ namespace EconToolbox.Desktop.ViewModels
                     summary.Acres.ToString("N1", CultureInfo.InvariantCulture),
                     summary.PercentOfTotal.ToString("P1", CultureInfo.InvariantCulture))));
             }
+
+            if (lines.Count > 0)
+            {
+                lines.Add(string.Empty);
+            }
+
+            lines.Add("Calculation notes");
+            lines.Add("Modeled impact probability = baseline annual exceedance probability scaled by stress and timing modifiers.");
+            lines.Add("Average damage = mean of depth-duration damage percentages.");
 
             File.WriteAllLines(dialog.FileName, lines);
         }

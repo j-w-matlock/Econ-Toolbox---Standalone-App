@@ -854,6 +854,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 try
                 {
+                    Forecast();
                     await Task.Run(() => _excelExportService.ExportWaterDemand(Scenarios, dlg.FileName));
                 }
                 catch (Exception ex)

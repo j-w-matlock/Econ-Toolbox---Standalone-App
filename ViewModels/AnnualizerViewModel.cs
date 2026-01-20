@@ -657,6 +657,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 try
                 {
+                    Compute();
                     await Task.Run(() =>
                         _excelExportService.ExportAnnualizer(
                             FirstCost,
@@ -816,4 +817,3 @@ namespace EconToolbox.Desktop.ViewModels
         }
     }
 }
-
