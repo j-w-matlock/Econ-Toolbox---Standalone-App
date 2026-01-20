@@ -872,25 +872,28 @@
 
     <Style TargetType="ScrollBar">
         <Setter Property="Background" Value="{DynamicResource App.ScrollBarTrack}"/>
-        <Setter Property="Width" Value="10"/>
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <DockPanel Background="{TemplateBinding Background}">
                         <RepeatButton x:Name="PART_DecreaseButton"
                                       DockPanel.Dock="Top"
-                                      Height="14"
+                                      Height="0"
                                       Command="ScrollBar.LineUpCommand"
                                       CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                       Background="Transparent"
-                                      Focusable="False"/>
+                                      Focusable="False"
+                                      IsHitTestVisible="False"/>
                         <RepeatButton x:Name="PART_IncreaseButton"
                                       DockPanel.Dock="Bottom"
-                                      Height="14"
+                                      Height="0"
                                       Command="ScrollBar.LineDownCommand"
                                       CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                       Background="Transparent"
-                                      Focusable="False"/>
+                                      Focusable="False"
+                                      IsHitTestVisible="False"/>
                         <Track x:Name="PART_Track"
                                IsDirectionReversed="True"
                                Minimum="{TemplateBinding Minimum}"
@@ -921,8 +924,8 @@
                             <Setter TargetName="PART_IncreaseButton" Property="DockPanel.Dock" Value="Right"/>
                             <Setter TargetName="PART_DecreaseButton" Property="Command" Value="ScrollBar.LineLeftCommand"/>
                             <Setter TargetName="PART_IncreaseButton" Property="Command" Value="ScrollBar.LineRightCommand"/>
-                            <Setter TargetName="PART_DecreaseButton" Property="Width" Value="14"/>
-                            <Setter TargetName="PART_IncreaseButton" Property="Width" Value="14"/>
+                            <Setter TargetName="PART_DecreaseButton" Property="Width" Value="0"/>
+                            <Setter TargetName="PART_IncreaseButton" Property="Width" Value="0"/>
                             <Setter TargetName="PART_DecreaseButton" Property="Height" Value="Auto"/>
                             <Setter TargetName="PART_IncreaseButton" Property="Height" Value="Auto"/>
                             <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/>
@@ -933,7 +936,7 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="Height" Value="10"/>
+                <Setter Property="Height" Value="8"/>
                 <Setter Property="Width" Value="Auto"/>
             </Trigger>
         </Style.Triggers>
@@ -941,10 +944,14 @@
 
     <Style TargetType="Thumb">
         <Setter Property="Background" Value="{DynamicResource App.ScrollBarThumb}"/>
+        <Setter Property="MinHeight" Value="24"/>
+        <Setter Property="MinWidth" Value="24"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="{StaticResource Radius.XS}"/>
+                    <Border Margin="2"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
