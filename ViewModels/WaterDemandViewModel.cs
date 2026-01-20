@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Windows.Media;
 using System.Windows;
+using System.Windows.Input;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using EconToolbox.Desktop.Models;
@@ -281,7 +282,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         public IRelayCommand ForecastCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
-        public IRelayCommand ComputeCommand { get; }
+        public ICommand ComputeCommand { get; }
 
         private readonly IExcelExportService _excelExportService;
 

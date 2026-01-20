@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EconToolbox.Desktop.ViewModels
@@ -6,6 +6,11 @@ namespace EconToolbox.Desktop.ViewModels
     public abstract class BaseViewModel : ObservableObject
     {
         private bool _isDirty;
+
+        protected BaseViewModel()
+        {
+            PropertyChanged += OnBasePropertyChanged;
+        }
 
         public bool IsDirty
         {
@@ -26,10 +31,9 @@ namespace EconToolbox.Desktop.ViewModels
             IsDirty = false;
         }
 
-        protected override void OnPropertyChanged([CallerMemberName] string? name = null)
+        private void OnBasePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            base.OnPropertyChanged(name);
-            if (name == nameof(IsDirty))
+            if (e.PropertyName == nameof(IsDirty))
             {
                 return;
             }
