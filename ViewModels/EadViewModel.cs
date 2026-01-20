@@ -152,6 +152,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void DamageColumns_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             if (e.OldItems != null)
             {
                 foreach (DamageColumn column in e.OldItems)
@@ -198,6 +199,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void Rows_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             if (e.NewItems != null)
             {
                 foreach (EadRow row in e.NewItems)
@@ -301,6 +303,7 @@ namespace EconToolbox.Desktop.ViewModels
             finally
             {
                 _isComputing = false;
+                MarkClean();
             }
         }
 
@@ -437,6 +440,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.PropertyName == nameof(DamageColumn.Name))
             {
+                MarkDirty();
                 ScheduleCompute();
                 RefreshDiagnostics();
             }
@@ -458,6 +462,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             if (e.PropertyName == nameof(EadRow.Probability) || e.PropertyName == nameof(EadRow.Stage))
             {
+                MarkDirty();
                 ScheduleCompute();
             }
             RefreshDiagnostics();
@@ -465,6 +470,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void RowDamages_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             ScheduleCompute();
             RefreshDiagnostics();
         }

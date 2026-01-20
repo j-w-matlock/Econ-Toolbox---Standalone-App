@@ -356,6 +356,7 @@ namespace EconToolbox.Desktop.ViewModels
             if (!ReferenceEquals(scenario, SelectedScenario))
                 return;
 
+            MarkDirty();
             SyncScenarioToInputs(scenario);
         }
 
@@ -408,6 +409,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void EntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             if (e.OldItems != null)
             {
                 foreach (var item in e.OldItems)
@@ -432,6 +434,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void EntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            MarkDirty();
             if (e.PropertyName == nameof(FutureCostEntry.Year) ||
                 e.PropertyName == nameof(FutureCostEntry.Month) ||
                 e.PropertyName == nameof(FutureCostEntry.Timing) ||
@@ -494,6 +497,10 @@ namespace EconToolbox.Desktop.ViewModels
                 Idc = TotalInvestment = Crf = AnnualCost = Bcr = double.NaN;
                 Results = new ObservableCollection<string> { $"Error computing results: {ex.Message}" };
                 HandleComputationException(ex, "Annualizer computation failed");
+            }
+            finally
+            {
+                MarkClean();
             }
         }
 

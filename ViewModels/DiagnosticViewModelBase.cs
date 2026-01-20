@@ -31,7 +31,7 @@ namespace EconToolbox.Desktop.ViewModels
             DiagnosticsChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        protected new void OnPropertyChanged([CallerMemberName] string? name = null)
+        protected override void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             base.OnPropertyChanged(name);
             RefreshDiagnostics();

@@ -475,6 +475,7 @@ namespace EconToolbox.Desktop.ViewModels
                 ComputeUpdatedStorage();
                 ComputeRrr();
                 ComputeTotal();
+                MarkClean();
             });
 
             UpdatedCostItems.Add(new UpdatedCostEntry { Category = "Lands and Damages" });
@@ -508,6 +509,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void UpdatedCostItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             if (e.OldItems != null)
             {
                 foreach (UpdatedCostEntry entry in e.OldItems)
@@ -529,6 +531,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void UpdatedCostItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            MarkDirty();
             RefreshDiagnostics();
         }
 
@@ -552,6 +555,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void RrrCostItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            MarkDirty();
             if (e.OldItems != null)
             {
                 foreach (RrrCostEntry entry in e.OldItems)
@@ -573,6 +577,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void RrrCostItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            MarkDirty();
             RefreshDiagnostics();
         }
 

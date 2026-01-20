@@ -359,6 +359,7 @@ public class RecreationCapacityViewModel : DiagnosticViewModelBase, IComputeModu
         Summary = TotalDailyCapacity > 0
             ? $"Design day capacity totals {TotalDailyCapacity:N0} user days per day and {TotalSeasonCapacity:N0} seasonal user days."
             : "Enter facility inventory and policy multipliers to generate capacity outputs.";
+        MarkClean();
     }
 
     private void NotifyCapacityChanged()
