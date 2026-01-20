@@ -17,7 +17,7 @@ The Economic Toolbox is a **standalone Windows Presentation Foundation (WPF) des
 
 - **Framework:** .NET 8 WPF desktop application
 - **MVVM:** CommunityToolkit.Mvvm for observable objects, relay commands, and source generators
-- **Styling:** Centralized theme resources in `Themes/Design.xaml`
+- **Styling:** Centralized theme resources in `Themes/Colors.xaml`, `Themes/Brushes.xaml`, `Themes/Typography.xaml`, `Themes/Spacing.xaml`, and `Themes/Controls.xaml`
 - **Excel output:** [ClosedXML](https://closedxml.io/) for professional workbook generation with charts and tables
 
 ## Getting Started
@@ -104,7 +104,7 @@ Selecting **Export** creates a single workbook with:
 
 - **Composition through DI:** View models, services, and the main window resolve through the container configured in `App.xaml.cs`.
 - **Async-first commands:** Heavy operations (like exports) surface as `AsyncRelayCommand` instances to keep the UI responsive.
-- **Theming resources:** Colors, fonts, and spacing tokens live in `Themes/Design.xaml`. Reference these semantic resources instead of hard-coded values.
+- **Theming resources:** Colors, brushes, typography, spacing, and control styles live under `Themes/`. Reference these semantic resources instead of hard-coded values.
 - **Validation-first inputs:** Extend `BaseViewModel` or use `ObservableValidator` when adding modules so input validation errors surface inline.
 
 ## Publishing a Standalone Executable
