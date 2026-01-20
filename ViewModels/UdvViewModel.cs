@@ -229,13 +229,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
             foreach (var row in Table)
             {
-                row.PropertyChanged += (_, __) =>
-                {
-                    MarkDirty();
-                    UpdateUnitDayValue();
-                    UpdateChart();
-                    RefreshDiagnostics();
-                };
+                row.PropertyChanged += PointValueRow_PropertyChanged;
             }
             RefreshDiagnostics();
         }
@@ -276,6 +270,14 @@ namespace EconToolbox.Desktop.ViewModels
             RefreshDiagnostics();
         }
 
+        private void PointValueRow_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            MarkDirty();
+            UpdateUnitDayValue();
+            UpdateChart();
+            RefreshDiagnostics();
+        }
+
         private void UpdateActivityTypes()
         {
             ActivityTypes.Clear();
@@ -299,6 +301,112 @@ namespace EconToolbox.Desktop.ViewModels
         {
             UnitDayValue = UdvModel.ComputeUnitDayValue(Table, RecreationType, ActivityType, Points);
             UpdateChart();
+        }
+
+        public UdvProjectData ExportProjectData()
+        {
+            return new UdvProjectData
+            {
+                RecreationType = RecreationType,
+                ActivityType = ActivityType,
+                Points = Points,
+                SeasonDays = SeasonDays,
+                VisitationInput = VisitationInput,
+                VisitationPeriod = VisitationPeriod,
+                ChartTitle = ChartTitle,
+                Table = Table.Select(row => new UdvPointValueData
+                {
+                    Points = row.Points,
+                    GeneralRecreation = row.GeneralRecreation,
+                    GeneralFishingHunting = row.GeneralFishingHunting,
+                    SpecializedFishingHunting = row.SpecializedFishingHunting,
+                    SpecializedRecreation = row.SpecializedRecreation
+                }).ToList(),
+                HistoricalVisitationRows = HistoricalVisitationRows.Select(row => new UdvHistoricalVisitationData
+                {
+                    Label = row.Label,
+                    VisitationText = row.VisitationText
+                }).ToList()
+            };
+        }
+
+        public void ImportProjectData(UdvProjectData? data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            foreach (var row in Table)
+            {
+                row.PropertyChanged -= PointValueRow_PropertyChanged;
+            }
+
+            Table.Clear();
+            foreach (var row in data.Table)
+            {
+                var newRow = new PointValueRow
+                {
+                    Points = row.Points,
+                    GeneralRecreation = row.GeneralRecreation,
+                    GeneralFishingHunting = row.GeneralFishingHunting,
+                    SpecializedFishingHunting = row.SpecializedFishingHunting,
+                    SpecializedRecreation = row.SpecializedRecreation
+                };
+                newRow.PropertyChanged += PointValueRow_PropertyChanged;
+                Table.Add(newRow);
+            }
+
+            if (Table.Count == 0)
+            {
+                foreach (var row in UdvModel.CreateDefaultTable())
+                {
+                    row.PropertyChanged += PointValueRow_PropertyChanged;
+                    Table.Add(row);
+                }
+            }
+
+            foreach (var row in HistoricalVisitationRows)
+            {
+                row.PropertyChanged -= HistoricalRow_PropertyChanged;
+            }
+
+            HistoricalVisitationRows.Clear();
+            foreach (var row in data.HistoricalVisitationRows)
+            {
+                var newRow = new HistoricalVisitationRow
+                {
+                    Label = row.Label,
+                    VisitationText = row.VisitationText ?? string.Empty
+                };
+                newRow.PropertyChanged += HistoricalRow_PropertyChanged;
+                HistoricalVisitationRows.Add(newRow);
+            }
+
+            if (HistoricalVisitationRows.Count == 0)
+            {
+                InitializeHistoricalRows();
+                foreach (var row in HistoricalVisitationRows)
+                {
+                    row.PropertyChanged += HistoricalRow_PropertyChanged;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(data.ChartTitle))
+            {
+                ChartTitle = data.ChartTitle;
+            }
+
+            RecreationType = string.IsNullOrWhiteSpace(data.RecreationType) ? RecreationType : data.RecreationType;
+            ActivityType = string.IsNullOrWhiteSpace(data.ActivityType) ? ActivityType : data.ActivityType;
+            Points = data.Points;
+            SeasonDays = data.SeasonDays;
+            VisitationInput = data.VisitationInput;
+            VisitationPeriod = string.IsNullOrWhiteSpace(data.VisitationPeriod) ? VisitationPeriod : data.VisitationPeriod;
+
+            UpdateUnitDayValue();
+            RecalculateUserDays();
+            RefreshDiagnostics();
         }
 
         private void UpdateChart()

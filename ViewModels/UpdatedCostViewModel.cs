@@ -650,6 +650,129 @@ namespace EconToolbox.Desktop.ViewModels
             Total2 = Capital2 + OmScaled;
         }
 
+        public UpdatedCostProjectData ExportProjectData()
+        {
+            return new UpdatedCostProjectData
+            {
+                TotalStorage = TotalStorage,
+                StorageRecommendation = StorageRecommendation,
+                JointOperationsCost = JointOperationsCost,
+                JointMaintenanceCost = JointMaintenanceCost,
+                UpdatedCostItems = UpdatedCostItems.Select(item => new UpdatedCostEntryData
+                {
+                    Category = item.Category,
+                    JointUsePre1967 = item.JointUsePre1967,
+                    Pre1967EnrIndex = item.Pre1967EnrIndex,
+                    TransitionEnrIndex = item.TransitionEnrIndex,
+                    EnrRatioPreToTransition = item.EnrRatioPreToTransition,
+                    JointUseTransition = item.JointUseTransition,
+                    Enr1967Index = item.Enr1967Index,
+                    EnrRatioTransitionTo1967 = item.EnrRatioTransitionTo1967,
+                    CwccisBase = item.CwccisBase,
+                    JointUse1967 = item.JointUse1967,
+                    CwccisIndex = item.CwccisIndex,
+                    CwccisUpdateFactor = item.CwccisUpdateFactor,
+                    UpdatedJointCost = item.UpdatedJointCost
+                }).ToList(),
+                PreMidpointYear = PreMidpointYear,
+                TransitionMidpointYear = TransitionMidpointYear,
+                PreEnrYear = PreEnrYear,
+                TransitionEnrYear = TransitionEnrYear,
+                Enr1967Year = Enr1967Year,
+                PreEnrIndexValue = PreEnrIndexValue,
+                TransitionEnrIndexValue = TransitionEnrIndexValue,
+                Enr1967IndexValue = Enr1967IndexValue,
+                CwccisBaseIndexValue = CwccisBaseIndexValue,
+                CwccisIndexYear = CwccisIndexYear,
+                UpdatedJointCostYear = UpdatedJointCostYear,
+                RrrRate = RrrRate,
+                RrrPeriods = RrrPeriods,
+                RrrCwcci = RrrCwcci,
+                RrrBaseYear = RrrBaseYear,
+                RrrCostItems = RrrCostItems.Select(item => new RrrCostEntryData
+                {
+                    Item = item.Item,
+                    FutureCost = item.FutureCost,
+                    Year = item.Year,
+                    PvFactor = item.PvFactor,
+                    PresentValue = item.PresentValue
+                }).ToList(),
+                DiscountRate1 = DiscountRate1,
+                AnalysisPeriod1 = AnalysisPeriod1,
+                DiscountRate2 = DiscountRate2,
+                AnalysisPeriod2 = AnalysisPeriod2
+            };
+        }
+
+        public void ImportProjectData(UpdatedCostProjectData? data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            UpdatedCostItems = new ObservableCollection<UpdatedCostEntry>(data.UpdatedCostItems.Select(item => new UpdatedCostEntry
+            {
+                Category = item.Category,
+                JointUsePre1967 = item.JointUsePre1967,
+                Pre1967EnrIndex = item.Pre1967EnrIndex,
+                TransitionEnrIndex = item.TransitionEnrIndex,
+                EnrRatioPreToTransition = item.EnrRatioPreToTransition,
+                JointUseTransition = item.JointUseTransition,
+                Enr1967Index = item.Enr1967Index,
+                EnrRatioTransitionTo1967 = item.EnrRatioTransitionTo1967,
+                CwccisBase = item.CwccisBase,
+                JointUse1967 = item.JointUse1967,
+                CwccisIndex = item.CwccisIndex,
+                CwccisUpdateFactor = item.CwccisUpdateFactor,
+                UpdatedJointCost = item.UpdatedJointCost
+            }));
+
+            RrrCostItems = new ObservableCollection<RrrCostEntry>(data.RrrCostItems.Select(item => new RrrCostEntry
+            {
+                Item = item.Item,
+                FutureCost = item.FutureCost,
+                Year = item.Year,
+                PvFactor = item.PvFactor,
+                PresentValue = item.PresentValue
+            }));
+
+            TotalStorage = data.TotalStorage;
+            StorageRecommendation = data.StorageRecommendation;
+            JointOperationsCost = data.JointOperationsCost;
+            JointMaintenanceCost = data.JointMaintenanceCost;
+
+            PreMidpointYear = data.PreMidpointYear;
+            TransitionMidpointYear = data.TransitionMidpointYear;
+            PreEnrYear = data.PreEnrYear;
+            TransitionEnrYear = data.TransitionEnrYear;
+            Enr1967Year = data.Enr1967Year;
+            PreEnrIndexValue = data.PreEnrIndexValue;
+            TransitionEnrIndexValue = data.TransitionEnrIndexValue;
+            Enr1967IndexValue = data.Enr1967IndexValue;
+            CwccisBaseIndexValue = data.CwccisBaseIndexValue;
+            CwccisIndexYear = data.CwccisIndexYear;
+            UpdatedJointCostYear = data.UpdatedJointCostYear;
+
+            RrrRate = data.RrrRate;
+            RrrPeriods = data.RrrPeriods;
+            RrrCwcci = data.RrrCwcci;
+            RrrBaseYear = data.RrrBaseYear;
+
+            DiscountRate1 = data.DiscountRate1;
+            AnalysisPeriod1 = data.AnalysisPeriod1;
+            DiscountRate2 = data.DiscountRate2;
+            AnalysisPeriod2 = data.AnalysisPeriod2;
+
+            ComputeStorage();
+            ComputeJoint();
+            ComputeUpdatedStorage();
+            ComputeRrr();
+            ComputeTotal();
+            MarkClean();
+            RefreshDiagnostics();
+        }
+
         private void ResetUpdatedCostItems()
         {
             foreach (var item in UpdatedCostItems)

@@ -279,6 +279,71 @@ namespace EconToolbox.Desktop.ViewModels
             MarkClean();
         }
 
+        public GanttProjectData ExportProjectData()
+        {
+            return new GanttProjectData
+            {
+                Tasks = Tasks.Select(task => new GanttTaskData
+                {
+                    Name = task.Name,
+                    Workstream = task.Workstream,
+                    StartDate = task.StartDate,
+                    DurationDays = task.DurationDays,
+                    EndDate = task.EndDate,
+                    Dependencies = task.Dependencies,
+                    PercentComplete = task.PercentComplete,
+                    IsMilestone = task.IsMilestone,
+                    LaborCostPerDay = task.LaborCostPerDay,
+                    ColorArgb = ToArgb(task.Color)
+                }).ToList()
+            };
+        }
+
+        public void ImportProjectData(GanttProjectData? data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            ClearTasks();
+
+            foreach (var taskData in data.Tasks)
+            {
+                var task = new GanttTask
+                {
+                    Name = taskData.Name,
+                    Workstream = taskData.Workstream,
+                    StartDate = taskData.StartDate,
+                    DurationDays = taskData.DurationDays,
+                    EndDate = taskData.EndDate,
+                    Dependencies = taskData.Dependencies,
+                    PercentComplete = taskData.PercentComplete,
+                    IsMilestone = taskData.IsMilestone,
+                    LaborCostPerDay = taskData.LaborCostPerDay
+                };
+                Tasks.Add(task);
+                task.Color = FromArgb(taskData.ColorArgb);
+            }
+
+            SelectedTask = Tasks.FirstOrDefault();
+            ComputeSchedule();
+        }
+
+        private static uint ToArgb(Color color)
+        {
+            return ((uint)color.A << 24) | ((uint)color.R << 16) | ((uint)color.G << 8) | color.B;
+        }
+
+        private static Color FromArgb(uint argb)
+        {
+            return Color.FromArgb(
+                (byte)((argb >> 24) & 0xFF),
+                (byte)((argb >> 16) & 0xFF),
+                (byte)((argb >> 8) & 0xFF),
+                (byte)(argb & 0xFF));
+        }
+
         private static List<string> ParseDependencies(string dependencies)
         {
             return dependencies

@@ -188,6 +188,25 @@
                         </StackPanel>
                     </Button>
                     <Separator/>
+                    <Button Command="{Binding SaveProjectCommand}"
+                            Style="{StaticResource Button.TitleBar}"
+                            ToolTip="Save project">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE74E;"
+                                       Style="{StaticResource Text.Icon.Toolbar}"/>
+                            <TextBlock Text="Save"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding LoadProjectCommand}"
+                            Style="{StaticResource Button.TitleBar}"
+                            ToolTip="Load project">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8E5;"
+                                       Style="{StaticResource Text.Icon.Toolbar}"/>
+                            <TextBlock Text="Load"/>
+                        </StackPanel>
+                    </Button>
+                    <Separator/>
                     <Button Command="{Binding ToggleLeftPaneCommand}"
                             Style="{StaticResource Button.TitleBar}"
                             ToolTip="Toggle Explorer (Ctrl+Alt+E)">

@@ -952,6 +952,172 @@ namespace EconToolbox.Desktop.ViewModels
             return DaysInYear - normalized + 1;
         }
 
+        public AgricultureDepthDamageProjectData ExportProjectData()
+        {
+            return new AgricultureDepthDamageProjectData
+            {
+                SelectedRegionName = SelectedRegion?.Name,
+                SelectedCropName = SelectedCrop?.Name,
+                AverageResponse = AverageResponse,
+                SimulationYears = SimulationYears,
+                Regions = Regions.Select(region => new AgricultureRegionData
+                {
+                    Name = region.Name,
+                    Description = region.Description,
+                    ImpactModifier = region.ImpactModifier,
+                    FloodWindowStartDay = region.FloodWindowStartDay,
+                    FloodWindowEndDay = region.FloodWindowEndDay,
+                    AnnualExceedanceProbability = region.AnnualExceedanceProbability,
+                    FloodSeasonPeakDay = region.FloodSeasonPeakDay,
+                    SeasonShiftDays = region.SeasonShiftDays,
+                    IsCustom = region.IsCustom,
+                    DepthDuration = region.DepthDuration.Select(point => new AgricultureDepthDurationPointData
+                    {
+                        DepthFeet = point.DepthFeet,
+                        DurationDays = point.DurationDays,
+                        BaseDamage = point.BaseDamage
+                    }).ToList()
+                }).ToList(),
+                Crops = Crops.Select(crop => new AgricultureCropData
+                {
+                    Name = crop.Name,
+                    Description = crop.Description,
+                    DamageFactor = crop.DamageFactor,
+                    ImpactModifier = crop.ImpactModifier,
+                    IsCustom = crop.IsCustom
+                }).ToList(),
+                StageExposures = StageExposures.Select(stage => new AgricultureStageExposureData
+                {
+                    StageName = stage.StageName,
+                    ExposureDays = stage.ExposureDays,
+                    FloodToleranceDays = stage.FloodToleranceDays
+                }).ToList(),
+                CropScapeTotalAcreage = CropScapeTotalAcreage,
+                CropScapeImportStatus = CropScapeImportStatus,
+                CropScapeSummaries = CropScapeSummaries.Select(summary => new CropScapeSummaryData
+                {
+                    Code = summary.Code,
+                    Name = summary.Name,
+                    PixelCount = summary.PixelCount,
+                    Acres = summary.Acres,
+                    PercentOfTotal = summary.PercentOfTotal
+                }).ToList()
+            };
+        }
+
+        public void ImportProjectData(AgricultureDepthDamageProjectData? data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            _isInitializing = true;
+            try
+            {
+                DetachRegionHandlers(SelectedRegion);
+                DetachCropHandlers(SelectedCrop);
+
+                foreach (var region in Regions)
+                {
+                    DetachRegionHandlers(region);
+                }
+
+                foreach (var crop in Crops)
+                {
+                    DetachCropHandlers(crop);
+                }
+
+                foreach (var stage in StageExposures)
+                {
+                    stage.PropertyChanged -= Stage_PropertyChanged;
+                }
+
+                Regions.Clear();
+                foreach (var region in data.Regions)
+                {
+                    var depthDuration = region.DepthDuration.Select(point =>
+                        new DepthDurationPoint(point.DepthFeet, point.DurationDays, point.BaseDamage));
+
+                    Regions.Add(new RegionDefinition(
+                        region.Name,
+                        region.Description,
+                        region.ImpactModifier,
+                        region.FloodWindowStartDay,
+                        region.FloodWindowEndDay,
+                        region.AnnualExceedanceProbability,
+                        region.FloodSeasonPeakDay,
+                        region.SeasonShiftDays,
+                        depthDuration,
+                        region.IsCustom));
+                }
+
+                Crops.Clear();
+                foreach (var crop in data.Crops)
+                {
+                    Crops.Add(new CropDefinition(
+                        crop.Name,
+                        crop.Description,
+                        crop.DamageFactor,
+                        crop.ImpactModifier,
+                        crop.IsCustom));
+                }
+
+                StageExposures.Clear();
+                foreach (var stage in StageExposure.CreateDefaults())
+                {
+                    StageExposures.Add(stage);
+                }
+
+                foreach (var stage in StageExposures)
+                {
+                    stage.PropertyChanged += Stage_PropertyChanged;
+                }
+
+                foreach (var stageData in data.StageExposures)
+                {
+                    var match = StageExposures.FirstOrDefault(stage =>
+                        stage.StageName.Equals(stageData.StageName, StringComparison.OrdinalIgnoreCase));
+                    if (match != null)
+                    {
+                        match.ExposureDays = stageData.ExposureDays;
+                        match.FloodToleranceDays = stageData.FloodToleranceDays;
+                    }
+                }
+
+                AverageResponse = data.AverageResponse;
+                SimulationYears = data.SimulationYears;
+
+                SelectedRegion = Regions.FirstOrDefault(r => string.Equals(r.Name, data.SelectedRegionName, StringComparison.OrdinalIgnoreCase))
+                                 ?? Regions.FirstOrDefault();
+                SelectedCrop = Crops.FirstOrDefault(c => string.Equals(c.Name, data.SelectedCropName, StringComparison.OrdinalIgnoreCase))
+                               ?? Crops.FirstOrDefault();
+
+                CropScapeSummaries.Clear();
+                foreach (var summary in data.CropScapeSummaries)
+                {
+                    CropScapeSummaries.Add(new CropScapeAcreageSummary(
+                        summary.Code,
+                        summary.Name,
+                        summary.PixelCount,
+                        summary.Acres,
+                        summary.PercentOfTotal));
+                }
+
+                CropScapeTotalAcreage = data.CropScapeTotalAcreage;
+                CropScapeImportStatus = string.IsNullOrWhiteSpace(data.CropScapeImportStatus)
+                    ? "No CropScape raster imported."
+                    : data.CropScapeImportStatus;
+            }
+            finally
+            {
+                _isInitializing = false;
+            }
+
+            Compute();
+            RefreshDiagnostics();
+        }
+
         protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
         {
             var diagnostics = new List<DiagnosticItem>();
