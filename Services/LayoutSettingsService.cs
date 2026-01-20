@@ -29,7 +29,9 @@ namespace EconToolbox.Desktop.Services
                 }
 
                 var json = File.ReadAllText(_settingsPath);
-                return JsonSerializer.Deserialize<LayoutSettings>(json) ?? new LayoutSettings();
+                var settings = JsonSerializer.Deserialize<LayoutSettings>(json) ?? new LayoutSettings();
+                Normalize(settings);
+                return settings;
             }
             catch (Exception ex)
             {
@@ -55,6 +57,24 @@ namespace EconToolbox.Desktop.Services
             {
                 Debug.WriteLine($"Failed to save layout settings: {ex}");
             }
+        }
+
+        private static void Normalize(LayoutSettings settings)
+        {
+            if (!IsValidWidth(settings.ExplorerPaneWidth))
+            {
+                settings.ExplorerPaneWidth = new LayoutSettings().ExplorerPaneWidth;
+            }
+
+            if (!IsValidWidth(settings.DetailsPaneWidth))
+            {
+                settings.DetailsPaneWidth = new LayoutSettings().DetailsPaneWidth;
+            }
+        }
+
+        private static bool IsValidWidth(double value)
+        {
+            return !double.IsNaN(value) && !double.IsInfinity(value) && value > 0;
         }
     }
 }
