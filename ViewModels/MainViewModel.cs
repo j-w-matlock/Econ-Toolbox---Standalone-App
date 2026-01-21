@@ -25,10 +25,9 @@ namespace EconToolbox.Desktop.ViewModels
         private ModuleDefinition? _selectedModule;
         private ModuleDefinition? _explorerSelectedModule;
         private bool _isSyncingSelection;
-        private BaseViewModel? _currentViewModel;
         private ICommand? _currentComputeCommand;
         private IDiagnosticsProvider? _diagnosticsProvider;
-        private readonly Dictionary<Type, BaseViewModel> _moduleInstances = new();
+        private readonly Dictionary<Type, BaseViewModel> _viewModelCache = new();
         public ModuleDefinition? SelectedModule
         {
             get => _selectedModule;
@@ -42,7 +41,7 @@ namespace EconToolbox.Desktop.ViewModels
                 if (SetProperty(ref _selectedModule, value))
                 {
                     SyncExplorerSelection(value);
-                    LoadSelectedModule(value);
+                    UpdateCurrentModuleState(value);
                     OnPropertyChanged(nameof(IsCalculateVisible));
                     OnPropertyChanged(nameof(PrimaryActionLabel));
                     OnPropertyChanged(nameof(CurrentViewModel));
@@ -169,7 +168,24 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public BaseViewModel? CurrentViewModel => _currentViewModel;
+        public BaseViewModel? CurrentViewModel
+        {
+            get
+            {
+                if (SelectedModule == null)
+                {
+                    return null;
+                }
+
+                if (!_viewModelCache.TryGetValue(SelectedModule.ViewModelType, out var cached))
+                {
+                    cached = _viewModelFactory.Create(SelectedModule.ViewModelType);
+                    _viewModelCache[SelectedModule.ViewModelType] = cached;
+                }
+
+                return cached;
+            }
+        }
 
         public bool IsCalculateVisible => _currentComputeCommand?.CanExecute(null) == true;
 
@@ -456,31 +472,18 @@ namespace EconToolbox.Desktop.ViewModels
             SelectedModule = ReadMeModule;
         }
 
-        private void LoadSelectedModule(ModuleDefinition? module)
+        private void UpdateCurrentModuleState(ModuleDefinition? module)
         {
             if (module == null)
             {
-                SetCurrentViewModel(null);
                 SetCurrentComputeCommand(null);
+                SetDiagnosticsProvider(null);
                 return;
             }
 
-            var viewModel = _viewModelFactory.Create(module.ViewModelType);
-            _moduleInstances[module.ViewModelType] = viewModel;
-            SetCurrentViewModel(viewModel);
-            SetCurrentComputeCommand((viewModel as IComputeModule)?.ComputeCommand);
-        }
-
-        private void SetCurrentViewModel(BaseViewModel? viewModel)
-        {
-            if (ReferenceEquals(_currentViewModel, viewModel))
-            {
-                return;
-            }
-
-            _currentViewModel = viewModel;
+            var viewModel = CurrentViewModel;
             SetDiagnosticsProvider(viewModel as IDiagnosticsProvider);
-            OnPropertyChanged(nameof(CurrentViewModel));
+            SetCurrentComputeCommand((viewModel as IComputeModule)?.ComputeCommand);
         }
 
         private void SetDiagnosticsProvider(IDiagnosticsProvider? provider)
@@ -814,13 +817,13 @@ namespace EconToolbox.Desktop.ViewModels
 
         private T GetModuleViewModel<T>() where T : BaseViewModel
         {
-            if (_moduleInstances.TryGetValue(typeof(T), out var cached) && cached is T typed)
+            if (_viewModelCache.TryGetValue(typeof(T), out var cached) && cached is T typed)
             {
                 return typed;
             }
 
-            var created = _viewModelFactory.Create<T>();
-            _moduleInstances[typeof(T)] = created;
+            var created = (T)_viewModelFactory.Create(typeof(T));
+            _viewModelCache[typeof(T)] = created;
             return created;
         }
     }

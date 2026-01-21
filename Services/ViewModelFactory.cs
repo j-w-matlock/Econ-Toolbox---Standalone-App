@@ -4,12 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EconToolbox.Desktop.Services
 {
-    public interface IViewModelFactory
-    {
-        BaseViewModel Create(Type viewModelType);
-        T Create<T>() where T : BaseViewModel;
-    }
-
     public sealed class ViewModelFactory : IViewModelFactory
     {
         private readonly IServiceProvider _serviceProvider;
@@ -21,17 +15,7 @@ namespace EconToolbox.Desktop.Services
 
         public BaseViewModel Create(Type viewModelType)
         {
-            if (!typeof(BaseViewModel).IsAssignableFrom(viewModelType))
-            {
-                throw new ArgumentException("Requested type must derive from BaseViewModel.", nameof(viewModelType));
-            }
-
-            return (BaseViewModel)ActivatorUtilities.CreateInstance(_serviceProvider, viewModelType);
-        }
-
-        public T Create<T>() where T : BaseViewModel
-        {
-            return (T)Create(typeof(T));
+            return (BaseViewModel)_serviceProvider.GetRequiredService(viewModelType);
         }
     }
 }
