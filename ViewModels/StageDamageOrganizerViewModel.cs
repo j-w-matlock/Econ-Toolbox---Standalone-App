@@ -116,9 +116,9 @@ namespace EconToolbox.Desktop.ViewModels
             RefreshDiagnostics();
         }
 
-        public StageDamageOrganizerProjectData ExportProjectData()
+        public override object CaptureState()
         {
-            return new StageDamageOrganizerProjectData
+            return new StageDamageOrganizerData
             {
                 StatusMessage = StatusMessage,
                 AepHeaders = AepHeaders.ToList(),
@@ -146,9 +146,9 @@ namespace EconToolbox.Desktop.ViewModels
             };
         }
 
-        public void ImportProjectData(StageDamageOrganizerProjectData? data)
+        public override void RestoreState(object state)
         {
-            if (data == null)
+            if (state is not StageDamageOrganizerData data)
             {
                 return;
             }

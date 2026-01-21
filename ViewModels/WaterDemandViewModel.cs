@@ -444,9 +444,9 @@ namespace EconToolbox.Desktop.ViewModels
             RefreshDiagnostics();
         }
 
-        public WaterDemandProjectData ExportProjectData()
+        public override object CaptureState()
         {
-            return new WaterDemandProjectData
+            return new WaterDemandData
             {
                 ForecastYears = ForecastYears,
                 ChartTitle = ChartTitle,
@@ -486,9 +486,9 @@ namespace EconToolbox.Desktop.ViewModels
             };
         }
 
-        public void ImportProjectData(WaterDemandProjectData? data)
+        public override void RestoreState(object state)
         {
-            if (data == null)
+            if (state is not WaterDemandData data)
             {
                 return;
             }

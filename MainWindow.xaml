@@ -157,6 +157,21 @@
         <Border Grid.Row="0"
                 Style="{StaticResource Border.TitleBar}">
             <DockPanel LastChildFill="True">
+                <Menu DockPanel.Dock="Left"
+                      Margin="0,0,16,0"
+                      Background="Transparent">
+                    <MenuItem Header="_File">
+                        <MenuItem Header="_Save Project As..."
+                                  Command="{Binding SaveProjectCommand}"/>
+                        <MenuItem Header="_Open Project..."
+                                  Command="{Binding LoadProjectCommand}"/>
+                        <Separator/>
+                        <MenuItem Header="Toggle _Explorer Pane"
+                                  Command="{Binding ToggleLeftPaneCommand}"/>
+                        <MenuItem Header="Toggle _Details Pane"
+                                  Command="{Binding ToggleRightPaneCommand}"/>
+                    </MenuItem>
+                </Menu>
                 <StackPanel Orientation="Horizontal"
                             DockPanel.Dock="Left">
                     <TextBlock Text="ECON TOOLBOX"

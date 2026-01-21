@@ -492,9 +492,9 @@ namespace EconToolbox.Desktop.ViewModels
             Compute();
         }
 
-        public EadProjectData ExportProjectData()
+        public override object CaptureState()
         {
-            return new EadProjectData
+            return new EadData
             {
                 UseStage = UseStage,
                 ChartTitle = ChartTitle,
@@ -511,9 +511,9 @@ namespace EconToolbox.Desktop.ViewModels
             };
         }
 
-        public void ImportProjectData(EadProjectData? data)
+        public override void RestoreState(object state)
         {
-            if (data == null)
+            if (state is not EadData data)
             {
                 return;
             }
