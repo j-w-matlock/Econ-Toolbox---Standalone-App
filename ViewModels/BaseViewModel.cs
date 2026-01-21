@@ -1,9 +1,10 @@
+using System;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public abstract class BaseViewModel : ObservableObject
+    public abstract class BaseViewModel : ObservableObject, IStatefulViewModel
     {
         private bool _isDirty;
 
@@ -39,6 +40,16 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             MarkDirty();
+        }
+
+        public virtual object CaptureState()
+        {
+            throw new NotSupportedException("State capture is not supported for this view model.");
+        }
+
+        public virtual void RestoreState(object state)
+        {
+            throw new NotSupportedException("State restore is not supported for this view model.");
         }
     }
 }

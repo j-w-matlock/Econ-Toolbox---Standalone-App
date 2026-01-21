@@ -952,9 +952,9 @@ namespace EconToolbox.Desktop.ViewModels
             return DaysInYear - normalized + 1;
         }
 
-        public AgricultureDepthDamageProjectData ExportProjectData()
+        public override object CaptureState()
         {
-            return new AgricultureDepthDamageProjectData
+            return new AgricultureDepthDamageData
             {
                 SelectedRegionName = SelectedRegion?.Name,
                 SelectedCropName = SelectedCrop?.Name,
@@ -1005,9 +1005,9 @@ namespace EconToolbox.Desktop.ViewModels
             };
         }
 
-        public void ImportProjectData(AgricultureDepthDamageProjectData? data)
+        public override void RestoreState(object state)
         {
-            if (data == null)
+            if (state is not AgricultureDepthDamageData data)
             {
                 return;
             }

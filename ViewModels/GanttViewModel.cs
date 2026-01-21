@@ -279,9 +279,9 @@ namespace EconToolbox.Desktop.ViewModels
             MarkClean();
         }
 
-        public GanttProjectData ExportProjectData()
+        public override object CaptureState()
         {
-            return new GanttProjectData
+            return new GanttData
             {
                 Tasks = Tasks.Select(task => new GanttTaskData
                 {
@@ -299,9 +299,9 @@ namespace EconToolbox.Desktop.ViewModels
             };
         }
 
-        public void ImportProjectData(GanttProjectData? data)
+        public override void RestoreState(object state)
         {
-            if (data == null)
+            if (state is not GanttData data)
             {
                 return;
             }

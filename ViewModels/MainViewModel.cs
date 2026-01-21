@@ -602,8 +602,8 @@ namespace EconToolbox.Desktop.ViewModels
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
-                Filter = "Econ Toolbox Project (*.econproj)|*.econproj|JSON Files (*.json)|*.json|All Files (*.*)|*.*",
-                FileName = "econ_toolbox_project.econproj"
+                Filter = "Econ Toolbox Project (*.etbx)|*.etbx",
+                FileName = "econ_toolbox_project.etbx"
             };
 
             if (dlg.ShowDialog() != true)
@@ -613,17 +613,17 @@ namespace EconToolbox.Desktop.ViewModels
 
             try
             {
-                var project = new ProjectData
+                var project = new EconToolboxProject
                 {
-                    Ead = GetModuleViewModel<EadViewModel>().ExportProjectData(),
-                    AgricultureDepthDamage = GetModuleViewModel<AgricultureDepthDamageViewModel>().ExportProjectData(),
-                    UpdatedCost = GetModuleViewModel<UpdatedCostViewModel>().ExportProjectData(),
-                    Annualizer = GetModuleViewModel<AnnualizerViewModel>().ExportProjectData(),
-                    WaterDemand = GetModuleViewModel<WaterDemandViewModel>().ExportProjectData(),
-                    Udv = GetModuleViewModel<UdvViewModel>().ExportProjectData(),
-                    RecreationCapacity = GetModuleViewModel<RecreationCapacityViewModel>().ExportProjectData(),
-                    Gantt = GetModuleViewModel<GanttViewModel>().ExportProjectData(),
-                    StageDamageOrganizer = GetModuleViewModel<StageDamageOrganizerViewModel>().ExportProjectData()
+                    Ead = CaptureState<EadData>(GetModuleViewModel<EadViewModel>()),
+                    AgricultureDepthDamage = CaptureState<AgricultureDepthDamageData>(GetModuleViewModel<AgricultureDepthDamageViewModel>()),
+                    UpdatedCost = CaptureState<UpdatedCostData>(GetModuleViewModel<UpdatedCostViewModel>()),
+                    Annualizer = CaptureState<AnnualizerData>(GetModuleViewModel<AnnualizerViewModel>()),
+                    WaterDemand = CaptureState<WaterDemandData>(GetModuleViewModel<WaterDemandViewModel>()),
+                    Udv = CaptureState<UdvData>(GetModuleViewModel<UdvViewModel>()),
+                    RecreationCapacity = CaptureState<RecreationCapacityData>(GetModuleViewModel<RecreationCapacityViewModel>()),
+                    Gantt = CaptureState<GanttData>(GetModuleViewModel<GanttViewModel>()),
+                    StageDamageOrganizer = CaptureState<StageDamageOrganizerData>(GetModuleViewModel<StageDamageOrganizerViewModel>())
                 };
 
                 string json = JsonSerializer.Serialize(project, CreateProjectJsonOptions());
@@ -640,7 +640,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
-                Filter = "Econ Toolbox Project (*.econproj)|*.econproj|JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+                Filter = "Econ Toolbox Project (*.etbx)|*.etbx",
                 Title = "Open Econ Toolbox Project"
             };
 
@@ -652,27 +652,51 @@ namespace EconToolbox.Desktop.ViewModels
             try
             {
                 string json = await File.ReadAllTextAsync(dlg.FileName);
-                var project = JsonSerializer.Deserialize<ProjectData>(json, CreateProjectJsonOptions());
+                var project = JsonSerializer.Deserialize<EconToolboxProject>(json, CreateProjectJsonOptions());
                 if (project == null)
                 {
                     MessageBox.Show("Unable to read project data.", "Load Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                GetModuleViewModel<EadViewModel>().ImportProjectData(project.Ead);
-                GetModuleViewModel<AgricultureDepthDamageViewModel>().ImportProjectData(project.AgricultureDepthDamage);
-                GetModuleViewModel<UpdatedCostViewModel>().ImportProjectData(project.UpdatedCost);
-                GetModuleViewModel<AnnualizerViewModel>().ImportProjectData(project.Annualizer);
-                GetModuleViewModel<WaterDemandViewModel>().ImportProjectData(project.WaterDemand);
-                GetModuleViewModel<UdvViewModel>().ImportProjectData(project.Udv);
-                GetModuleViewModel<RecreationCapacityViewModel>().ImportProjectData(project.RecreationCapacity);
-                GetModuleViewModel<GanttViewModel>().ImportProjectData(project.Gantt);
-                GetModuleViewModel<StageDamageOrganizerViewModel>().ImportProjectData(project.StageDamageOrganizer);
+                RestoreState(GetModuleViewModel<EadViewModel>(), project.Ead);
+                RestoreState(GetModuleViewModel<AgricultureDepthDamageViewModel>(), project.AgricultureDepthDamage);
+                RestoreState(GetModuleViewModel<UpdatedCostViewModel>(), project.UpdatedCost);
+                RestoreState(GetModuleViewModel<AnnualizerViewModel>(), project.Annualizer);
+                RestoreState(GetModuleViewModel<WaterDemandViewModel>(), project.WaterDemand);
+                RestoreState(GetModuleViewModel<UdvViewModel>(), project.Udv);
+                RestoreState(GetModuleViewModel<RecreationCapacityViewModel>(), project.RecreationCapacity);
+                RestoreState(GetModuleViewModel<GanttViewModel>(), project.Gantt);
+                RestoreState(GetModuleViewModel<StageDamageOrganizerViewModel>(), project.StageDamageOrganizer);
+                UpdateDiagnostics();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
                 MessageBox.Show($"Load failed: {ex.Message}", "Load Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private static T? CaptureState<T>(BaseViewModel viewModel) where T : class
+        {
+            if (viewModel is not IStatefulViewModel stateful)
+            {
+                return null;
+            }
+
+            return stateful.CaptureState() as T;
+        }
+
+        private static void RestoreState(BaseViewModel viewModel, object? state)
+        {
+            if (state == null)
+            {
+                return;
+            }
+
+            if (viewModel is IStatefulViewModel stateful)
+            {
+                stateful.RestoreState(state);
             }
         }
 

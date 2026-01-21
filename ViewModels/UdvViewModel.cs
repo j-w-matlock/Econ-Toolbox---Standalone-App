@@ -303,9 +303,9 @@ namespace EconToolbox.Desktop.ViewModels
             UpdateChart();
         }
 
-        public UdvProjectData ExportProjectData()
+        public override object CaptureState()
         {
-            return new UdvProjectData
+            return new UdvData
             {
                 RecreationType = RecreationType,
                 ActivityType = ActivityType,
@@ -330,9 +330,9 @@ namespace EconToolbox.Desktop.ViewModels
             };
         }
 
-        public void ImportProjectData(UdvProjectData? data)
+        public override void RestoreState(object state)
         {
-            if (data == null)
+            if (state is not UdvData data)
             {
                 return;
             }

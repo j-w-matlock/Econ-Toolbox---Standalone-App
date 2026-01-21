@@ -650,9 +650,9 @@ namespace EconToolbox.Desktop.ViewModels
             Total2 = Capital2 + OmScaled;
         }
 
-        public UpdatedCostProjectData ExportProjectData()
+        public override object CaptureState()
         {
-            return new UpdatedCostProjectData
+            return new UpdatedCostData
             {
                 TotalStorage = TotalStorage,
                 StorageRecommendation = StorageRecommendation,
@@ -704,9 +704,9 @@ namespace EconToolbox.Desktop.ViewModels
             };
         }
 
-        public void ImportProjectData(UpdatedCostProjectData? data)
+        public override void RestoreState(object state)
         {
-            if (data == null)
+            if (state is not UpdatedCostData data)
             {
                 return;
             }

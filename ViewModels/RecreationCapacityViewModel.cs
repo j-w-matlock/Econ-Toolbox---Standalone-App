@@ -311,9 +311,9 @@ public class RecreationCapacityViewModel : DiagnosticViewModelBase, IComputeModu
         Recalculate();
     }
 
-    public RecreationCapacityProjectData ExportProjectData()
+    public override object CaptureState()
     {
-        return new RecreationCapacityProjectData
+        return new RecreationCapacityData
         {
             CampingCampsites = CampingCampsites,
             CampingAverageGroupSize = CampingAverageGroupSize,
@@ -332,9 +332,9 @@ public class RecreationCapacityViewModel : DiagnosticViewModelBase, IComputeModu
         };
     }
 
-    public void ImportProjectData(RecreationCapacityProjectData? data)
+    public override void RestoreState(object state)
     {
-        if (data == null)
+        if (state is not RecreationCapacityData data)
         {
             return;
         }

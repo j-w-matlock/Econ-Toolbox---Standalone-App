@@ -656,9 +656,9 @@ namespace EconToolbox.Desktop.ViewModels
             return "Calculated";
         }
 
-        public AnnualizerProjectData ExportProjectData()
+        public override object CaptureState()
         {
-            return new AnnualizerProjectData
+            return new AnnualizerData
             {
                 FirstCost = FirstCost,
                 Rate = Rate,
@@ -697,9 +697,9 @@ namespace EconToolbox.Desktop.ViewModels
             };
         }
 
-        public void ImportProjectData(AnnualizerProjectData? data)
+        public override void RestoreState(object state)
         {
-            if (data == null)
+            if (state is not AnnualizerData data)
             {
                 return;
             }
