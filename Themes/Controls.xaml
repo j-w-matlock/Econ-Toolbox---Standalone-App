@@ -5,7 +5,7 @@
 
     <Style x:Key="ScrollViewer.Page" TargetType="ScrollViewer">
         <Setter Property="Focusable" Value="False"/>
-        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
         <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
         <Setter Property="CanContentScroll" Value="False"/>
         <Setter Property="Padding" Value="{StaticResource Padding.Card}"/>
@@ -869,7 +869,7 @@
     </Style>
 
     <Style TargetType="ScrollViewer">
-        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
         <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
     </Style>
 
