@@ -20,8 +20,6 @@ namespace EconToolbox.Desktop.ViewModels
         private ObservableCollection<UpdatedCostEntry> _updatedCostItems = new();
         private double _totalUpdatedCost;
 
-        private int _preMidpointYear = 1939;
-        private int _transitionMidpointYear = 1948;
         private int _preEnrYear = 1939;
         private int _transitionEnrYear = 1948;
         private int _enr1967Year = 1967;
@@ -30,7 +28,6 @@ namespace EconToolbox.Desktop.ViewModels
         private double _enr1967IndexValue;
         private double _cwccisBaseIndexValue = 100.0;
         private int _cwccisIndexYear = 2019;
-        private int _updatedJointCostYear = 2020;
 
         private double _rrrRate;
         private int _rrrPeriods = 30;
@@ -112,35 +109,6 @@ namespace EconToolbox.Desktop.ViewModels
             private set { _totalUpdatedCost = value; OnPropertyChanged(); }
         }
 
-        public int PreMidpointYear
-        {
-            get => _preMidpointYear;
-            set
-            {
-                if (_preMidpointYear != value)
-                {
-                    _preMidpointYear = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(ActualJointUsePreLabel));
-                    OnPropertyChanged(nameof(EnrRatioPreToTransitionLabel));
-                }
-            }
-        }
-
-        public int TransitionMidpointYear
-        {
-            get => _transitionMidpointYear;
-            set
-            {
-                if (_transitionMidpointYear != value)
-                {
-                    _transitionMidpointYear = value;
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(ActualJointUseTransitionLabel));
-                }
-            }
-        }
-
         public int PreEnrYear
         {
             get => _preEnrYear;
@@ -152,6 +120,7 @@ namespace EconToolbox.Desktop.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(PreEnrIndexLabel));
                     OnPropertyChanged(nameof(EnrRatioPreToTransitionLabel));
+                    OnPropertyChanged(nameof(ActualJointUsePreLabel));
                 }
             }
         }
@@ -168,6 +137,7 @@ namespace EconToolbox.Desktop.ViewModels
                     OnPropertyChanged(nameof(TransitionEnrIndexLabel));
                     OnPropertyChanged(nameof(EnrRatioPreToTransitionLabel));
                     OnPropertyChanged(nameof(EnrRatioTransitionTo1967Label));
+                    OnPropertyChanged(nameof(ActualJointUseTransitionLabel));
                 }
             }
         }
@@ -286,26 +256,13 @@ namespace EconToolbox.Desktop.ViewModels
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(CwccisIndexLabel));
                     OnPropertyChanged(nameof(CwccisUpdateLabel));
-                }
-            }
-        }
-
-        public int UpdatedJointCostYear
-        {
-            get => _updatedJointCostYear;
-            set
-            {
-                if (_updatedJointCostYear != value)
-                {
-                    _updatedJointCostYear = value;
-                    OnPropertyChanged();
                     OnPropertyChanged(nameof(UpdatedJointCostLabel));
                 }
             }
         }
 
-        public string ActualJointUsePreLabel => $"Actual Joint Use (Mid-Point {PreMidpointYear})";
-        public string ActualJointUseTransitionLabel => $"Actual Joint Use (Mid-Point {TransitionMidpointYear})";
+        public string ActualJointUsePreLabel => $"Actual Joint Use (Mid-Point {PreEnrYear})";
+        public string ActualJointUseTransitionLabel => $"Actual Joint Use (Mid-Point {TransitionEnrYear})";
         public string PreEnrIndexLabel => PreEnrIndexValue > 0
             ? $"{PreEnrYear} ENR Index Value ({PreEnrIndexValue:N2})"
             : $"{PreEnrYear} ENR Index Value";
@@ -323,7 +280,7 @@ namespace EconToolbox.Desktop.ViewModels
         public string CwccisIndexLabel => $"{CwccisIndexYear} CWCCIS Index Value";
         public string CwccisUpdateLabel => $"CWCCIS Update Value ({CwccisIndexYear}/{Enr1967Year})";
         public string JointUse1967Label => $"Updated Joint-Use as of {Enr1967Year}";
-        public string UpdatedJointCostLabel => $"FY {UpdatedJointCostYear} Joint Costs";
+        public string UpdatedJointCostLabel => $"FY {CwccisIndexYear} Joint Costs";
 
         public double RrrRate
         {
@@ -674,8 +631,6 @@ namespace EconToolbox.Desktop.ViewModels
                     CwccisUpdateFactor = item.CwccisUpdateFactor,
                     UpdatedJointCost = item.UpdatedJointCost
                 }).ToList(),
-                PreMidpointYear = PreMidpointYear,
-                TransitionMidpointYear = TransitionMidpointYear,
                 PreEnrYear = PreEnrYear,
                 TransitionEnrYear = TransitionEnrYear,
                 Enr1967Year = Enr1967Year,
@@ -684,7 +639,6 @@ namespace EconToolbox.Desktop.ViewModels
                 Enr1967IndexValue = Enr1967IndexValue,
                 CwccisBaseIndexValue = CwccisBaseIndexValue,
                 CwccisIndexYear = CwccisIndexYear,
-                UpdatedJointCostYear = UpdatedJointCostYear,
                 RrrRate = RrrRate,
                 RrrPeriods = RrrPeriods,
                 RrrCwcci = RrrCwcci,
@@ -742,8 +696,6 @@ namespace EconToolbox.Desktop.ViewModels
             JointOperationsCost = data.JointOperationsCost;
             JointMaintenanceCost = data.JointMaintenanceCost;
 
-            PreMidpointYear = data.PreMidpointYear;
-            TransitionMidpointYear = data.TransitionMidpointYear;
             PreEnrYear = data.PreEnrYear;
             TransitionEnrYear = data.TransitionEnrYear;
             Enr1967Year = data.Enr1967Year;
@@ -752,7 +704,6 @@ namespace EconToolbox.Desktop.ViewModels
             Enr1967IndexValue = data.Enr1967IndexValue;
             CwccisBaseIndexValue = data.CwccisBaseIndexValue;
             CwccisIndexYear = data.CwccisIndexYear;
-            UpdatedJointCostYear = data.UpdatedJointCostYear;
 
             RrrRate = data.RrrRate;
             RrrPeriods = data.RrrPeriods;

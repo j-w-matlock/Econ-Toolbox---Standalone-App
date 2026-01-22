@@ -412,13 +412,6 @@
                     <StackPanel Grid.Column="0" Margin="0,0,12,0">
                         <TextBlock Text="Pre-Construction Inputs" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
                         <StackPanel Margin="0,0,0,8">
-                            <TextBlock Text="Pre-construction Mid-Point Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding PreMidpointYear}"
-                                     Foreground="{DynamicResource App.Link.JointUse}"
-                                     HorizontalContentAlignment="Right"
-                                     ToolTip="Year used to label the original construction mid-point joint-use column. This anchors the timing of the historical cost inputs for escalation."/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Original ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrYear}"
                                      Foreground="{DynamicResource App.Link.PreEnr}"
@@ -436,13 +429,6 @@
                     <StackPanel Grid.Column="1" Margin="0,0,12,0">
                         <TextBlock Text="Transition Inputs" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
                         <StackPanel Margin="0,0,0,8">
-                            <TextBlock Text="Transition Mid-Point Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding TransitionMidpointYear}"
-                                     Foreground="{DynamicResource App.Link.TransitionEnr}"
-                                     HorizontalContentAlignment="Right"
-                                     ToolTip="Year used to label the transition mid-point joint-use column. This sets the timing for the transition ENR index ratio."/>
-                        </StackPanel>
-                        <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrYear}"
                                      Foreground="{DynamicResource App.Link.TransitionEnr}"
@@ -455,10 +441,6 @@
                                      Foreground="{DynamicResource App.Link.TransitionEnr}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="ENR index value used for the transition mid-point. This value is used in ENR ratio calculations to update joint-use costs."/>
-                        </StackPanel>
-                        <StackPanel>
-                            <TextBlock Text="Updated Joint Cost Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding UpdatedJointCostYear}" HorizontalContentAlignment="Right" ToolTip="Fiscal year represented by the updated joint cost results. This labels the updated costs shown in outputs and exports."/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="2">
