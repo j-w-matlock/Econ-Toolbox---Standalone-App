@@ -679,7 +679,6 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            Padding="{TemplateBinding Padding}"
                             SnapsToDevicePixels="True">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -689,16 +688,17 @@
                             </Grid.ColumnDefinitions>
                             <Thumb x:Name="PART_LeftHeaderGripper"
                                    Width="4"
-                                   Margin="-2,0,0,0"
+                                   Margin="0"
                                    Background="Transparent"
                                    Cursor="SizeWE"/>
                             <ContentPresenter Grid.Column="1"
+                                              Margin="{TemplateBinding Padding}"
                                               VerticalAlignment="Center"
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
                             <Thumb x:Name="PART_RightHeaderGripper"
                                    Grid.Column="2"
                                    Width="4"
-                                   Margin="0,0,-2,0"
+                                   Margin="0"
                                    Background="Transparent"
                                    Cursor="SizeWE"/>
                         </Grid>
