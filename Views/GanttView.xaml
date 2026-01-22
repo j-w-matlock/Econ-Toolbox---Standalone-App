@@ -169,13 +169,13 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <Button Command="{Binding AddTaskCommand}" Style="{StaticResource Button.Action}" Margin="0,0,8,0" ToolTip="Insert a new task row at the bottom of the table. New tasks add duration and cost to the schedule."/>
+                            <Button Command="{Binding AddTaskCommand}" Style="{StaticResource Button.Action}" Margin="0,0,8,0" ToolTip="Insert a new task row at the bottom of the table. New tasks add duration and cost to the schedule.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
                                     <TextBlock Text="Add Task"/>
                                 </StackPanel>
                             </Button>
-                            <Button Command="{Binding RemoveTaskCommand}" Style="{StaticResource Button.Action}" Margin="0,0,8,0" ToolTip="Delete the currently selected task from the list. Removing tasks reduces total schedule cost and duration."/>
+                            <Button Command="{Binding RemoveTaskCommand}" Style="{StaticResource Button.Action}" Margin="0,0,8,0" ToolTip="Delete the currently selected task from the list. Removing tasks reduces total schedule cost and duration.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
                                     <TextBlock Text="Remove Selected"/>
