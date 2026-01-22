@@ -103,7 +103,7 @@
                                                 <TextBox Grid.Column="2"
                                                          Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
                                                          MinWidth="180"
-                                                         ToolTip="Edit the summary name for this file. Used for chart legends and CSV output."/>
+                                                         ToolTip="Edit the summary name for this file. Used for chart legends and CSV output. The label does not change calculations but affects how results are identified."/>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

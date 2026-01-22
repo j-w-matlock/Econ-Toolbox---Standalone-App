@@ -51,7 +51,7 @@
             <TabControl Grid.Row="1" ItemsSource="{Binding Scenarios}" SelectedItem="{Binding SelectedScenario}" HorizontalContentAlignment="Stretch">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Description}"/>
+                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Description, StringFormat={}{0} This description summarizes the scenario assumptions that drive forecast calculations.}"/>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
@@ -87,7 +87,7 @@
                                                 <DataGridTextColumn.Header>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                        ToolTip="Historical observation year for the demand record."/>
+                                                                        ToolTip="Historical observation year for the demand record. The year sequence is used to calibrate growth trends and regression fits."/>
                                                         <TextBlock Text="Year" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </DataGridTextColumn.Header>
@@ -96,7 +96,7 @@
                                                 <DataGridTextColumn.Header>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                        ToolTip="Recorded water demand per capita for the listed year."/>
+                                                                        ToolTip="Recorded water demand per capita for the listed year. These values inform the baseline trend used in forecast calculations."/>
                                                         <TextBlock Text="Demand per Capita" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </DataGridTextColumn.Header>
@@ -134,7 +134,7 @@
                                     <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
                                         <InlineUIContainer BaselineAlignment="Center">
                                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Number of years to extend the demand projection."/>
+                                                            ToolTip="Number of years to extend the demand projection. This sets how many forecast rows are calculated beyond the base year."/>
                                         </InlineUIContainer>
                                         <Run Text="Forecast Years"/>
                                     </TextBlock>
@@ -144,7 +144,7 @@
                                     <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
                                         <InlineUIContainer BaselineAlignment="Center">
                                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Year that anchors the historical data and forecast."/>
+                                                            ToolTip="Year that anchors the historical data and forecast. The base year establishes the starting point for growth and per-capita adjustments."/>
                                         </InlineUIContainer>
                                         <Run Text="Base Year"/>
                                     </TextBlock>
@@ -153,7 +153,7 @@
                                     <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
                                         <InlineUIContainer BaselineAlignment="Center">
                                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Population served in the base year."/>
+                                                            ToolTip="Population served in the base year. This value scales per-capita demand into total demand for all forecast years."/>
                                         </InlineUIContainer>
                                         <Run Text="Base Population"/>
                                     </TextBlock>
@@ -163,7 +163,7 @@
                                     <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
                                         <InlineUIContainer BaselineAlignment="Center">
                                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Current per capita water demand for the base year."/>
+                                                            ToolTip="Current per capita water demand for the base year. This is the starting per-capita value that is adjusted forward each year."/>
                                         </InlineUIContainer>
                                         <Run Text="Base Per Capita"/>
                                     </TextBlock>
@@ -173,7 +173,7 @@
                                     <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
                                         <InlineUIContainer BaselineAlignment="Center">
                                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Expected annual population growth rate for the service area."/>
+                                                            ToolTip="Expected annual population growth rate for the service area. Higher growth increases projected population and total demand."/>
                                         </InlineUIContainer>
                                         <Run Text="Population Growth %"/>
                                     </TextBlock>
@@ -183,7 +183,7 @@
                                     <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
                                         <InlineUIContainer BaselineAlignment="Center">
                                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Annual percentage change expected in per capita demand."/>
+                                                            ToolTip="Annual percentage change expected in per capita demand. This rate modifies per-capita demand each year, affecting total demand."/>
                                         </InlineUIContainer>
                                         <Run Text="Per Capita Change %"/>
                                     </TextBlock>
@@ -197,7 +197,7 @@
                                                 <DataGridTextColumn.Header>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                        ToolTip="Current share of total demand attributed to the sector."/>
+                                                                        ToolTip="Current share of total demand attributed to the sector. This percentage allocates baseline demand into sector-specific totals."/>
                                                         <TextBlock Text="Current %" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </DataGridTextColumn.Header>
@@ -206,7 +206,7 @@
                                                 <DataGridTextColumn.Header>
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                        ToolTip="Projected future share of total demand for the sector."/>
+                                                                        ToolTip="Projected future share of total demand for the sector. This percentage allocates forecast demand into sector-specific totals."/>
                                                         <TextBlock Text="Future %" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </DataGridTextColumn.Header>
@@ -228,7 +228,7 @@
                                             <ContentControl Grid.Row="0"
                                                             Grid.Column="0"
                                                             Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Percent reduction in demand from planned system improvements."/>
+                                                            ToolTip="Percent reduction in demand from planned system improvements. This reduces adjusted demand after sector allocations."/>
                                             <TextBlock Grid.Row="0"
                                                        Grid.Column="1"
                                                        Text="Improvements %"
@@ -241,7 +241,7 @@
                                             <ContentControl Grid.Row="1"
                                                             Grid.Column="0"
                                                             Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Percent of demand lost to system leakage or other losses."/>
+                                                            ToolTip="Percent of demand lost to system leakage or other losses. Losses increase adjusted demand to account for water that is not delivered."/>
                                             <TextBlock Grid.Row="1"
                                                        Grid.Column="1"
                                                        Text="Losses %"
@@ -286,20 +286,20 @@
                                             <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="{DynamicResource App.TextSecondary}" Text="Alternative Forecast 2" HorizontalAlignment="Left"/>
 
                                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Population growth"/>
-                                            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative1PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 1."/>
-                                            <TextBox Grid.Row="2" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative2PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 2."/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative1PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 1. This scales the growth rate used to project population."/>
+                                            <TextBox Grid.Row="2" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative2PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 2. This scales the growth rate used to project population."/>
 
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="Per capita demand change"/>
-                                            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 1."/>
-                                            <TextBox Grid.Row="3" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 2."/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 1. This scales the per-capita change rate used in forecasts."/>
+                                            <TextBox Grid.Row="3" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 2. This scales the per-capita change rate used in forecasts."/>
 
                                             <TextBlock Grid.Row="4" Grid.Column="0" Text="System improvements"/>
-                                            <TextBox Grid.Row="4" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 1."/>
-                                            <TextBox Grid.Row="4" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 2."/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 1. This adjusts the conservation reduction applied to demand."/>
+                                            <TextBox Grid.Row="4" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 2. This adjusts the conservation reduction applied to demand."/>
 
                                             <TextBlock Grid.Row="5" Grid.Column="0" Text="System losses"/>
-                                            <TextBox Grid.Row="5" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1."/>
-                                            <TextBox Grid.Row="5" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2."/>
+                                            <TextBox Grid.Row="5" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1. This modifies the loss factor used in adjusted demand."/>
+                                            <TextBox Grid.Row="5" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2. This modifies the loss factor used in adjusted demand."/>
 
                                             <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="{DynamicResource App.TextSecondary}" TextWrapping="Wrap">
                                                 Adjust the percentage change applied to each baseline rate to craft two alternative forecasts. Positive values increase the rate, while negative values decrease it. Baseline inputs remain unchanged.
@@ -315,56 +315,56 @@
                                             <DataGridTextColumn Header="Growth Rate (%)" Binding="{Binding GrowthRate, Mode=TwoWay, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Growth Rate = (Current Demand - Previous Demand) / Previous Demand"/>
+                                                        <Setter Property="ToolTip" Value="Growth Rate = (Current Demand - Previous Demand) / Previous Demand. This rate feeds the next year's demand calculation."/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Header="Demand (gallons/day)" Binding="{Binding Demand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Demand = Prior Demand × (1 + Growth Rate)"/>
+                                                        <Setter Property="ToolTip" Value="Demand = Prior Demand × (1 + Growth Rate). This is the baseline total before sector allocation."/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Header="Residential (gallons/day)" Binding="{Binding ResidentialDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Residential = Demand × Residential %"/>
+                                                        <Setter Property="ToolTip" Value="Residential = Demand × Residential %. This allocates total demand to residential use."/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Header="Commercial (gallons/day)" Binding="{Binding CommercialDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Commercial = Demand × Commercial %"/>
+                                                        <Setter Property="ToolTip" Value="Commercial = Demand × Commercial %. This allocates total demand to commercial use."/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Header="Industrial (gallons/day)" Binding="{Binding IndustrialDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Industrial = Demand × Industrial %"/>
+                                                        <Setter Property="ToolTip" Value="Industrial = Demand × Industrial %. This allocates total demand to industrial use."/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Header="Agricultural (gallons/day)" Binding="{Binding AgriculturalDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Agricultural = Demand × Agricultural %"/>
+                                                        <Setter Property="ToolTip" Value="Agricultural = Demand × Agricultural %. This allocates total demand to agricultural use."/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Header="Adjusted (gallons/day)" Binding="{Binding AdjustedDemand, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %)"/>
+                                                        <Setter Property="ToolTip" Value="Adjusted = Demand ÷ (1 - Losses %) × (1 - Improvements %). This applies losses and conservation adjustments to the baseline demand."/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Header="Adjusted (ac-ft/yr)" Binding="{Binding AdjustedDemandAcreFeet, StringFormat={}{0:N2}}">
                                                 <DataGridTextColumn.ElementStyle>
                                                     <Style TargetType="TextBlock">
-                                                        <Setter Property="ToolTip" Value="Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851"/>
+                                                        <Setter Property="ToolTip" Value="Adjusted Acre-Feet = Adjusted Demand × 365 ÷ 325,851. This converts adjusted daily demand into annual storage volume."/>
                                                     </Style>
                                                 </DataGridTextColumn.ElementStyle>
                                             </DataGridTextColumn>

@@ -65,7 +65,7 @@
                                   DisplayMemberPath="Name"
                                   Margin="{StaticResource Margin.Stack}"
                                   MinWidth="220"
-                                  ToolTip="Choose the regional depth-duration template to review or customize."/>
+                                  ToolTip="Choose the regional depth-duration template to review or customize. The selection sets baseline timing and depth-duration parameters used in calculations."/>
                         <TextBlock Text="{Binding SelectedRegionDescription}"
                                    Style="{StaticResource Text.Body}"
                                    TextWrapping="Wrap"
@@ -104,7 +104,7 @@
                                         <TextBlock Text="Region name"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 ToolTip="Display name for the selected region shown in the drop-down list."/>
+                                                 ToolTip="Display name for the selected region shown in the drop-down list. Renaming does not change calculations but updates labels in outputs."/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="0"
@@ -114,7 +114,7 @@
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.AnnualExceedanceProbabilityDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  HorizontalContentAlignment="Right"
-                                                 ToolTip="Probability that a damaging flood occurs in an average year (0–1)."/>
+                                                 ToolTip="Probability that a damaging flood occurs in an average year (0–1). This baseline probability is multiplied by modeled stress to estimate impact risk."/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="1"
@@ -124,7 +124,7 @@
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.FloodWindowStartDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  HorizontalContentAlignment="Right"
-                                                 ToolTip="First day of year when flooding typically begins for the selected region."/>
+                                                 ToolTip="First day of year when flooding typically begins for the selected region. The window affects which growth stages are exposed during the season."/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="1"
@@ -134,7 +134,7 @@
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.FloodSeasonPeakDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  HorizontalContentAlignment="Right"
-                                                 ToolTip="Day of year when flood likelihood typically peaks for the selected region."/>
+                                                 ToolTip="Day of year when flood likelihood typically peaks for the selected region. The peak timing influences stage-specific exposure weighting."/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="2"
@@ -144,7 +144,7 @@
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.FloodWindowEndDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  HorizontalContentAlignment="Right"
-                                                 ToolTip="Last day of year when flooding commonly occurs for the selected region."/>
+                                                 ToolTip="Last day of year when flooding commonly occurs for the selected region. This bounds exposure calculations across the season."/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="2"
@@ -154,7 +154,7 @@
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.SeasonShiftDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  HorizontalContentAlignment="Right"
-                                                 ToolTip="Shifts the growing season timeline relative to the flood season (negative = earlier)."/>
+                                                 ToolTip="Shifts the growing season timeline relative to the flood season (negative = earlier). This changes which growth stages overlap the flood window."/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="3"
@@ -167,7 +167,7 @@
                                                  AcceptsReturn="True"
                                                  TextWrapping="Wrap"
                                                  MinHeight="60"
-                                                 ToolTip="Narrative description that will appear beneath the region selector."/>
+                                                 ToolTip="Narrative description that will appear beneath the region selector. This does not affect calculations but documents assumptions."/>
                                     </StackPanel>
                                 </Grid>
                                 <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding SelectedRegion.DepthDuration}"
@@ -184,13 +184,13 @@
                                                             Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet)."/>
+                                                    <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet). Depth is used with duration to estimate base damage."/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                             <DataGridTextColumn.EditingElementStyle>
                                                 <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                                                    <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet)."/>
+                                                    <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet). Depth is used with duration to estimate base damage."/>
                                                 </Style>
                                             </DataGridTextColumn.EditingElementStyle>
                                         </DataGridTextColumn>
@@ -199,13 +199,13 @@
                                                             Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="ToolTip" Value="Length of inundation represented by the row (days)."/>
+                                                    <Setter Property="ToolTip" Value="Length of inundation represented by the row (days). Duration influences stress-adjusted damage calculations."/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                             <DataGridTextColumn.EditingElementStyle>
                                                 <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                                                    <Setter Property="ToolTip" Value="Length of inundation represented by the row (days)."/>
+                                                    <Setter Property="ToolTip" Value="Length of inundation represented by the row (days). Duration influences stress-adjusted damage calculations."/>
                                                 </Style>
                                             </DataGridTextColumn.EditingElementStyle>
                                         </DataGridTextColumn>
@@ -214,13 +214,13 @@
                                                             Width="SizeToHeader">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1)."/>
+                                                    <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1). This base damage is scaled by crop and stress modifiers."/>
                                                 </Style>
                                             </DataGridTextColumn.ElementStyle>
                                             <DataGridTextColumn.EditingElementStyle>
                                                 <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                                     <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                                                    <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1)."/>
+                                                    <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1). This base damage is scaled by crop and stress modifiers."/>
                                                 </Style>
                                             </DataGridTextColumn.EditingElementStyle>
                                         </DataGridTextColumn>
@@ -232,11 +232,11 @@
                                     <Button Content="Add point"
                                             Command="{Binding AddDepthDurationPointCommand}"
                                             Margin="{StaticResource Margin.Inline}"
-                                            ToolTip="Insert another depth-duration point using the regional template as a starting value."/>
+                                            ToolTip="Insert another depth-duration point using the regional template as a starting value. New points expand the curve used in damage calculations."/>
                                     <Button Content="Remove selected"
                                             Command="{Binding RemoveDepthDurationPointCommand}"
                                             Margin="{StaticResource Margin.Inline}"
-                                            ToolTip="Delete the highlighted depth-duration row from the table."/>
+                                            ToolTip="Delete the highlighted depth-duration row from the table. Removing points alters the depth-duration damage curve."/>
                                 </StackPanel>
                                 <TextBlock Text="Base damage represents the fraction of acreage lost at the specified depth and duration (0 = no loss, 1 = total loss)."
                                            Style="{StaticResource Text.Caption}"
@@ -256,7 +256,7 @@
                                   DisplayMemberPath="Name"
                                   Margin="{StaticResource Margin.Stack}"
                                   MinWidth="220"
-                                  ToolTip="Select the crop profile sourced from USDA NASS categories."/>
+                                  ToolTip="Select the crop profile sourced from USDA NASS categories. Crop selection applies crop-specific damage and impact modifiers."/>
                         <TextBlock Text="{Binding SelectedCropDescription}"
                                    Style="{StaticResource Text.Body}"
                                    TextWrapping="Wrap"
@@ -279,13 +279,13 @@
                                            Margin="{StaticResource Margin.StackSmall}"/>
                                 <TextBox Text="{Binding SelectedCrop.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Margin="{StaticResource Margin.StackSmall}"
-                                         ToolTip="Enter the display label for the selected crop."/>
+                                         ToolTip="Enter the display label for the selected crop. Renaming does not change calculations but updates labels in outputs."/>
                                 <TextBox Text="{Binding SelectedCrop.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Margin="{StaticResource Margin.StackSmall}"
                                          AcceptsReturn="True"
                                          TextWrapping="Wrap"
                                          MinHeight="60"
-                                         ToolTip="Provide a description that explains the crop assumptions for this selection."/>
+                                         ToolTip="Provide a description that explains the crop assumptions for this selection. This documents inputs without changing calculations."/>
                                 <StackPanel Orientation="Horizontal"
                                             Margin="{StaticResource Margin.StackSmall}">
                                     <StackPanel Width="140"
@@ -294,7 +294,7 @@
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedCrop.DamageFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
                                                  HorizontalContentAlignment="Right"
-                                                 ToolTip="Scaling factor that adjusts depth-duration damages for the crop."/>
+                                                 ToolTip="Scaling factor that adjusts depth-duration damages for the crop. Higher values increase modeled damage percent."/>
                                     </StackPanel>
                                     <StackPanel Width="140"
                                                 Margin="{StaticResource Margin.Inline}">
@@ -302,7 +302,7 @@
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedCrop.ImpactModifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
                                                  HorizontalContentAlignment="Right"
-                                                 ToolTip="Multiplier that affects the modeled probability of experiencing a damaging flood."/>
+                                                 ToolTip="Multiplier that affects the modeled probability of experiencing a damaging flood. Higher values increase modeled impact probability."/>
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="Damage factor scales depth-duration damages, while the impact modifier influences the modeled probability of a damaging event."
@@ -332,11 +332,11 @@
                                         <Button Content="Import CropScape CDL"
                                                 Command="{Binding ImportCropScapeRasterCommand}"
                                                 Margin="{StaticResource Margin.Inline}"
-                                                ToolTip="Load a USDA CropScape raster to populate acreage shares for each crop class."/>
+                                                ToolTip="Load a USDA CropScape raster to populate acreage shares for each crop class. Acreage shares are used in CropScape damage projections."/>
                                         <Button Content="Clear summary"
                                                 Command="{Binding ClearCropScapeSummaryCommand}"
                                                 Margin="{StaticResource Margin.Inline}"
-                                                ToolTip="Remove the imported CropScape acreage totals so you can start a fresh summary."/>
+                                                ToolTip="Remove the imported CropScape acreage totals so you can start a fresh summary. Clearing resets acreage inputs used in damage projections."/>
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="{Binding CropScapeImportStatus}"
@@ -430,7 +430,7 @@
                                                         <TextBox Text="{Binding ExposureDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
                                                                  HorizontalContentAlignment="Right"
                                                                  MinWidth="80"
-                                                                 ToolTip="Estimated number of days this growth stage experiences inundation in a typical event."/>
+                                                                 ToolTip="Estimated number of days this growth stage experiences inundation in a typical event. Longer exposure raises stress for this stage."/>
                                                     </StackPanel>
                                                     <StackPanel Margin="{StaticResource Margin.Inline}">
                                                         <TextBlock Text="Flood tolerance (days)"
@@ -438,12 +438,12 @@
                                                         <TextBox Text="{Binding FloodToleranceDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
                                                                  HorizontalContentAlignment="Right"
                                                                  MinWidth="80"
-                                                                 ToolTip="Number of days this stage can withstand inundation before significant damage occurs."/>
+                                                                 ToolTip="Number of days this stage can withstand inundation before significant damage occurs. Lower tolerance increases stress and modeled damage."/>
                                                     </StackPanel>
                                                     <StackPanel Margin="{StaticResource Margin.Inline}">
                                                         <Button Content="Reset"
                                                                 Command="{Binding ResetCommand}"
-                                                                ToolTip="Restore the default exposure and flood tolerance for this stage."/>
+                                                                ToolTip="Restore the default exposure and flood tolerance for this stage. Resetting updates stress inputs used in probability and damage calculations."/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </StackPanel>
@@ -476,7 +476,7 @@
                                 <TextBox Text="{Binding AverageResponse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
                                          HorizontalContentAlignment="Right"
                                          MinWidth="120"
-                                         ToolTip="Adjusts how strongly seasonal stress amplifies modeled damages (1 = default response)."/>
+                                         ToolTip="Adjusts how strongly seasonal stress amplifies modeled damages (1 = default response). Higher values increase modeled damage and impact probability."/>
                                 <TextBlock Text="Scales the seasonal exposure severity."
                                            Style="{StaticResource Text.Caption}"
                                            TextWrapping="Wrap"
@@ -489,7 +489,7 @@
                                 <TextBox Text="{Binding SimulationYears, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          HorizontalContentAlignment="Right"
                                          MinWidth="120"
-                                         ToolTip="Number of simulated seasons summarized in the narrative output."/>
+                                         ToolTip="Number of simulated seasons summarized in the narrative output. This does not change calculations, but it frames summary messaging."/>
                                 <TextBlock Text="Used in the narrative to describe modeled seasons."
                                            Style="{StaticResource Text.Caption}"
                                            TextWrapping="Wrap"
@@ -737,11 +737,11 @@
                     <Button Content="Calculate"
                             Command="{Binding ComputeCommand}"
                             Margin="{StaticResource Margin.Inline}"
-                            ToolTip="Run the simulation and refresh the agriculture depth-damage results."/>
+                            ToolTip="Run the simulation and refresh the agriculture depth-damage results. This recalculates impact probability and depth-duration damages."/>
                     <Button Content="CSV Export"
                             Command="{Binding ExportCommand}"
                             Margin="{StaticResource Margin.Inline}"
-                            ToolTip="Save the current depth-duration table to a CSV file for external analysis."/>
+                            ToolTip="Save the current depth-duration table to a CSV file for external analysis. Export does not change calculations but captures current results."/>
                 </StackPanel>
             </Grid>
             <Border Style="{StaticResource Border.ResultInfo}"

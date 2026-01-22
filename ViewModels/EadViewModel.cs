@@ -405,7 +405,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 HeaderText = "Probability",
                 MinWidth = 120,
-                ToolTip = "Exceedance probability for the row of damage and stage inputs."
+                ToolTip = "Exceedance probability for the row of damage and stage inputs. This value drives where the point sits on the frequency-damage curve."
             });
 
             if (UseStage)
@@ -414,7 +414,7 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     HeaderText = "Stage",
                     MinWidth = 120,
-                    ToolTip = "Water surface elevation or stage aligned with the probability."
+                    ToolTip = "Water surface elevation or stage aligned with the probability. Stage values affect stage-damage curve alignment when enabled."
                 });
             }
 
@@ -426,7 +426,7 @@ namespace EconToolbox.Desktop.ViewModels
                     HeaderBindingPath = nameof(DamageColumn.Name),
                     IsHeaderEditable = true,
                     MinWidth = 140,
-                    ToolTip = "Damage amount for this category at the selected probability."
+                    ToolTip = "Damage amount for this category at the selected probability. These values are integrated to compute expected annual damage."
                 });
             }
         }

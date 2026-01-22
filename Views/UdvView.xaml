@@ -64,7 +64,7 @@
                 <TextBlock>
                     <InlineUIContainer BaselineAlignment="Center">
                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                        ToolTip="Choose the overall recreation classification to filter available activity point tables."/>
+                                        ToolTip="Choose the overall recreation classification to filter available activity point tables. The selection drives which point scale is used in the unit day value lookup."/>
                     </InlineUIContainer>
                     <Run Text="Recreation Type"/>
                 </TextBlock>
@@ -74,7 +74,7 @@
                 <TextBlock>
                     <InlineUIContainer BaselineAlignment="Center">
                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                        ToolTip="Select the specific activity that matches your study to retrieve the proper unit day scale."/>
+                                        ToolTip="Select the specific activity that matches your study to retrieve the proper unit day scale. This choice determines the unit day value mapping applied to points."/>
                     </InlineUIContainer>
                     <Run Text="Activity Type"/>
                 </TextBlock>
@@ -101,7 +101,7 @@
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Enter the point score from the Unit Day Value table that reflects recreation quality."/>
+                                ToolTip="Enter the point score from the Unit Day Value table that reflects recreation quality. The point score is used to determine the unit day value tier."/>
                 <TextBlock Text="Point Value" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
             <TextBox Grid.Row="0"
@@ -117,7 +117,7 @@
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Provide the number of days in the recreation season that will host visitors."/>
+                                ToolTip="Provide the number of days in the recreation season that will host visitors. This length scales total user days from the visitation rate."/>
                 <TextBlock Text="Season Length (days)" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
             <TextBox Grid.Row="1"
@@ -133,7 +133,7 @@
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Enter visitation as daily, monthly, or yearly figures. Adjust the selector to match your data cadence."/>
+                                ToolTip="Enter visitation as daily, monthly, or yearly figures. Adjust the selector to match your data cadence. The cadence determines how the input is converted to total user days."/>
                 <TextBlock Text="Visitation Input" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Grid.Row="2"
@@ -156,7 +156,7 @@
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Calculated total user days for the season based on visitation settings."/>
+                                ToolTip="Calculated total user days for the season based on visitation settings. This value feeds the unit day value computation and final benefit estimates."/>
                 <TextBlock Text="Total User Days" Margin="4,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
             <TextBlock Grid.Row="3"
@@ -205,7 +205,7 @@
                     <Button Content="Calculate Median"
                             Command="{Binding ComputeMedianCommand}"
                             Width="180"
-                            ToolTip="Compute the median visitation value from the historical records above."/>
+                            ToolTip="Compute the median visitation value from the historical records above. The median replaces the visitation input used in total user day calculations."/>
                     <TextBlock Margin="12,0,0,0"
                                Visibility="{Binding HasHistoricalMedian, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Run Text="Median: "/>
