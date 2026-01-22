@@ -682,15 +682,18 @@
                             SnapsToDevicePixels="True">
                         <Grid>
                             <Thumb x:Name="PART_LeftHeaderGripper"
-                                   Width="1"
+                                   Width="4"
+                                   Margin="0"
                                    Background="Transparent"
-                                   Cursor="SizeWE"
-                                   HorizontalAlignment="Left"/>
-                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                   Cursor="SizeWE"/>
+                            <ContentPresenter Grid.Column="1"
+                                              Margin="{TemplateBinding Padding}"
                                               VerticalAlignment="Center"
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
                             <Thumb x:Name="PART_RightHeaderGripper"
-                                   Width="1"
+                                   Grid.Column="2"
+                                   Width="4"
+                                   Margin="0"
                                    Background="Transparent"
                                    Cursor="SizeWE"
                                    HorizontalAlignment="Right"/>
