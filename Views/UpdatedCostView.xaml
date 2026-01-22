@@ -391,118 +391,121 @@
                         </StackPanel>
                     </StackPanel>
                 </Grid>
+                <StackPanel.Resources>
+                    <Style TargetType="DataGridCell" x:Key="RequiredCellBaseStyle">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    </Style>
+                    <Style x:Key="NumericCellStyle" TargetType="TextBlock">
+                        <Setter Property="TextAlignment" Value="Right"/>
+                        <Setter Property="Padding" Value="0,0,4,0"/>
+                    </Style>
+                    <Style x:Key="NumericEditingStyle" TargetType="TextBox">
+                        <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                    </Style>
+                    <Style x:Key="CategoryCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Category}" Value="">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Category}" Value="{x:Null}">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="JointUseCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding JointUsePre1967}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="PreEnrCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Pre1967EnrIndex}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="TransitionEnrCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TransitionEnrIndex}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="Enr1967CellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Enr1967Index}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="CwccisBaseCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CwccisBase}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="CwccisIndexCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CwccisIndex}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="JointUseTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.JointUse}"/>
+                    </Style>
+                    <Style x:Key="JointUseEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.JointUse}"/>
+                    </Style>
+                    <Style x:Key="PreEnrTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.PreEnr}"/>
+                    </Style>
+                    <Style x:Key="PreEnrEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.PreEnr}"/>
+                    </Style>
+                    <Style x:Key="TransitionEnrTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.TransitionEnr}"/>
+                    </Style>
+                    <Style x:Key="TransitionEnrEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.TransitionEnr}"/>
+                    </Style>
+                    <Style x:Key="Enr1967TextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.Enr1967}"/>
+                    </Style>
+                    <Style x:Key="Enr1967EditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.Enr1967}"/>
+                    </Style>
+                    <Style x:Key="CwccisBaseTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisBase}"/>
+                    </Style>
+                    <Style x:Key="CwccisBaseEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisBase}"/>
+                    </Style>
+                    <Style x:Key="CwccisIndexTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
+                    </Style>
+                    <Style x:Key="CwccisIndexEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
+                    </Style>
+                </StackPanel.Resources>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0,0,0,10">
                     <TextBlock TextWrapping="Wrap">
                         Matched colors now show which table columns draw from the inputs above. Highlighted cells mark fields that need values before the update calculation can run.
                     </TextBlock>
                 </Border>
+                <TextBlock Text="Step 1: Escalate pre-1967 joint-use costs to the 1967 base (index 100)."
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,6"/>
                 <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding UpdatedCostItems}"
                           AutoGenerateColumns="False"
-                          Height="220"
-                          Margin="0,0,0,5"
+                          Height="200"
+                          Margin="0,0,0,12"
                           ColumnWidth="SizeToHeader">
-                    <DataGrid.Resources>
-                        <Style TargetType="DataGridCell" x:Key="RequiredCellBaseStyle">
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
-                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                        </Style>
-                        <Style x:Key="NumericCellStyle" TargetType="TextBlock">
-                            <Setter Property="TextAlignment" Value="Right"/>
-                            <Setter Property="Padding" Value="0,0,4,0"/>
-                        </Style>
-                        <Style x:Key="NumericEditingStyle" TargetType="TextBox">
-                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                        </Style>
-                        <Style x:Key="CategoryCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Category}" Value="">
-                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Category}" Value="{x:Null}">
-                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                        <Style x:Key="JointUseCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding JointUsePre1967}" Value="0">
-                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                        <Style x:Key="PreEnrCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Pre1967EnrIndex}" Value="0">
-                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                        <Style x:Key="TransitionEnrCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding TransitionEnrIndex}" Value="0">
-                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                        <Style x:Key="Enr1967CellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Enr1967Index}" Value="0">
-                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                        <Style x:Key="CwccisBaseCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CwccisBase}" Value="0">
-                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                        <Style x:Key="CwccisIndexCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding CwccisIndex}" Value="0">
-                                    <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                        <Style x:Key="JointUseTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.JointUse}"/>
-                        </Style>
-                        <Style x:Key="JointUseEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.JointUse}"/>
-                        </Style>
-                        <Style x:Key="PreEnrTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.PreEnr}"/>
-                        </Style>
-                        <Style x:Key="PreEnrEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.PreEnr}"/>
-                        </Style>
-                        <Style x:Key="TransitionEnrTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.TransitionEnr}"/>
-                        </Style>
-                        <Style x:Key="TransitionEnrEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.TransitionEnr}"/>
-                        </Style>
-                        <Style x:Key="Enr1967TextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.Enr1967}"/>
-                        </Style>
-                        <Style x:Key="Enr1967EditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.Enr1967}"/>
-                        </Style>
-                        <Style x:Key="CwccisBaseTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisBase}"/>
-                        </Style>
-                        <Style x:Key="CwccisBaseEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisBase}"/>
-                        </Style>
-                        <Style x:Key="CwccisIndexTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
-                        </Style>
-                        <Style x:Key="CwccisIndexEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
-                            <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
-                        </Style>
-                    </DataGrid.Resources>
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Category}" CellStyle="{StaticResource CategoryCellStyle}">
                             <DataGridTextColumn.Header>
@@ -561,18 +564,46 @@
                         </DataGridTextColumn>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
                             <DataGridTextColumn.Binding>
-                                <Binding Path="JointUseTransition" Converter="{StaticResource CurrencyConverter}"/>
-                            </DataGridTextColumn.Binding>
-                            <DataGridTextColumn.Header>
-                                <TextBlock Text="Adjusted Joint Use Costs at Midpoint of Construction"/>
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
-                            <DataGridTextColumn.Binding>
                                 <Binding Path="EnrRatioTransitionTo1967" StringFormat="{}{0:N2}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="ENR Update Ratio"/>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="JointUse1967" Converter="{StaticResource CurrencyConverter}"/>
+                            </DataGridTextColumn.Binding>
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="Adjusted Joint Use Costs at 1967 Base"/>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Text="Step 2: Apply CWCCIS to updated 1967-base costs."
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,6"/>
+                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding UpdatedCostItems}"
+                          AutoGenerateColumns="False"
+                          Height="170"
+                          Margin="0,0,0,5"
+                          ColumnWidth="SizeToHeader">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Category}" CellStyle="{StaticResource CategoryCellStyle}">
+                            <DataGridTextColumn.Header>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
+                                                    ToolTip="Category labels follow each item into the CWCCIS update step."/>
+                                    <TextBlock Text="Category" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
+                            <DataGridTextColumn.Binding>
+                                <Binding Path="JointUse1967" Converter="{StaticResource CurrencyConverter}"/>
+                            </DataGridTextColumn.Binding>
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="Adjusted Joint Use Costs at 1967 Base"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding CwccisBase}"
@@ -581,22 +612,6 @@
                                            CellStyle="{StaticResource CwccisBaseCellStyle}">
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="CWCCIS Base Index" Foreground="{DynamicResource App.Link.CwccisBase}"/>
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
-                            <DataGridTextColumn.Binding>
-                                <Binding Path="TransitionEnrIndex"/>
-                            </DataGridTextColumn.Binding>
-                            <DataGridTextColumn.Header>
-                                <TextBlock Text="Transition ENR Index Value"/>
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
-                            <DataGridTextColumn.Binding>
-                                <Binding Path="JointUse1967" Converter="{StaticResource CurrencyConverter}"/>
-                            </DataGridTextColumn.Binding>
-                            <DataGridTextColumn.Header>
-                                <TextBlock Text="Updated Joint Use Costs as of 1967 base"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding CwccisIndex}"
