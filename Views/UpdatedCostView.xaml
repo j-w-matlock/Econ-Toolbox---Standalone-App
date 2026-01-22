@@ -139,7 +139,7 @@
                     <TextBlock Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Enter the system's total usable storage before any plan allocation."/>
+                                            ToolTip="Enter the system's total usable storage before any plan allocation. This value is the denominator for the storage percentage used to scale costs."/>
                         </InlineUIContainer>
                         <Run Text="Total Usable Storage"/>
                     </TextBlock>
@@ -147,7 +147,7 @@
                     <TextBlock Grid.Row="1" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Recommended portion of the joint storage allocated to this alternative."/>
+                                            ToolTip="Recommended portion of the joint storage allocated to this alternative. This value is the numerator used to scale downstream costs."/>
                         </InlineUIContainer>
                         <Run Text="Storage Recommendation"/>
                     </TextBlock>
@@ -156,7 +156,7 @@
                             Grid.Row="2"
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
-                            ToolTip="Calculate the storage utilization percentage based on the values above.">
+                            ToolTip="Calculate the storage utilization percentage based on the values above. The resulting percent drives cost allocations across the other tabs.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -165,7 +165,7 @@
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
-                    <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
+                    <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Percent = Storage Recommendation / Total Usable Storage. This percentage scales joint O&amp;M, RR&amp;R, and capital costs."/>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
@@ -220,7 +220,7 @@
                     <TextBlock Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Annual system-wide joint operations expense before scaling."/>
+                                            ToolTip="Annual system-wide joint operations expense before scaling. This amount is multiplied by the storage percentage in total cost results."/>
                         </InlineUIContainer>
                         <Run Text="Joint Operations Cost"/>
                     </TextBlock>
@@ -230,7 +230,7 @@
                     <TextBlock Grid.Row="1" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Annual joint maintenance expense for the entire system."/>
+                                            ToolTip="Annual joint maintenance expense for the entire system. This amount is multiplied by the storage percentage in total cost results."/>
                         </InlineUIContainer>
                         <Run Text="Joint Maintenance Cost"/>
                     </TextBlock>
@@ -239,7 +239,7 @@
                              Grid.Column="1"
                              Margin="0,0,0,5"/>
                     <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}"
-                            ToolTip="Sum annual joint operations and maintenance costs for allocation.">
+                            ToolTip="Sum annual joint operations and maintenance costs for allocation. The sum feeds the joint O&amp;M scaling in total annual cost."/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -248,7 +248,7 @@
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
-                    <TextBlock Text="{Binding TotalJointOm, Mode=OneWay, StringFormat=Total Joint O&amp;M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost"/>
+                    <TextBlock Text="{Binding TotalJointOm, Mode=OneWay, StringFormat=Total Joint O&amp;M: {0:C2}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost. This total is later scaled by the storage percentage."/>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
@@ -314,21 +314,21 @@
                             <TextBox Text="{Binding PreMidpointYear}"
                                      Foreground="{DynamicResource App.Link.JointUse}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="Year used to label the original construction mid-point joint-use column."/>
+                                     ToolTip="Year used to label the original construction mid-point joint-use column. This anchors the timing of the historical cost inputs for escalation."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Original ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrYear}"
                                      Foreground="{DynamicResource App.Link.PreEnr}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="Year associated with the initial ENR index values."/>
+                                     ToolTip="Year associated with the initial ENR index values. This year determines the starting ENR index used in escalation ratios."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Original ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrIndexValue}"
                                      Foreground="{DynamicResource App.Link.PreEnr}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="ENR index value tied to the original pre-construction year."/>
+                                     ToolTip="ENR index value tied to the original pre-construction year. This value is used to compute ENR escalation ratios."/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="0,0,12,0">
@@ -338,25 +338,25 @@
                             <TextBox Text="{Binding TransitionMidpointYear}"
                                      Foreground="{DynamicResource App.Link.TransitionEnr}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="Year used to label the transition mid-point joint-use column."/>
+                                     ToolTip="Year used to label the transition mid-point joint-use column. This sets the timing for the transition ENR index ratio."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrYear}"
                                      Foreground="{DynamicResource App.Link.TransitionEnr}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="Year associated with the transition ENR index values."/>
+                                     ToolTip="Year associated with the transition ENR index values. This year defines the transition ENR index used in ratio calculations."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrIndexValue}"
                                      Foreground="{DynamicResource App.Link.TransitionEnr}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="ENR index value used for the transition mid-point."/>
+                                     ToolTip="ENR index value used for the transition mid-point. This value is used in ENR ratio calculations to update joint-use costs."/>
                         </StackPanel>
                         <StackPanel>
                             <TextBlock Text="Updated Joint Cost Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
-                            <TextBox Text="{Binding UpdatedJointCostYear}" HorizontalContentAlignment="Right" ToolTip="Fiscal year represented by the updated joint cost results."/>
+                            <TextBox Text="{Binding UpdatedJointCostYear}" HorizontalContentAlignment="Right" ToolTip="Fiscal year represented by the updated joint cost results. This labels the updated costs shown in outputs and exports."/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="2">
@@ -366,28 +366,28 @@
                             <TextBox Text="{Binding Enr1967Year}"
                                      Foreground="{DynamicResource App.Link.Enr1967}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="Year anchoring the ENR and CWCCIS indexing, typically 1967."/>
+                                     ToolTip="Year anchoring the ENR and CWCCIS indexing, typically 1967. This base year is used to normalize escalation factors."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="1967 ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding Enr1967IndexValue}"
                                      Foreground="{DynamicResource App.Link.Enr1967}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="ENR index value for the 1967 base year."/>
+                                     ToolTip="ENR index value for the 1967 base year. This value anchors the ENR ratio applied to transition costs."/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="1967 CWCCIS Base Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding CwccisBaseIndexValue}"
                                      Foreground="{DynamicResource App.Link.CwccisBase}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="CWCCIS base index value for 1967 (commonly 100)."/>
+                                     ToolTip="CWCCIS base index value for 1967 (commonly 100). This is the denominator for the CWCCIS update factor."/>
                         </StackPanel>
                         <StackPanel>
                             <TextBlock Text="CWCCIS Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding CwccisIndexYear}"
                                      Foreground="{DynamicResource App.Link.CwccisCurrent}"
                                      HorizontalContentAlignment="Right"
-                                     ToolTip="Calendar year tied to the current CWCCIS index values."/>
+                                     ToolTip="Calendar year tied to the current CWCCIS index values. This sets the timing for the CWCCIS update factor applied to costs."/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -508,7 +508,7 @@
                             <DataGridTextColumn.Header>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                    ToolTip="Name or description of the cost item being escalated."/>
+                                                    ToolTip="Name or description of the cost item being escalated. Categories help map inputs to updated cost totals and reports."/>
                                     <TextBlock Text="Category" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </DataGridTextColumn.Header>
@@ -522,7 +522,7 @@
                             <DataGridTextColumn.Header>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                    ToolTip="Joint-use cost at the mid-point of construction using the original ENR year."/>
+                                                    ToolTip="Joint-use cost at the mid-point of construction using the original ENR year. This is the base cost that gets escalated through ENR and CWCCIS factors."/>
                                     <TextBlock Margin="4,0,0,0"
                                                VerticalAlignment="Center"
                                                Foreground="{DynamicResource App.Link.JointUse}"
@@ -606,7 +606,7 @@
                             <DataGridTextColumn.Header>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                    ToolTip="Latest CWCCIS index value used for escalation."/>
+                                                    ToolTip="Latest CWCCIS index value used for escalation. This drives the CWCCIS update factor applied to 1967 costs."/>
                                     <TextBlock Text="Current CWCCIS Index"
                                                Margin="4,0,0,0"
                                                Foreground="{DynamicResource App.Link.CwccisCurrent}"
@@ -635,7 +635,7 @@
                 <Button Margin="0,4,0,4"
                         Command="{Binding ResetUpdatedCostItemsCommand}"
                         HorizontalAlignment="Left"
-                        ToolTip="Clear all updated cost rows so you can rebuild the table from scratch.">
+                        ToolTip="Clear all updated cost rows so you can rebuild the table from scratch. Clearing removes their contribution to total updated cost.">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
                         <TextBlock Text="Reset Table"/>
@@ -643,7 +643,7 @@
                 </Button>
                 <Button Margin="0,5,0,5"
                         Command="{Binding ComputeUpdatedStorageCommand}"
-                        ToolTip="Escalate the cost rows using the ENR and CWCCIS factors provided above.">
+                        ToolTip="Escalate the cost rows using the ENR and CWCCIS factors provided above. This recalculates the updated joint cost totals used in annualized scenarios.">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock FontFamily="Segoe MDL2 Assets"
                                    Text="&#xE8EF;"
@@ -721,7 +721,7 @@
                     <TextBlock Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Real federal discount rate applied to future RR&amp;R and mitigation costs."/>
+                                            ToolTip="Real federal discount rate applied to future RR&amp;R and mitigation costs. Higher rates reduce present value and annualized totals."/>
                         </InlineUIContainer>
                         <Run Text="Federal Discount Rate (%)"/>
                     </TextBlock>
@@ -729,7 +729,7 @@
                     <TextBlock Grid.Row="1" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Number of years used when discounting recurring RR&amp;R and mitigation items."/>
+                                            ToolTip="Number of years used when discounting recurring RR&amp;R and mitigation items. This period sets the CRF used to annualize RR&amp;R costs."/>
                         </InlineUIContainer>
                         <Run Text="Analysis Years"/>
                     </TextBlock>
@@ -737,7 +737,7 @@
                     <TextBlock Grid.Row="2" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Civil Works Construction Cost Index factor applied after discounting."/>
+                                            ToolTip="Civil Works Construction Cost Index factor applied after discounting. This multiplier escalates present value costs to updated dollars."/>
                         </InlineUIContainer>
                         <Run Text="CWCCI"/>
                     </TextBlock>
@@ -745,7 +745,7 @@
                     <TextBlock Grid.Row="3" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Reference year to which all RR&amp;R and mitigation costs are discounted."/>
+                                            ToolTip="Reference year to which all RR&amp;R and mitigation costs are discounted. This year anchors the present value factors."/>
                         </InlineUIContainer>
                         <Run Text="Base Year"/>
                     </TextBlock>
@@ -756,7 +756,7 @@
                                 <DataGridTextColumn.Header>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                        ToolTip="Name of the repair, replacement, rehabilitation, or mitigation activity."/>
+                                                        ToolTip="Name of the repair, replacement, rehabilitation, or mitigation activity. The label tracks which item contributes to the RR&amp;R totals."/>
                                         <TextBlock Text="Item" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </DataGridTextColumn.Header>
@@ -768,7 +768,7 @@
                                 <DataGridTextColumn.Header>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                        ToolTip="Cost of the activity stated in the year it occurs."/>
+                                                        ToolTip="Cost of the activity stated in the year it occurs. This amount is discounted to present value before escalation."/>
                                         <TextBlock Text="Future Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </DataGridTextColumn.Header>
@@ -777,7 +777,7 @@
                                 <DataGridTextColumn.Header>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                        ToolTip="Calendar year when the activity is scheduled."/>
+                                                        ToolTip="Calendar year when the activity is scheduled. The year determines the discount exponent used in PV factors."/>
                                         <TextBlock Text="Year" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </DataGridTextColumn.Header>
@@ -795,7 +795,7 @@
                             Margin="0,4,0,4"
                             Command="{Binding ResetRrrItemsCommand}"
                             HorizontalAlignment="Left"
-                            ToolTip="Clear all RR&amp;R and mitigation entries from the table.">
+                            ToolTip="Clear all RR&amp;R and mitigation entries from the table. Clearing removes their effect on updated and annualized RR&amp;R totals.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
                             <TextBlock Text="Reset Table"/>
@@ -805,7 +805,7 @@
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
                             Command="{Binding ComputeRrrCommand}"
-                            ToolTip="Discount and escalate the RR&amp;R / mitigation schedule using the settings above.">
+                            ToolTip="Discount and escalate the RR&amp;R / mitigation schedule using the settings above. This recalculates present value, updated cost, and annualized totals.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -815,8 +815,8 @@
                         </StackPanel>
                     </Button>
                     <StackPanel Grid.Row="7" Grid.ColumnSpan="2">
-                        <TextBlock Text="{Binding RrrUpdatedCost, Mode=OneWay, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value × CWCCI" FontWeight="Bold" Margin="0,0,0,4"/>
-                        <TextBlock Text="{Binding RrrAnnualized, Mode=OneWay, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding RrrUpdatedCost, Mode=OneWay, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value × CWCCI. This updated total feeds the annualized RR&amp;R amount." FontWeight="Bold" Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding RrrAnnualized, Mode=OneWay, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF. This annualized value is scaled by storage percent in total cost." FontWeight="Bold"/>
                     </StackPanel>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
@@ -876,7 +876,7 @@
                     <TextBlock Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Discount rate used for the first annualization scenario."/>
+                                            ToolTip="Discount rate used for the first annualization scenario. This rate drives the CRF used to annualize updated costs in Cost 1."/>
                         </InlineUIContainer>
                         <Run Text="Discount Rate 1 (%)"/>
                     </TextBlock>
@@ -884,7 +884,7 @@
                     <TextBlock Grid.Row="1" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Number of years in the first capital recovery scenario."/>
+                                            ToolTip="Number of years in the first capital recovery scenario. This period, with the discount rate, defines the CRF for Cost 1."/>
                         </InlineUIContainer>
                         <Run Text="Analysis Period 1"/>
                     </TextBlock>
@@ -892,7 +892,7 @@
                     <TextBlock Grid.Row="2" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Discount rate for the second comparison scenario."/>
+                                            ToolTip="Discount rate for the second comparison scenario. This rate drives the CRF used to annualize updated costs in Cost 2."/>
                         </InlineUIContainer>
                         <Run Text="Discount Rate 2 (%)"/>
                     </TextBlock>
@@ -900,7 +900,7 @@
                     <TextBlock Grid.Row="3" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Years covered by the second capital recovery scenario."/>
+                                            ToolTip="Years covered by the second capital recovery scenario. This period, with the discount rate, defines the CRF for Cost 2."/>
                         </InlineUIContainer>
                         <Run Text="Analysis Period 2"/>
                     </TextBlock>
@@ -909,7 +909,7 @@
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
                             Command="{Binding ComputeTotalCommand}"
-                            ToolTip="Combine capital, O&amp;M, and RR&amp;R values to update the allocation scenarios.">
+                            ToolTip="Combine capital, O&amp;M, and RR&amp;R values to update the allocation scenarios. This refreshes the total annual cost outputs for both scenarios.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -925,21 +925,21 @@
                         </Grid.ColumnDefinitions>
                         <GroupBox Header="Cost 1" Grid.Column="0" Margin="0,0,5,0">
                             <StackPanel>
-                                <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
-                                <TextBlock Text="{Binding CostRecommendation, Mode=OneWay, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
-                                <TextBlock Text="{Binding Capital1, Mode=OneWay, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1"/>
-                                <TextBlock Text="{Binding OmScaled, Mode=OneWay, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
-                                <TextBlock Text="{Binding RrrScaled, Mode=OneWay, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent"/>
-                                <TextBlock Text="{Binding Total1, Mode=OneWay, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage. This factor is applied to all scaled cost components."/>
+                                <TextBlock Text="{Binding CostRecommendation, Mode=OneWay, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent. This is the scaled capital base before annualization."/>
+                                <TextBlock Text="{Binding Capital1, Mode=OneWay, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1. This is the annualized capital component for Cost 1."/>
+                                <TextBlock Text="{Binding OmScaled, Mode=OneWay, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent. This is the O&amp;M component scaled by storage share."/>
+                                <TextBlock Text="{Binding RrrScaled, Mode=OneWay, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent. This scales annualized RR&amp;R to the storage share."/>
+                                <TextBlock Text="{Binding Total1, Mode=OneWay, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation. This is the summed annual cost for scenario 1." FontWeight="Bold"/>
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Header="Cost 2" Grid.Column="1" Margin="5,0,0,0">
                             <StackPanel>
-                                <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage"/>
-                                <TextBlock Text="{Binding CostRecommendation, Mode=OneWay, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent"/>
-                                <TextBlock Text="{Binding Capital2, Mode=OneWay, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2"/>
-                                <TextBlock Text="{Binding OmScaled, Mode=OneWay, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent"/>
-                                <TextBlock Text="{Binding Total2, Mode=OneWay, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" ToolTip="Percent = Storage Recommendation / Total Usable Storage. This factor is applied to all scaled cost components."/>
+                                <TextBlock Text="{Binding CostRecommendation, Mode=OneWay, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent. This is the scaled capital base before annualization."/>
+                                <TextBlock Text="{Binding Capital2, Mode=OneWay, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2. This is the annualized capital component for Cost 2."/>
+                                <TextBlock Text="{Binding OmScaled, Mode=OneWay, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent. This is the O&amp;M component scaled by storage share."/>
+                                <TextBlock Text="{Binding Total2, Mode=OneWay, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M. This is the summed annual cost for scenario 2." FontWeight="Bold"/>
                             </StackPanel>
                         </GroupBox>
                     </Grid>

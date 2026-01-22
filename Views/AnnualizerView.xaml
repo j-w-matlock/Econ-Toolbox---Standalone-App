@@ -81,7 +81,7 @@
                                     </Grid.RowDefinitions>
 
                                     <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Reference year that anchors discounting for future costs and benefits."/>
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Reference year that anchors discounting for future costs and benefits. This sets the base for present value factors across all annualization calculations."/>
                                         <TextBlock Text="Base Year" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="0" Grid.Column="1"
@@ -90,7 +90,7 @@
                                              Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Number of periods for capital recovery."/>
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Number of periods for capital recovery. This length drives the capital recovery factor and annualized cost results."/>
                                         <TextBlock Text="Analysis Period" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="1" Grid.Column="1"
@@ -99,7 +99,7 @@
                                              Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Total construction duration in months used to accumulate IDC."/>
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Total construction duration in months used to accumulate IDC. Longer durations increase the time interest accrues on construction outlays."/>
                                         <TextBlock Text="Construction Months" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="2" Grid.Column="1"
@@ -108,7 +108,7 @@
                                              Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Select whether IDC accrues from the beginning, middle, or end of each construction month when no detailed schedule is provided."/>
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Select whether IDC accrues from the beginning, middle, or end of each construction month when no detailed schedule is provided. The timing assumption shifts how much interest is applied within each month."/>
                                         <TextBlock Text="IDC Timing Assumption" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="3" Grid.Column="1"
@@ -117,7 +117,7 @@
                                               Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Toggle to calculate IDC using period-based first and last payment assumptions."/>
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Toggle to calculate IDC using period-based first and last payment assumptions. Enabling this changes the IDC timing logic and alters the resulting IDC total."/>
                                         <TextBlock Text="Calculate Interest at Period" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
                                     </StackPanel>
                                     <CheckBox Grid.Row="4" Grid.Column="1"
@@ -126,7 +126,7 @@
                                               Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Choose when the first payment occurs within the construction period for period-based IDC."/>
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Choose when the first payment occurs within the construction period for period-based IDC. The selected timing changes how many periods of interest are applied to the first outlay."/>
                                         <TextBlock Text="First Payment Timing" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="5" Grid.Column="1"
@@ -146,7 +146,7 @@
                                     </ComboBox>
 
                                     <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,0">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Define the timing of the final payment when using period-based IDC."/>
+                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Define the timing of the final payment when using period-based IDC. This affects how much interest is applied to the last payment period."/>
                                         <TextBlock Text="Last Payment Timing" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="6" Grid.Column="1"
@@ -253,7 +253,7 @@
                         <StackPanel Margin="0,24,0,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
                                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                ToolTip="List construction outlays by month and timing so the tool can compute interest during construction."/>
+                                                ToolTip="List construction outlays by month and timing so the tool can compute interest during construction. The schedule drives the monthly IDC accumulation and present value factors."/>
                                 <TextBlock Text="IDC Schedule" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
@@ -266,7 +266,7 @@
                                             <DataGridTextColumn.Header>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Amount of capital spent in the specified month."/>
+                                                                    ToolTip="Amount of capital spent in the specified month. Larger outlays increase IDC accrual and total capitalized cost."/>
                                                     <TextBlock Text="Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                 </StackPanel>
                                             </DataGridTextColumn.Header>
@@ -275,7 +275,7 @@
                                             <DataGridTextColumn.Header>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Construction month index when the cost occurs, starting at 1."/>
+                                                                    ToolTip="Construction month index when the cost occurs, starting at 1. Earlier months accrue interest for more periods than later months."/>
                                                     <TextBlock Text="Month Index" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                 </StackPanel>
                                             </DataGridTextColumn.Header>
@@ -284,7 +284,7 @@
                                             <DataGridComboBoxColumn.Header>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Select whether the cost hits at the beginning, midpoint, or end of the month."/>
+                                                                    ToolTip="Select whether the cost hits at the beginning, midpoint, or end of the month. Earlier timing increases the interest applied within the month."/>
                                                     <TextBlock Text="Timing" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                 </StackPanel>
                                             </DataGridComboBoxColumn.Header>
@@ -301,7 +301,7 @@
                                 </DataGrid>
                             </Border>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
-                                <Button Command="{Binding ResetIdcCommand}" MinWidth="160" ToolTip="Clear all IDC schedule entries">
+                                <Button Command="{Binding ResetIdcCommand}" MinWidth="160" ToolTip="Clear all IDC schedule entries. Clearing resets IDC calculations that depend on the schedule.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
                                         <TextBlock Text="Reset IDC Inputs"/>
@@ -313,7 +313,7 @@
                         <StackPanel Margin="0,24,0,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
                                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                ToolTip="Add future capital expenses in the year and timing they occur to include their present value."/>
+                                                ToolTip="Add future capital expenses in the year and timing they occur to include their present value. These entries feed the discounted cost totals and annualization results."/>
                                 <TextBlock Text="Future Costs" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
@@ -326,7 +326,7 @@
                                             <DataGridTextColumn.Header>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Future cost amount entered in nominal dollars."/>
+                                                                    ToolTip="Future cost amount entered in nominal dollars. This amount is discounted to present value using the base year and timing."/>
                                                     <TextBlock Text="Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                 </StackPanel>
                                             </DataGridTextColumn.Header>
@@ -335,7 +335,7 @@
                                             <DataGridTextColumn.Header>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Calendar year when the future cost will be incurred."/>
+                                                                    ToolTip="Calendar year when the future cost will be incurred. The year determines how many periods the cost is discounted."/>
                                                     <TextBlock Text="Year" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                 </StackPanel>
                                             </DataGridTextColumn.Header>
@@ -344,7 +344,7 @@
                                             <DataGridComboBoxColumn.Header>
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                     <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Timing within the year to align present value factors."/>
+                                                                    ToolTip="Timing within the year to align present value factors. Earlier timing increases the discounted weight relative to later timing."/>
                                                     <TextBlock Text="Timing" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                                 </StackPanel>
                                             </DataGridComboBoxColumn.Header>
@@ -361,7 +361,7 @@
                                 </DataGrid>
                             </Border>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
-                                <Button Command="{Binding ResetFutureCostsCommand}" MinWidth="160" ToolTip="Clear all future cost entries">
+                                <Button Command="{Binding ResetFutureCostsCommand}" MinWidth="160" ToolTip="Clear all future cost entries. Clearing removes their discounted impacts from totals.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
                                         <TextBlock Text="Reset Future Costs"/>

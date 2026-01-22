@@ -42,7 +42,7 @@
                         <Button Command="{Binding AddDamageColumnCommand}"
                                 Style="{StaticResource Button.Action}"
                                 Margin="0,0,12,0"
-                                ToolTip="Append a new damage column for an additional category or scenario.">
+                                ToolTip="Append a new damage column for an additional category or scenario. Additional columns create new damage curves included in calculations.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
                                 <TextBlock Text="Add Damage Column"/>
@@ -51,7 +51,7 @@
                         <Button Command="{Binding RemoveDamageColumnCommand}"
                                 Style="{StaticResource Button.Action}"
                                 Margin="0,0,12,0"
-                                ToolTip="Remove the most recently added damage column.">
+                                ToolTip="Remove the most recently added damage column. Removing a column excludes its damage curve from calculations.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
                                 <TextBlock Text="Remove Damage Column"/>
@@ -61,7 +61,7 @@
                                   VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                ToolTip="Toggle to add a stage column so you can enter paired stage values."/>
+                                                ToolTip="Toggle to add a stage column so you can enter paired stage values. Stage values change how damages align with stage-frequency logic."/>
                                 <TextBlock Text="Include Stage" Margin="4,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </CheckBox>
