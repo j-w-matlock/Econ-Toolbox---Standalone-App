@@ -183,7 +183,7 @@
                                 <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding ScenarioComparisons}"
                                           SelectedItem="{Binding SelectedScenario, Mode=TwoWay}"
                                           AutoGenerateColumns="False"
-                                          HeadersVisibility="All"
+                                          HeadersVisibility="Column"
                                           ColumnWidth="SizeToHeader"
                                           Margin="0,8,0,0">
                                     <DataGrid.Columns>
@@ -257,7 +257,7 @@
                                 <TextBlock Text="IDC Schedule" Margin="6,0,0,0" FontWeight="SemiBold"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
-                                <DataGrid CanUserResizeColumns="True" x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="All" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
+                                <DataGrid CanUserResizeColumns="True" x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="Column" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn>
                                             <DataGridTextColumn.Binding>

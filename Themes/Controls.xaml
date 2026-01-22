@@ -639,9 +639,11 @@
         <Setter Property="AlternatingRowBackground" Value="{DynamicResource App.SurfaceAlt}"/>
         <Setter Property="GridLinesVisibility" Value="Horizontal"/>
         <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource App.Divider}"/>
+        <Setter Property="CanUserResizeColumns" Value="True"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Standard}"/>
         <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
         <Setter Property="Margin" Value="{StaticResource Margin.StackLarge}"/>
         <Setter Property="SelectionUnit" Value="CellOrRowHeader"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -656,6 +658,7 @@
         <Setter Property="RowHeaderWidth" Value="0"/>
         <Setter Property="ColumnHeaderHeight" Value="{x:Static sys:Double.NaN}"/>
         <Setter Property="RowHeight" Value="32"/>
+        <Setter Property="ColumnWidth" Value="SizeToHeader"/>
         <Setter Property="CellStyle" Value="{DynamicResource DataGridCellStyle}"/>
         <Setter Property="RowStyle" Value="{DynamicResource DataGridRowStyle}"/>
         <Setter Property="behaviors:DataGridCommitBehavior.CommitOnLostFocus" Value="True"/>
