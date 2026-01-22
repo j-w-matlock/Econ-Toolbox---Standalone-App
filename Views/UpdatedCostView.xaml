@@ -391,6 +391,108 @@
                         </StackPanel>
                     </StackPanel>
                 </Grid>
+                <StackPanel.Resources>
+                    <Style TargetType="DataGridCell" x:Key="RequiredCellBaseStyle">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    </Style>
+                    <Style x:Key="NumericCellStyle" TargetType="TextBlock">
+                        <Setter Property="TextAlignment" Value="Right"/>
+                        <Setter Property="Padding" Value="0,0,4,0"/>
+                    </Style>
+                    <Style x:Key="NumericEditingStyle" TargetType="TextBox">
+                        <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                    </Style>
+                    <Style x:Key="CategoryCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Category}" Value="">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Category}" Value="{x:Null}">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="JointUseCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding JointUsePre1967}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="PreEnrCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Pre1967EnrIndex}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="TransitionEnrCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TransitionEnrIndex}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="Enr1967CellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Enr1967Index}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="CwccisBaseCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CwccisBase}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="CwccisIndexCellStyle" TargetType="DataGridCell" BasedOn="{StaticResource RequiredCellBaseStyle}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CwccisIndex}" Value="0">
+                                <Setter Property="Background" Value="{DynamicResource App.WarningBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style x:Key="JointUseTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.JointUse}"/>
+                    </Style>
+                    <Style x:Key="JointUseEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.JointUse}"/>
+                    </Style>
+                    <Style x:Key="PreEnrTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.PreEnr}"/>
+                    </Style>
+                    <Style x:Key="PreEnrEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.PreEnr}"/>
+                    </Style>
+                    <Style x:Key="TransitionEnrTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.TransitionEnr}"/>
+                    </Style>
+                    <Style x:Key="TransitionEnrEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.TransitionEnr}"/>
+                    </Style>
+                    <Style x:Key="Enr1967TextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.Enr1967}"/>
+                    </Style>
+                    <Style x:Key="Enr1967EditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.Enr1967}"/>
+                    </Style>
+                    <Style x:Key="CwccisBaseTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisBase}"/>
+                    </Style>
+                    <Style x:Key="CwccisBaseEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisBase}"/>
+                    </Style>
+                    <Style x:Key="CwccisIndexTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NumericCellStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
+                    </Style>
+                    <Style x:Key="CwccisIndexEditingTextStyle" TargetType="TextBox" BasedOn="{StaticResource NumericEditingStyle}">
+                        <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
+                    </Style>
+                </StackPanel.Resources>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0,0,0,10">
                     <TextBlock TextWrapping="Wrap">
                         Matched colors now show which table columns draw from the inputs above. Highlighted cells mark fields that need values before the update calculation can run.
