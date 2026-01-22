@@ -681,11 +681,6 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             SnapsToDevicePixels="True">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
                             <Thumb x:Name="PART_LeftHeaderGripper"
                                    Width="4"
                                    Margin="0"
@@ -700,7 +695,8 @@
                                    Width="4"
                                    Margin="0"
                                    Background="Transparent"
-                                   Cursor="SizeWE"/>
+                                   Cursor="SizeWE"
+                                   HorizontalAlignment="Right"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
