@@ -613,7 +613,7 @@
                         </DataGridTextColumn>
                         <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
                             <DataGridTextColumn.Binding>
-                                <Binding Path="CwccisUpdateFactor" StringFormat="{}{0:N5}"/>
+                                <Binding Path="CwccisUpdateFactor" StringFormat="{}{0:N2}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="CWCCIS Update Value"/>

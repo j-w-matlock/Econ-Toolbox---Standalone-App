@@ -573,7 +573,7 @@ namespace EconToolbox.Desktop.ViewModels
                 item.EnrRatioTransitionTo1967 = enrRatioTransitionTo1967;
                 item.JointUse1967 = jointUse1967;
 
-                var cwccisUpdateFactor = CalculateRatio(item.CwccisIndex, cwccisBase);
+                var cwccisUpdateFactor = RoundToDecimals(CalculateRatio(item.CwccisIndex, cwccisBase), 2);
                 item.CwccisUpdateFactor = cwccisUpdateFactor;
                 item.UpdatedJointCost = item.JointUse1967 * cwccisUpdateFactor;
             }
@@ -831,6 +831,11 @@ namespace EconToolbox.Desktop.ViewModels
             var ratio = CalculateRatio(numerator, denominator);
             var escalatedValue = ratio > 0 ? baseValue * ratio : baseValue;
             return (ratio, escalatedValue);
+        }
+
+        private static double RoundToDecimals(double value, int decimals)
+        {
+            return Math.Round(value, decimals, MidpointRounding.AwayFromZero);
         }
 
         private void ResetRrrCostItems()
