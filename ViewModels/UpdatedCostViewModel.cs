@@ -566,13 +566,22 @@ namespace EconToolbox.Desktop.ViewModels
                 var cwccisBase = UseValueOrFallback(item.CwccisBase, CwccisBaseIndexValue > 0 ? CwccisBaseIndexValue : 100.0);
                 item.CwccisBase = cwccisBase;
 
-                var (enrRatioPreToTransition, jointUseTransition) = CalculateRatioAndValue(item.JointUsePre1967, transitionIndex, preIndex);
-                item.EnrRatioPreToTransition = enrRatioPreToTransition;
-                item.JointUseTransition = jointUseTransition;
+                if (item.JointUsePre1967 > 0)
+                {
+                    var (enrRatioPreToTransition, jointUseTransition) = CalculateRatioAndValue(item.JointUsePre1967, transitionIndex, preIndex);
+                    item.EnrRatioPreToTransition = enrRatioPreToTransition;
+                    item.JointUseTransition = jointUseTransition;
 
-                var (enrRatioTransitionTo1967, jointUse1967) = CalculateRatioAndValue(item.JointUseTransition, enr1967Index, transitionIndex);
-                item.EnrRatioTransitionTo1967 = enrRatioTransitionTo1967;
-                item.JointUse1967 = jointUse1967;
+                    var (enrRatioTransitionTo1967, jointUse1967) = CalculateRatioAndValue(item.JointUseTransition, enr1967Index, transitionIndex);
+                    item.EnrRatioTransitionTo1967 = enrRatioTransitionTo1967;
+                    item.JointUse1967 = jointUse1967;
+                }
+                else
+                {
+                    item.EnrRatioPreToTransition = 0;
+                    item.JointUseTransition = 0;
+                    item.EnrRatioTransitionTo1967 = 0;
+                }
 
                 var cwccisUpdateFactor = CalculateRatio(item.CwccisIndex, cwccisBase);
                 item.CwccisUpdateFactor = cwccisUpdateFactor;
