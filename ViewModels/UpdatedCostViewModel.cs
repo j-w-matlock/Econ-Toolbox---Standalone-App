@@ -574,8 +574,9 @@ namespace EconToolbox.Desktop.ViewModels
                 item.JointUse1967 = jointUse1967;
 
                 var cwccisUpdateFactor = CalculateRatio(item.CwccisIndex, cwccisBase);
-                item.CwccisUpdateFactor = cwccisUpdateFactor;
-                item.UpdatedJointCost = item.JointUse1967 * cwccisUpdateFactor;
+                var roundedCwccisUpdateFactor = Math.Round(cwccisUpdateFactor, 2, MidpointRounding.AwayFromZero);
+                item.CwccisUpdateFactor = roundedCwccisUpdateFactor;
+                item.UpdatedJointCost = item.JointUse1967 * roundedCwccisUpdateFactor;
             }
             TotalUpdatedCost = UpdatedCostItems.Sum(i => i.UpdatedJointCost);
         }
