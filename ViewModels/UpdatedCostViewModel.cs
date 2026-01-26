@@ -9,6 +9,7 @@ namespace EconToolbox.Desktop.ViewModels
 {
     public class UpdatedCostViewModel : DiagnosticViewModelBase, IComputeModule
     {
+        private const int UpdatedCostPrecision = 10;
         private double _totalStorage;
         private double _storageRecommendation;
         private double _percent;
@@ -575,9 +576,9 @@ namespace EconToolbox.Desktop.ViewModels
 
                 var cwccisUpdateFactor = CalculateRatio(item.CwccisIndex, cwccisBase);
                 item.CwccisUpdateFactor = cwccisUpdateFactor;
-                item.UpdatedJointCost = item.JointUse1967 * cwccisUpdateFactor;
+                item.UpdatedJointCost = RoundUpdatedCost(item.JointUse1967 * cwccisUpdateFactor);
             }
-            TotalUpdatedCost = UpdatedCostItems.Sum(i => i.UpdatedJointCost);
+            TotalUpdatedCost = RoundUpdatedCost(UpdatedCostItems.Sum(i => i.UpdatedJointCost));
         }
 
         private void ComputeRrr()
@@ -822,15 +823,20 @@ namespace EconToolbox.Desktop.ViewModels
         private static double CalculateRatio(double numerator, double denominator)
         {
             return numerator > 0 && denominator > 0
-                ? numerator / denominator
+                ? RoundUpdatedCost(numerator / denominator)
                 : 0.0;
         }
 
         private static (double Ratio, double EscalatedValue) CalculateRatioAndValue(double baseValue, double numerator, double denominator)
         {
             var ratio = CalculateRatio(numerator, denominator);
-            var escalatedValue = ratio > 0 ? baseValue * ratio : baseValue;
+            var escalatedValue = ratio > 0 ? RoundUpdatedCost(baseValue * ratio) : RoundUpdatedCost(baseValue);
             return (ratio, escalatedValue);
+        }
+
+        private static double RoundUpdatedCost(double value)
+        {
+            return Math.Round(value, UpdatedCostPrecision, MidpointRounding.AwayFromZero);
         }
 
         private void ResetRrrCostItems()
