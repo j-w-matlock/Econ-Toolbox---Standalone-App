@@ -485,7 +485,9 @@
                            Margin="0,0,0,6"/>
                 <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding UpdatedCostItems}"
                           AutoGenerateColumns="False"
-                          Height="200"
+                          Height="202"
+                          RowHeight="28"
+                          ColumnHeaderHeight="34"
                           Margin="0,0,0,12"
                           ColumnWidth="SizeToHeader">
                     <DataGrid.Columns>
@@ -567,7 +569,9 @@
                            Margin="0,0,0,6"/>
                 <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding UpdatedCostItems}"
                           AutoGenerateColumns="False"
-                          Height="170"
+                          Height="202"
+                          RowHeight="28"
+                          ColumnHeaderHeight="34"
                           Margin="0,0,0,5"
                           ColumnWidth="SizeToHeader">
                     <DataGrid.Columns>
