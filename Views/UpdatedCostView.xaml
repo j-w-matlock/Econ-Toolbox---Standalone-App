@@ -580,12 +580,14 @@
                                 </StackPanel>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True" ElementStyle="{StaticResource NumericCellStyle}">
+                        <DataGridTextColumn ElementStyle="{StaticResource JointUseTextStyle}"
+                                            EditingElementStyle="{StaticResource JointUseEditingTextStyle}"
+                                            CellStyle="{StaticResource JointUseCellStyle}">
                             <DataGridTextColumn.Binding>
                                 <Binding Path="JointUse1967" Converter="{StaticResource CurrencyConverter}"/>
                             </DataGridTextColumn.Binding>
                             <DataGridTextColumn.Header>
-                                <TextBlock Text="Adjusted Joint Use Costs at 1967 Base"/>
+                                <TextBlock Text="Joint Use Costs at Midpoint of Construction"/>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn Binding="{Binding CwccisBase}"
