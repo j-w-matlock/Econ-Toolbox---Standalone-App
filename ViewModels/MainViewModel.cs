@@ -21,6 +21,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ModuleDefinition ReadMeModule { get; }
         public IReadOnlyList<ModuleDefinition> Modules { get; }
         public ObservableCollection<DiagnosticItem> Diagnostics { get; } = new();
+        public ProjectViewModel ProjectManager { get; }
 
         private ModuleDefinition? _selectedModule;
         private ModuleDefinition? _explorerSelectedModule;
@@ -212,6 +213,8 @@ namespace EconToolbox.Desktop.ViewModels
             _viewModelFactory = viewModelFactory;
             _excelExportService = excelExportService;
             _layoutSettingsService = layoutSettingsService;
+
+            ProjectManager = new ProjectViewModel();
 
             CalculateCommand = new RelayCommand(Calculate);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
