@@ -702,13 +702,12 @@
                                        TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
-                            Capture future repair, replacement, rehabilitation, and mitigation costs. Use the grid to list each activity, the year it occurs, and its cost in that year dollars. The tool discounts everything back to the base year before applying the CWCCI.
+                            Capture future repair, replacement, rehabilitation, and mitigation costs. Use the grid to list each activity, the year it occurs, and its cost in that year dollars. The tool discounts everything back to the base year for annualization.
                         </TextBlock>
                     </StackPanel>
                 </Border>
                 <Grid Margin="0,10,0,10">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -740,20 +739,21 @@
                     <TextBlock Grid.Row="2" Margin="0,0,5,5">
                         <InlineUIContainer BaselineAlignment="Center">
                             <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Civil Works Construction Cost Index factor applied after discounting. This multiplier escalates present value costs to updated dollars."/>
-                        </InlineUIContainer>
-                        <Run Text="CWCCI"/>
-                    </TextBlock>
-                    <TextBox Text="{Binding RrrCwcci}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                    <TextBlock Grid.Row="3" Margin="0,0,5,5">
-                        <InlineUIContainer BaselineAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
                                             ToolTip="Reference year to which all RR&amp;R and mitigation costs are discounted. This year anchors the present value factors."/>
                         </InlineUIContainer>
                         <Run Text="Base Year"/>
                     </TextBlock>
-                    <TextBox Text="{Binding RrrBaseYear}" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
-                    <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding RrrCostItems}" AutoGenerateColumns="False" Grid.Row="4" Grid.ColumnSpan="2" Height="150" Margin="0,0,0,5" ColumnWidth="SizeToHeader">
+                    <TextBox Text="{Binding RrrBaseYear}" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+                    <DataGrid CanUserResizeColumns="True"
+                              CanUserAddRows="True"
+                              ItemsSource="{Binding RrrCostItems}"
+                              AutoGenerateColumns="False"
+                              Grid.Row="3"
+                              Grid.ColumnSpan="2"
+                              Height="150"
+                              Margin="0,0,0,5"
+                              ColumnWidth="SizeToHeader"
+                              VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Item}">
                                 <DataGridTextColumn.Header>
@@ -771,7 +771,7 @@
                                 <DataGridTextColumn.Header>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                        ToolTip="Cost of the activity stated in the year it occurs. This amount is discounted to present value before escalation."/>
+                                                        ToolTip="Cost of the activity stated in the year it occurs. This amount is discounted to present value for annualization."/>
                                         <TextBlock Text="Future Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </DataGridTextColumn.Header>
@@ -793,7 +793,7 @@
                             </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Grid.Row="5"
+                    <Button Grid.Row="4"
                             Grid.ColumnSpan="2"
                             Margin="0,4,0,4"
                             Command="{Binding ResetRrrItemsCommand}"
@@ -804,11 +804,11 @@
                             <TextBlock Text="Reset Table"/>
                         </StackPanel>
                     </Button>
-                    <Button Grid.Row="6"
+                    <Button Grid.Row="5"
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
                             Command="{Binding ComputeRrrCommand}"
-                            ToolTip="Discount and escalate the RR&amp;R / mitigation schedule using the settings above. This recalculates present value, updated cost, and annualized totals.">
+                            ToolTip="Discount the RR&amp;R / mitigation schedule using the settings above. This recalculates present value, updated cost, and annualized totals.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets"
                                        Text="&#xE8EF;"
@@ -817,21 +817,21 @@
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
-                    <StackPanel Grid.Row="7" Grid.ColumnSpan="2">
-                        <TextBlock Text="{Binding RrrUpdatedCost, Mode=OneWay, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value × CWCCI. This updated total feeds the annualized RR&amp;R amount." FontWeight="Bold" Margin="0,0,0,4"/>
+                    <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
+                        <TextBlock Text="{Binding RrrUpdatedCost, Mode=OneWay, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value. This total feeds the annualized RR&amp;R amount." FontWeight="Bold" Margin="0,0,0,4"/>
                         <TextBlock Text="{Binding RrrAnnualized, Mode=OneWay, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF. This annualized value is scaled by storage percent in total cost." FontWeight="Bold"/>
                     </StackPanel>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <TextBlock TextWrapping="Wrap">
-                        Present Value aggregates each scheduled cost using the discount rate and base year. The Updated Cost multiplies that total by CWCCI, and the Annualized figure then applies your capital recovery factor. Larger future costs, slower discounting, or higher CWCCI will elevate every downstream total.
+                        Present Value aggregates each scheduled cost using the discount rate and base year. The Updated Cost matches that total, and the Annualized figure then applies your capital recovery factor. Larger future costs or slower discounting will elevate every downstream total.
                     </TextBlock>
                 </Border>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
                     <TextBlock TextWrapping="Wrap">
                         • PV Factor = 1 ÷ (1 + r)^(Year − Base Year); Present Value = Future Cost × PV Factor.
                         <LineBreak/>
-                        • RRR Updated Cost = Σ Present Value × CWCCI.
+                        • RRR Updated Cost = Σ Present Value.
                         <LineBreak/>
                         • Annualized RR&amp;R = RRR Updated Cost × CRF(r, periods), where CRF follows r(1 + r)ⁿ ÷ ((1 + r)ⁿ − 1) or 1/n when r = 0.
                     </TextBlock>

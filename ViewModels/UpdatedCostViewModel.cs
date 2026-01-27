@@ -599,7 +599,7 @@ namespace EconToolbox.Desktop.ViewModels
                 item.PresentValue = item.FutureCost * item.PvFactor;
             }
             RrrTotalPv = RrrCostItems.Sum(i => i.PresentValue);
-            RrrUpdatedCost = RrrTotalPv * RrrCwcci;
+            RrrUpdatedCost = RrrTotalPv;
             double crf = CapitalRecoveryModel.Calculate(rateDec, RrrPeriods);
             RrrAnnualized = RrrUpdatedCost * crf;
         }
