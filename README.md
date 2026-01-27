@@ -109,14 +109,26 @@ Selecting **Export** creates a single workbook with:
 
 ## Publishing a Standalone Executable
 
-Create a self-contained `.exe` to distribute without requiring a local .NET install:
+Create a self-contained `.exe` to distribute without requiring a local .NET install.
+
+### VS Code workflow (Windows)
+
+1. Open this repo folder in VS Code on Windows.
+2. Ensure the **.NET 8 SDK** is installed (`dotnet --list-sdks` should show an 8.x entry).
+3. Open **Terminal → New Terminal** and run the publish command from the repo root.
 
 ```bash
-dotnet publish -c Release -r win-x64 --self-contained true \
+dotnet publish EconToolbox.Desktop.csproj -c Release -r win-x64 --self-contained true \
     /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true
 ```
 
 The packaged executable is emitted to `bin/Release/net8.0-windows/win-x64/publish/EconToolbox.Desktop.exe`.
+
+### If publish fails
+
+- **`NETSDK1047` or `assets file doesn't have a target for 'net8.0-windows'`**: restore from the repo root (`dotnet restore`) and retry publish.
+- **`The SDK 'Microsoft.NET.Sdk.WindowsDesktop' specified could not be found`**: install the Windows Desktop workload with the Visual Studio Installer, then retry.
+- **`error NETSDK1127: The targeting pack ...`**: install the **.NET 8 targeting pack** (or reinstall the .NET 8 SDK) and retry.
 
 ## Known Issues and Limitations
 
