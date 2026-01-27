@@ -987,7 +987,7 @@ namespace EconToolbox.Desktop.Services
                 else if (kv.Key == "Total Updated Cost")
                     cell.GetComment().AddText("Total Updated Cost = Σ(Updated Joint-Use 1967 × CWCCIS Update Value)");
                 else if (kv.Key == "RRR Updated Cost")
-                    cell.GetComment().AddText("RRR Updated Cost = Present Value × CWCCI");
+                    cell.GetComment().AddText("RRR Updated Cost = Present Value");
                 else if (kv.Key == "RRR Annualized")
                     cell.GetComment().AddText("RRR Annualized = RRR Updated Cost × CRF");
                 else if (kv.Key == "OM Scaled")
@@ -1223,7 +1223,7 @@ namespace EconToolbox.Desktop.Services
                 ("Storage Utilization", updated.Percent, "0.00%", "Storage Recommendation / Total Usable Storage.", false),
                 ("Total Joint O&M", updated.TotalJointOm, "$#,##0.00", "Joint Operations Cost + Joint Maintenance Cost.", false),
                 ("Total Updated Cost", updated.TotalUpdatedCost, "$#,##0.00", "Σ(Updated Joint-Use 1967 × CWCCIS Update Value).", false),
-                ("RRR Updated Cost", updated.RrrUpdatedCost, "$#,##0.00", "Present Value × CWCCI.", false),
+                ("RRR Updated Cost", updated.RrrUpdatedCost, "$#,##0.00", "Present Value.", false),
                 ("RRR Annualized", updated.RrrAnnualized, "$#,##0.00", "RRR Updated Cost × CRF.", false),
                 ("O&M Scaled", updated.OmScaled, "$#,##0.00", "Total Joint O&M × Storage Utilization.", false),
                 ("RRR Scaled", updated.RrrScaled, "$#,##0.00", "RRR Annualized × Storage Utilization.", false),
