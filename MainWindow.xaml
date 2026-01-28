@@ -337,7 +337,7 @@
                                                            Margin="0,0,0,4"/>
                                                 <TextBlock Text="{Binding FunctionSummary}"
                                                            TextWrapping="Wrap"
-                                                           Foreground="{DynamicResource App.TextSecondary}"/>
+                                                           Foreground="{DynamicResource App.ToolTipForeground}"/>
                                             </StackPanel>
                                         </ToolTip>
                                     </StackPanel.ToolTip>
@@ -381,7 +381,8 @@
                                     DockPanel.Dock="Right"
                                     Style="{StaticResource Button.PaneToggle}">
                                 <TextBlock Text="Hide"
-                                           Style="{StaticResource Text.StatusBar}"/>
+                                           Style="{StaticResource Text.StatusBar}"
+                                           Foreground="{DynamicResource App.OnAccent}"/>
                             </Button>
                         </DockPanel>
                         <TextBlock Text="{Binding SelectedModule.Title}"
