@@ -96,7 +96,6 @@ public static class ResizableBorderBehavior
         private readonly VisualCollection visuals;
         private readonly Thumb rightThumb;
         private readonly Thumb bottomThumb;
-        private readonly Thumb cornerThumb;
 
         public ResizableBorderAdorner(FrameworkElement adornedElement)
             : base(adornedElement)
@@ -104,15 +103,11 @@ public static class ResizableBorderBehavior
             visuals = new VisualCollection(this);
             rightThumb = CreateThumb(Cursors.SizeWE);
             bottomThumb = CreateThumb(Cursors.SizeNS);
-            cornerThumb = CreateThumb(Cursors.SizeNWSE);
-
             rightThumb.DragDelta += OnRightDragDelta;
             bottomThumb.DragDelta += OnBottomDragDelta;
-            cornerThumb.DragDelta += OnCornerDragDelta;
 
             visuals.Add(rightThumb);
             visuals.Add(bottomThumb);
-            visuals.Add(cornerThumb);
         }
 
         protected override int VisualChildrenCount => visuals.Count;
@@ -122,25 +117,25 @@ public static class ResizableBorderBehavior
         protected override Size ArrangeOverride(Size finalSize)
         {
             var handleSize = Math.Max(0, GetHandleSize());
-            var halfHandle = handleSize / 2;
             var safeWidth = Math.Max(0, finalSize.Width);
             var safeHeight = Math.Max(0, finalSize.Height);
-            var rightHeight = Math.Max(0, safeHeight - handleSize);
-            var bottomWidth = Math.Max(0, safeWidth - handleSize);
 
-            rightThumb.Arrange(new Rect(Math.Max(0, safeWidth - halfHandle), Math.Max(0, halfHandle), handleSize, rightHeight));
-            bottomThumb.Arrange(new Rect(Math.Max(0, halfHandle), Math.Max(0, safeHeight - halfHandle), bottomWidth, handleSize));
-            cornerThumb.Arrange(new Rect(Math.Max(0, safeWidth - handleSize), Math.Max(0, safeHeight - handleSize), handleSize, handleSize));
+            rightThumb.Arrange(new Rect(Math.Max(0, safeWidth - handleSize), 0, handleSize, safeHeight));
+            bottomThumb.Arrange(new Rect(0, Math.Max(0, safeHeight - handleSize), safeWidth, handleSize));
 
             return finalSize;
         }
 
         private Thumb CreateThumb(Cursor cursor)
         {
+            var styleKey = cursor == Cursors.SizeWE
+                ? "Thumb.ResizeHandle.Vertical"
+                : "Thumb.ResizeHandle.Horizontal";
+
             var thumb = new Thumb
             {
                 Cursor = cursor,
-                Style = (Style?)FindResource("Thumb.ResizeHandle")
+                Style = (Style?)FindResource(styleKey)
             };
 
             return thumb;
@@ -153,12 +148,6 @@ public static class ResizableBorderBehavior
 
         private void OnBottomDragDelta(object sender, DragDeltaEventArgs e)
         {
-            ResizeVertically(e.VerticalChange);
-        }
-
-        private void OnCornerDragDelta(object sender, DragDeltaEventArgs e)
-        {
-            ResizeHorizontally(e.HorizontalChange);
             ResizeVertically(e.VerticalChange);
         }
 

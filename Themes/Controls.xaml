@@ -1045,27 +1045,48 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="Thumb.ResizeHandle" TargetType="Thumb">
+    <Style x:Key="Thumb.ResizeHandle.Vertical" TargetType="Thumb">
         <Setter Property="Width" Value="{StaticResource Layout.CardResizeHandleSize}"/>
-        <Setter Property="Height" Value="{StaticResource Layout.CardResizeHandleSize}"/>
-        <Setter Property="Background" Value="{DynamicResource App.ScrollBarThumb}"/>
-        <Setter Property="Opacity" Value="0.65"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{DynamicResource App.Border}"
-                            BorderThickness="1"
-                            CornerRadius="{StaticResource Radius.XS}"/>
+                    <Grid Background="{TemplateBinding Background}">
+                        <Border x:Name="ResizeLine"
+                                BorderBrush="{DynamicResource App.Border}"
+                                BorderThickness="0,0,1,0"
+                                SnapsToDevicePixels="True"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ResizeLine" Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource App.Accent}"/>
-                <Setter Property="Opacity" Value="0.9"/>
-            </Trigger>
-        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Thumb.ResizeHandle.Horizontal" TargetType="Thumb">
+        <Setter Property="Height" Value="{StaticResource Layout.CardResizeHandleSize}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Border x:Name="ResizeLine"
+                                BorderBrush="{DynamicResource App.Border}"
+                                BorderThickness="0,0,0,1"
+                                SnapsToDevicePixels="True"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ResizeLine" Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="GridSplitter.Pane" TargetType="GridSplitter">
