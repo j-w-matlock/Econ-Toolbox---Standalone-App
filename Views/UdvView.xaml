@@ -61,24 +61,18 @@
                 </Style>
             </StackPanel.Style>
             <StackPanel Margin="{StaticResource Margin.Inline}">
-                <TextBlock>
-                    <InlineUIContainer BaselineAlignment="Center">
-                        <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                        ToolTip="Choose the overall recreation classification to filter available activity point tables. The selection drives which point scale is used in the unit day value lookup."/>
-                    </InlineUIContainer>
-                    <Run Text="Recreation Type"/>
-                </TextBlock>
-                <ComboBox ItemsSource="{Binding RecreationTypes}" SelectedItem="{Binding RecreationType}" MinWidth="150"/>
+                <TextBlock Text="Recreation Type"/>
+                <ComboBox ItemsSource="{Binding RecreationTypes}"
+                          SelectedItem="{Binding RecreationType}"
+                          MinWidth="150"
+                          ToolTip="Choose the overall recreation classification to filter available activity point tables. The selection drives which point scale is used in the unit day value lookup."/>
             </StackPanel>
             <StackPanel Margin="{StaticResource Margin.Inline}">
-                <TextBlock>
-                    <InlineUIContainer BaselineAlignment="Center">
-                        <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                        ToolTip="Select the specific activity that matches your study to retrieve the proper unit day scale. This choice determines the unit day value mapping applied to points."/>
-                    </InlineUIContainer>
-                    <Run Text="Activity Type"/>
-                </TextBlock>
-                <ComboBox ItemsSource="{Binding ActivityTypes}" SelectedItem="{Binding ActivityType}" MinWidth="200"/>
+                <TextBlock Text="Activity Type"/>
+                <ComboBox ItemsSource="{Binding ActivityTypes}"
+                          SelectedItem="{Binding ActivityType}"
+                          MinWidth="200"
+                          ToolTip="Select the specific activity that matches your study to retrieve the proper unit day scale. This choice determines the unit day value mapping applied to points."/>
             </StackPanel>
         </StackPanel>
         <Grid Grid.Row="2"
@@ -100,13 +94,12 @@
                         Orientation="Horizontal"
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
-                <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Enter the point score from the Unit Day Value table that reflects recreation quality. The point score is used to determine the unit day value tier."/>
-                <TextBlock Text="Point Value" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Point Value" VerticalAlignment="Center"/>
             </StackPanel>
             <TextBox Grid.Row="0"
                      Grid.Column="1"
                      Text="{Binding Points, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="Enter the point score from the Unit Day Value table that reflects recreation quality. The point score is used to determine the unit day value tier."
                      MinWidth="80"
                      Margin="12,0,0,0"
                      TextAlignment="Right"/>
@@ -116,13 +109,12 @@
                         Orientation="Horizontal"
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
-                <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Provide the number of days in the recreation season that will host visitors. This length scales total user days from the visitation rate."/>
-                <TextBlock Text="Season Length (days)" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Season Length (days)" VerticalAlignment="Center"/>
             </StackPanel>
             <TextBox Grid.Row="1"
                      Grid.Column="1"
                      Text="{Binding SeasonDays, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="Provide the number of days in the recreation season that will host visitors. This length scales total user days from the visitation rate."
                      MinWidth="100"
                      Margin="12,0,0,0"
                      TextAlignment="Right"/>
@@ -132,9 +124,7 @@
                         Orientation="Horizontal"
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
-                <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Enter visitation as daily, monthly, or yearly figures. Adjust the selector to match your data cadence. The cadence determines how the input is converted to total user days."/>
-                <TextBlock Text="Visitation Input" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Visitation Input" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Grid.Row="2"
                         Grid.Column="1"
@@ -143,11 +133,13 @@
                         VerticalAlignment="Center">
                 <TextBox Text="{Binding VisitationInput, UpdateSourceTrigger=PropertyChanged}"
                          MinWidth="100"
+                         ToolTip="Enter visitation as daily, monthly, or yearly figures. Adjust the selector to match your data cadence. The cadence determines how the input is converted to total user days."
                          TextAlignment="Right"/>
                 <ComboBox ItemsSource="{Binding VisitationPeriods}"
                           SelectedItem="{Binding VisitationPeriod}"
                           Margin="8,0,0,0"
-                          MinWidth="120"/>
+                          MinWidth="120"
+                          ToolTip="Select the cadence for the visitation input (daily, monthly, yearly). This selection controls how the input converts into total user days."/>
             </StackPanel>
 
             <StackPanel Grid.Row="3"
@@ -155,13 +147,12 @@
                         Orientation="Horizontal"
                         VerticalAlignment="Center"
                         Margin="{StaticResource Margin.Inline}">
-                <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                ToolTip="Calculated total user days for the season based on visitation settings. This value feeds the unit day value computation and final benefit estimates."/>
-                <TextBlock Text="Total User Days" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Total User Days" VerticalAlignment="Center"/>
             </StackPanel>
             <TextBlock Grid.Row="3"
                        Grid.Column="1"
                        Text="{Binding TotalUserDays, StringFormat={}{0:N0}}"
+                       ToolTip="Calculated total user days for the season based on visitation settings. This value feeds the unit day value computation and final benefit estimates."
                        Margin="12,0,0,0"
                        VerticalAlignment="Center"
                        FontWeight="SemiBold"/>
@@ -183,21 +174,23 @@
                           ScrollViewer.VerticalScrollBarVisibility="Auto"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Label, UpdateSourceTrigger=PropertyChanged}"
+                        <DataGridTextColumn Header="Label (optional)"
+                                            Binding="{Binding Label, UpdateSourceTrigger=PropertyChanged}"
                                             Width="SizeToHeader">
-                            <DataGridTextColumn.Header>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="Label (optional)"/>
-                                </StackPanel>
-                            </DataGridTextColumn.Header>
+                            <DataGridTextColumn.HeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="ToolTip" Value="Optional label describing the historical visitation observation (year, source, or note)."/>
+                                </Style>
+                            </DataGridTextColumn.HeaderStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Binding="{Binding VisitationText, UpdateSourceTrigger=PropertyChanged}"
+                        <DataGridTextColumn Header="Visitation"
+                                            Binding="{Binding VisitationText, UpdateSourceTrigger=PropertyChanged}"
                                             Width="SizeToHeader">
-                            <DataGridTextColumn.Header>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="Visitation"/>
-                                </StackPanel>
-                            </DataGridTextColumn.Header>
+                            <DataGridTextColumn.HeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="ToolTip" Value="Observed visitation value used to compute the historical median for user days."/>
+                                </Style>
+                            </DataGridTextColumn.HeaderStyle>
                         </DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -224,11 +217,17 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Unit Day Value:" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:C2}}" Margin="6,0,0,0" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:C2}}"
+                               Margin="6,0,0,0"
+                               FontWeight="SemiBold"
+                               ToolTip="Calculated unit day value based on the selected recreation type, activity, and point score."/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
                     <TextBlock Text="Annual Recreation Benefit:" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding AnnualRecreationBenefit, StringFormat={}{0:C2}}" Margin="6,0,0,0" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding AnnualRecreationBenefit, StringFormat={}{0:C2}}"
+                               Margin="6,0,0,0"
+                               FontWeight="SemiBold"
+                               ToolTip="Annual recreation benefit calculated as unit day value multiplied by total user days."/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopXSmall}">
                     This total monetizes recreation by multiplying the unit day value with the total user days derived from your season length and visitation cadence. Raising the point score moves you to a higher value tier, while longer seasons or higher visitation proportionally increase the benefit.

@@ -81,57 +81,57 @@
                                     </Grid.RowDefinitions>
 
                                     <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Reference year that anchors discounting for future costs and benefits. This sets the base for present value factors across all annualization calculations."/>
-                                        <TextBlock Text="Base Year" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
+                                        <TextBlock Text="Base Year" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="0" Grid.Column="1"
                                              Text="{Binding BaseYear, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
+                                             ToolTip="Reference year that anchors discounting for future costs and benefits. This sets the base for present value factors across all annualization calculations."
                                              Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Number of periods for capital recovery. This length drives the capital recovery factor and annualized cost results."/>
-                                        <TextBlock Text="Analysis Period" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
+                                        <TextBlock Text="Analysis Period" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="1" Grid.Column="1"
                                              Text="{Binding AnalysisPeriod, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
+                                             ToolTip="Number of periods for capital recovery. This length drives the capital recovery factor and annualized cost results."
                                              Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Total construction duration in months used to accumulate IDC. Longer durations increase the time interest accrues on construction outlays."/>
-                                        <TextBlock Text="Construction Months" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
+                                        <TextBlock Text="Construction Months" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="2" Grid.Column="1"
                                              Text="{Binding ConstructionMonths, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
+                                             ToolTip="Total construction duration in months used to accumulate IDC. Longer durations increase the time interest accrues on construction outlays."
                                              Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Select whether IDC accrues from the beginning, middle, or end of each construction month when no detailed schedule is provided. The timing assumption shifts how much interest is applied within each month."/>
-                                        <TextBlock Text="IDC Timing Assumption" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
+                                        <TextBlock Text="IDC Timing Assumption" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="3" Grid.Column="1"
                                               ItemsSource="{Binding IdcTimingOptions}"
                                               SelectedItem="{Binding IdcTimingBasis}"
+                                              ToolTip="Select whether IDC accrues from the beginning, middle, or end of each construction month when no detailed schedule is provided. The timing assumption shifts how much interest is applied within each month."
                                               Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Toggle to calculate IDC using period-based first and last payment assumptions. Enabling this changes the IDC timing logic and alters the resulting IDC total."/>
-                                        <TextBlock Text="Calculate Interest at Period" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
+                                        <TextBlock Text="Calculate Interest at Period" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <CheckBox Grid.Row="4" Grid.Column="1"
                                               Content="Enable period-based IDC"
                                               IsChecked="{Binding CalculateInterestAtPeriod}"
+                                              ToolTip="Toggle to calculate IDC using period-based first and last payment assumptions. Enabling this changes the IDC timing logic and alters the resulting IDC total."
                                               Margin="0,0,0,8"/>
 
                                     <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Choose when the first payment occurs within the construction period for period-based IDC. The selected timing changes how many periods of interest are applied to the first outlay."/>
-                                        <TextBlock Text="First Payment Timing" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
+                                        <TextBlock Text="First Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="5" Grid.Column="1"
                                               ItemsSource="{Binding IdcFirstPaymentOptions}"
                                               SelectedItem="{Binding IdcFirstPaymentTiming}"
+                                              ToolTip="Choose when the first payment occurs within the construction period for period-based IDC. The selected timing changes how many periods of interest are applied to the first outlay."
                                               Margin="0,0,0,8">
                                         <ComboBox.Style>
                                             <Style TargetType="ComboBox">
@@ -146,12 +146,12 @@
                                     </ComboBox>
 
                                     <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,0">
-                                        <ContentControl Style="{StaticResource Content.InfoIcon}" ToolTip="Define the timing of the final payment when using period-based IDC. This affects how much interest is applied to the last payment period."/>
-                                        <TextBlock Text="Last Payment Timing" Style="{StaticResource AnnualizerLabelStyle}" Margin="6,0,0,0"/>
+                                        <TextBlock Text="Last Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="6" Grid.Column="1"
                                               ItemsSource="{Binding IdcLastPaymentOptions}"
-                                              SelectedItem="{Binding IdcLastPaymentTiming}">
+                                              SelectedItem="{Binding IdcLastPaymentTiming}"
+                                              ToolTip="Define the timing of the final payment when using period-based IDC. This affects how much interest is applied to the last payment period.">
                                         <ComboBox.Style>
                                             <Style TargetType="ComboBox">
                                                 <Setter Property="IsEnabled" Value="False"/>
@@ -189,42 +189,108 @@
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Scenario Name"
                                                             Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Descriptive name for the scenario. This label appears in comparisons, charts, and exports."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="First Cost"
                                                             Binding="{Binding FirstCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Initial capital investment entered in current dollars. This value is annualized with the rate and period inputs."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Rate (%)"
                                                             Binding="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource SafeNumberConverter}}"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Discount rate applied to the scenario. This rate drives the capital recovery factor and annualized costs."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Annual O&amp;M"
                                                             Binding="{Binding AnnualOm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Annual operations and maintenance expense. This is added to annualized capital costs for total annual cost."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Annual Benefits"
                                                             Binding="{Binding AnnualBenefits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Annual benefit estimate for the scenario. Combined with annual costs to compute the benefit-cost ratio."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Annual Cost"
                                                             Binding="{Binding AnnualCost, StringFormat=C0}"
                                                             IsReadOnly="True"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Calculated total annual cost (annualized capital + annual O&amp;M). Updates after recalculation."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="BCR"
                                                             Binding="{Binding Bcr, StringFormat=F2}"
                                                             IsReadOnly="True"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Benefit-cost ratio (annual benefits ÷ annual cost). Values above 1 indicate benefits exceed costs."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Unity BCR First Cost"
                                                             Binding="{Binding UnityBcrFirstCost, StringFormat=C0}"
                                                             IsReadOnly="True"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="First cost scaled to a unity benefit-cost ratio. This helps benchmark the capital level that yields BCR = 1."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="IDC"
                                                             Binding="{Binding Idc, StringFormat=C0}"
                                                             IsReadOnly="True"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Interest during construction computed from the IDC schedule and timing assumptions."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="CRF"
                                                             Binding="{Binding Crf, StringFormat=F5}"
                                                             IsReadOnly="True"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Capital recovery factor derived from rate and analysis period. Used to annualize the first cost."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Notes"
                                                             Binding="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                            Width="SizeToHeader"/>
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Optional notes to document scenario assumptions or special considerations."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
                                 <UniformGrid Columns="3" HorizontalAlignment="Left" Margin="0,10,0,0" Rows="1">
@@ -252,42 +318,36 @@
 
                         <StackPanel Margin="0,24,0,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
-                                <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                ToolTip="List construction outlays by month and timing so the tool can compute interest during construction. The schedule drives the monthly IDC accumulation and present value factors."/>
-                                <TextBlock Text="IDC Schedule" Margin="6,0,0,0" FontWeight="SemiBold"/>
+                                <TextBlock Text="IDC Schedule" FontWeight="SemiBold"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
                                 <DataGrid CanUserResizeColumns="True" x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="Column" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn>
+                                        <DataGridTextColumn Header="Cost">
                                             <DataGridTextColumn.Binding>
                                                 <Binding Path="Cost" Converter="{StaticResource CurrencyConverter}"/>
                                             </DataGridTextColumn.Binding>
-                                            <DataGridTextColumn.Header>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Amount of capital spent in the specified month. Larger outlays increase IDC accrual and total capitalized cost."/>
-                                                    <TextBlock Text="Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </DataGridTextColumn.Header>
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Amount of capital spent in the specified month. Larger outlays increase IDC accrual and total capitalized cost."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Binding="{Binding Month, Converter={StaticResource SafeNumberConverter}}">
-                                            <DataGridTextColumn.Header>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Construction month index when the cost occurs, starting at 1. Earlier months accrue interest for more periods than later months."/>
-                                                    <TextBlock Text="Month Index" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </DataGridTextColumn.Header>
+                                            <DataGridTextColumn.Header>Month Index</DataGridTextColumn.Header>
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Construction month index when the cost occurs, starting at 1. Earlier months accrue interest for more periods than later months."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
                                         </DataGridTextColumn>
                                         <DataGridComboBoxColumn SelectedItemBinding="{Binding Timing}">
-                                            <DataGridComboBoxColumn.Header>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Select whether the cost hits at the beginning, midpoint, or end of the month. Earlier timing increases the interest applied within the month."/>
-                                                    <TextBlock Text="Timing" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </DataGridComboBoxColumn.Header>
+                                            <DataGridComboBoxColumn.Header>Timing</DataGridComboBoxColumn.Header>
+                                            <DataGridComboBoxColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Select whether the cost hits at the beginning, midpoint, or end of the month. Earlier timing increases the interest applied within the month."/>
+                                                </Style>
+                                            </DataGridComboBoxColumn.HeaderStyle>
                                             <DataGridComboBoxColumn.ItemsSource>
                                                 <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=System.Runtime">
                                                     <sys:String>beginning</sys:String>
@@ -296,7 +356,13 @@
                                                 </x:Array>
                                             </DataGridComboBoxColumn.ItemsSource>
                                         </DataGridComboBoxColumn>
-                                        <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Present value factor applied to the IDC cost based on timing and discount assumptions."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>
@@ -312,42 +378,36 @@
 
                         <StackPanel Margin="0,24,0,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
-                                <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                ToolTip="Add future capital expenses in the year and timing they occur to include their present value. These entries feed the discounted cost totals and annualization results."/>
-                                <TextBlock Text="Future Costs" Margin="6,0,0,0" FontWeight="SemiBold"/>
+                                <TextBlock Text="Future Costs" FontWeight="SemiBold"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
                                 <DataGrid CanUserResizeColumns="True" x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn>
+                                        <DataGridTextColumn Header="Cost">
                                             <DataGridTextColumn.Binding>
                                                 <Binding Path="Cost" Converter="{StaticResource CurrencyConverter}"/>
                                             </DataGridTextColumn.Binding>
-                                            <DataGridTextColumn.Header>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Future cost amount entered in nominal dollars. This amount is discounted to present value using the base year and timing."/>
-                                                    <TextBlock Text="Cost" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </DataGridTextColumn.Header>
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Future cost amount entered in nominal dollars. This amount is discounted to present value using the base year and timing."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
                                         </DataGridTextColumn>
                                         <DataGridTextColumn Binding="{Binding Year, Converter={StaticResource SafeNumberConverter}}">
-                                            <DataGridTextColumn.Header>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Calendar year when the future cost will be incurred. The year determines how many periods the cost is discounted."/>
-                                                    <TextBlock Text="Year" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </DataGridTextColumn.Header>
+                                            <DataGridTextColumn.Header>Year</DataGridTextColumn.Header>
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Calendar year when the future cost will be incurred. The year determines how many periods the cost is discounted."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
                                         </DataGridTextColumn>
                                         <DataGridComboBoxColumn SelectedItemBinding="{Binding Timing}">
-                                            <DataGridComboBoxColumn.Header>
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                    ToolTip="Timing within the year to align present value factors. Earlier timing increases the discounted weight relative to later timing."/>
-                                                    <TextBlock Text="Timing" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                </StackPanel>
-                                            </DataGridComboBoxColumn.Header>
+                                            <DataGridComboBoxColumn.Header>Timing</DataGridComboBoxColumn.Header>
+                                            <DataGridComboBoxColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Timing within the year to align present value factors. Earlier timing increases the discounted weight relative to later timing."/>
+                                                </Style>
+                                            </DataGridComboBoxColumn.HeaderStyle>
                                             <DataGridComboBoxColumn.ItemsSource>
                                                 <x:Array Type="sys:String" xmlns:sys="clr-namespace:System;assembly=System.Runtime">
                                                     <sys:String>beginning</sys:String>
@@ -356,7 +416,13 @@
                                                 </x:Array>
                                             </DataGridComboBoxColumn.ItemsSource>
                                         </DataGridComboBoxColumn>
-                                        <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True"/>
+                                        <DataGridTextColumn Header="PV Factor" Binding="{Binding PvFactor}" IsReadOnly="True">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Present value factor applied to the future cost based on the base year and timing assumption."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>

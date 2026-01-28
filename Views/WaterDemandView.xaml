@@ -83,23 +83,19 @@
                                                   ColumnWidth="SizeToHeader"
                                                   Margin="0">
                                             <DataGrid.Columns>
-                                            <DataGridTextColumn Binding="{Binding Year}">
-                                                <DataGridTextColumn.Header>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                        ToolTip="Historical observation year for the demand record. The year sequence is used to calibrate growth trends and regression fits."/>
-                                                        <TextBlock Text="Year" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                </DataGridTextColumn.Header>
+                                            <DataGridTextColumn Header="Year" Binding="{Binding Year}">
+                                                <DataGridTextColumn.HeaderStyle>
+                                                    <Style TargetType="DataGridColumnHeader">
+                                                        <Setter Property="ToolTip" Value="Historical observation year for the demand record. The year sequence is used to calibrate growth trends and regression fits."/>
+                                                    </Style>
+                                                </DataGridTextColumn.HeaderStyle>
                                             </DataGridTextColumn>
-                                            <DataGridTextColumn Binding="{Binding Demand}">
-                                                <DataGridTextColumn.Header>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                        ToolTip="Recorded water demand per capita for the listed year. These values inform the baseline trend used in forecast calculations."/>
-                                                        <TextBlock Text="Demand per Capita" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                </DataGridTextColumn.Header>
+                                            <DataGridTextColumn Header="Demand per Capita" Binding="{Binding Demand}">
+                                                <DataGridTextColumn.HeaderStyle>
+                                                    <Style TargetType="DataGridColumnHeader">
+                                                        <Setter Property="ToolTip" Value="Recorded water demand per capita for the listed year. These values inform the baseline trend used in forecast calculations."/>
+                                                    </Style>
+                                                </DataGridTextColumn.HeaderStyle>
                                             </DataGridTextColumn>
                                         </DataGrid.Columns>
                                         </DataGrid>
@@ -131,85 +127,65 @@
                                         </Style>
                                     </Grid.Resources>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
-                                        <InlineUIContainer BaselineAlignment="Center">
-                                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Number of years to extend the demand projection. This sets how many forecast rows are calculated beyond the base year."/>
-                                        </InlineUIContainer>
-                                        <Run Text="Forecast Years"/>
-                                    </TextBlock>
-                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DataContext.ForecastYears, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Forecast Years"/>
+                                    <TextBox Grid.Row="0"
+                                             Grid.Column="1"
+                                             Text="{Binding DataContext.ForecastYears, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                             ToolTip="Number of years to extend the demand projection. This sets how many forecast rows are calculated beyond the base year."/>
                                     <TextBlock Text="years" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
-                                        <InlineUIContainer BaselineAlignment="Center">
-                                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Year that anchors the historical data and forecast. The base year establishes the starting point for growth and per-capita adjustments."/>
-                                        </InlineUIContainer>
-                                        <Run Text="Base Year"/>
-                                    </TextBlock>
-                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding BaseYear}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Year"/>
+                                    <TextBox Grid.Row="1"
+                                             Grid.Column="1"
+                                             Text="{Binding BaseYear}"
+                                             ToolTip="Year that anchors the historical data and forecast. The base year establishes the starting point for growth and per-capita adjustments."/>
 
-                                    <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
-                                        <InlineUIContainer BaselineAlignment="Center">
-                                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Population served in the base year. This value scales per-capita demand into total demand for all forecast years."/>
-                                        </InlineUIContainer>
-                                        <Run Text="Base Population"/>
-                                    </TextBlock>
-                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding BasePopulation}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Population"/>
+                                    <TextBox Grid.Row="2"
+                                             Grid.Column="1"
+                                             Text="{Binding BasePopulation}"
+                                             ToolTip="Population served in the base year. This value scales per-capita demand into total demand for all forecast years."/>
                                     <TextBlock Text="people" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
-                                        <InlineUIContainer BaselineAlignment="Center">
-                                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Current per capita water demand for the base year. This is the starting per-capita value that is adjusted forward each year."/>
-                                        </InlineUIContainer>
-                                        <Run Text="Base Per Capita"/>
-                                    </TextBlock>
-                                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BasePerCapitaDemand}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Per Capita"/>
+                                    <TextBox Grid.Row="3"
+                                             Grid.Column="1"
+                                             Text="{Binding BasePerCapitaDemand}"
+                                             ToolTip="Current per capita water demand for the base year. This is the starting per-capita value that is adjusted forward each year."/>
                                     <TextBlock Text="gallons/person/day" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
-                                        <InlineUIContainer BaselineAlignment="Center">
-                                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Expected annual population growth rate for the service area. Higher growth increases projected population and total demand."/>
-                                        </InlineUIContainer>
-                                        <Run Text="Population Growth %"/>
-                                    </TextBlock>
-                                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding PopulationGrowthRate}"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Population Growth %"/>
+                                    <TextBox Grid.Row="4"
+                                             Grid.Column="1"
+                                             Text="{Binding PopulationGrowthRate}"
+                                             ToolTip="Expected annual population growth rate for the service area. Higher growth increases projected population and total demand."/>
                                     <TextBlock Text="%" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
 
-                                    <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0">
-                                        <InlineUIContainer BaselineAlignment="Center">
-                                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Annual percentage change expected in per capita demand. This rate modifies per-capita demand each year, affecting total demand."/>
-                                        </InlineUIContainer>
-                                        <Run Text="Per Capita Change %"/>
-                                    </TextBlock>
-                                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding PerCapitaDemandChangeRate}"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Per Capita Change %"/>
+                                    <TextBox Grid.Row="5"
+                                             Grid.Column="1"
+                                             Text="{Binding PerCapitaDemandChangeRate}"
+                                             ToolTip="Annual percentage change expected in per capita demand. This rate modifies per-capita demand each year, affecting total demand."/>
                                     <TextBlock Text="%" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"/>
 
                                     <DataGrid CanUserResizeColumns="True" Grid.Row="6" Grid.ColumnSpan="3" ItemsSource="{Binding Sectors}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" Margin="0,5,0,5" ColumnWidth="SizeToHeader">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Sector" Binding="{Binding Name}" IsReadOnly="True"/>
-                                            <DataGridTextColumn Binding="{Binding CurrentPercent, Mode=TwoWay}">
-                                                <DataGridTextColumn.Header>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                        ToolTip="Current share of total demand attributed to the sector. This percentage allocates baseline demand into sector-specific totals."/>
-                                                        <TextBlock Text="Current %" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                </DataGridTextColumn.Header>
+                                            <DataGridTextColumn Header="Current %"
+                                                                Binding="{Binding CurrentPercent, Mode=TwoWay}">
+                                                <DataGridTextColumn.HeaderStyle>
+                                                    <Style TargetType="DataGridColumnHeader">
+                                                        <Setter Property="ToolTip" Value="Current share of total demand attributed to the sector. This percentage allocates baseline demand into sector-specific totals."/>
+                                                    </Style>
+                                                </DataGridTextColumn.HeaderStyle>
                                             </DataGridTextColumn>
                                             <DataGridTextColumn Binding="{Binding FuturePercent, Mode=TwoWay}">
-                                                <DataGridTextColumn.Header>
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                                        ToolTip="Projected future share of total demand for the sector. This percentage allocates forecast demand into sector-specific totals."/>
-                                                        <TextBlock Text="Future %" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                                                    </StackPanel>
-                                                </DataGridTextColumn.Header>
+                                                <DataGridTextColumn.Header>Future %</DataGridTextColumn.Header>
+                                                <DataGridTextColumn.HeaderStyle>
+                                                    <Style TargetType="DataGridColumnHeader">
+                                                        <Setter Property="ToolTip" Value="Projected future share of total demand for the sector. This percentage allocates forecast demand into sector-specific totals."/>
+                                                    </Style>
+                                                </DataGridTextColumn.HeaderStyle>
                                             </DataGridTextColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
@@ -217,7 +193,6 @@
                                     <Expander Grid.Row="7" Grid.ColumnSpan="3" Header="Advanced Adjustments" Margin="0,5,0,5">
                                         <Grid Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" SharedSizeGroup="InfoIcon"/>
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="Label"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
@@ -225,32 +200,26 @@
                                                 <RowDefinition Height="Auto"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
-                                            <ContentControl Grid.Row="0"
-                                                            Grid.Column="0"
-                                                            Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Percent reduction in demand from planned system improvements. This reduces adjusted demand after sector allocations."/>
                                             <TextBlock Grid.Row="0"
-                                                       Grid.Column="1"
+                                                       Grid.Column="0"
                                                        Text="Improvements %"
                                                        Margin="4,0,0,0"
                                                        VerticalAlignment="Center"/>
                                             <TextBox Grid.Row="0"
-                                                     Grid.Column="2"
+                                                     Grid.Column="1"
                                                      Margin="12,0,0,0"
-                                                     Text="{Binding SystemImprovementsPercent}"/>
-                                            <ContentControl Grid.Row="1"
-                                                            Grid.Column="0"
-                                                            Style="{StaticResource Content.InfoIcon}"
-                                                            ToolTip="Percent of demand lost to system leakage or other losses. Losses increase adjusted demand to account for water that is not delivered."/>
+                                                     Text="{Binding SystemImprovementsPercent}"
+                                                     ToolTip="Percent reduction in demand from planned system improvements. This reduces adjusted demand after sector allocations."/>
                                             <TextBlock Grid.Row="1"
-                                                       Grid.Column="1"
+                                                       Grid.Column="0"
                                                        Text="Losses %"
                                                        Margin="4,6,0,0"
                                                        VerticalAlignment="Center"/>
                                             <TextBox Grid.Row="1"
-                                                     Grid.Column="2"
+                                                     Grid.Column="1"
                                                      Margin="12,6,0,0"
-                                                     Text="{Binding SystemLossesPercent}"/>
+                                                     Text="{Binding SystemLossesPercent}"
+                                                     ToolTip="Percent of demand lost to system leakage or other losses. Losses increase adjusted demand to account for water that is not delivered."/>
                                         </Grid>
                                     </Expander>
 

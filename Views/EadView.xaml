@@ -58,13 +58,9 @@
                             </StackPanel>
                         </Button>
                         <CheckBox IsChecked="{Binding UseStage}"
-                                  VerticalAlignment="Center">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                                ToolTip="Toggle to add a stage column so you can enter paired stage values. Stage values change how damages align with stage-frequency logic."/>
-                                <TextBlock Text="Include Stage" Margin="4,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </CheckBox>
+                                  VerticalAlignment="Center"
+                                  Content="Include Stage"
+                                  ToolTip="Toggle to add a stage column so you can enter paired stage values. Stage values change how damages align with stage-frequency logic."/>
                     </StackPanel>
                 </Border>
 
@@ -96,6 +92,7 @@
                                  Margin="0,0,0,12"
                                  BorderThickness="0"
                                  Background="Transparent"
+                                 ToolTip="Title shown above the frequency-damage chart and included in exports."
                                  TextAlignment="Center"
                                  HorizontalContentAlignment="Center"/>
                         <TextBlock Text="Graph shows frequency-damage or stage-damage curves for each column so you can visually confirm the inputs."
@@ -153,10 +150,22 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Damage Column"
                                                     Binding="{Binding Label}"
-                                                    Width="SizeToHeader"/>
+                                                    Width="SizeToHeader">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="ToolTip" Value="Name of the damage column or category summarized in the results table."/>
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                </DataGridTextColumn>
                                 <DataGridTextColumn Header="Expected Annual Damage"
                                                     Binding="{Binding Result}"
-                                                    Width="SizeToHeader"/>
+                                                    Width="SizeToHeader">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="ToolTip" Value="Calculated expected annual damage for the column, based on the integrated frequency-damage curve."/>
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                </DataGridTextColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>

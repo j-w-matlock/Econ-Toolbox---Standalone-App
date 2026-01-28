@@ -236,32 +236,7 @@ namespace EconToolbox.Desktop.Behaviors
 
                 if (!string.IsNullOrWhiteSpace(descriptor.ToolTip))
                 {
-                    var panel = new StackPanel
-                    {
-                        Orientation = Orientation.Horizontal,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-
-                    var icon = new ContentControl
-                    {
-                        ToolTip = descriptor.ToolTip,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-
-                    if (Application.Current?.TryFindResource("Content.InfoIcon") is Style iconStyle)
-                    {
-                        icon.Style = iconStyle;
-                    }
-
-                    panel.Children.Add(icon);
-
-                    if (headerElement.Margin.Left < 4)
-                    {
-                        headerElement.Margin = new Thickness(4, headerElement.Margin.Top, headerElement.Margin.Right, headerElement.Margin.Bottom);
-                    }
-
-                    panel.Children.Add(headerElement);
-                    return panel;
+                    headerElement.ToolTip = descriptor.ToolTip;
                 }
 
                 return headerElement;
