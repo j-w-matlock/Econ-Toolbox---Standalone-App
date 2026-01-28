@@ -683,10 +683,17 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             SnapsToDevicePixels="True">
                         <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="4"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="4"/>
+                            </Grid.ColumnDefinitions>
                             <Thumb x:Name="PART_LeftHeaderGripper"
+                                   Grid.Column="0"
                                    Width="4"
-                                   Margin="0"
+                                    Margin="0"
                                    Background="Transparent"
+                                   Style="{DynamicResource DataGridHeaderGripperStyle}"
                                    Cursor="SizeWE"/>
                             <ContentPresenter Grid.Column="1"
                                               Margin="{TemplateBinding Padding}"
@@ -697,10 +704,25 @@
                                    Width="4"
                                    Margin="0"
                                    Background="Transparent"
+                                   Style="{DynamicResource DataGridHeaderGripperStyle}"
                                    Cursor="SizeWE"
                                    HorizontalAlignment="Right"/>
                         </Grid>
                     </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DataGridHeaderGripperStyle" TargetType="Thumb">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="MinHeight" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border Background="Transparent"
+                            SnapsToDevicePixels="True"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -882,8 +904,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{DynamicResource App.Border}"
-                            BorderThickness="1"
+                            BorderThickness="0"
                             CornerRadius="4"
                             Padding="1"
                             SnapsToDevicePixels="True"
@@ -963,8 +984,7 @@
                 <ControlTemplate TargetType="Thumb">
                     <Border Margin="1"
                             Background="{TemplateBinding Background}"
-                            BorderBrush="{DynamicResource App.Border}"
-                            BorderThickness="1"
+                            BorderThickness="0"
                             CornerRadius="4"
                             SnapsToDevicePixels="True"/>
                 </ControlTemplate>
