@@ -130,7 +130,9 @@ public static class ResizableBorderBehavior
         {
             var styleKey = cursor == Cursors.SizeWE
                 ? "Thumb.ResizeHandle.Vertical"
-                : "Thumb.ResizeHandle.Horizontal";
+                : cursor == Cursors.SizeNS
+                    ? "Thumb.ResizeHandle.Horizontal"
+                    : "Thumb.ResizeHandle.Corner";
 
             var thumb = new Thumb
             {
