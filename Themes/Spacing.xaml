@@ -46,6 +46,7 @@
     <!-- Layout sizing tokens -->
     <sys:Double x:Key="Layout.MaxContentWidth">1040</sys:Double>
     <sys:Double x:Key="Layout.CardMaxWidth">960</sys:Double>
+    <sys:Double x:Key="Layout.ChartMaxWidth">960</sys:Double>
     <sys:Double x:Key="Layout.TableMaxWidth">960</sys:Double>
     <sys:Double x:Key="Layout.FormFieldWidth">260</sys:Double>
     <sys:Double x:Key="Layout.FormFieldWideWidth">320</sys:Double>
