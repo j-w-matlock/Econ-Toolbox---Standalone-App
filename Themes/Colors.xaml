@@ -63,9 +63,9 @@
     <Color x:Key="App.RowHoverBackground.Color">#E3F7F2</Color>
 
     <!-- Scrollbars -->
-    <Color x:Key="App.ScrollBarThumb.Color">#C4C4C4</Color>
-    <Color x:Key="App.ScrollBarThumbHover.Color">#A6A6A6</Color>
-    <Color x:Key="App.ScrollBarTrack.Color">#F5F5F5</Color>
+    <Color x:Key="App.ScrollBarThumb.Color">#C8C8C8</Color>
+    <Color x:Key="App.ScrollBarThumbHover.Color">#AFAFAF</Color>
+    <Color x:Key="App.ScrollBarTrack.Color">#F0F0F0</Color>
 
     <!-- Hero/shadow -->
     <Color x:Key="App.HeroStart.Color">#2C2C2C</Color>
