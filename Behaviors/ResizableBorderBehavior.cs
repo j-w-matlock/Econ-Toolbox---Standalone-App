@@ -123,11 +123,9 @@ public static class ResizableBorderBehavior
         {
             var handleSize = GetHandleSize();
             var halfHandle = handleSize / 2;
-            var rightHandleHeight = Math.Max(0, finalSize.Height - handleSize);
-            var bottomHandleWidth = Math.Max(0, finalSize.Width - handleSize);
 
-            rightThumb.Arrange(new Rect(finalSize.Width - halfHandle, halfHandle, handleSize, rightHandleHeight));
-            bottomThumb.Arrange(new Rect(halfHandle, finalSize.Height - halfHandle, bottomHandleWidth, handleSize));
+            rightThumb.Arrange(new Rect(finalSize.Width - halfHandle, halfHandle, handleSize, finalSize.Height - handleSize));
+            bottomThumb.Arrange(new Rect(halfHandle, finalSize.Height - halfHandle, finalSize.Width - handleSize, handleSize));
             cornerThumb.Arrange(new Rect(finalSize.Width - handleSize, finalSize.Height - handleSize, handleSize, handleSize));
 
             return finalSize;
