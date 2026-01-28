@@ -1049,12 +1049,14 @@
                 <ControlTemplate TargetType="Thumb">
                     <Grid Background="{TemplateBinding Background}">
                         <Border x:Name="ResizeLine"
+                                Opacity="0"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1,0,0,0"
                                 SnapsToDevicePixels="True"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ResizeLine" Property="Opacity" Value="1"/>
                             <Setter TargetName="ResizeLine" Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -1071,12 +1073,14 @@
                 <ControlTemplate TargetType="Thumb">
                     <Grid Background="{TemplateBinding Background}">
                         <Border x:Name="ResizeLine"
+                                Opacity="0"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="0,1,0,0"
                                 SnapsToDevicePixels="True"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ResizeLine" Property="Opacity" Value="1"/>
                             <Setter TargetName="ResizeLine" Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -1094,12 +1098,14 @@
                 <ControlTemplate TargetType="Thumb">
                     <Grid Background="{TemplateBinding Background}">
                         <Border x:Name="ResizeLine"
+                                Opacity="0"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1,1,0,0"
                                 SnapsToDevicePixels="True"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ResizeLine" Property="Opacity" Value="1"/>
                             <Setter TargetName="ResizeLine" Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
