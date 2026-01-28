@@ -131,6 +131,7 @@
                                     <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Forecast Years"/>
                                     <TextBox Grid.Row="0"
                                              Grid.Column="1"
+                                             Style="{StaticResource WaterDemandInputBoxStyle}"
                                              Text="{Binding DataContext.ForecastYears, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                              ToolTip="Number of years to extend the demand projection. This sets how many forecast rows are calculated beyond the base year."/>
                                     <TextBlock Text="years" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
@@ -138,12 +139,14 @@
                                     <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Year"/>
                                     <TextBox Grid.Row="1"
                                              Grid.Column="1"
+                                             Style="{StaticResource WaterDemandInputBoxStyle}"
                                              Text="{Binding BaseYear}"
                                              ToolTip="Year that anchors the historical data and forecast. The base year establishes the starting point for growth and per-capita adjustments."/>
 
                                     <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Population"/>
                                     <TextBox Grid.Row="2"
                                              Grid.Column="1"
+                                             Style="{StaticResource WaterDemandInputBoxStyle}"
                                              Text="{Binding BasePopulation}"
                                              ToolTip="Population served in the base year. This value scales per-capita demand into total demand for all forecast years."/>
                                     <TextBlock Text="people" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
@@ -151,6 +154,7 @@
                                     <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Per Capita"/>
                                     <TextBox Grid.Row="3"
                                              Grid.Column="1"
+                                             Style="{StaticResource WaterDemandInputBoxStyle}"
                                              Text="{Binding BasePerCapitaDemand}"
                                              ToolTip="Current per capita water demand for the base year. This is the starting per-capita value that is adjusted forward each year."/>
                                     <TextBlock Text="gallons/person/day" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
@@ -158,6 +162,7 @@
                                     <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Population Growth %"/>
                                     <TextBox Grid.Row="4"
                                              Grid.Column="1"
+                                             Style="{StaticResource WaterDemandInputBoxStyle}"
                                              Text="{Binding PopulationGrowthRate}"
                                              ToolTip="Expected annual population growth rate for the service area. Higher growth increases projected population and total demand."/>
                                     <TextBlock Text="%" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
@@ -165,6 +170,7 @@
                                     <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Per Capita Change %"/>
                                     <TextBox Grid.Row="5"
                                              Grid.Column="1"
+                                             Style="{StaticResource WaterDemandInputBoxStyle}"
                                              Text="{Binding PerCapitaDemandChangeRate}"
                                              ToolTip="Annual percentage change expected in per capita demand. This rate modifies per-capita demand each year, affecting total demand."/>
                                     <TextBlock Text="%" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"/>
@@ -208,6 +214,7 @@
                                                        VerticalAlignment="Center"/>
                                             <TextBox Grid.Row="0"
                                                      Grid.Column="1"
+                                                     Style="{StaticResource WaterDemandInputBoxStyle}"
                                                      Margin="12,0,0,0"
                                                      Text="{Binding SystemImprovementsPercent}"
                                                      ToolTip="Percent reduction in demand from planned system improvements. This reduces adjusted demand after sector allocations."/>
@@ -218,6 +225,7 @@
                                                        VerticalAlignment="Center"/>
                                             <TextBox Grid.Row="1"
                                                      Grid.Column="1"
+                                                     Style="{StaticResource WaterDemandInputBoxStyle}"
                                                      Margin="12,6,0,0"
                                                      Text="{Binding SystemLossesPercent}"
                                                      ToolTip="Percent of demand lost to system leakage or other losses. Losses increase adjusted demand to account for water that is not delivered."/>
@@ -256,20 +264,20 @@
                                             <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="{DynamicResource App.TextSecondary}" Text="Alternative Forecast 2" HorizontalAlignment="Left"/>
 
                                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Population growth"/>
-                                            <TextBox Grid.Row="2" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative1PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 1. This scales the growth rate used to project population."/>
-                                            <TextBox Grid.Row="2" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" TextAlignment="Center" Text="{Binding DataContext.Alternative2PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 2. This scales the growth rate used to project population."/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" TextAlignment="Center" Text="{Binding DataContext.Alternative1PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 1. This scales the growth rate used to project population."/>
+                                            <TextBox Grid.Row="2" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" TextAlignment="Center" Text="{Binding DataContext.Alternative2PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 2. This scales the growth rate used to project population."/>
 
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="Per capita demand change"/>
-                                            <TextBox Grid.Row="3" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 1. This scales the per-capita change rate used in forecasts."/>
-                                            <TextBox Grid.Row="3" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 2. This scales the per-capita change rate used in forecasts."/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 1. This scales the per-capita change rate used in forecasts."/>
+                                            <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 2. This scales the per-capita change rate used in forecasts."/>
 
                                             <TextBlock Grid.Row="4" Grid.Column="0" Text="System improvements"/>
-                                            <TextBox Grid.Row="4" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 1. This adjusts the conservation reduction applied to demand."/>
-                                            <TextBox Grid.Row="4" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 2. This adjusts the conservation reduction applied to demand."/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 1. This adjusts the conservation reduction applied to demand."/>
+                                            <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 2. This adjusts the conservation reduction applied to demand."/>
 
                                             <TextBlock Grid.Row="5" Grid.Column="0" Text="System losses"/>
-                                            <TextBox Grid.Row="5" Grid.Column="1" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1. This modifies the loss factor used in adjusted demand."/>
-                                            <TextBox Grid.Row="5" Grid.Column="2" MinWidth="90" HorizontalAlignment="Left" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2. This modifies the loss factor used in adjusted demand."/>
+                                            <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1. This modifies the loss factor used in adjusted demand."/>
+                                            <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2. This modifies the loss factor used in adjusted demand."/>
 
                                             <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="{DynamicResource App.TextSecondary}" TextWrapping="Wrap">
                                                 Adjust the percentage change applied to each baseline rate to craft two alternative forecasts. Positive values increase the rate, while negative values decrease it. Baseline inputs remain unchanged.
