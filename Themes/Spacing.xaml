@@ -2,11 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
     <!-- Spacing tokens -->
-    <sys:Double x:Key="Space.XS">4</sys:Double>
-    <sys:Double x:Key="Space.SM">8</sys:Double>
-    <sys:Double x:Key="Space.MD">16</sys:Double>
-    <sys:Double x:Key="Space.LG">24</sys:Double>
-    <sys:Double x:Key="Space.XL">32</sys:Double>
+    <sys:Double x:Key="Space.XS">3</sys:Double>
+    <sys:Double x:Key="Space.SM">6</sys:Double>
+    <sys:Double x:Key="Space.MD">12</sys:Double>
+    <sys:Double x:Key="Space.LG">18</sys:Double>
+    <sys:Double x:Key="Space.XL">24</sys:Double>
 
     <!-- Corner radius tokens -->
     <CornerRadius x:Key="Radius.XS">4</CornerRadius>
@@ -24,22 +24,22 @@
     <Thickness x:Key="BorderThickness.Header">0,0,1,1</Thickness>
     <Thickness x:Key="BorderThickness.CellDivider">0,0,1,0</Thickness>
 
-    <Thickness x:Key="Padding.Card">16</Thickness>
-    <Thickness x:Key="Padding.Section">20</Thickness>
-    <Thickness x:Key="Padding.Content">12</Thickness>
-    <Thickness x:Key="Padding.TitleBar">12,8</Thickness>
-    <Thickness x:Key="Padding.TitleBarButton">10,4</Thickness>
-    <Thickness x:Key="Margin.Container">16</Thickness>
-    <Thickness x:Key="Margin.StackSmall">0,0,0,4</Thickness>
-    <Thickness x:Key="Margin.Stack">0,0,0,8</Thickness>
-    <Thickness x:Key="Margin.StackLarge">0,0,0,16</Thickness>
-    <Thickness x:Key="Margin.Inline">0,0,8,0</Thickness>
-    <Thickness x:Key="Margin.InlineLarge">0,0,24,0</Thickness>
-    <Thickness x:Key="Margin.InlineMedium">0,0,16,0</Thickness>
-    <Thickness x:Key="Margin.InlineTight">0,0,12,0</Thickness>
-    <Thickness x:Key="Margin.IconSmall">0,0,6,0</Thickness>
-    <Thickness x:Key="Margin.TopSmall">0,8,0,0</Thickness>
-    <Thickness x:Key="Margin.TopLarge">0,16,0,0</Thickness>
-    <Thickness x:Key="Margin.TopXSmall">0,4,0,0</Thickness>
+    <Thickness x:Key="Padding.Card">12</Thickness>
+    <Thickness x:Key="Padding.Section">16</Thickness>
+    <Thickness x:Key="Padding.Content">10</Thickness>
+    <Thickness x:Key="Padding.TitleBar">10,6</Thickness>
+    <Thickness x:Key="Padding.TitleBarButton">8,4</Thickness>
+    <Thickness x:Key="Margin.Container">12</Thickness>
+    <Thickness x:Key="Margin.StackSmall">0,0,0,3</Thickness>
+    <Thickness x:Key="Margin.Stack">0,0,0,6</Thickness>
+    <Thickness x:Key="Margin.StackLarge">0,0,0,12</Thickness>
+    <Thickness x:Key="Margin.Inline">0,0,6,0</Thickness>
+    <Thickness x:Key="Margin.InlineLarge">0,0,18,0</Thickness>
+    <Thickness x:Key="Margin.InlineMedium">0,0,12,0</Thickness>
+    <Thickness x:Key="Margin.InlineTight">0,0,8,0</Thickness>
+    <Thickness x:Key="Margin.IconSmall">0,0,4,0</Thickness>
+    <Thickness x:Key="Margin.TopSmall">0,6,0,0</Thickness>
+    <Thickness x:Key="Margin.TopLarge">0,12,0,0</Thickness>
+    <Thickness x:Key="Margin.TopXSmall">0,3,0,0</Thickness>
     <Thickness x:Key="Margin.None">0</Thickness>
 </ResourceDictionary>
