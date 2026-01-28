@@ -139,12 +139,16 @@
                     <TextBlock Margin="0,0,5,5" Text="Total Usable Storage"/>
                     <TextBox Text="{Binding TotalStorage}"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Enter the system's total usable storage before any plan allocation. This value is the denominator for the storage percentage used to scale costs."/>
                     <TextBlock Grid.Row="1" Margin="0,0,5,5" Text="Storage Recommendation"/>
                     <TextBox Text="{Binding StorageRecommendation}"
                              Grid.Row="1"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Recommended portion of the joint storage allocated to this alternative. This value is the numerator used to scale downstream costs."/>
                     <Button Command="{Binding ComputeStorageCommand}"
@@ -210,17 +214,21 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Margin="0,0,5,5" Text="Joint Operations Cost"/>
                     <TextBox Text="{Binding JointOperationsCost, Converter={StaticResource CurrencyConverter}}"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Annual system-wide joint operations expense before scaling. This amount is multiplied by the storage percentage in total cost results."/>
                     <TextBlock Grid.Row="1" Margin="0,0,5,5" Text="Joint Maintenance Cost"/>
                     <TextBox Text="{Binding JointMaintenanceCost, Converter={StaticResource CurrencyConverter}}"
                              Grid.Row="1"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Annual joint maintenance expense for the entire system. This amount is multiplied by the storage percentage in total cost results."/>
                     <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}"
@@ -751,23 +759,29 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Margin="0,0,5,5" Text="Federal Discount Rate (%)"/>
                     <TextBox Text="{Binding RrrRate}"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Real federal discount rate applied to future RR&amp;R and mitigation costs. Higher rates reduce present value and annualized totals."/>
                     <TextBlock Grid.Row="1" Margin="0,0,5,5" Text="Analysis Years"/>
                     <TextBox Text="{Binding RrrPeriods}"
                              Grid.Row="1"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Number of years used when discounting recurring RR&amp;R and mitigation items. This period sets the CRF used to annualize RR&amp;R costs."/>
                     <TextBlock Grid.Row="2" Margin="0,0,5,5" Text="Base Year"/>
                     <TextBox Text="{Binding RrrBaseYear}"
                              Grid.Row="2"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Reference year to which all RR&amp;R and mitigation costs are discounted. This year anchors the present value factors."/>
                     <DataGrid CanUserResizeColumns="True"
@@ -905,29 +919,37 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Margin="0,0,5,5" Text="Discount Rate 1 (%)"/>
                     <TextBox Text="{Binding DiscountRate1}"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Discount rate used for the first annualization scenario. This rate drives the CRF used to annualize updated costs in Cost 1."/>
                     <TextBlock Grid.Row="1" Margin="0,0,5,5" Text="Analysis Period 1"/>
                     <TextBox Text="{Binding AnalysisPeriod1}"
                              Grid.Row="1"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Number of years in the first capital recovery scenario. This period, with the discount rate, defines the CRF for Cost 1."/>
                     <TextBlock Grid.Row="2" Margin="0,0,5,5" Text="Discount Rate 2 (%)"/>
                     <TextBox Text="{Binding DiscountRate2}"
                              Grid.Row="2"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Discount rate for the second comparison scenario. This rate drives the CRF used to annualize updated costs in Cost 2."/>
                     <TextBlock Grid.Row="3" Margin="0,0,5,5" Text="Analysis Period 2"/>
                     <TextBox Text="{Binding AnalysisPeriod2}"
                              Grid.Row="3"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Years covered by the second capital recovery scenario. This period, with the discount rate, defines the CRF for Cost 2."/>
                     <Button Grid.Row="4"
