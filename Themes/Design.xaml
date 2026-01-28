@@ -14,5 +14,7 @@
     <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"/>
     <converters:OrientationToIsDirectionReversedConverter x:Key="OrientationToIsDirectionReversedConverter"/>
     <converters:WidthToLayoutModeConverter x:Key="WidthToLayoutModeConverter" Threshold="800"/>
+    <converters:CharCountToWidthConverter x:Key="CharCountToWidthConverter"/>
+    <converters:PercentToScaleConverter x:Key="PercentToScaleConverter"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 </ResourceDictionary>

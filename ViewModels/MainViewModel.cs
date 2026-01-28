@@ -204,6 +204,23 @@ namespace EconToolbox.Desktop.ViewModels
         private double _explorerPaneWidthBeforeCollapse = DefaultExplorerPaneWidth;
         private double _detailsPaneWidthBeforeCollapse = DefaultDetailsPaneWidth;
         private bool _isApplyingSettings;
+        private double _zoomPercent = 100;
+
+        public double ZoomPercent
+        {
+            get => _zoomPercent;
+            set
+            {
+                var clamped = Math.Clamp(value, 50, 200);
+                if (Math.Abs(_zoomPercent - clamped) < 0.1)
+                {
+                    return;
+                }
+
+                _zoomPercent = clamped;
+                OnPropertyChanged();
+            }
+        }
 
         public MainViewModel(
             IViewModelFactory viewModelFactory,
