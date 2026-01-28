@@ -143,13 +143,13 @@
                                         <TextBlock Text="First Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="5" Grid.Column="1"
-                                              Style="{StaticResource AnnualizerInputComboStyle}"
                                               ItemsSource="{Binding IdcFirstPaymentOptions}"
                                               SelectedItem="{Binding IdcFirstPaymentTiming}"
                                               ToolTip="Choose when the first payment occurs within the construction period for period-based IDC. The selected timing changes how many periods of interest are applied to the first outlay."
                                               Margin="0,0,0,8">
                                         <ComboBox.Style>
-                                            <Style TargetType="ComboBox">
+                                            <Style TargetType="ComboBox"
+                                                   BasedOn="{StaticResource AnnualizerInputComboStyle}">
                                                 <Setter Property="IsEnabled" Value="False"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding CalculateInterestAtPeriod}" Value="True">
@@ -164,12 +164,12 @@
                                         <TextBlock Text="Last Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="6" Grid.Column="1"
-                                              Style="{StaticResource AnnualizerInputComboStyle}"
                                               ItemsSource="{Binding IdcLastPaymentOptions}"
                                               SelectedItem="{Binding IdcLastPaymentTiming}"
                                               ToolTip="Define the timing of the final payment when using period-based IDC. This affects how much interest is applied to the last payment period.">
                                         <ComboBox.Style>
-                                            <Style TargetType="ComboBox">
+                                            <Style TargetType="ComboBox"
+                                                   BasedOn="{StaticResource AnnualizerInputComboStyle}">
                                                 <Setter Property="IsEnabled" Value="False"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding CalculateInterestAtPeriod}" Value="True">
