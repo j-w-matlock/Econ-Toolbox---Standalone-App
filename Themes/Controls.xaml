@@ -208,10 +208,6 @@
         <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
     </Style>
 
-    <Style TargetType="StackPanel">
-        <Setter Property="behaviors:ResizableBorderBehavior.Enable" Value="True"/>
-    </Style>
-
     <Style TargetType="Border">
         <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
     </Style>
