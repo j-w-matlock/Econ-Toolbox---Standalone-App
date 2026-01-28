@@ -9,10 +9,13 @@
              SnapsToDevicePixels="True"
              UseLayoutRounding="True"
              d:DataContext="{d:DesignInstance Type=vm:RecreationCapacityViewModel}">
+    <UserControl.Resources>
+        <Style TargetType="TextBox" BasedOn="{StaticResource Form.TextBox}"/>
+    </UserControl.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto"
                   Padding="{StaticResource Padding.Card}">
-        <StackPanel>
+        <StackPanel Style="{StaticResource Layout.ContentStack}">
             <Border Style="{StaticResource Border.Explainer}">
                 <StackPanel>
                     <Grid VerticalAlignment="Center">
@@ -46,8 +49,7 @@
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <TextBlock Text="Overall capacity summary"
-                               FontWeight="Bold"
-                               FontSize="16"/>
+                               Style="{StaticResource Text.SectionTitle}"/>
                     <TextBlock Margin="{StaticResource Margin.TopSmall}"
                                Text="{Binding Summary}"/>
                     <Grid Margin="{StaticResource Margin.TopLarge}" Grid.IsSharedSizeScope="True">
@@ -73,8 +75,7 @@
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <TextBlock Text="Camping capacity"
-                               FontWeight="Bold"
-                               FontSize="15"/>
+                               Style="{StaticResource Text.SectionTitle}"/>
                     <Grid Margin="{StaticResource Margin.TopSmall}"
                           Grid.IsSharedSizeScope="True">
                         <Grid.ColumnDefinitions>
@@ -170,8 +171,7 @@
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <TextBlock Text="Shoreline fishing capacity"
-                               FontWeight="Bold"
-                               FontSize="15"/>
+                               Style="{StaticResource Text.SectionTitle}"/>
                     <Grid Margin="{StaticResource Margin.TopSmall}"
                           Grid.IsSharedSizeScope="True">
                         <Grid.ColumnDefinitions>
@@ -254,8 +254,7 @@
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <TextBlock Text="Boating capacity"
-                               FontWeight="Bold"
-                               FontSize="15"/>
+                               Style="{StaticResource Text.SectionTitle}"/>
                     <Grid Margin="{StaticResource Margin.TopSmall}"
                           Grid.IsSharedSizeScope="True">
                         <Grid.ColumnDefinitions>

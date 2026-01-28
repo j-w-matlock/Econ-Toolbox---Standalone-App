@@ -11,7 +11,9 @@
                       Style="{StaticResource ScrollViewer.Page}">
             <TabControl Margin="0"
                         Padding="0"
-                        HorizontalContentAlignment="Stretch">
+                        HorizontalContentAlignment="Stretch"
+                        HorizontalAlignment="Left"
+                        MaxWidth="{StaticResource Layout.MaxContentWidth}">
                 <TabItem Header="Annualization" Padding="0">
                     <StackPanel Margin="0">
                         <Border Style="{StaticResource Border.Explainer}">
@@ -46,16 +48,11 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{DynamicResource App.Surface}"
-                                CornerRadius="8"
-                                Padding="{StaticResource Padding.Card}"
-                                BorderBrush="{DynamicResource App.Border}"
-                                BorderThickness="1"
+                        <Border Style="{StaticResource Border.Card}"
                                 Margin="0,16,0,0">
                             <StackPanel>
                                 <TextBlock Text="Shared Timing &amp; Discounting"
-                                           FontSize="15"
-                                           FontWeight="SemiBold"/>
+                                           Style="{StaticResource Text.SectionTitle}"/>
                                 <TextBlock Style="{StaticResource Text.Body}" Margin="0,4,0,12" TextWrapping="Wrap">
                                     Apply consistent timing, period, and IDC assumptions before refining each scenario below.
                                 </TextBlock>
@@ -65,14 +62,10 @@
                                             <Setter Property="FontWeight" Value="SemiBold"/>
                                             <Setter Property="VerticalAlignment" Value="Center"/>
                                         </Style>
-                                        <Style TargetType="TextBox" x:Key="AnnualizerInputBoxStyle" BasedOn="{StaticResource {x:Type TextBox}}">
-                                            <Setter Property="Width" Value="360"/>
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Style TargetType="TextBox" x:Key="AnnualizerInputBoxStyle" BasedOn="{StaticResource Form.TextBoxWide}">
                                             <Setter Property="MaxLength" Value="50"/>
                                         </Style>
-                                        <Style TargetType="ComboBox" x:Key="AnnualizerInputComboStyle" BasedOn="{StaticResource {x:Type ComboBox}}">
-                                            <Setter Property="Width" Value="360"/>
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Style TargetType="ComboBox" x:Key="AnnualizerInputComboStyle" BasedOn="{StaticResource Form.ComboBoxWide}">
                                         </Style>
                                     </Grid.Resources>
                                     <Grid.ColumnDefinitions>
@@ -183,16 +176,11 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{DynamicResource App.Surface}"
-                                CornerRadius="8"
-                                Padding="{StaticResource Padding.Card}"
-                                BorderBrush="{DynamicResource App.Border}"
-                                BorderThickness="1"
+                        <Border Style="{StaticResource Border.Card}"
                                 Margin="0,16,0,0">
                             <StackPanel>
                                 <TextBlock Text="Scenario Inputs"
-                                           FontSize="15"
-                                           FontWeight="SemiBold"/>
+                                           Style="{StaticResource Text.SectionTitle}"/>
                                 <TextBlock Style="{StaticResource Text.Body}" Margin="0,4,0,8" TextWrapping="Wrap">
                                     Enter all annualization inputs in one table. Add rows for alternative scenarios and select a row to update the rest of the worksheet.
                                 </TextBlock>

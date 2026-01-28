@@ -6,7 +6,7 @@
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
-        <Grid>
+        <Grid Style="{StaticResource Layout.ContentGrid}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -64,14 +64,14 @@
                 <TextBlock Text="Recreation Type"/>
                 <ComboBox ItemsSource="{Binding RecreationTypes}"
                           SelectedItem="{Binding RecreationType}"
-                          MinWidth="150"
+                          Style="{StaticResource Form.ComboBox}"
                           ToolTip="Choose the overall recreation classification to filter available activity point tables. The selection drives which point scale is used in the unit day value lookup."/>
             </StackPanel>
             <StackPanel Margin="{StaticResource Margin.Inline}">
                 <TextBlock Text="Activity Type"/>
                 <ComboBox ItemsSource="{Binding ActivityTypes}"
                           SelectedItem="{Binding ActivityType}"
-                          MinWidth="200"
+                          Style="{StaticResource Form.ComboBoxWide}"
                           ToolTip="Select the specific activity that matches your study to retrieve the proper unit day scale. This choice determines the unit day value mapping applied to points."/>
             </StackPanel>
         </StackPanel>
@@ -100,7 +100,7 @@
                      Grid.Column="1"
                      Text="{Binding Points, UpdateSourceTrigger=PropertyChanged}"
                      ToolTip="Enter the point score from the Unit Day Value table that reflects recreation quality. The point score is used to determine the unit day value tier."
-                     MinWidth="80"
+                     Style="{StaticResource Form.TextBox}"
                      Margin="12,0,0,0"
                      TextAlignment="Right"/>
 
@@ -115,7 +115,7 @@
                      Grid.Column="1"
                      Text="{Binding SeasonDays, UpdateSourceTrigger=PropertyChanged}"
                      ToolTip="Provide the number of days in the recreation season that will host visitors. This length scales total user days from the visitation rate."
-                     MinWidth="100"
+                     Style="{StaticResource Form.TextBox}"
                      Margin="12,0,0,0"
                      TextAlignment="Right"/>
 
@@ -132,13 +132,13 @@
                         Margin="12,0,0,0"
                         VerticalAlignment="Center">
                 <TextBox Text="{Binding VisitationInput, UpdateSourceTrigger=PropertyChanged}"
-                         MinWidth="100"
+                         Style="{StaticResource Form.TextBox}"
                          ToolTip="Enter visitation as daily, monthly, or yearly figures. Adjust the selector to match your data cadence. The cadence determines how the input is converted to total user days."
                          TextAlignment="Right"/>
                 <ComboBox ItemsSource="{Binding VisitationPeriods}"
                           SelectedItem="{Binding VisitationPeriod}"
                           Margin="8,0,0,0"
-                          MinWidth="120"
+                          Style="{StaticResource Form.ComboBox}"
                           ToolTip="Select the cadence for the visitation input (daily, monthly, yearly). This selection controls how the input converts into total user days."/>
             </StackPanel>
 
@@ -213,7 +213,14 @@
                            Text="{Binding HistoricalDataError}"/>
             </StackPanel>
         </Border>
-        <Border Grid.Row="4" Background="{DynamicResource App.HighlightBackground}" BorderBrush="{DynamicResource App.HighlightBorder}" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}" Margin="{StaticResource Margin.Stack}">
+        <Border Grid.Row="4"
+                Style="{StaticResource Border.ResultInfo}"
+                Background="{DynamicResource App.HighlightBackground}"
+                BorderBrush="{DynamicResource App.HighlightBorder}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="{StaticResource Padding.Content}"
+                Margin="{StaticResource Margin.Stack}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Unit Day Value:" FontWeight="Bold"/>
@@ -234,17 +241,24 @@
                 </TextBlock>
             </StackPanel>
         </Border>
-        <Border Grid.Row="5" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}" Margin="{StaticResource Margin.Stack}">
+        <Border Grid.Row="5"
+                Style="{StaticResource Border.ResultInfo}"
+                Background="{DynamicResource App.Surface}"
+                BorderBrush="{DynamicResource App.Border}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="{StaticResource Padding.Content}"
+                Margin="{StaticResource Margin.Stack}">
             <StackPanel>
                 <TextBox Text="{Binding ChartTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="16"
                          FontWeight="SemiBold"
-                         HorizontalAlignment="Center"
+                         HorizontalAlignment="Left"
                          Margin="0,0,0,8"
                          BorderThickness="0"
                          Background="Transparent"
-                         TextAlignment="Center"
-                         HorizontalContentAlignment="Center"/>
+                         TextAlignment="Left"
+                         HorizontalContentAlignment="Left"/>
                 <TextBlock Text="Line chart showing how unit day values rise with higher point scores. The selected point overlays the active recreation and activity choice."
                            TextWrapping="Wrap"
                            Foreground="{DynamicResource App.TextSecondary}"
@@ -271,7 +285,8 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Border Background="{DynamicResource App.ChartFill}"
+                <Border Style="{StaticResource Border.Chart}"
+                        Background="{DynamicResource App.ChartFill}"
                         BorderBrush="{DynamicResource App.Border}"
                         BorderThickness="1"
                         CornerRadius="8"
