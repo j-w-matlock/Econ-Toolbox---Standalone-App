@@ -256,6 +256,10 @@
         </Border>
 
         <Grid Grid.Row="1">
+            <Grid.LayoutTransform>
+                <ScaleTransform ScaleX="{Binding ZoomPercent, Converter={StaticResource PercentToScaleConverter}}"
+                                ScaleY="{Binding ZoomPercent, Converter={StaticResource PercentToScaleConverter}}"/>
+            </Grid.LayoutTransform>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="ExplorerColumn">
                     <ColumnDefinition.Width>
@@ -488,8 +492,21 @@
                            Style="{StaticResource Text.StatusBar}"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock Text="{Binding SelectedModule.Title}"
-                           Style="{StaticResource Text.StatusBar}"/>
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="{Binding SelectedModule.Title}"
+                               Margin="0,0,12,0"
+                               Style="{StaticResource Text.StatusBar}"/>
+                    <TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}"
+                               Margin="0,0,6,0"
+                               Style="{StaticResource Text.StatusBar}"/>
+                    <Slider Width="140"
+                            Minimum="50"
+                            Maximum="200"
+                            TickFrequency="10"
+                            IsSnapToTickEnabled="True"
+                            Value="{Binding ZoomPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
     </Grid>
