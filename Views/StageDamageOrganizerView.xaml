@@ -234,9 +234,11 @@
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
                                 CornerRadius="8"
-                                Padding="8">
+                                Padding="8"
+                                HorizontalAlignment="Stretch">
                             <controls:BarChartControl Height="420"
                                                       MinHeight="320"
+                                                      HorizontalAlignment="Stretch"
                                                       Series="{Binding ChartSeries}"
                                                       EmptyMessage="{Binding StatusMessage}"/>
                         </Border>

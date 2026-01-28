@@ -126,9 +126,11 @@
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
                                 CornerRadius="8"
-                                Padding="8">
+                                Padding="8"
+                                HorizontalAlignment="Stretch">
                             <controls:LineGraphControl Height="420"
                                                        MinHeight="320"
+                                                       HorizontalAlignment="Stretch"
                                                        Series="{Binding ChartSeries}"
                                                        IsStageAxis="{Binding UseStage}"
                                                        EmptyMessage="{Binding ChartStatusMessage}"/>

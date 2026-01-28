@@ -290,9 +290,11 @@
                         BorderBrush="{DynamicResource App.Border}"
                         BorderThickness="1"
                         CornerRadius="8"
-                        Padding="8">
+                        Padding="8"
+                        HorizontalAlignment="Stretch">
                     <controls:LineGraphControl Height="320"
                                                MinHeight="240"
+                                               HorizontalAlignment="Stretch"
                                                Series="{Binding ChartSeries}"
                                                EmptyMessage="{Binding ChartStatusMessage}"
                                                XAxisLabelPrefix="Points "
