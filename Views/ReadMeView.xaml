@@ -6,7 +6,8 @@
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
-        <Grid Background="Transparent">
+        <Grid Background="Transparent"
+              Style="{StaticResource Layout.ContentGrid}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>

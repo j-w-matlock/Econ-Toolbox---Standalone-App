@@ -10,7 +10,7 @@
                                                DayScale="18"/>
     </UserControl.Resources>
     <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
-        <Grid>
+        <Grid Style="{StaticResource Layout.ContentGrid}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -51,8 +51,7 @@
                 <Border Style="{StaticResource Border.Card}">
                     <StackPanel>
                         <TextBlock Text="Work Breakdown"
-                                   FontWeight="SemiBold"
-                                   FontSize="15"
+                                   Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,8"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Tasks}"
                                   SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
@@ -214,7 +213,13 @@
                                            TextWrapping="Wrap"/>
                             </StackPanel>
                         </StackPanel>
-                        <Border Grid.Row="1" Background="{DynamicResource App.HighlightBackground}" BorderBrush="{DynamicResource App.HighlightBorder}" BorderThickness="1" CornerRadius="8" Padding="8">
+                        <Border Grid.Row="1"
+                                Style="{StaticResource Border.Panel}"
+                                Background="{DynamicResource App.HighlightBackground}"
+                                BorderBrush="{DynamicResource App.HighlightBorder}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="8">
                             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                                 <Canvas Height="{Binding Bars.Count, Converter={StaticResource RowToPixelConverter}}"
                                         Width="{Binding TotalDurationDays, Converter={StaticResource DayToPixelConverter}}"
