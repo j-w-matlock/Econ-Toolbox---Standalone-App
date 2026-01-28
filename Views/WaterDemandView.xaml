@@ -232,7 +232,15 @@
                                         </Grid>
                                     </Expander>
 
-                                    <Border Grid.Row="8" Grid.ColumnSpan="3" Background="{DynamicResource App.ChartFill}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,8,0,0">
+                                    <Border Grid.Row="8"
+                                            Grid.ColumnSpan="3"
+                                            Style="{StaticResource Border.Chart}"
+                                            Background="{DynamicResource App.ChartFill}"
+                                            BorderBrush="{DynamicResource App.Border}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="12"
+                                            Margin="0,8,0,0">
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -389,7 +397,8 @@
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
-                                    <Border Background="{DynamicResource App.ChartFill}"
+                                    <Border Style="{StaticResource Border.Chart}"
+                                            Background="{DynamicResource App.ChartFill}"
                                             BorderBrush="{DynamicResource App.Border}"
                                             BorderThickness="1"
                                             CornerRadius="8"
