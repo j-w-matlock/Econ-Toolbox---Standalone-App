@@ -29,7 +29,11 @@
         <Setter Property="Margin" Value="{StaticResource Margin.StackLarge}"/>
     </Style>
 
-    <Style x:Key="Border.Card" TargetType="Border" BasedOn="{StaticResource Border.Base}"/>
+    <Style x:Key="Border.Card" TargetType="Border" BasedOn="{StaticResource Border.Base}">
+        <Setter Property="MinWidth" Value="{StaticResource Layout.CardMinWidth}"/>
+        <Setter Property="MinHeight" Value="{StaticResource Layout.CardMinHeight}"/>
+        <Setter Property="behaviors:ResizableBorderBehavior.Enable" Value="True"/>
+    </Style>
 
     <Style x:Key="Border.ResultInfo" TargetType="Border" BasedOn="{StaticResource Border.Base}">
         <Setter Property="Margin" Value="{StaticResource Margin.StackLarge}"/>
@@ -202,6 +206,10 @@
     <Style TargetType="Page">
         <Setter Property="Background" Value="{DynamicResource App.EditorBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
+    </Style>
+
+    <Style TargetType="StackPanel">
+        <Setter Property="behaviors:ResizableBorderBehavior.Enable" Value="True"/>
     </Style>
 
     <Style TargetType="Border">
@@ -685,6 +693,7 @@
     <Style x:Key="Layout.ContentStack" TargetType="StackPanel">
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="MaxWidth" Value="{StaticResource Layout.MaxContentWidth}"/>
+        <Setter Property="behaviors:ResizableBorderBehavior.Enable" Value="True"/>
     </Style>
 
     <Style x:Key="Form.TextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -1032,6 +1041,29 @@
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource App.ScrollBarThumbHover}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Thumb.ResizeHandle" TargetType="Thumb">
+        <Setter Property="Width" Value="{StaticResource Layout.CardResizeHandleSize}"/>
+        <Setter Property="Height" Value="{StaticResource Layout.CardResizeHandleSize}"/>
+        <Setter Property="Background" Value="{DynamicResource App.ScrollBarThumb}"/>
+        <Setter Property="Opacity" Value="0.65"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{DynamicResource App.Border}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource Radius.XS}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource App.Accent}"/>
+                <Setter Property="Opacity" Value="0.9"/>
             </Trigger>
         </Style.Triggers>
     </Style>
