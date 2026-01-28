@@ -61,11 +61,11 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="People at one time"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Text="{Binding TotalPeopleAtOneTime, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" ToolTip="Total people at one time across camping, fishing, and boating. Sum of PAOT outputs." Text="{Binding TotalPeopleAtOneTime, StringFormat={}{0:N0}}"/>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Design day user capacity"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Text="{Binding TotalDailyCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" ToolTip="Total design day capacity across all activities. Sum of daily capacities." Text="{Binding TotalDailyCapacity, StringFormat={}{0:N0}}"/>
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Seasonal user capacity"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" FontWeight="SemiBold" Text="{Binding TotalSeasonCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" FontWeight="SemiBold" ToolTip="Total seasonal user capacity across all activities. Sum of seasonal capacities." Text="{Binding TotalSeasonCapacity, StringFormat={}{0:N0}}"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -92,46 +92,42 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Developed family or standard campsites available for overnight use. This count drives the camping PAOT and capacity calculations."/>
-                            <TextBlock Margin="4,0,0,0" Text="Campsites"/>
+                            <TextBlock Text="Campsites"/>
                         </StackPanel>
                         <TextBox Grid.Row="0"
                                  Grid.Column="1"
                                  Text="{Binding CampingCampsites, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Developed family or standard campsites available for overnight use. This count drives the camping PAOT and capacity calculations."
                                  HorizontalAlignment="Left"
                                  MinWidth="140"/>
 
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Typical number of people per occupied site (5 per Corps guidance from EP 1130-2-550, Table 8-1, p. 8-4). This multiplier scales PAOT and subsequent capacities."/>
-                            <TextBlock Margin="4,0,0,0" Text="Average occupancy"/>
+                            <TextBlock Text="Average occupancy"/>
                         </StackPanel>
                         <TextBox Grid.Row="1"
                                  Grid.Column="1"
                                  Text="{Binding CampingAverageGroupSize, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Typical number of people per occupied site (5 per Corps guidance from EP 1130-2-550, Table 8-1, p. 8-4). This multiplier scales PAOT and subsequent capacities."
                                  HorizontalAlignment="Left"
                                  MinWidth="140"/>
 
                         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Daily site turnover multiplier reflecting arrivals and departures. This multiplier converts PAOT to design day capacity."/>
-                            <TextBlock Margin="4,0,0,0" Text="Daily turnover"/>
+                            <TextBlock Text="Daily turnover"/>
                         </StackPanel>
                         <TextBox Grid.Row="2"
                                  Grid.Column="1"
                                  Text="{Binding CampingDailyTurnover, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Daily site turnover multiplier reflecting arrivals and departures. This multiplier converts PAOT to design day capacity."
                                  HorizontalAlignment="Left"
                                  MinWidth="140"/>
 
                         <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Length of the managed recreation season in days. This multiplier scales daily capacity to seasonal capacity."/>
-                            <TextBlock Margin="4,0,0,0" Text="Season length (days)"/>
+                            <TextBlock Text="Season length (days)"/>
                         </StackPanel>
                         <TextBox Grid.Row="3"
                                  Grid.Column="1"
                                  Text="{Binding CampingSeasonLengthDays, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Length of the managed recreation season in days. This multiplier scales daily capacity to seasonal capacity."
                                  HorizontalAlignment="Left"
                                  MinWidth="140"/>
 
@@ -143,6 +139,7 @@
                                    Grid.Column="1"
                                    Margin="0,8,0,0"
                                    FontWeight="SemiBold"
+                                   ToolTip="People at one time (PAOT) for camping. Calculated from campsites, occupancy, and daily turnover."
                                    Text="{Binding CampingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="5"
@@ -153,6 +150,7 @@
                                    Grid.Column="1"
                                    Margin="0,4,0,0"
                                    FontWeight="SemiBold"
+                                   ToolTip="Design day user capacity for camping. PAOT multiplied by daily turnover."
                                    Text="{Binding CampingDailyCapacity, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="6"
@@ -163,6 +161,7 @@
                                    Grid.Column="1"
                                    Margin="0,4,0,0"
                                    FontWeight="SemiBold"
+                                   ToolTip="Seasonal user capacity for camping. Daily capacity scaled by season length."
                                    Text="{Binding CampingSeasonCapacity, StringFormat={}{0:N0}}"/>
                     </Grid>
                 </StackPanel>
@@ -191,68 +190,63 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Linear shoreline that can safely support anglers. This length sets the base capacity for fishing PAOT."/>
-                            <TextBlock Margin="4,0,0,0" Text="Accessible shoreline (ft)"/>
+                            <TextBlock Text="Accessible shoreline (ft)"/>
                         </StackPanel>
                         <TextBox Grid.Row="0"
                                  Grid.Column="1"
                                  Text="{Binding FishingAccessibleShorelineFeet, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Linear shoreline that can safely support anglers. This length sets the base capacity for fishing PAOT."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Feet of shoreline allocated to each fishing position. Smaller spacing increases the number of positions and PAOT."/>
-                            <TextBlock Margin="4,0,0,0" Text="Spacing per position (ft)"/>
+                            <TextBlock Text="Spacing per position (ft)"/>
                         </StackPanel>
                         <TextBox Grid.Row="1"
                                  Grid.Column="1"
                                  Text="{Binding FishingSpacingFeet, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Feet of shoreline allocated to each fishing position. Smaller spacing increases the number of positions and PAOT."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Average anglers per position (groups or families fishing together). This scales PAOT and capacities for fishing."/>
-                            <TextBlock Margin="4,0,0,0" Text="Average group size"/>
+                            <TextBlock Text="Average group size"/>
                         </StackPanel>
                         <TextBox Grid.Row="2"
                                  Grid.Column="1"
                                  Text="{Binding FishingAverageGroupSize, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Average anglers per position (groups or families fishing together). This scales PAOT and capacities for fishing."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Expected angler turnover per day. This converts PAOT into design day capacity for fishing."/>
-                            <TextBlock Margin="4,0,0,0" Text="Daily turnover"/>
+                            <TextBlock Text="Daily turnover"/>
                         </StackPanel>
                         <TextBox Grid.Row="3"
                                  Grid.Column="1"
                                  Text="{Binding FishingDailyTurnover, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Expected angler turnover per day. This converts PAOT into design day capacity for fishing."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Length of the fishing season in days. This scales fishing daily capacity into seasonal capacity."/>
-                            <TextBlock Margin="4,0,0,0" Text="Season length (days)"/>
+                            <TextBlock Text="Season length (days)"/>
                         </StackPanel>
                         <TextBox Grid.Row="4"
                                  Grid.Column="1"
                                  Text="{Binding FishingSeasonLengthDays, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Length of the fishing season in days. This scales fishing daily capacity into seasonal capacity."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Text="PAOT"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" FontWeight="SemiBold" Text="{Binding FishingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for fishing, based on shoreline length, spacing, and group size." Text="{Binding FishingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,4,0,0" Text="Design day user capacity"/>
-                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" Text="{Binding FishingDailyCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Design day user capacity for fishing. Converts PAOT using daily turnover." Text="{Binding FishingDailyCapacity, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,4,0,0" Text="Seasonal user capacity"/>
-                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" Text="{Binding FishingSeasonCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Seasonal user capacity for fishing. Daily capacity scaled by season length." Text="{Binding FishingSeasonCapacity, StringFormat={}{0:N0}}"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -280,68 +274,63 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Open water surface suitable for powered and sail recreation. This acreage is the base for boating capacity calculations."/>
-                            <TextBlock Margin="4,0,0,0" Text="Usable water surface (acres)"/>
+                            <TextBlock Text="Usable water surface (acres)"/>
                         </StackPanel>
                         <TextBox Grid.Row="0"
                                  Grid.Column="1"
                                  Text="{Binding BoatingWaterSurfaceAcres, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Open water surface suitable for powered and sail recreation. This acreage is the base for boating capacity calculations."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Surface acres allocated per vessel under design day density. Smaller values allow more vessels and higher PAOT."/>
-                            <TextBlock Margin="4,0,0,0" Text="Acres per vessel"/>
+                            <TextBlock Text="Acres per vessel"/>
                         </StackPanel>
                         <TextBox Grid.Row="1"
                                  Grid.Column="1"
                                  Text="{Binding BoatingAcresPerVessel, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Surface acres allocated per vessel under design day density. Smaller values allow more vessels and higher PAOT."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Average persons per vessel on the design day. This scales boating PAOT and subsequent capacities."/>
-                            <TextBlock Margin="4,0,0,0" Text="Persons per vessel"/>
+                            <TextBlock Text="Persons per vessel"/>
                         </StackPanel>
                         <TextBox Grid.Row="2"
                                  Grid.Column="1"
                                  Text="{Binding BoatingPersonsPerVessel, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Average persons per vessel on the design day. This scales boating PAOT and subsequent capacities."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Daily turnover multiplier capturing launch and retrieval cycles. This converts boating PAOT to design day capacity."/>
-                            <TextBlock Margin="4,0,0,0" Text="Daily turnover"/>
+                            <TextBlock Text="Daily turnover"/>
                         </StackPanel>
                         <TextBox Grid.Row="3"
                                  Grid.Column="1"
                                  Text="{Binding BoatingDailyTurnover, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Daily turnover multiplier capturing launch and retrieval cycles. This converts boating PAOT to design day capacity."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <ContentControl Style="{StaticResource Content.InfoIcon}"
-                                            ToolTip="Length of the boating season in days. This scales boating daily capacity into seasonal capacity."/>
-                            <TextBlock Margin="4,0,0,0" Text="Season length (days)"/>
+                            <TextBlock Text="Season length (days)"/>
                         </StackPanel>
                         <TextBox Grid.Row="4"
                                  Grid.Column="1"
                                  Text="{Binding BoatingSeasonLengthDays, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Length of the boating season in days. This scales boating daily capacity into seasonal capacity."
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Text="PAOT"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" FontWeight="SemiBold" Text="{Binding BoatingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for boating. Calculated from usable water surface, vessel spacing, and persons per vessel." Text="{Binding BoatingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,4,0,0" Text="Design day user capacity"/>
-                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" Text="{Binding BoatingDailyCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Design day user capacity for boating. PAOT multiplied by daily turnover." Text="{Binding BoatingDailyCapacity, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,4,0,0" Text="Seasonal user capacity"/>
-                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" Text="{Binding BoatingSeasonCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Seasonal user capacity for boating. Daily capacity scaled by season length." Text="{Binding BoatingSeasonCapacity, StringFormat={}{0:N0}}"/>
                     </Grid>
                 </StackPanel>
             </Border>

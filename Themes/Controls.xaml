@@ -205,6 +205,7 @@
     <Style TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource App.Accent}"/>
         <Setter Property="Foreground" Value="{DynamicResource App.OnAccent}"/>
+        <Setter Property="ToolTipService.IsEnabled" Value="False"/>
         <Setter Property="Padding" Value="10,6"/>
         <Setter Property="Margin" Value="0"/>
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Standard}"/>
@@ -318,7 +319,7 @@
 
     <Style x:Key="Button.Outline" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource App.Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.OnAccent}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Standard}"/>
     </Style>
@@ -673,6 +674,7 @@
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Header}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DataGridColumnHeader">
