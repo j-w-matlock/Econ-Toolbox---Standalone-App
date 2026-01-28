@@ -66,12 +66,12 @@
                                             <Setter Property="VerticalAlignment" Value="Center"/>
                                         </Style>
                                         <Style TargetType="TextBox" x:Key="AnnualizerInputBoxStyle" BasedOn="{StaticResource {x:Type TextBox}}">
-                                            <Setter Property="MaxWidth" Value="360"/>
+                                            <Setter Property="Width" Value="360"/>
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                             <Setter Property="MaxLength" Value="50"/>
                                         </Style>
                                         <Style TargetType="ComboBox" x:Key="AnnualizerInputComboStyle" BasedOn="{StaticResource {x:Type ComboBox}}">
-                                            <Setter Property="MaxWidth" Value="360"/>
+                                            <Setter Property="Width" Value="360"/>
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                         </Style>
                                     </Grid.Resources>

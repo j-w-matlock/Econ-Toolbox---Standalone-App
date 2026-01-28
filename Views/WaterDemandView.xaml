@@ -120,8 +120,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.Resources>
-                                        <Style TargetType="TextBox" x:Key="WaterDemandInputBoxStyle" BasedOn="{StaticResource {x:Type TextBox}}">
-                                            <Setter Property="MaxWidth" Value="360"/>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                            <Setter Property="Width" Value="360"/>
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                             <Setter Property="MaxLength" Value="50"/>
                                             <Setter Property="Margin" Value="0,0,10,0"/>
