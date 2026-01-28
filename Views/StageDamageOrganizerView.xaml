@@ -6,7 +6,7 @@
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
     <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
-        <Grid>
+        <Grid Style="{StaticResource Layout.ContentGrid}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -102,7 +102,7 @@
                                                            FontWeight="SemiBold"/>
                                                 <TextBox Grid.Column="2"
                                                          Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-                                                         MinWidth="180"
+                                                         Style="{StaticResource Form.TextBox}"
                                                          ToolTip="Edit the summary name for this file. Used for chart legends and CSV output. The label does not change calculations but affects how results are identified."/>
                                             </Grid>
                                         </DataTemplate>
@@ -151,7 +151,7 @@
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="DamageCategory summary"
-                                               FontWeight="SemiBold"
+                                               Style="{StaticResource Text.SectionTitle}"
                                                Margin="0,0,0,8"/>
                                     <DataGrid CanUserResizeColumns="True" x:Name="CategorySummaryGrid"
                                               Grid.Row="1"
@@ -178,7 +178,7 @@
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="Top structure damages (highest AEP)"
-                                               FontWeight="SemiBold"
+                                               Style="{StaticResource Text.SectionTitle}"
                                                Margin="0,0,0,8"/>
                                     <DataGrid CanUserResizeColumns="True" Grid.Row="1"
                                               ItemsSource="{Binding Highlights}"
@@ -223,16 +223,14 @@
                 </Grid>
 
                 <Border Grid.Column="1"
-                        Background="{DynamicResource App.Surface}"
-                        BorderBrush="{DynamicResource App.Border}"
-                        BorderThickness="1"
-                        CornerRadius="8"
+                        Style="{StaticResource Border.Card}"
                         Padding="12">
                     <StackPanel>
                         <TextBlock Text="Total structure damage by DamageCategory"
-                                   FontWeight="SemiBold"
+                                   Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,8"/>
-                        <Border Background="{DynamicResource App.ChartFill}"
+                        <Border Style="{StaticResource Border.Panel}"
+                                Background="{DynamicResource App.ChartFill}"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
                                 CornerRadius="8"

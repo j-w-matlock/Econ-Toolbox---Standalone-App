@@ -7,7 +7,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Auto"
                   Padding="{StaticResource Padding.Card}">
-        <StackPanel>
+        <StackPanel Style="{StaticResource Layout.ContentStack}">
             <Border Style="{StaticResource Border.Explainer}">
                 <StackPanel>
                     <Grid VerticalAlignment="Center">
@@ -45,16 +45,11 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0"
-                        Background="{DynamicResource App.Surface}"
-                        BorderBrush="{DynamicResource App.Border}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="{StaticResource Padding.Content}"
+                        Style="{StaticResource Border.Card}"
                         Margin="{StaticResource Margin.InlineMedium}">
                     <StackPanel>
                         <TextBlock Text="Where is the field located?"
-                                   FontWeight="SemiBold"
-                                   FontSize="15"
+                                   Style="{StaticResource Text.SectionTitle}"
                                    Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Text="Pick the USACE hydrologic region that best matches watershed timing. The selection shifts planting windows and flood season sampling."
                                    Style="{StaticResource Text.Body}"
@@ -64,18 +59,15 @@
                                   SelectedItem="{Binding SelectedRegion}"
                                   DisplayMemberPath="Name"
                                   Margin="{StaticResource Margin.Stack}"
-                                  MinWidth="220"
+                                  Style="{StaticResource Form.ComboBox}"
                                   ToolTip="Choose the regional depth-duration template to review or customize. The selection sets baseline timing and depth-duration parameters used in calculations."/>
                         <TextBlock Text="{Binding SelectedRegionDescription}"
                                    Style="{StaticResource Text.Body}"
                                    TextWrapping="Wrap"
                                    Margin="{StaticResource Margin.Stack}"/>
 
-                        <Border BorderBrush="{DynamicResource App.Border}"
-                                BorderThickness="1"
+                        <Border Style="{StaticResource Border.Panel}"
                                 Background="{DynamicResource App.SurfaceAlt}"
-                                CornerRadius="4"
-                                Padding="{StaticResource Padding.Content}"
                                 Margin="{StaticResource Margin.Stack}">
                             <StackPanel>
                                 <TextBlock Text="Custom region inputs"
@@ -100,9 +92,7 @@
                                     <Grid.Resources>
                                         <Style x:Key="RegionInputBoxStyle"
                                                TargetType="TextBox"
-                                               BasedOn="{StaticResource {x:Type TextBox}}">
-                                            <Setter Property="Width" Value="240"/>
-                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                               BasedOn="{StaticResource Form.TextBox}">
                                         </Style>
                                     </Grid.Resources>
 
@@ -181,6 +171,7 @@
                                                  AcceptsReturn="True"
                                                  TextWrapping="Wrap"
                                                  MinHeight="60"
+                                                 Style="{StaticResource Form.TextBoxWide}"
                                                  ToolTip="Narrative description that will appear beneath the region selector. This does not affect calculations but documents assumptions."/>
                                     </StackPanel>
                                 </Grid>

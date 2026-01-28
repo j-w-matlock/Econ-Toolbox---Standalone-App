@@ -9,7 +9,7 @@
              UseLayoutRounding="True">
     <Grid>
         <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
-            <StackPanel>
+            <StackPanel Style="{StaticResource Layout.ContentStack}">
                 <Border Style="{StaticResource Border.Explainer}">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
@@ -68,7 +68,7 @@
                         Margin="0,0,0,12">
                     <StackPanel>
                         <TextBlock Text="Stage / Frequency / Damage Inputs"
-                                   FontWeight="SemiBold"
+                                   Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,8"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Rows}"
                                   AutoGenerateColumns="False"
@@ -88,13 +88,13 @@
                         <TextBox Text="{Binding ChartTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  FontSize="16"
                                  FontWeight="SemiBold"
-                                 HorizontalAlignment="Center"
+                                 HorizontalAlignment="Left"
                                  Margin="0,0,0,12"
                                  BorderThickness="0"
                                  Background="Transparent"
                                  ToolTip="Title shown above the frequency-damage chart and included in exports."
-                                 TextAlignment="Center"
-                                 HorizontalContentAlignment="Center"/>
+                                 TextAlignment="Left"
+                                 HorizontalContentAlignment="Left"/>
                         <TextBlock Text="Graph shows frequency-damage or stage-damage curves for each column so you can visually confirm the inputs."
                                    TextWrapping="Wrap"
                                    Margin="0,0,0,12"
@@ -121,7 +121,8 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Border Background="{DynamicResource App.ChartFill}"
+                        <Border Style="{StaticResource Border.Panel}"
+                                Background="{DynamicResource App.ChartFill}"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
                                 CornerRadius="8"
@@ -138,7 +139,7 @@
                 <Border Style="{StaticResource Border.Card}">
                     <StackPanel>
                         <TextBlock Text="Expected Annual Damage Results"
-                                   FontWeight="SemiBold"
+                                   Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,8"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Results}"
                                   AutoGenerateColumns="False"
