@@ -65,10 +65,19 @@
                                             <Setter Property="FontWeight" Value="SemiBold"/>
                                             <Setter Property="VerticalAlignment" Value="Center"/>
                                         </Style>
+                                        <Style TargetType="TextBox" x:Key="AnnualizerInputBoxStyle" BasedOn="{StaticResource {x:Type TextBox}}">
+                                            <Setter Property="Width" Value="360"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            <Setter Property="MaxLength" Value="50"/>
+                                        </Style>
+                                        <Style TargetType="ComboBox" x:Key="AnnualizerInputComboStyle" BasedOn="{StaticResource {x:Type ComboBox}}">
+                                            <Setter Property="Width" Value="360"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        </Style>
                                     </Grid.Resources>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="3*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -84,6 +93,7 @@
                                         <TextBlock Text="Base Year" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="0" Grid.Column="1"
+                                             Style="{StaticResource AnnualizerInputBoxStyle}"
                                              Text="{Binding BaseYear, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
                                              ToolTip="Reference year that anchors discounting for future costs and benefits. This sets the base for present value factors across all annualization calculations."
@@ -93,6 +103,7 @@
                                         <TextBlock Text="Analysis Period" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="1" Grid.Column="1"
+                                             Style="{StaticResource AnnualizerInputBoxStyle}"
                                              Text="{Binding AnalysisPeriod, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
                                              ToolTip="Number of periods for capital recovery. This length drives the capital recovery factor and annualized cost results."
@@ -102,6 +113,7 @@
                                         <TextBlock Text="Construction Months" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <TextBox Grid.Row="2" Grid.Column="1"
+                                             Style="{StaticResource AnnualizerInputBoxStyle}"
                                              Text="{Binding ConstructionMonths, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
                                              ToolTip="Total construction duration in months used to accumulate IDC. Longer durations increase the time interest accrues on construction outlays."
@@ -111,6 +123,7 @@
                                         <TextBlock Text="IDC Timing Assumption" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="3" Grid.Column="1"
+                                              Style="{StaticResource AnnualizerInputComboStyle}"
                                               ItemsSource="{Binding IdcTimingOptions}"
                                               SelectedItem="{Binding IdcTimingBasis}"
                                               ToolTip="Select whether IDC accrues from the beginning, middle, or end of each construction month when no detailed schedule is provided. The timing assumption shifts how much interest is applied within each month."
@@ -122,6 +135,7 @@
                                     <CheckBox Grid.Row="4" Grid.Column="1"
                                               Content="Enable period-based IDC"
                                               IsChecked="{Binding CalculateInterestAtPeriod}"
+                                              HorizontalAlignment="Left"
                                               ToolTip="Toggle to calculate IDC using period-based first and last payment assumptions. Enabling this changes the IDC timing logic and alters the resulting IDC total."
                                               Margin="0,0,0,8"/>
 
@@ -129,6 +143,7 @@
                                         <TextBlock Text="First Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="5" Grid.Column="1"
+                                              Style="{StaticResource AnnualizerInputComboStyle}"
                                               ItemsSource="{Binding IdcFirstPaymentOptions}"
                                               SelectedItem="{Binding IdcFirstPaymentTiming}"
                                               ToolTip="Choose when the first payment occurs within the construction period for period-based IDC. The selected timing changes how many periods of interest are applied to the first outlay."
@@ -149,6 +164,7 @@
                                         <TextBlock Text="Last Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="6" Grid.Column="1"
+                                              Style="{StaticResource AnnualizerInputComboStyle}"
                                               ItemsSource="{Binding IdcLastPaymentOptions}"
                                               SelectedItem="{Binding IdcLastPaymentTiming}"
                                               ToolTip="Define the timing of the final payment when using period-based IDC. This affects how much interest is applied to the last payment period.">
