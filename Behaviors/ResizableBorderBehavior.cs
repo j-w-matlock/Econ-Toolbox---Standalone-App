@@ -121,12 +121,16 @@ public static class ResizableBorderBehavior
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var handleSize = GetHandleSize();
+            var handleSize = Math.Max(0, GetHandleSize());
             var halfHandle = handleSize / 2;
+            var safeWidth = Math.Max(0, finalSize.Width);
+            var safeHeight = Math.Max(0, finalSize.Height);
+            var rightHeight = Math.Max(0, safeHeight - handleSize);
+            var bottomWidth = Math.Max(0, safeWidth - handleSize);
 
-            rightThumb.Arrange(new Rect(finalSize.Width - halfHandle, halfHandle, handleSize, finalSize.Height - handleSize));
-            bottomThumb.Arrange(new Rect(halfHandle, finalSize.Height - halfHandle, finalSize.Width - handleSize, handleSize));
-            cornerThumb.Arrange(new Rect(finalSize.Width - handleSize, finalSize.Height - handleSize, handleSize, handleSize));
+            rightThumb.Arrange(new Rect(Math.Max(0, safeWidth - halfHandle), Math.Max(0, halfHandle), handleSize, rightHeight));
+            bottomThumb.Arrange(new Rect(Math.Max(0, halfHandle), Math.Max(0, safeHeight - halfHandle), bottomWidth, handleSize));
+            cornerThumb.Arrange(new Rect(Math.Max(0, safeWidth - handleSize), Math.Max(0, safeHeight - handleSize), handleSize, handleSize));
 
             return finalSize;
         }
