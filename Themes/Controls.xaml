@@ -362,17 +362,6 @@
         <Setter Property="Margin" Value="{StaticResource Margin.StackSmall}"/>
         <Setter Property="Padding" Value="8,6"/>
         <Setter Property="MinWidth" Value="120"/>
-        <Setter Property="MaxWidth">
-            <Setter.Value>
-                <MultiBinding Converter="{StaticResource CharCountToWidthConverter}" ConverterParameter="50">
-                    <Binding RelativeSource="{RelativeSource Self}" Path="FontFamily"/>
-                    <Binding RelativeSource="{RelativeSource Self}" Path="FontSize"/>
-                    <Binding RelativeSource="{RelativeSource Self}" Path="FontStyle"/>
-                    <Binding RelativeSource="{RelativeSource Self}" Path="FontWeight"/>
-                    <Binding RelativeSource="{RelativeSource Self}" Path="FontStretch"/>
-                </MultiBinding>
-            </Setter.Value>
-        </Setter>
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
