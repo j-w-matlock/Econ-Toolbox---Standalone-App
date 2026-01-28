@@ -234,7 +234,6 @@
 
                                     <Border Grid.Row="8"
                                             Grid.ColumnSpan="3"
-                                            Style="{StaticResource Border.Chart}"
                                             Background="{DynamicResource App.ChartFill}"
                                             BorderBrush="{DynamicResource App.Border}"
                                             BorderThickness="1"
@@ -242,7 +241,7 @@
                                             Padding="12"
                                             Margin="0,8,0,0">
                                         <Border.Style>
-                                            <Style TargetType="Border">
+                                            <Style TargetType="Border" BasedOn="{StaticResource Border.Chart}">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Name}" Value="Baseline">
