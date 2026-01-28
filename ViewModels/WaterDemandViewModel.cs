@@ -226,6 +226,11 @@ namespace EconToolbox.Desktop.ViewModels
             get => _selectedScenario;
             set
             {
+                if (ReferenceEquals(_selectedScenario, value))
+                {
+                    return;
+                }
+
                 _selectedScenario = value;
                 OnPropertyChanged();
                 Results = value?.Results ?? new ObservableCollection<DemandEntry>();
