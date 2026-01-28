@@ -116,17 +116,17 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.Resources>
                                         <Style x:Key="WaterDemandInputBoxStyle"
                                                TargetType="TextBox"
                                                BasedOn="{StaticResource {x:Type TextBox}}">
-                                            <Setter Property="Width" Value="360"/>
+                                            <Setter Property="Width" Value="220"/>
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
                                             <Setter Property="MaxLength" Value="50"/>
-                                            <Setter Property="Margin" Value="0,0,10,0"/>
+                                            <Setter Property="Margin" Value="0,0,6,0"/>
                                         </Style>
                                     </Grid.Resources>
 

@@ -88,8 +88,8 @@
                                            Margin="{StaticResource Margin.StackSmall}"/>
                                 <Grid Margin="{StaticResource Margin.StackSmall}">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -97,6 +97,14 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
+                                    <Grid.Resources>
+                                        <Style x:Key="RegionInputBoxStyle"
+                                               TargetType="TextBox"
+                                               BasedOn="{StaticResource {x:Type TextBox}}">
+                                            <Setter Property="Width" Value="240"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        </Style>
+                                    </Grid.Resources>
 
                                     <StackPanel Grid.Row="0"
                                                 Grid.Column="0"
@@ -104,6 +112,7 @@
                                         <TextBlock Text="Region name"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
                                                  ToolTip="Display name for the selected region shown in the drop-down list. Renaming does not change calculations but updates labels in outputs."/>
                                     </StackPanel>
 
@@ -113,6 +122,7 @@
                                         <TextBlock Text="Annual Exceedance Probability"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.AnnualExceedanceProbabilityDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
                                                  HorizontalContentAlignment="Right"
                                                  ToolTip="Probability that a damaging flood occurs in an average year (0–1). This baseline probability is multiplied by modeled stress to estimate impact risk."/>
                                     </StackPanel>
@@ -123,6 +133,7 @@
                                         <TextBlock Text="Flood season start (day)"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.FloodWindowStartDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
                                                  HorizontalContentAlignment="Right"
                                                  ToolTip="First day of year when flooding typically begins for the selected region. The window affects which growth stages are exposed during the season."/>
                                     </StackPanel>
@@ -133,6 +144,7 @@
                                         <TextBlock Text="Flood season peak (day)"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.FloodSeasonPeakDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
                                                  HorizontalContentAlignment="Right"
                                                  ToolTip="Day of year when flood likelihood typically peaks for the selected region. The peak timing influences stage-specific exposure weighting."/>
                                     </StackPanel>
@@ -143,6 +155,7 @@
                                         <TextBlock Text="Flood season end (day)"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.FloodWindowEndDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
                                                  HorizontalContentAlignment="Right"
                                                  ToolTip="Last day of year when flooding commonly occurs for the selected region. This bounds exposure calculations across the season."/>
                                     </StackPanel>
@@ -153,6 +166,7 @@
                                         <TextBlock Text="Season shift (days)"
                                                    Style="{StaticResource Text.Caption}"/>
                                         <TextBox Text="{Binding SelectedRegion.SeasonShiftDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
                                                  HorizontalContentAlignment="Right"
                                                  ToolTip="Shifts the growing season timeline relative to the flood season (negative = earlier). This changes which growth stages overlap the flood window."/>
                                     </StackPanel>

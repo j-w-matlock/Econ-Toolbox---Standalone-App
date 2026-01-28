@@ -139,12 +139,16 @@
                     <TextBlock Margin="0,0,5,5" Text="Total Usable Storage"/>
                     <TextBox Text="{Binding TotalStorage}"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Enter the system's total usable storage before any plan allocation. This value is the denominator for the storage percentage used to scale costs."/>
                     <TextBlock Grid.Row="1" Margin="0,0,5,5" Text="Storage Recommendation"/>
                     <TextBox Text="{Binding StorageRecommendation}"
                              Grid.Row="1"
                              Grid.Column="1"
+                             Width="240"
+                             HorizontalAlignment="Left"
                              Margin="0,0,0,5"
                              ToolTip="Recommended portion of the joint storage allocated to this alternative. This value is the numerator used to scale downstream costs."/>
                     <Button Command="{Binding ComputeStorageCommand}"
