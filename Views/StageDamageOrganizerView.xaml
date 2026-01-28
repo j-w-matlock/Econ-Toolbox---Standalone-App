@@ -229,7 +229,7 @@
                         <TextBlock Text="Total structure damage by DamageCategory"
                                    Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,8"/>
-                        <Border Style="{StaticResource Border.Chart}"
+                        <Border Style="{StaticResource Border.Panel}"
                                 Background="{DynamicResource App.ChartFill}"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"

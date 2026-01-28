@@ -668,7 +668,7 @@
         <Setter Property="RowHeaderWidth" Value="0"/>
         <Setter Property="ColumnHeaderHeight" Value="{x:Static sys:Double.NaN}"/>
         <Setter Property="RowHeight" Value="32"/>
-        <Setter Property="ColumnWidth" Value="*"/>
+        <Setter Property="ColumnWidth" Value="SizeToHeader"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="MaxWidth" Value="{StaticResource Layout.TableMaxWidth}"/>
         <Setter Property="CellStyle" Value="{DynamicResource DataGridCellStyle}"/>

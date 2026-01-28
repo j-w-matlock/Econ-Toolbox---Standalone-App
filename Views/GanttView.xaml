@@ -214,7 +214,7 @@
                             </StackPanel>
                         </StackPanel>
                         <Border Grid.Row="1"
-                                Style="{StaticResource Border.Chart}"
+                                Style="{StaticResource Border.Panel}"
                                 Background="{DynamicResource App.HighlightBackground}"
                                 BorderBrush="{DynamicResource App.HighlightBorder}"
                                 BorderThickness="1"
