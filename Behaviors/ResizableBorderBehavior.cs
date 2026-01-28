@@ -137,10 +137,16 @@ public static class ResizableBorderBehavior
 
         private Thumb CreateThumb(Cursor cursor)
         {
+            var styleKey = cursor == Cursors.SizeWE
+                ? "Thumb.ResizeHandle.Vertical"
+                : cursor == Cursors.SizeNS
+                    ? "Thumb.ResizeHandle.Horizontal"
+                    : "Thumb.ResizeHandle.Corner";
+
             var thumb = new Thumb
             {
                 Cursor = cursor,
-                Style = (Style?)FindResource("Thumb.ResizeHandle")
+                Style = (Style?)FindResource(styleKey)
             };
 
             return thumb;
