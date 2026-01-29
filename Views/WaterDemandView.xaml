@@ -59,7 +59,7 @@
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
@@ -119,8 +119,9 @@
                                         <Style x:Key="WaterDemandInputBoxStyle"
                                                TargetType="TextBox"
                                                BasedOn="{StaticResource Form.TextBox}">
+                                            <Setter Property="Width" Value="180"/>
                                             <Setter Property="MaxLength" Value="50"/>
-                                            <Setter Property="Margin" Value="0,0,6,0"/>
+                                            <Setter Property="Margin" Value="0,0,2,0"/>
                                         </Style>
                                     </Grid.Resources>
 
