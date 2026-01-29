@@ -1,51 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EconToolbox.Desktop.Models
 {
-    public class PointValueRow : INotifyPropertyChanged
+    public partial class PointValueRow : ObservableObject
     {
+        [ObservableProperty]
         private int _points;
+
+        [ObservableProperty]
         private double _generalRecreation;
+
+        [ObservableProperty]
         private double _generalFishingHunting;
+
+        [ObservableProperty]
         private double _specializedFishingHunting;
+
+        [ObservableProperty]
         private double _specializedRecreation;
-
-        public int Points
-        {
-            get => _points;
-            set { _points = value; OnPropertyChanged(nameof(Points)); }
-        }
-
-        public double GeneralRecreation
-        {
-            get => _generalRecreation;
-            set { _generalRecreation = value; OnPropertyChanged(nameof(GeneralRecreation)); }
-        }
-
-        public double GeneralFishingHunting
-        {
-            get => _generalFishingHunting;
-            set { _generalFishingHunting = value; OnPropertyChanged(nameof(GeneralFishingHunting)); }
-        }
-
-        public double SpecializedFishingHunting
-        {
-            get => _specializedFishingHunting;
-            set { _specializedFishingHunting = value; OnPropertyChanged(nameof(SpecializedFishingHunting)); }
-        }
-
-        public double SpecializedRecreation
-        {
-            get => _specializedRecreation;
-            set { _specializedRecreation = value; OnPropertyChanged(nameof(SpecializedRecreation)); }
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     public static class UdvModel

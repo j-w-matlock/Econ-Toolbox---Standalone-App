@@ -1,34 +1,13 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace EconToolbox.Desktop.Models
 {
-    public class HistoricalVisitationRow : ObservableObject
+    public partial class HistoricalVisitationRow : ObservableObject
     {
+        [ObservableProperty]
         private string? _label;
+
+        [ObservableProperty]
         private string _visitationText = string.Empty;
-
-        public string? Label
-        {
-            get => _label;
-            set
-            {
-                if (_label != value)
-                {
-                    _label = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public string VisitationText
-        {
-            get => _visitationText;
-            set
-            {
-                if (_visitationText != value)
-                {
-                    _visitationText = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
     }
 }

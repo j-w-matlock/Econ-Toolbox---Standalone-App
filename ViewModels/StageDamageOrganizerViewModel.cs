@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using CommunityToolkit.Mvvm.ComponentModel;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Themes;
 using Microsoft.VisualBasic.FileIO;
@@ -753,35 +754,21 @@ namespace EconToolbox.Desktop.ViewModels
         private record StageDamageLoadResult(IReadOnlyList<StageDamageRecord> Records, IReadOnlyList<StageDamageSummaryInfo> Summaries);
     }
 
-    public class StageDamageSummaryInfo : ObservableObject
+    public partial class StageDamageSummaryInfo : ObservableObject
     {
-        private string _name;
-
         public StageDamageSummaryInfo(string sourceKey, string sourceLabel)
         {
             SourceKey = sourceKey;
             SourceLabel = sourceLabel;
-            _name = sourceLabel;
+            Name = sourceLabel;
         }
 
         public string SourceKey { get; }
 
         public string SourceLabel { get; }
 
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                if (value == _name)
-                {
-                    return;
-                }
-
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        private string _name = string.Empty;
     }
 
     internal record AepColumn(string NormalizedKey, string Label);
