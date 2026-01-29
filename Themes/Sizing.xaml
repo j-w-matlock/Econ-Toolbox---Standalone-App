@@ -7,11 +7,24 @@
     <sys:Double x:Key="Spacing.Medium">16</sys:Double>
     <sys:Double x:Key="Spacing.Large">24</sys:Double>
     <sys:Double x:Key="Spacing.XLarge">32</sys:Double>
+    <sys:Double x:Key="SpacingSmall">4</sys:Double>
+    <sys:Double x:Key="SpacingMedium">8</sys:Double>
+    <sys:Double x:Key="SpacingLarge">16</sys:Double>
 
     <!-- Corner radius tokens -->
     <CornerRadius x:Key="CornerRadius.Small">2</CornerRadius>
     <CornerRadius x:Key="CornerRadius.Medium">4</CornerRadius>
     <CornerRadius x:Key="CornerRadius.Large">8</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusSmall">2</CornerRadius>
+
+    <!-- Spacing-derived thickness tokens -->
+    <Thickness x:Key="MarginSmall">4</Thickness>
+    <Thickness x:Key="MarginMedium">8</Thickness>
+    <Thickness x:Key="MarginLarge">16</Thickness>
+    <Thickness x:Key="PaddingSmall">4</Thickness>
+    <Thickness x:Key="PaddingMedium">8</Thickness>
+    <Thickness x:Key="PaddingLarge">16</Thickness>
+    <Thickness x:Key="PaddingButton">16,8</Thickness>
 
     <!-- Padding tokens -->
     <Thickness x:Key="Padding.Small">8</Thickness>
