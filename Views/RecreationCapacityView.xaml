@@ -23,19 +23,15 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
-                                   FontSize="18"
-                                   Foreground="{DynamicResource App.Accent}"
-                                   Margin="0,0,8,0"/>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
                         <TextBlock Grid.Column="1"
                                    Text="Recreation capacity study"
-                                   FontWeight="Bold"
-                                   FontSize="16"
-                                   Foreground="{DynamicResource App.Accent}"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
                                    TextWrapping="Wrap"/>
                     </Grid>
-                    <TextBlock Margin="0,6,0,0"
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}"
+                               Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap">
                         This worksheet estimates people-at-one-time (PAOT) and design day user capacities for
                         camping, shoreline fishing, and boating in accordance with U.S. Army Corps of Engineers
@@ -51,6 +47,7 @@
                     <TextBlock Text="Overall capacity summary"
                                Style="{StaticResource Text.SectionTitle}"/>
                     <TextBlock Margin="{StaticResource Margin.TopSmall}"
+                               Style="{StaticResource Text.Body}"
                                Text="{Binding Summary}"/>
                     <Grid Margin="{StaticResource Margin.TopLarge}" Grid.IsSharedSizeScope="True">
                         <Grid.ColumnDefinitions>
@@ -63,11 +60,11 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="People at one time"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" ToolTip="Total people at one time across camping, fishing, and boating. Sum of PAOT outputs." Text="{Binding TotalPeopleAtOneTime, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Text.BodyStrong}" ToolTip="Total people at one time across camping, fishing, and boating. Sum of PAOT outputs." Text="{Binding TotalPeopleAtOneTime, StringFormat={}{0:N0}}"/>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Design day user capacity"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" ToolTip="Total design day capacity across all activities. Sum of daily capacities." Text="{Binding TotalDailyCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Text.BodyStrong}" ToolTip="Total design day capacity across all activities. Sum of daily capacities." Text="{Binding TotalDailyCapacity, StringFormat={}{0:N0}}"/>
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Seasonal user capacity"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" FontWeight="SemiBold" ToolTip="Total seasonal user capacity across all activities. Sum of seasonal capacities." Text="{Binding TotalSeasonCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Text.BodyStrong}" ToolTip="Total seasonal user capacity across all activities. Sum of seasonal capacities." Text="{Binding TotalSeasonCapacity, StringFormat={}{0:N0}}"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -337,10 +334,11 @@
         <Border Style="{StaticResource Border.ResultInfo}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                    <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                    <TextBlock Text="Result guidance" Style="{StaticResource Text.SectionHeaderAccent}"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource Text.Body}"
                            Margin="{StaticResource Margin.TopSmall}">
                     Camping, shoreline fishing, and boating blocks each report people-at-one-time (PAOT), design day capacity, and seasonal user days. The totals at the bottom combine all activities so you can immediately compare recreation supply against plan targets or historic visitation.
                 </TextBlock>
@@ -349,10 +347,12 @@
         <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                    <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                    <TextBlock Text="Workflow tips" Style="{StaticResource Text.SectionHeaderAccent}"/>
                 </StackPanel>
-                <TextBlock Margin="{StaticResource Margin.TopSmall}" TextWrapping="Wrap">
+                <TextBlock Margin="{StaticResource Margin.TopSmall}"
+                           Style="{StaticResource Text.Body}"
+                           TextWrapping="Wrap">
                     <Run Text="• Double-check group size, turnover, and season length before comparing activities."/>
                     <LineBreak/>
                     <Run Text="• Keep units consistent across camping, fishing, and boating inputs to avoid capacity jumps."/>
@@ -364,10 +364,11 @@
         <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                    <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                    <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                    <TextBlock Text="Formula Reference" Style="{StaticResource Text.SectionHeaderAccent}"/>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource Text.Body}"
                            Margin="{StaticResource Margin.TopSmall}">
                     <Run Text="• Camping PAOT = Campsites × Average Group Size; Daily Capacity = PAOT × Daily Turnover; Seasonal Capacity = Daily Capacity × Season Length."/>
                     <LineBreak/>

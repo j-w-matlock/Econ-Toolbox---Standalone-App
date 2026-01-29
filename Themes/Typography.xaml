@@ -47,11 +47,19 @@
         <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
 
+    <Style x:Key="Text.SectionTitleAccent" TargetType="TextBlock" BasedOn="{StaticResource Text.SectionTitle}">
+        <Setter Property="Foreground" Value="{DynamicResource App.Accent}"/>
+    </Style>
+
     <Style x:Key="Text.SectionHeader" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
+    </Style>
+
+    <Style x:Key="Text.SectionHeaderAccent" TargetType="TextBlock" BasedOn="{StaticResource Text.SectionHeader}">
+        <Setter Property="Foreground" Value="{DynamicResource App.Accent}"/>
     </Style>
 
     <Style x:Key="Text.BodySmall" TargetType="TextBlock">
@@ -89,6 +97,17 @@
         <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+
+    <Style x:Key="Text.BodyStrong" TargetType="TextBlock" BasedOn="{StaticResource Text.Body}">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <Style x:Key="Text.Icon.Section" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.Accent}"/>
+        <Setter Property="Margin" Value="{StaticResource Margin.InlineMedium}"/>
     </Style>
 
     <Style x:Key="Text.Title" TargetType="TextBlock">

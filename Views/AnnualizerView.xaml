@@ -23,20 +23,16 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock FontFamily="Segoe MDL2 Assets"
-                                           Text=""
-                                           FontSize="18"
-                                           Foreground="{DynamicResource App.Accent}"
-                                           Margin="0,0,8,0"/>
+                                <TextBlock Text=""
+                                           Style="{StaticResource Text.Icon.Section}"/>
                                 <TextBlock Grid.Column="1"
                                            Text="Cost Annualization Workflow"
-                                           FontWeight="Bold"
-                                           FontSize="16"
-                                           Foreground="{DynamicResource App.Accent}"
+                                           Style="{StaticResource Text.SectionTitleAccent}"
                                            TextWrapping="Wrap"/>
                             </Grid>
                                 <TextBlock TextWrapping="Wrap"
-                                           Margin="0,6,0,0">
+                                           Style="{StaticResource Text.Body}"
+                                           Margin="{StaticResource Margin.TopLarge}">
                                     <Run Text="• Document upfront investments, financing assumptions, and the analysis period."/>
                                     <LineBreak/>
                                     <Run Text="• Capture construction cash flow in the IDC schedule and list future costs in the year they occur."/>
@@ -298,21 +294,21 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                                 <UniformGrid Columns="3" HorizontalAlignment="Left" Margin="0,10,0,0" Rows="1">
-                                    <Button Command="{Binding AddScenarioComparisonCommand}" Width="150" Margin="0,0,8,0">
+                                    <Button Command="{Binding AddScenarioComparisonCommand}" Width="150" Margin="0,0,8,0" Style="{StaticResource Button.Action}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                            <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                             <TextBlock Text="Add Scenario"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Command="{Binding ComputeCommand}" Width="150" Margin="0,0,8,0">
+                                    <Button Command="{Binding ComputeCommand}" Width="150" Margin="0,0,8,0" Style="{StaticResource Button.Action}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                            <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                             <TextBlock Text="Calculate"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Command="{Binding ResetScenarioComparisonsCommand}" Width="150">
+                                    <Button Command="{Binding ResetScenarioComparisonsCommand}" Width="150" Style="{StaticResource Button.Action}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                            <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                             <TextBlock Text="Reset Table"/>
                                         </StackPanel>
                                     </Button>
@@ -322,7 +318,7 @@
 
                         <StackPanel Margin="0,24,0,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
-                                <TextBlock Text="IDC Schedule" FontWeight="SemiBold"/>
+                                <TextBlock Text="IDC Schedule" Style="{StaticResource Text.SectionHeader}"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
                                 <DataGrid CanUserResizeColumns="True" x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="Column" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
@@ -371,9 +367,9 @@
                                 </DataGrid>
                             </Border>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
-                                <Button Command="{Binding ResetIdcCommand}" MinWidth="160" ToolTip="Clear all IDC schedule entries. Clearing resets IDC calculations that depend on the schedule.">
+                                <Button Command="{Binding ResetIdcCommand}" MinWidth="160" Style="{StaticResource Button.Action}" ToolTip="Clear all IDC schedule entries. Clearing resets IDC calculations that depend on the schedule.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                         <TextBlock Text="Reset IDC Inputs"/>
                                     </StackPanel>
                                 </Button>
@@ -382,7 +378,7 @@
 
                         <StackPanel Margin="0,24,0,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
-                                <TextBlock Text="Future Costs" FontWeight="SemiBold"/>
+                                <TextBlock Text="Future Costs" Style="{StaticResource Text.SectionHeader}"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
                                 <DataGrid CanUserResizeColumns="True" x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
@@ -431,9 +427,9 @@
                                 </DataGrid>
                             </Border>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
-                                <Button Command="{Binding ResetFutureCostsCommand}" MinWidth="160" ToolTip="Clear all future cost entries. Clearing removes their discounted impacts from totals.">
+                                <Button Command="{Binding ResetFutureCostsCommand}" MinWidth="160" Style="{StaticResource Button.Action}" ToolTip="Clear all future cost entries. Clearing removes their discounted impacts from totals.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                         <TextBlock Text="Reset Future Costs"/>
                                     </StackPanel>
                                 </Button>
@@ -444,14 +440,10 @@
                             <Border Style="{StaticResource Border.ResultInfo}">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text=""
-                                                   FontSize="18"
-                                                   Foreground="{DynamicResource App.Accent}"
-                                                   Margin="0,0,8,0"/>
+                                        <TextBlock Text=""
+                                                   Style="{StaticResource Text.Icon.Section}"/>
                                         <TextBlock Text="Result guidance"
-                                                   FontWeight="Bold"
-                                                   Foreground="{DynamicResource App.Accent}"/>
+                                                   Style="{StaticResource Text.SectionHeaderAccent}"/>
                                     </StackPanel>
                                     <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
                                         IDC, Total Investment, CRF, Annual Cost, and BCR update together. Confirm IDC before reviewing total investment, then use CRF and Annual Cost to explain how first cost, future costs, and O&amp;M translate into an annualized value and economic justification.
@@ -461,14 +453,10 @@
                             <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                                   Text=""
-                                                   FontSize="18"
-                                                   Foreground="{DynamicResource App.Accent}"
-                                                   Margin="0,0,8,0"/>
+                                        <TextBlock Text=""
+                                                   Style="{StaticResource Text.Icon.Section}"/>
                                         <TextBlock Text="Formula Reference"
-                                                   FontWeight="Bold"
-                                                   Foreground="{DynamicResource App.Accent}"/>
+                                                   Style="{StaticResource Text.SectionHeaderAccent}"/>
                                     </StackPanel>
                                     <TextBlock Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
                                         <Run Text="• Future cost present values use PV = cost × (1 + r)⁻ⁿ where n equals the year offset plus the timing fraction (0 for beginning, 0.5 for middle, 1 for end)."/>
