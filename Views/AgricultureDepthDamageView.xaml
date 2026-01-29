@@ -15,20 +15,16 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
-                                   FontSize="18"
-                                   Foreground="{DynamicResource App.Accent}"
-                                   Margin="0,0,8,0"/>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
                         <TextBlock Grid.Column="1"
                                    Text="Agricultural Depth-Duration Damage Guidance"
-                                   FontWeight="Bold"
-                                   FontSize="16"
-                                   Foreground="{DynamicResource App.Accent}"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
                                    TextWrapping="Wrap"/>
                     </Grid>
                     <TextBlock TextWrapping="Wrap"
-                               Margin="0,6,0,0">
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         <Run Text="Use these prompts to translate crop stage, regional flood timing, and acreage risk into a depth-duration damage estimate tailored for CE/ICA studies."/>
                         <LineBreak/>
                         <Run Text="Update the exposure assumptions below, then select Calculate to refresh the modeled curve and summary outputs."/>
@@ -754,14 +750,10 @@
                     Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
-                                   FontSize="18"
-                                   Foreground="{DynamicResource App.Accent}"
-                                   Margin="0,0,8,0"/>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
                         <TextBlock Text="Result guidance"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource App.Accent}"/>
+                                   Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap"
@@ -774,14 +766,10 @@
                     Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
-                                   FontSize="18"
-                                   Foreground="{DynamicResource App.Accent}"
-                                   Margin="0,0,8,0"/>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
                         <TextBlock Text="Workflow tips"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource App.Accent}"/>
+                                   Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap"
@@ -798,14 +786,10 @@
                     Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
-                                   FontSize="18"
-                                   Foreground="{DynamicResource App.Accent}"
-                                   Margin="0,0,8,0"/>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
                         <TextBlock Text="Formula Reference"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource App.Accent}"/>
+                                   Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}"
                                TextWrapping="Wrap"

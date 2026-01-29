@@ -36,13 +36,12 @@
                     </Viewbox>
                     <TextBlock Grid.Column="1"
                                Text="Unit Day Value Overview"
-                               FontWeight="Bold"
-                               FontSize="16"
-                               Foreground="{DynamicResource App.Accent}"
+                               Style="{StaticResource Text.SectionTitleAccent}"
                                TextWrapping="Wrap"/>
                 </Grid>
                 <TextBlock TextWrapping="Wrap"
-                           Margin="0,6,0,0">
+                           Style="{StaticResource Text.Body}"
+                           Margin="{StaticResource Margin.TopLarge}">
                     Choose the recreation and activity classification, then supply a point score, season length, and visitation cadence. Points must align with the table order to return the correct value tier. Use the Calculate button at the bottom of the window whenever you change inputs so the unit day value stays synchronized.
                 </TextBlock>
             </StackPanel>
@@ -159,8 +158,10 @@
         </Grid>
         <Border Grid.Row="3" Style="{StaticResource Border.ResultInfo}">
             <StackPanel>
-                <TextBlock Text="Historical Visitation Data" FontWeight="Bold"/>
-                <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopXSmall}">
+                <TextBlock Text="Historical Visitation Data" Style="{StaticResource Text.SectionHeader}"/>
+                <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource Text.Body}"
+                           Margin="{StaticResource Margin.TopXSmall}">
                     Provide historic visitation observations in the table. You can type directly or paste multiple rows from a spreadsheet. The median of these values will replace the visitation input above.
                 </TextBlock>
                 <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding HistoricalVisitationRows}"
@@ -223,20 +224,22 @@
                 Margin="{StaticResource Margin.Stack}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Unit Day Value:" FontWeight="Bold"/>
+                    <TextBlock Text="Unit Day Value:" Style="{StaticResource Text.SectionHeader}"/>
                     <TextBlock Text="{Binding UnitDayValue, StringFormat={}{0:C2}}"
                                Margin="6,0,0,0"
-                               FontWeight="SemiBold"
+                               Style="{StaticResource Text.BodyStrong}"
                                ToolTip="Calculated unit day value based on the selected recreation type, activity, and point score."/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
-                    <TextBlock Text="Annual Recreation Benefit:" FontWeight="Bold"/>
+                    <TextBlock Text="Annual Recreation Benefit:" Style="{StaticResource Text.SectionHeader}"/>
                     <TextBlock Text="{Binding AnnualRecreationBenefit, StringFormat={}{0:C2}}"
                                Margin="6,0,0,0"
-                               FontWeight="SemiBold"
+                               Style="{StaticResource Text.BodyStrong}"
                                ToolTip="Annual recreation benefit calculated as unit day value multiplied by total user days."/>
                 </StackPanel>
-                <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopXSmall}">
+                <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource Text.Body}"
+                           Margin="{StaticResource Margin.TopXSmall}">
                     This total monetizes recreation by multiplying the unit day value with the total user days derived from your season length and visitation cadence. Raising the point score moves you to a higher value tier, while longer seasons or higher visitation proportionally increase the benefit.
                 </TextBlock>
             </StackPanel>
@@ -260,8 +263,7 @@
                          TextAlignment="Left"
                          HorizontalContentAlignment="Left"/>
                 <TextBlock Text="Line chart showing how unit day values rise with higher point scores. The selected point overlays the active recreation and activity choice."
-                           TextWrapping="Wrap"
-                           Foreground="{DynamicResource App.TextSecondary}"
+                           Style="{StaticResource Text.BodySmall}"
                            Margin="0,0,0,12"/>
                 <ItemsControl ItemsSource="{Binding LegendItems}"
                               Margin="0,0,0,12">
@@ -307,10 +309,12 @@
         <Border Grid.Row="6" Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.HighlightBorder}" BorderThickness="1" CornerRadius="8" Padding="{StaticResource Padding.Content}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="{StaticResource Margin.Inline}"/>
-                    <TextBlock Text="Point Scale Reference" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                    <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                    <TextBlock Text="Point Scale Reference" Style="{StaticResource Text.SectionHeaderAccent}"/>
                 </StackPanel>
-                <TextBlock TextWrapping="Wrap" FontSize="12" Margin="{StaticResource Margin.Stack}">
+                <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource Text.BodySmall}"
+                           Margin="{StaticResource Margin.Stack}">
                     Reference this table to ensure your point selection matches the published ranges. The highlighted unit day value is chosen by matching your point entry to the correct column.
                 </TextBlock>
                 <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Table}" AutoGenerateColumns="False" CanUserAddRows="False" ColumnWidth="SizeToHeader">
@@ -344,10 +348,12 @@
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Result guidance" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopSmall}">
                         The highlighted Unit Day Value and Annual Recreation Benefit respond immediately to changes in points, visitation cadence, or season length. Use them to explain how quality adjustments move you between table tiers while user days scale the monetized benefit.
                     </TextBlock>
                 </StackPanel>
@@ -355,10 +361,12 @@
             <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Workflow tips" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopSmall}">
                         <Run Text="• Verify point selections against the published ranges before interpreting the UDV."/>
                         <LineBreak/>
                         <Run Text="• Revisit visitation cadence and season length if user days look too high or low."/>
@@ -370,10 +378,12 @@
             <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Formula Reference" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="{StaticResource Margin.TopSmall}">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopSmall}">
                         <Run Text="• Unit day values are interpolated between table breakpoints: UDV = yᵢ + (Points − xᵢ)/(xᵢ₊₁ − xᵢ) × (yᵢ₊₁ − yᵢ)."/>
                         <LineBreak/>
                         <Run Text="• Total user days come from visitation cadence, season length, and group size settings in the header inputs."/>

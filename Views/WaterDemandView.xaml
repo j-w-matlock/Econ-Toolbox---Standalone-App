@@ -26,20 +26,16 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
-                                   FontSize="18"
-                                   Foreground="{DynamicResource App.Accent}"
-                                   Margin="0,0,8,0"/>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
                         <TextBlock Grid.Column="1"
                                    Text="Water Demand Forecast Workflow"
-                                   FontWeight="Bold"
-                                   FontSize="16"
-                                   Foreground="{DynamicResource App.Accent}"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
                                    TextWrapping="Wrap"/>
                     </Grid>
                     <TextBlock TextWrapping="Wrap"
-                               Margin="0,6,0,0">
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         <Run Text="• Enter historic demand records first to calibrate the baseline."/>
                         <LineBreak/>
                         <Run Text="• Choose or add scenarios, then set the forecast horizon and demographic assumptions."/>
@@ -265,7 +261,12 @@
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="ScenarioValue"/>
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="ScenarioValue"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="SemiBold" Foreground="{DynamicResource App.Accent}" Margin="0,0,0,8" Text="Scenario Variations (% change applied to baseline rates)"/>
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="0"
+                                                       Grid.ColumnSpan="3"
+                                                       Text="Scenario Variations (% change applied to baseline rates)"
+                                                       Style="{StaticResource Text.SectionHeaderAccent}"
+                                                       Margin="{StaticResource Margin.StackLarge}"/>
                                             <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="SemiBold" Foreground="{DynamicResource App.TextSecondary}" Text="Parameter"/>
                                             <TextBlock Grid.Row="1" Grid.Column="1" FontWeight="SemiBold" Foreground="{DynamicResource App.TextSecondary}" Margin="16,0,16,0" Text="Alternative Forecast 1" HorizontalAlignment="Left"/>
                                             <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="SemiBold" Foreground="{DynamicResource App.TextSecondary}" Text="Alternative Forecast 2" HorizontalAlignment="Left"/>
@@ -419,28 +420,36 @@
             <Border Grid.Row="2" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Scenario Summary" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Scenario Summary" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding SelectedScenario.Description}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                    <TextBlock Text="{Binding SelectedScenario.Description}"
+                               Style="{StaticResource Text.Body}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.TopLarge}"/>
                 </StackPanel>
             </Border>
             <Border Grid.Row="3" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Forecast Logic" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Forecast Logic" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                    <TextBlock Text="{Binding Explanation}"
+                               Style="{StaticResource Text.Body}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.TopLarge}"/>
                 </StackPanel>
             </Border>
             <Border Grid.Row="4" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Result guidance" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         • Growth Rate reflects the year-over-year percent change driven by your population and per-capita assumptions. Higher growth inputs raise this column.
                         <LineBreak/>
                         • Demand shows projected system demand before sector allocations. Each sector column (Residential, Commercial, Industrial, Agricultural) applies the percentages you supplied.
@@ -454,10 +463,12 @@
             <Border Grid.Row="5" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Workflow tips" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         <Run Text="• Review sector percentages after adjusting growth to ensure they still sum to 100%."/>
                         <LineBreak/>
                         <Run Text="• Use Advanced Adjustments to visualize conservation or losses without changing historical baselines."/>
@@ -469,10 +480,12 @@
             <Border Grid.Row="6" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Formula Reference" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Formula Reference" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         <Run Text="• Linear regression fits Demand = m × Year + b, with m = (nΣXY − ΣXΣY)/(nΣX² − (ΣX)²) and b = (ΣY − mΣX)/n."/>
                         <LineBreak/>
                         <Run Text="• Growth rate forecasts use r = (Last/First)^(1/ΔYears) − 1 (or your override), then Demandᵗ = Demandᵗ₋₁ × (1 + r)."/>

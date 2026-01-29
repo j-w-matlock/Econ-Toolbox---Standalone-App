@@ -21,20 +21,16 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
-                                   FontSize="18"
-                                   Foreground="{DynamicResource App.Accent}"
-                                   Margin="0,0,8,0"/>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
                         <TextBlock Grid.Column="1"
                                    Text="Stage Damage CSV Organizer"
-                                   FontSize="16"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource App.Accent}"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
                                    TextWrapping="Wrap"/>
                     </Grid>
                     <TextBlock TextWrapping="Wrap"
-                               Margin="0,6,0,0">
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         Upload Stage Damage Functions_StructureStageDamageDetails.csv exports from FDA 2.0. The organizer groups results by <Run FontStyle="Italic">DamageCategory</Run>, surfaces structures with the highest AEP structure damages, and builds a stacked bar chart for quick review.
                     </TextBlock>
                 </StackPanel>
@@ -68,7 +64,7 @@
                                         Style="{StaticResource Button.Action}"
                                         IsEnabled="{Binding IsBusy, Converter={StaticResource BoolInverseConverter}}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                         <TextBlock Text="Upload CSVs"/>
                                     </StackPanel>
                                 </Button>
@@ -77,7 +73,7 @@
                                         Margin="8,0,0,0"
                                         IsEnabled="{Binding HasRecords}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                         <TextBlock Text="Clear"/>
                                     </StackPanel>
                                 </Button>
@@ -115,7 +111,7 @@
                                     Style="{StaticResource Button.Action}"
                                     IsEnabled="{Binding HasRecords}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                     <TextBlock Text="Save Summary"/>
                                 </StackPanel>
                             </Button>

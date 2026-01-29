@@ -17,20 +17,16 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       FontSize="18"
-                                       Foreground="{DynamicResource App.Accent}"
-                                       Margin="0,0,8,0"/>
+                            <TextBlock Text=""
+                                       Style="{StaticResource Text.Icon.Section}"/>
                             <TextBlock Grid.Column="1"
                                        Text="Expected Annual Damage"
-                                       FontSize="16"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource App.Accent}"
+                                       Style="{StaticResource Text.SectionTitleAccent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock TextWrapping="Wrap"
-                                   Margin="0,6,0,0">
+                                   Style="{StaticResource Text.Body}"
+                                   Margin="{StaticResource Margin.TopLarge}">
                             Add stage/frequency and damage values for each category, then use the buttons below to compare scenarios and visualize the curves. Select Calculate after updates so the chart and summary outputs stay synchronized.
                         </TextBlock>
                     </StackPanel>
@@ -44,7 +40,7 @@
                                 Margin="0,0,12,0"
                                 ToolTip="Append a new damage column for an additional category or scenario. Additional columns create new damage curves included in calculations.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                 <TextBlock Text="Add Damage Column"/>
                             </StackPanel>
                         </Button>
@@ -53,7 +49,7 @@
                                 Margin="0,0,12,0"
                                 ToolTip="Remove the most recently added damage column. Removing a column excludes its damage curve from calculations.">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="{StaticResource Margin.Inline}"/>
+                                <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                 <TextBlock Text="Remove Damage Column"/>
                             </StackPanel>
                         </Button>
@@ -69,7 +65,7 @@
                     <StackPanel>
                         <TextBlock Text="Stage / Frequency / Damage Inputs"
                                    Style="{StaticResource Text.SectionTitle}"
-                                   Margin="0,0,0,8"/>
+                                   Margin="{StaticResource Margin.StackLarge}"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Rows}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="True"
@@ -96,9 +92,8 @@
                                  TextAlignment="Left"
                                  HorizontalContentAlignment="Left"/>
                         <TextBlock Text="Graph shows frequency-damage or stage-damage curves for each column so you can visually confirm the inputs."
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,12"
-                                   Foreground="{DynamicResource App.TextSecondary}"/>
+                                   Style="{StaticResource Text.BodySmall}"
+                                   Margin="0,0,0,12"/>
                         <ItemsControl ItemsSource="{Binding LegendItems}"
                                       Margin="0,0,0,12">
                             <ItemsControl.ItemsPanel>

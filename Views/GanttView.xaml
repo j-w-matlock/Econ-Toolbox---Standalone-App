@@ -24,20 +24,16 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text=""
-                                   FontSize="18"
-                                   Foreground="{DynamicResource App.Accent}"
-                                   Margin="0,0,8,0"/>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
                         <TextBlock Grid.Column="1"
                                    Text="Standard Gantt Planner"
-                                   FontSize="16"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource App.Accent}"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
                                    TextWrapping="Wrap"/>
                     </Grid>
                     <TextBlock TextWrapping="Wrap"
-                               Margin="0,6,0,0">
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         Document project tasks, durations, and dependencies. Use the Calculate button at the bottom of the window to refresh the schedule and bars. Export shares the task table and timeline with the rest of the workbook.
                     </TextBlock>
                 </StackPanel>
@@ -52,7 +48,7 @@
                     <StackPanel>
                         <TextBlock Text="Work Breakdown"
                                    Style="{StaticResource Text.SectionTitle}"
-                                   Margin="0,0,0,8"/>
+                                   Margin="{StaticResource Margin.StackLarge}"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Tasks}"
                                   SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
                                   AutoGenerateColumns="False"
@@ -170,26 +166,26 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <Button Command="{Binding AddTaskCommand}" Style="{StaticResource Button.Action}" Margin="0,0,8,0" ToolTip="Insert a new task row at the bottom of the table. New tasks add duration and cost to the schedule.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                     <TextBlock Text="Add Task"/>
                                 </StackPanel>
                             </Button>
                             <Button Command="{Binding RemoveTaskCommand}" Style="{StaticResource Button.Action}" Margin="0,0,8,0" ToolTip="Delete the currently selected task from the list. Removing tasks reduces total schedule cost and duration.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                     <TextBlock Text="Remove Selected"/>
                                 </StackPanel>
                             </Button>
                             <Button Command="{Binding ClearTasksCommand}" Style="{StaticResource Button.Action}" ToolTip="Clear all tasks so you can start a fresh schedule. Clearing resets all schedule and cost calculations.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="" Margin="0,0,6,0"/>
+                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                     <TextBlock Text="Clear"/>
                                 </StackPanel>
                             </Button>
                             <TextBlock Text="{Binding TotalLaborCost, StringFormat=Total Cost: {0:C2}}"
                                        Margin="16,0,0,0"
                                        VerticalAlignment="Center"
-                                       FontWeight="SemiBold"
+                                       Style="{StaticResource Text.BodyStrong}"
                                        Foreground="{DynamicResource App.Accent}"/>
                         </StackPanel>
                     </StackPanel>
@@ -203,13 +199,12 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,12" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="16" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
+                            <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
                             <StackPanel>
-                                <TextBlock Text="Schedule Timeline" FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding ScheduleSummary}" FontSize="12" Foreground="{DynamicResource App.TextSecondary}"/>
+                                <TextBlock Text="Schedule Timeline" Style="{StaticResource Text.SectionHeader}"/>
+                                <TextBlock Text="{Binding ScheduleSummary}" Style="{StaticResource Text.BodySmall}"/>
                                 <TextBlock Text="Connectors show finish-to-start relationships between tasks."
-                                           FontSize="11"
-                                           Foreground="{DynamicResource App.TextSecondary}"
+                                           Style="{StaticResource Text.BodySmall}"
                                            TextWrapping="Wrap"/>
                             </StackPanel>
                         </StackPanel>
@@ -353,10 +348,12 @@
                 <Border Style="{StaticResource Border.ResultInfo}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                            <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                            <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                            <TextBlock Text="Result guidance" Style="{StaticResource Text.SectionHeaderAccent}"/>
                         </StackPanel>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <TextBlock TextWrapping="Wrap"
+                                   Style="{StaticResource Text.Body}"
+                                   Margin="{StaticResource Margin.TopLarge}">
                             The task grid drives the bars, milestone diamonds, and total cost at the bottom of the table. Use the Schedule Summary caption above the chart to describe the active window, and remember that zero-duration tasks render as milestones with the diamond marker.
                         </TextBlock>
                     </StackPanel>

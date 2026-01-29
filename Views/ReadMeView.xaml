@@ -31,14 +31,15 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
+                            <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
                             <TextBlock Grid.Column="1"
                                        Text="Using the README tab"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource App.Accent}"
+                                       Style="{StaticResource Text.SectionTitleAccent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <TextBlock TextWrapping="Wrap"
+                                   Style="{StaticResource Text.Body}"
+                                   Margin="{StaticResource Margin.TopLarge}">
                             Browse setup steps, module descriptions, and publishing guidance without leaving the toolbox. Use the scroll bar and Ctrl+F search to jump to the section you need while working inside the app.
                         </TextBlock>
                     </StackPanel>
@@ -50,14 +51,15 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
+                            <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
                             <TextBlock Grid.Column="1"
                                        Text="Navigation tips"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource App.Accent}"
+                                       Style="{StaticResource Text.SectionTitleAccent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <TextBlock TextWrapping="Wrap"
+                                   Style="{StaticResource Text.Body}"
+                                   Margin="{StaticResource Margin.TopLarge}">
                             <Run Text="• Use the Table of Contents in the rendered markdown to jump to build, module, or publishing sections."/>
                             <LineBreak/>
                             <Run Text="• External links open in your default browser; keep the tab open to continue working in the toolbox."/>

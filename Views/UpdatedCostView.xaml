@@ -56,11 +56,9 @@
                             </Style>
                         </StackPanel.Style>
                         <TextBlock Text="Updated Cost Workflow"
-                                   FontSize="16"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource App.Accent}"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
                                    TextWrapping="Wrap"/>
-                        <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
+                        <TextBlock Style="{StaticResource Text.Body}" Margin="{StaticResource Margin.TopLarge}">
                             <Run Text="• Work through each sub-tab from left to right so dependent calculations stay aligned."/>
                             <LineBreak/>
                             <Run Text="• Start with storage capacity, capture annual joint costs, then update historical line items."/>
@@ -107,18 +105,14 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock FontFamily="Segoe MDL2 Assets"
-                                               Text=""
-                                               FontSize="18"
-                                               Foreground="{DynamicResource App.Accent}"
-                                               Margin="0,0,8,0"/>
+                                    <TextBlock Text=""
+                                               Style="{StaticResource Text.Icon.Section}"/>
                                     <TextBlock Grid.Column="1"
                                                Text="Storage Guidance"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource App.Accent}"
+                                               Style="{StaticResource Text.SectionHeaderAccent}"
                                                TextWrapping="Wrap"/>
                                 </Grid>
-                                <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
+                                <TextBlock Style="{StaticResource Text.Body}" Margin="{StaticResource Margin.TopLarge}">
                                     <Run Text="• Record the full system storage and the recommended allocation for your study."/>
                                     <LineBreak/>
                                     <Run Text="• Use Compute to scale the remaining sections by this proportion before moving forward."/>
@@ -153,31 +147,32 @@
                             Grid.Row="2"
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
+                            Style="{StaticResource Button.Action}"
                             ToolTip="Calculate the storage utilization percentage based on the values above. The resulting percent drives cost allocations across the other tabs.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8EF;"
-                                       FontSize="18"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE8EF;"
+                                       Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
                     <TextBlock Text="{Binding Percent, Mode=OneWay, StringFormat=P: {0:F5}}" Grid.Row="3" Grid.ColumnSpan="2" ToolTip="Percent = Storage Recommendation / Total Usable Storage. This percentage scales joint O&amp;M, RR&amp;R, and capital costs."/>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
-                    <TextBlock TextWrapping="Wrap">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}">
                         The resulting P value shows how much of the joint facilities support your recommendation. Increasing the recommendation or decreasing total storage raises the percentage and, consequently, the share of downstream costs assigned to this project.
                     </TextBlock>
                 </Border>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
-                    <TextBlock TextWrapping="Wrap">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}">
                         • Storage utilization is computed as Percent = Storage Recommendation ÷ Total Usable Storage. The value is clamped to zero when either input is missing.
                     </TextBlock>
                 </Border>
             </StackPanel>
         </TabItem>
         <TabItem Header="Joint Costs O&amp;M">
-            <StackPanel Margin="10">
+            <StackPanel Margin="{StaticResource Margin.Container}">
                 <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
@@ -185,18 +180,14 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       FontSize="18"
-                                       Foreground="{DynamicResource App.Accent}"
-                                       Margin="0,0,8,0"/>
+                            <TextBlock Text=""
+                                       Style="{StaticResource Text.Icon.Section}"/>
                             <TextBlock Grid.Column="1"
                                        Text="Joint O&amp;M Entry"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource App.Accent}"
+                                       Style="{StaticResource Text.SectionHeaderAccent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
-                        <TextBlock Style="{StaticResource Text.Body}" Margin="0,6,0,0">
+                        <TextBlock Style="{StaticResource Text.Body}" Margin="{StaticResource Margin.TopLarge}">
                             <Run Text="• Enter system-wide joint operating and maintenance costs on an annual basis."/>
                             <LineBreak/>
                             <Run Text="• Use Compute to capture the running total that will later be scaled by the storage percentage."/>
@@ -228,12 +219,11 @@
                              Margin="0,0,0,5"
                              ToolTip="Annual joint maintenance expense for the entire system. This amount is multiplied by the storage percentage in total cost results."/>
                     <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,5" Command="{Binding ComputeJointCommand}"
+                            Style="{StaticResource Button.Action}"
                             ToolTip="Sum annual joint operations and maintenance costs for allocation. The sum feeds the joint O&amp;M scaling in total annual cost.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8EF;"
-                                       FontSize="18"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE8EF;"
+                                       Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
@@ -362,18 +352,16 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       FontSize="18"
-                                       Foreground="{DynamicResource App.Accent}"
-                                       Margin="0,0,8,0"/>
+                            <TextBlock Text=""
+                                       Style="{StaticResource Text.Icon.Section}"/>
                             <TextBlock Grid.Column="1"
                                        Text="Update Legacy Costs"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource App.Accent}"
+                                       Style="{StaticResource Text.SectionHeaderAccent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <TextBlock TextWrapping="Wrap"
+                                   Style="{StaticResource Text.Body}"
+                                   Margin="{StaticResource Margin.TopLarge}">
                             Replace historical construction costs with current values by pairing each category with the proper update factor. Keep the categories clear so the export remains audit friendly.
                         </TextBlock>
                     </StackPanel>
@@ -675,38 +663,41 @@
                 <Button Margin="0,4,0,4"
                         Command="{Binding ResetUpdatedCostItemsCommand}"
                         HorizontalAlignment="Left"
+                        Style="{StaticResource Button.Action}"
                         ToolTip="Clear all updated cost rows so you can rebuild the table from scratch. Clearing removes their contribution to total updated cost.">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
+                        <TextBlock Text="&#xE72C;" Style="{StaticResource Text.Icon.Action}"/>
                         <TextBlock Text="Reset Table"/>
                     </StackPanel>
                 </Button>
                 <Button Margin="0,5,0,5"
                         Command="{Binding ComputeUpdatedStorageCommand}"
+                        Style="{StaticResource Button.Action}"
                         ToolTip="Escalate the cost rows using the ENR and CWCCIS factors provided above. This recalculates the updated joint cost totals used in annualized scenarios.">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets"
-                                   Text="&#xE8EF;"
-                                   FontSize="18"
-                                   Margin="0,0,6,0"/>
+                        <TextBlock Text="&#xE8EF;"
+                                   Style="{StaticResource Text.Icon.Action}"/>
                         <TextBlock Text="Compute"/>
                     </StackPanel>
                 </Button>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">
+                        <TextBlock Style="{StaticResource Text.BodyStrong}">
                             <Run Text="Total "/>
                             <Run Text="{Binding UpdatedJointCostLabel, Mode=OneWay}"/>
                             <Run Text=": "/>
                             <Run Text="{Binding TotalUpdatedCost, Mode=OneWay, StringFormat={}{0:C2}}"/>
                         </TextBlock>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <TextBlock TextWrapping="Wrap"
+                                   Style="{StaticResource Text.Body}"
+                                   Margin="{StaticResource Margin.TopLarge}">
                             Each line item is escalated from the original ENR year to the 1967 CWCCIS base and then multiplied by the CWCCIS update value. The resulting total carries forward into the capital cost scenarios.
                         </TextBlock>
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
-                    <TextBlock TextWrapping="Wrap">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}">
                         • ENR ratio (pre → transition) = Transition ENR Index ÷ Pre ENR Index, and Joint Use Transition = Joint Use Pre-1967 × ENR ratio.
                         <LineBreak/>
                         • ENR ratio (transition → 1967) = 1967 ENR Index ÷ Transition ENR Index, and Joint Use 1967 = Joint Use Transition × ENR ratio.
@@ -719,7 +710,7 @@
             </StackPanel>
         </TabItem>
         <TabItem Header="RR&amp;R and Mitigation">
-            <StackPanel Margin="10">
+            <StackPanel Margin="{StaticResource Margin.Container}">
                 <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
@@ -727,18 +718,16 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       FontSize="18"
-                                       Foreground="{DynamicResource App.Accent}"
-                                       Margin="0,0,8,0"/>
+                            <TextBlock Text=""
+                                       Style="{StaticResource Text.Icon.Section}"/>
                             <TextBlock Grid.Column="1"
                                        Text="RR&amp;R / Mitigation Planner"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource App.Accent}"
+                                       Style="{StaticResource Text.SectionHeaderAccent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <TextBlock TextWrapping="Wrap"
+                                   Style="{StaticResource Text.Body}"
+                                   Margin="{StaticResource Margin.TopLarge}">
                             Capture future repair, replacement, rehabilitation, and mitigation costs. Use the grid to list each activity, the year it occurs, and its cost in that year dollars. The tool discounts everything back to the base year for annualization.
                         </TextBlock>
                     </StackPanel>
@@ -836,9 +825,10 @@
                             Margin="0,4,0,4"
                             Command="{Binding ResetRrrItemsCommand}"
                             HorizontalAlignment="Left"
+                            Style="{StaticResource Button.Action}"
                             ToolTip="Clear all RR&amp;R and mitigation entries from the table. Clearing removes their effect on updated and annualized RR&amp;R totals.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" FontSize="16" Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE72C;" Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="Reset Table"/>
                         </StackPanel>
                     </Button>
@@ -846,27 +836,33 @@
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
                             Command="{Binding ComputeRrrCommand}"
+                            Style="{StaticResource Button.Action}"
                             ToolTip="Discount the RR&amp;R / mitigation schedule using the settings above. This recalculates present value, updated cost, and annualized totals.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8EF;"
-                                       FontSize="18"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE8EF;"
+                                       Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
                     <StackPanel Grid.Row="6" Grid.ColumnSpan="2">
-                        <TextBlock Text="{Binding RrrUpdatedCost, Mode=OneWay, StringFormat=Updated Cost: {0:C2}}" ToolTip="Updated Cost = Present Value. This total feeds the annualized RR&amp;R amount." FontWeight="Bold" Margin="0,0,0,4"/>
-                        <TextBlock Text="{Binding RrrAnnualized, Mode=OneWay, StringFormat=Annualized: {0:C2}}" ToolTip="Annualized = Updated Cost × CRF. This annualized value is scaled by storage percent in total cost." FontWeight="Bold"/>
+                        <TextBlock Text="{Binding RrrUpdatedCost, Mode=OneWay, StringFormat=Updated Cost: {0:C2}}"
+                                   Style="{StaticResource Text.BodyStrong}"
+                                   ToolTip="Updated Cost = Present Value. This total feeds the annualized RR&amp;R amount."
+                                   Margin="0,0,0,4"/>
+                        <TextBlock Text="{Binding RrrAnnualized, Mode=OneWay, StringFormat=Annualized: {0:C2}}"
+                                   Style="{StaticResource Text.BodyStrong}"
+                                   ToolTip="Annualized = Updated Cost × CRF. This annualized value is scaled by storage percent in total cost."/>
                     </StackPanel>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
-                    <TextBlock TextWrapping="Wrap">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}">
                         Present Value aggregates each scheduled cost using the discount rate and base year. The Updated Cost matches that total, and the Annualized figure then applies your capital recovery factor. Larger future costs or slower discounting will elevate every downstream total.
                     </TextBlock>
                 </Border>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
-                    <TextBlock TextWrapping="Wrap">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}">
                         • PV Factor = 1 ÷ (1 + r)^(Year − Base Year); Present Value = Future Cost × PV Factor.
                         <LineBreak/>
                         • RRR Updated Cost = Σ Present Value.
@@ -877,7 +873,7 @@
             </StackPanel>
         </TabItem>
         <TabItem Header="Total Annual Cost">
-            <StackPanel Margin="10">
+            <StackPanel Margin="{StaticResource Margin.Container}">
                 <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
@@ -885,18 +881,16 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text=""
-                                       FontSize="18"
-                                       Foreground="{DynamicResource App.Accent}"
-                                       Margin="0,0,8,0"/>
+                            <TextBlock Text=""
+                                       Style="{StaticResource Text.Icon.Section}"/>
                             <TextBlock Grid.Column="1"
                                        Text="Compare Annual Cost Scenarios"
-                                       FontWeight="Bold"
-                                       Foreground="{DynamicResource App.Accent}"
+                                       Style="{StaticResource Text.SectionHeaderAccent}"
                                        TextWrapping="Wrap"/>
                         </Grid>
-                        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                        <TextBlock TextWrapping="Wrap"
+                                   Style="{StaticResource Text.Body}"
+                                   Margin="{StaticResource Margin.TopLarge}">
                             Define up to two capital recovery scenarios. Each uses its own discount rate and analysis period to annualize the updated costs, then layers on scaled joint O&amp;M and RR&amp;R/mitigation values.
                         </TextBlock>
                     </StackPanel>
@@ -945,12 +939,11 @@
                             Grid.ColumnSpan="2"
                             Margin="0,5,0,5"
                             Command="{Binding ComputeTotalCommand}"
+                            Style="{StaticResource Button.Action}"
                             ToolTip="Combine capital, O&amp;M, and RR&amp;R values to update the allocation scenarios. This refreshes the total annual cost outputs for both scenarios.">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock FontFamily="Segoe MDL2 Assets"
-                                       Text="&#xE8EF;"
-                                       FontSize="18"
-                                       Margin="0,0,6,0"/>
+                            <TextBlock Text="&#xE8EF;"
+                                       Style="{StaticResource Text.Icon.Action}"/>
                             <TextBlock Text="Compute"/>
                         </StackPanel>
                     </Button>
@@ -966,7 +959,9 @@
                                 <TextBlock Text="{Binding Capital1, Mode=OneWay, StringFormat=Annualized Storage Cost 1: {0:C2}}" ToolTip="Annualized Storage Cost 1 = Total Updated Cost × Percent × CRF1. This is the annualized capital component for Cost 1."/>
                                 <TextBlock Text="{Binding OmScaled, Mode=OneWay, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent. This is the O&amp;M component scaled by storage share."/>
                                 <TextBlock Text="{Binding RrrScaled, Mode=OneWay, StringFormat=Annualized RR&amp;R/Mitigation: {0:C2}}" ToolTip="Annualized RR&amp;R/Mitigation = RRR Annualized × Percent. This scales annualized RR&amp;R to the storage share."/>
-                                <TextBlock Text="{Binding Total1, Mode=OneWay, StringFormat=Total Annual Cost 1: {0:C2}}" ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation. This is the summed annual cost for scenario 1." FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Total1, Mode=OneWay, StringFormat=Total Annual Cost 1: {0:C2}}"
+                                           Style="{StaticResource Text.BodyStrong}"
+                                           ToolTip="Total Annual Cost 1 = Capital1 + Joint O&amp;M + Annualized RR&amp;R/Mitigation. This is the summed annual cost for scenario 1."/>
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Header="Cost 2" Grid.Column="1" Margin="5,0,0,0">
@@ -975,18 +970,22 @@
                                 <TextBlock Text="{Binding CostRecommendation, Mode=OneWay, StringFormat=Cost of Storage Recommendation: {0:C2}}" ToolTip="Cost Recommendation = Total Updated Cost × Percent. This is the scaled capital base before annualization."/>
                                 <TextBlock Text="{Binding Capital2, Mode=OneWay, StringFormat=Annualized Storage Cost 2: {0:C2}}" ToolTip="Annualized Storage Cost 2 = Total Updated Cost × Percent × CRF2. This is the annualized capital component for Cost 2."/>
                                 <TextBlock Text="{Binding OmScaled, Mode=OneWay, StringFormat=Joint O&amp;M: {0:C2}}" ToolTip="Joint O&amp;M = Total Joint O&amp;M × Percent. This is the O&amp;M component scaled by storage share."/>
-                                <TextBlock Text="{Binding Total2, Mode=OneWay, StringFormat=Total Annual Cost 2: {0:C2}}" ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M. This is the summed annual cost for scenario 2." FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Total2, Mode=OneWay, StringFormat=Total Annual Cost 2: {0:C2}}"
+                                           Style="{StaticResource Text.BodyStrong}"
+                                           ToolTip="Total Annual Cost 2 = Capital2 + Joint O&amp;M. This is the summed annual cost for scenario 2."/>
                             </StackPanel>
                         </GroupBox>
                     </Grid>
                 </Grid>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
-                    <TextBlock TextWrapping="Wrap">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}">
                         Cost 1 and Cost 2 let you compare alternative discounting assumptions. Lower discount rates or longer analysis periods increase the capital recovery factor and therefore annualized storage costs. Because joint O&amp;M and RR&amp;R values scale with the storage percentage, any change you make on earlier tabs will ripple into both scenarios here.
                     </TextBlock>
                 </Border>
                 <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
-                    <TextBlock TextWrapping="Wrap">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}">
                         • Cost Recommendation = Total Updated Cost × Percent; Joint O&amp;M and RR&amp;R allocations scale as Total Joint O&amp;M × Percent and RRR Annualized × Percent.
                         <LineBreak/>
                         • Capital1 = Total Updated Cost × Percent × CRF(Discount Rate 1, Analysis Period 1); Capital2 mirrors this with the second rate and period.
@@ -1000,10 +999,12 @@
             <Border Style="{StaticResource Border.ResultInfo}" Margin="0">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Result guidance" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Result guidance" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         Storage Allocation, Updated RR&amp;R, and Total Annual Cost tabs feed the same allocation percentage and cost streams. Review the allocation tab first, then confirm how escalated costs, RR&amp;R schedules, and annualized totals change as you adjust discounting assumptions across scenarios.
                     </TextBlock>
                 </StackPanel>
@@ -1011,10 +1012,12 @@
             <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopLarge}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="" FontSize="18" Foreground="{DynamicResource App.Accent}" Margin="0,0,8,0"/>
-                        <TextBlock Text="Workflow tips" FontWeight="Bold" Foreground="{DynamicResource App.Accent}"/>
+                        <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Workflow tips" Style="{StaticResource Text.SectionHeaderAccent}"/>
                     </StackPanel>
-                    <TextBlock TextWrapping="Wrap" Margin="0,6,0,0">
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
                         <Run Text="• Verify storage recommendation and total usable storage before comparing Cost 1 and Cost 2."/>
                         <LineBreak/>
                         <Run Text="• Recalculate capital recovery factors after adjusting discount rates or analysis periods."/>
