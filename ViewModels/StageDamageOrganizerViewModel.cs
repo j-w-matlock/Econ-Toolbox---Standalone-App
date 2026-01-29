@@ -754,7 +754,7 @@ namespace EconToolbox.Desktop.ViewModels
         private record StageDamageLoadResult(IReadOnlyList<StageDamageRecord> Records, IReadOnlyList<StageDamageSummaryInfo> Summaries);
     }
 
-    public partial class StageDamageSummaryInfo : ObservableObject
+    public partial class StageDamageSummaryInfo : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
         public StageDamageSummaryInfo(string sourceKey, string sourceLabel)
         {
