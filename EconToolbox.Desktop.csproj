@@ -9,6 +9,9 @@
     <AssemblyName>EconToolbox.Desktop</AssemblyName>
     <RootNamespace>EconToolbox.Desktop</RootNamespace>
     <EnableDefaultItems>false</EnableDefaultItems>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,4 +53,10 @@
     </None>
     <None Include="app.manifest" />
   </ItemGroup>
+
+  <Target Name="DisableTrimForWpf" BeforeTargets="RuntimeIdentifierInference" Condition="'$(UseWPF)' == 'true'">
+    <PropertyGroup>
+      <PublishTrimmed>false</PublishTrimmed>
+    </PropertyGroup>
+  </Target>
 </Project>
