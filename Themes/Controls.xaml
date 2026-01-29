@@ -32,6 +32,7 @@
     <Style x:Key="Border.Card" TargetType="Border" BasedOn="{StaticResource Border.Base}">
         <Setter Property="MinWidth" Value="{StaticResource Layout.CardMinWidth}"/>
         <Setter Property="MinHeight" Value="{StaticResource Layout.CardMinHeight}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="behaviors:ResizableBorderBehavior.Enable" Value="True"/>
     </Style>
 
@@ -206,10 +207,6 @@
     <Style TargetType="Page">
         <Setter Property="Background" Value="{DynamicResource App.EditorBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
-    </Style>
-
-    <Style TargetType="StackPanel">
-        <Setter Property="behaviors:ResizableBorderBehavior.Enable" Value="True"/>
     </Style>
 
     <Style TargetType="Border">
@@ -1053,12 +1050,14 @@
                 <ControlTemplate TargetType="Thumb">
                     <Grid Background="{TemplateBinding Background}">
                         <Border x:Name="ResizeLine"
+                                Opacity="0"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1,0,0,0"
                                 SnapsToDevicePixels="True"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ResizeLine" Property="Opacity" Value="1"/>
                             <Setter TargetName="ResizeLine" Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -1075,12 +1074,14 @@
                 <ControlTemplate TargetType="Thumb">
                     <Grid Background="{TemplateBinding Background}">
                         <Border x:Name="ResizeLine"
+                                Opacity="0"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="0,1,0,0"
                                 SnapsToDevicePixels="True"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ResizeLine" Property="Opacity" Value="1"/>
                             <Setter TargetName="ResizeLine" Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -1098,12 +1099,14 @@
                 <ControlTemplate TargetType="Thumb">
                     <Grid Background="{TemplateBinding Background}">
                         <Border x:Name="ResizeLine"
+                                Opacity="0"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1,1,0,0"
                                 SnapsToDevicePixels="True"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ResizeLine" Property="Opacity" Value="1"/>
                             <Setter TargetName="ResizeLine" Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
