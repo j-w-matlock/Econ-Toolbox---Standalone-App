@@ -32,6 +32,7 @@
     <Style x:Key="Border.Card" TargetType="Border" BasedOn="{StaticResource Border.Base}">
         <Setter Property="MinWidth" Value="{StaticResource Layout.CardMinWidth}"/>
         <Setter Property="MinHeight" Value="{StaticResource Layout.CardMinHeight}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="behaviors:ResizableBorderBehavior.Enable" Value="True"/>
     </Style>
 
