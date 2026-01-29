@@ -86,7 +86,7 @@
                     <Button x:Name="CalculateButton"
                             Grid.Column="0"
                             Command="{Binding CalculateCommand}"
-                            Margin="0,0,12,0"
+                            Margin="{StaticResource Margin.RightMedium}"
                             Style="{StaticResource Button.ActionLarge}"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
@@ -101,8 +101,8 @@
                     </Button>
                     <Button Grid.Column="1"
                             Command="{Binding ExportCommand}"
-                            Margin="{StaticResource Margin.None}"
-                            Style="{StaticResource Button.ActionLarge}">
+                            Margin="{StaticResource Margin.Zero}"
+                            Style="{StaticResource Button.ActionSecondaryLarge}">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
@@ -118,7 +118,7 @@
             <DataTemplate x:Key="ActionsNarrowTemplate">
                 <StackPanel>
                     <Button Command="{Binding CalculateCommand}"
-                            Margin="0,0,0,8"
+                            Margin="{StaticResource Margin.BottomSmall}"
                             Style="{StaticResource Button.ActionCompact}"
                             Visibility="{Binding IsCalculateVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                             IsEnabled="{Binding IsCalculateVisible}">
@@ -132,8 +132,8 @@
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ExportCommand}"
-                            Margin="{StaticResource Margin.None}"
-                            Style="{StaticResource Button.ActionCompact}">
+                            Margin="{StaticResource Margin.Zero}"
+                            Style="{StaticResource Button.ActionSecondaryCompact}">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
@@ -159,7 +159,7 @@
                 Style="{StaticResource Border.TitleBar}">
             <DockPanel LastChildFill="True">
                 <Menu DockPanel.Dock="Left"
-                      Margin="0,0,16,0"
+                      Margin="{StaticResource Margin.RightMedium}"
                       Background="Transparent">
                     <MenuItem Header="_File">
                         <MenuItem Header="_Save Project As..."
@@ -178,7 +178,7 @@
                     <TextBlock Text="ECON TOOLBOX"
                                Style="{StaticResource Text.TitleBarBrand}"/>
                     <TextBlock Text="{Binding SelectedModule.Title}"
-                               Margin="{StaticResource Margin.InlineTight}"
+                               Margin="{StaticResource Margin.LeftSmall}"
                                Style="{StaticResource Text.TitleBarModule}"/>
                 </StackPanel>
                 <ToolBar DockPanel.Dock="Right"
@@ -243,7 +243,7 @@
                     </Button>
                     <Button Command="{Binding ShowReadMeCommand}"
                             Style="{StaticResource Button.TitleBar}"
-                            Margin="8,0,0,0"
+                            Margin="{StaticResource Margin.LeftSmall}"
                             ToolTip="Open README">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE82D;"
@@ -278,7 +278,7 @@
                     <ColumnDefinition.Width>
                         <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
                             <Binding Path="IsExplorerPaneVisible"/>
-                            <Binding Source="6"/>
+                            <Binding Source="{StaticResource Spacing.Small}"/>
                         </MultiBinding>
                     </ColumnDefinition.Width>
                 </ColumnDefinition>
@@ -299,7 +299,7 @@
                     <ColumnDefinition.Width>
                         <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
                             <Binding Path="IsDetailsPaneVisible"/>
-                            <Binding Source="6"/>
+                            <Binding Source="{StaticResource Spacing.Small}"/>
                         </MultiBinding>
                     </ColumnDefinition.Width>
                 </ColumnDefinition>
@@ -316,18 +316,18 @@
                     <StackPanel DockPanel.Dock="Top">
                         <TextBlock Text="EXPLORER"
                                    Style="{StaticResource Text.PaneCaption}"
-                                   Margin="0,0,0,8"/>
+                                   Margin="{StaticResource Margin.BottomSmall}"/>
                     </StackPanel>
                     <Expander DockPanel.Dock="Top"
                               Header="Project Manager"
                               IsExpanded="True"
-                              Margin="0,0,0,12">
+                              Margin="{StaticResource Margin.BottomMedium}">
                         <local:ProjectView DataContext="{Binding ProjectManager}"/>
                     </Expander>
                     <TextBlock DockPanel.Dock="Top"
                                Text="Modules"
                                Style="{StaticResource Text.PaneTitle}"
-                               Margin="0,0,0,8"/>
+                               Margin="{StaticResource Margin.BottomSmall}"/>
                     <ListBox ItemsSource="{Binding Modules}"
                              SelectedItem="{Binding ExplorerSelectedModule}"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -345,7 +345,7 @@
                                                 <TextBlock Text="{Binding Description}"
                                                            FontWeight="SemiBold"
                                                            TextWrapping="Wrap"
-                                                           Margin="0,0,0,4"/>
+                                                           Margin="{StaticResource Margin.BottomSmall}"/>
                                                 <TextBlock Text="{Binding FunctionSummary}"
                                                            TextWrapping="Wrap"
                                                            Foreground="{DynamicResource App.ToolTipForeground}"/>
@@ -382,11 +382,11 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0"
-                                Margin="0,0,0,8">
+                                Margin="{StaticResource Margin.BottomSmall}">
                         <DockPanel LastChildFill="False">
                             <TextBlock Text="PROPERTIES"
                                        Style="{StaticResource Text.PaneCaption}"
-                                       Margin="0,0,0,6"
+                                       Margin="{StaticResource Margin.BottomSmall}"
                                        DockPanel.Dock="Left"/>
                             <Button Command="{Binding ToggleRightPaneCommand}"
                                     DockPanel.Dock="Right"
@@ -398,52 +398,52 @@
                         </DockPanel>
                         <TextBlock Text="{Binding SelectedModule.Title}"
                                    Style="{StaticResource Text.SectionTitle}"
-                                   Margin="0,0,0,6"
+                                   Margin="{StaticResource Margin.BottomSmall}"
                                    TextWrapping="Wrap"/>
                         <TextBlock Text="{Binding SelectedModule.Description}"
                                    Style="{StaticResource Text.BodySmall}"/>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1"
-                                  Margin="0"
+                                  Margin="{StaticResource Margin.Zero}"
                                   VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <TextBlock Text="Summary"
                                        Style="{StaticResource Text.SectionHeader}"
-                                       Margin="0,0,0,6"/>
+                                       Margin="{StaticResource Margin.BottomSmall}"/>
                             <TextBlock Text="{Binding SelectedModule.FunctionSummary}"
                                        Style="{StaticResource Text.BodySmall}"
-                                       Margin="0,0,0,12"/>
+                                       Margin="{StaticResource Margin.BottomMedium}"/>
 
                             <TextBlock Text="Inputs"
                                        Style="{StaticResource Text.SectionHeader}"
-                                       Margin="0,0,0,6"/>
+                                       Margin="{StaticResource Margin.BottomSmall}"/>
                             <ItemsControl ItemsSource="{Binding SelectedModule.InputSteps}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding StringFormat=• {0}}"
                                                    Style="{StaticResource Text.BodySmall}"
-                                                   Margin="0,0,0,6"/>
+                                                   Margin="{StaticResource Margin.BottomSmall}"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
                             <TextBlock Text="Outputs"
                                        Style="{StaticResource Text.SectionHeader}"
-                                       Margin="0,8,0,6"/>
+                                       Margin="{StaticResource Margin.TopBottomSmall}"/>
                             <ItemsControl ItemsSource="{Binding SelectedModule.OutputHighlights}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding StringFormat=• {0}}"
                                                    Style="{StaticResource Text.BodySmall}"
-                                                   Margin="0,0,0,6"/>
+                                                   Margin="{StaticResource Margin.BottomSmall}"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
                             <TextBlock Text="Diagnostics"
                                        Style="{StaticResource Text.SectionHeader}"
-                                       Margin="0,12,0,6"/>
+                                       Margin="{StaticResource Margin.TopMediumBottomSmall}"/>
                             <ItemsControl ItemsSource="{Binding Diagnostics}"/>
                         </StackPanel>
                     </ScrollViewer>
@@ -476,7 +476,7 @@
 
             <Border Grid.Column="4"
                     Style="{StaticResource Border.EditorPane}">
-                <Grid Margin="{StaticResource Padding.Section}">
+                <Grid Margin="{StaticResource Padding.Medium}">
                     <ContentControl Content="{Binding CurrentViewModel}"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
@@ -495,10 +495,10 @@
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Center">
                     <TextBlock Text="{Binding SelectedModule.Title}"
-                               Margin="0,0,12,0"
+                               Margin="{StaticResource Margin.RightMedium}"
                                Style="{StaticResource Text.StatusBar}"/>
                     <TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}"
-                               Margin="0,0,6,0"
+                               Margin="{StaticResource Margin.RightSmall}"
                                Style="{StaticResource Text.StatusBar}"/>
                     <Slider Width="140"
                             Minimum="50"

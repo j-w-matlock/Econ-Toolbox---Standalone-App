@@ -70,28 +70,42 @@
         <Setter Property="MaxWidth" Value="{StaticResource Layout.ChartMaxWidth}"/>
     </Style>
 
-    <Style x:Key="Button.Action" TargetType="Button">
-        <Setter Property="Height" Value="36"/>
+    <Style x:Key="Button.Action" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+        <Setter Property="Height" Value="40"/>
         <Setter Property="MinWidth" Value="120"/>
-        <Setter Property="Padding" Value="12,6"/>
+        <Setter Property="Padding" Value="16,8"/>
     </Style>
 
     <Style x:Key="Button.ActionLarge" TargetType="Button" BasedOn="{StaticResource Button.Action}">
-        <Setter Property="Height" Value="40"/>
+        <Setter Property="Height" Value="48"/>
     </Style>
 
     <Style x:Key="Button.ActionCompact" TargetType="Button" BasedOn="{StaticResource Button.Action}">
-        <Setter Property="Height" Value="38"/>
+        <Setter Property="Height" Value="40"/>
     </Style>
 
-    <Style x:Key="Button.TitleBar" TargetType="Button">
-        <Setter Property="Padding" Value="{StaticResource Padding.TitleBarButton}"/>
-        <Setter Property="Margin" Value="{StaticResource Margin.Inline}"/>
+    <Style x:Key="Button.ActionSecondaryLarge" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+        <Setter Property="Height" Value="48"/>
+        <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="Padding" Value="16,8"/>
     </Style>
 
-    <Style x:Key="Button.PaneToggle" TargetType="Button">
-        <Setter Property="Padding" Value="6,2"/>
-        <Setter Property="Margin" Value="8,0,0,6"/>
+    <Style x:Key="Button.ActionSecondaryCompact" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="MinWidth" Value="120"/>
+        <Setter Property="Padding" Value="16,8"/>
+    </Style>
+
+    <Style x:Key="Button.TitleBar" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+        <Setter Property="Padding" Value="{StaticResource Padding.Small}"/>
+        <Setter Property="Margin" Value="{StaticResource Margin.RightSmall}"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+
+    <Style x:Key="Button.PaneToggle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+        <Setter Property="Padding" Value="{StaticResource Padding.Small}"/>
+        <Setter Property="Margin" Value="{StaticResource Margin.LeftBottomSmall}"/>
+        <Setter Property="FontSize" Value="12"/>
     </Style>
 
     <!-- Validation -->
@@ -211,131 +225,6 @@
 
     <Style TargetType="Border">
         <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
-    </Style>
-
-    <Style TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource App.Accent}"/>
-        <Setter Property="Foreground" Value="{DynamicResource App.OnAccent}"/>
-        <Setter Property="ToolTipService.IsEnabled" Value="False"/>
-        <Setter Property="Padding" Value="10,6"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Standard}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource App.AccentPressed}"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="MaxWidth" Value="{StaticResource Layout.ButtonMaxWidth}"/>
-        <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
-        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border x:Name="border"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{StaticResource Radius.XS}"
-                            SnapsToDevicePixels="True">
-                        <Border.Background>
-                            <SolidColorBrush x:Name="ButtonBackgroundBrush"
-                                             Color="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Background.(SolidColorBrush.Color)}"/>
-                        </Border.Background>
-                        <Border.BorderBrush>
-                            <SolidColorBrush x:Name="ButtonBorderBrush"
-                                             Color="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=BorderBrush.(SolidColorBrush.Color)}"/>
-                        </Border.BorderBrush>
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CommonStates">
-                                <VisualState x:Name="Normal">
-                                    <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="ButtonBackgroundBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Background.(SolidColorBrush.Color)}"
-                                                        Duration="0:0:0.12"/>
-                                        <ColorAnimation Storyboard.TargetName="ButtonBorderBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=BorderBrush.(SolidColorBrush.Color)}"
-                                                        Duration="0:0:0.12"/>
-                                        <DoubleAnimation Storyboard.TargetName="border"
-                                                         Storyboard.TargetProperty="Opacity"
-                                                         To="1"
-                                                         Duration="0:0:0.12"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="MouseOver">
-                                    <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="ButtonBackgroundBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={StaticResource App.AccentHover}, Path=Color}"
-                                                        Duration="0:0:0.12"/>
-                                        <ColorAnimation Storyboard.TargetName="ButtonBorderBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={StaticResource App.AccentHover}, Path=Color}"
-                                                        Duration="0:0:0.12"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Pressed">
-                                    <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="ButtonBackgroundBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={StaticResource App.AccentPressed}, Path=Color}"
-                                                        Duration="0:0:0.08"/>
-                                        <ColorAnimation Storyboard.TargetName="ButtonBorderBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={StaticResource App.AccentPressed}, Path=Color}"
-                                                        Duration="0:0:0.08"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Disabled">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="border"
-                                                         Storyboard.TargetProperty="Opacity"
-                                                         To="0.55"
-                                                         Duration="0:0:0.12"/>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="FocusStates">
-                                <VisualState x:Name="Unfocused">
-                                    <Storyboard>
-                                        <ThicknessAnimation Storyboard.TargetName="border"
-                                                            Storyboard.TargetProperty="BorderThickness"
-                                                            To="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=BorderThickness}"
-                                                            Duration="0:0:0.12"/>
-                                        <ColorAnimation Storyboard.TargetName="ButtonBorderBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=BorderBrush.(SolidColorBrush.Color)}"
-                                                        Duration="0:0:0.12"/>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Focused">
-                                    <Storyboard>
-                                        <ThicknessAnimation Storyboard.TargetName="border"
-                                                            Storyboard.TargetProperty="BorderThickness"
-                                                            To="{StaticResource BorderThickness.Focus}"
-                                                            Duration="0:0:0.12"/>
-                                        <ColorAnimation Storyboard.TargetName="ButtonBorderBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="{Binding Source={StaticResource App.Focus}, Path=Color}"
-                                                        Duration="0:0:0.12"/>
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        <ContentPresenter Margin="{TemplateBinding Padding}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="Button.Filled" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"/>
-
-    <Style x:Key="Button.Outline" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource App.OnAccent}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource App.Accent}"/>
-        <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Standard}"/>
     </Style>
 
     <Style x:Key="ToggleButton.Switch" TargetType="ToggleButton">
@@ -1198,9 +1087,35 @@
     </Style>
 
     <Style TargetType="GroupBox">
-        <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
-        <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
-        <Setter Property="Padding" Value="8"/>
+        <Setter Property="Background" Value="{StaticResource Color.CardBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource Color.TextPrimaryBrush}"/>
+        <Setter Property="Padding" Value="{StaticResource Padding.Card}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="GroupBox">
+                    <Border Background="{TemplateBinding Background}"
+                            CornerRadius="{StaticResource CornerRadius.Large}"
+                            Padding="{TemplateBinding Padding}">
+                        <Border.Effect>
+                            <DropShadowEffect Color="{DynamicResource App.Shadow.Color}"
+                                              ShadowDepth="0"
+                                              BlurRadius="12"
+                                              Opacity="0.2"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <ContentPresenter ContentSource="Header"
+                                              Margin="{StaticResource Margin.BottomSmall}"
+                                              RecognizesAccessKey="True"/>
+                            <ContentPresenter Grid.Row="1"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="Expander">

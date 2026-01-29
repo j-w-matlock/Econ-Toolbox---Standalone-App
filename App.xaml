@@ -6,8 +6,10 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/Colors.xaml"/>
                 <ResourceDictionary Source="Themes/Brushes.xaml"/>
+                <ResourceDictionary Source="Themes/Sizing.xaml"/>
                 <ResourceDictionary Source="Themes/Spacing.xaml"/>
                 <ResourceDictionary Source="Themes/Typography.xaml"/>
+                <ResourceDictionary Source="Themes/ButtonStyles.xaml"/>
                 <ResourceDictionary Source="Themes/Design.xaml"/>
                 <ResourceDictionary Source="Themes/Controls.xaml"/>
             </ResourceDictionary.MergedDictionaries>
