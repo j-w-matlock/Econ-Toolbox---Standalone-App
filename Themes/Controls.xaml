@@ -674,8 +674,7 @@
         <Setter Property="ColumnHeaderHeight" Value="{x:Static sys:Double.NaN}"/>
         <Setter Property="RowHeight" Value="32"/>
         <Setter Property="ColumnWidth" Value="SizeToHeader"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="MaxWidth" Value="{StaticResource Layout.TableMaxWidth}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="CellStyle" Value="{DynamicResource DataGridCellStyle}"/>
         <Setter Property="RowStyle" Value="{DynamicResource DataGridRowStyle}"/>
         <Setter Property="behaviors:DataGridCommitBehavior.CommitOnLostFocus" Value="True"/>
@@ -683,13 +682,13 @@
     </Style>
 
     <Style x:Key="Layout.ContentGrid" TargetType="Grid">
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="MaxWidth" Value="{StaticResource Layout.MaxContentWidth}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="MaxWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"/>
     </Style>
 
     <Style x:Key="Layout.ContentStack" TargetType="StackPanel">
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="MaxWidth" Value="{StaticResource Layout.MaxContentWidth}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="MaxWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"/>
         <Setter Property="behaviors:ResizableBorderBehavior.Enable" Value="True"/>
     </Style>
 
