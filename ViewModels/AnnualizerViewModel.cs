@@ -721,7 +721,7 @@ namespace EconToolbox.Desktop.ViewModels
                 Cost = entry.Cost,
                 Year = entry.Year,
                 Month = entry.Month,
-                Timing = entry.Timing
+                Timing = string.IsNullOrWhiteSpace(entry.Timing) ? "end" : entry.Timing
             }));
 
             IdcEntries = new ObservableCollection<FutureCostEntry>(data.IdcEntries.Select(entry => new FutureCostEntry
@@ -729,7 +729,7 @@ namespace EconToolbox.Desktop.ViewModels
                 Cost = entry.Cost,
                 Year = entry.Year,
                 Month = entry.Month,
-                Timing = entry.Timing
+                Timing = string.IsNullOrWhiteSpace(entry.Timing) ? "end" : entry.Timing
             }));
 
             _suppressScenarioSync = true;

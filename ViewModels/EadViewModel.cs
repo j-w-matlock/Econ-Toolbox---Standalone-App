@@ -518,44 +518,52 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            UseStage = data.UseStage;
-            if (!string.IsNullOrWhiteSpace(data.ChartTitle))
+            _suppressAutoCompute = true;
+            try
             {
-                ChartTitle = data.ChartTitle;
-            }
-
-            DamageColumns.Clear();
-            foreach (var column in data.DamageColumns)
-            {
-                DamageColumns.Add(new DamageColumn { Name = column.Name });
-            }
-
-            if (DamageColumns.Count == 0)
-            {
-                DamageColumns.Add(new DamageColumn { Name = "Damage 1" });
-            }
-
-            Rows.Clear();
-            foreach (var row in data.Rows)
-            {
-                var newRow = new EadRow
+                UseStage = data.UseStage;
+                if (!string.IsNullOrWhiteSpace(data.ChartTitle))
                 {
-                    Probability = row.Probability,
-                    Stage = row.Stage
-                };
-
-                for (int i = 0; i < DamageColumns.Count; i++)
-                {
-                    double value = i < row.Damages.Count ? row.Damages[i] : 0d;
-                    newRow.Damages.Add(value);
+                    ChartTitle = data.ChartTitle;
                 }
 
-                Rows.Add(newRow);
-            }
+                DamageColumns.Clear();
+                foreach (var column in data.DamageColumns)
+                {
+                    DamageColumns.Add(new DamageColumn { Name = column.Name });
+                }
 
-            UpdateColumnDefinitions();
-            Compute();
-            RefreshDiagnostics();
+                if (DamageColumns.Count == 0)
+                {
+                    DamageColumns.Add(new DamageColumn { Name = "Damage 1" });
+                }
+
+                Rows.Clear();
+                foreach (var row in data.Rows)
+                {
+                    var newRow = new EadRow
+                    {
+                        Probability = row.Probability,
+                        Stage = row.Stage
+                    };
+
+                    for (int i = 0; i < DamageColumns.Count; i++)
+                    {
+                        double value = i < row.Damages.Count ? row.Damages[i] : 0d;
+                        newRow.Damages.Add(value);
+                    }
+
+                    Rows.Add(newRow);
+                }
+
+                UpdateColumnDefinitions();
+                Compute();
+                RefreshDiagnostics();
+            }
+            finally
+            {
+                _suppressAutoCompute = false;
+            }
         }
 
         protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
