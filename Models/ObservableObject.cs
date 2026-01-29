@@ -1,13 +1,8 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EconToolbox.Desktop.Models
 {
-    public abstract class ObservableObject : INotifyPropertyChanged
+    public abstract partial class ObservableObject : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

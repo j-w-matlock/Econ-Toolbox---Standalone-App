@@ -1,43 +1,22 @@
-using EconToolbox.Desktop.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EconToolbox.Desktop.Models
 {
-    public class RrrCostEntry : ObservableObject
+    public partial class RrrCostEntry : ObservableObject
     {
+        [ObservableProperty]
         private string _item = string.Empty;
+
+        [ObservableProperty]
         private double _futureCost;
+
+        [ObservableProperty]
         private int _year;
+
+        [ObservableProperty]
         private double _pvFactor;
+
+        [ObservableProperty]
         private double _presentValue;
-
-        public string Item
-        {
-            get => _item;
-            set { _item = value; OnPropertyChanged(); }
-        }
-
-        public double FutureCost
-        {
-            get => _futureCost;
-            set { _futureCost = value; OnPropertyChanged(); }
-        }
-
-        public int Year
-        {
-            get => _year;
-            set { _year = value; OnPropertyChanged(); }
-        }
-
-        public double PvFactor
-        {
-            get => _pvFactor;
-            set { _pvFactor = value; OnPropertyChanged(); }
-        }
-
-        public double PresentValue
-        {
-            get => _presentValue;
-            set { _presentValue = value; OnPropertyChanged(); }
-        }
     }
 }

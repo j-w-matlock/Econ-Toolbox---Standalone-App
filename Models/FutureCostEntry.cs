@@ -1,47 +1,28 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace EconToolbox.Desktop.Models
 {
-    public class FutureCostEntry : ObservableObject
+    public partial class FutureCostEntry : ObservableObject
     {
+        [ObservableProperty]
         private double _cost;
+
+        [ObservableProperty]
         private int _year;
+
+        [ObservableProperty]
         private int _month = 1;
-        private double _pvFactor;
-        private string _timing = "end";
-
-        public double Cost
-        {
-            get => _cost;
-            set { _cost = value; OnPropertyChanged(); }
-        }
-
-        public int Year
-        {
-            get => _year;
-            set { _year = value; OnPropertyChanged(); }
-        }
-
-        public int Month
-        {
-            get => _month;
-            set { _month = value; OnPropertyChanged(); }
-        }
 
         /// <summary>
         /// Present value factor calculated from rate, year and payment timing.
         /// </summary>
-        public double PvFactor
-        {
-            get => _pvFactor;
-            set { _pvFactor = value; OnPropertyChanged(); }
-        }
+        [ObservableProperty]
+        private double _pvFactor;
 
         /// <summary>
         /// Payment timing within the period: beginning, midpoint or end.
         /// </summary>
-        public string Timing
-        {
-            get => _timing;
-            set { _timing = value; OnPropertyChanged(); }
-        }
+        [ObservableProperty]
+        private string _timing = "end";
     }
 }
