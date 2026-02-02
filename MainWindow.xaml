@@ -479,7 +479,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Expander Header="Project Manager"
-                              IsExpanded="True"
+                              IsExpanded="False"
                               Margin="{StaticResource Margin.BottomMedium}">
                         <local:ProjectView DataContext="{Binding ProjectManager}"/>
                     </Expander>

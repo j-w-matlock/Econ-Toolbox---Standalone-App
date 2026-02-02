@@ -29,6 +29,9 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<DataGridColumnDescriptor> ColumnDefinitions { get; } = new();
 
         private bool _useStage;
+        private bool _calculateEqad;
+        private int _analysisPeriod = 50;
+        private double _futureDamages;
         private readonly DispatcherTimer _computeDebounceTimer;
         private bool _suppressAutoCompute;
         private bool _isComputing;
@@ -46,6 +49,57 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged();
                 UpdateColumnDefinitions();
                 Compute();
+            }
+        }
+
+        public bool CalculateEqad
+        {
+            get => _calculateEqad;
+            set
+            {
+                if (_calculateEqad == value)
+                {
+                    return;
+                }
+
+                _calculateEqad = value;
+                OnPropertyChanged();
+                Compute();
+                RefreshDiagnostics();
+            }
+        }
+
+        public int AnalysisPeriod
+        {
+            get => _analysisPeriod;
+            set
+            {
+                if (_analysisPeriod == value)
+                {
+                    return;
+                }
+
+                _analysisPeriod = value;
+                OnPropertyChanged();
+                ScheduleCompute();
+                RefreshDiagnostics();
+            }
+        }
+
+        public double FutureDamages
+        {
+            get => _futureDamages;
+            set
+            {
+                if (Math.Abs(_futureDamages - value) < 0.0001)
+                {
+                    return;
+                }
+
+                _futureDamages = value;
+                OnPropertyChanged();
+                ScheduleCompute();
+                RefreshDiagnostics();
             }
         }
 
@@ -275,6 +329,30 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
+                if (CalculateEqad && AnalysisPeriod <= 0)
+                {
+                    Results = new ObservableCollection<EadResultRow>
+                    {
+                        new() { Label = "Status", Result = "Analysis period must be greater than zero for EqAD." }
+                    };
+                    LegendItems.Clear();
+                    ChartSeries = new ObservableCollection<ChartSeries>();
+                    ChartStatusMessage = "Enter a valid analysis period to compute EqAD.";
+                    return;
+                }
+
+                if (CalculateEqad && FutureDamages < 0)
+                {
+                    Results = new ObservableCollection<EadResultRow>
+                    {
+                        new() { Label = "Status", Result = "Future damages must be zero or greater for EqAD." }
+                    };
+                    LegendItems.Clear();
+                    ChartSeries = new ObservableCollection<ChartSeries>();
+                    ChartStatusMessage = "Enter non-negative future damages to compute EqAD.";
+                    return;
+                }
+
                 var sortedRows = Rows.OrderByDescending(r => r.Probability).ToList();
                 var probabilities = sortedRows.Select(r => r.Probability).ToArray();
                 var results = new System.Collections.Generic.List<EadResultRow>();
@@ -282,10 +360,17 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     var damages = sortedRows.Select(r => r.Damages[i]).ToArray();
                     double ead = EadModel.Compute(probabilities, damages);
+                    string eqadResult = string.Empty;
+                    if (CalculateEqad)
+                    {
+                        double eqad = EadModel.ComputeEquivalentAnnualDamage(ead, AnalysisPeriod, FutureDamages);
+                        eqadResult = eqad.ToString("C2");
+                    }
                     results.Add(new EadResultRow
                     {
                         Label = DamageColumns[i].Name,
-                        Result = ead.ToString("C2")
+                        Result = ead.ToString("C2"),
+                        EqadResult = eqadResult
                     });
                 }
                 Results = new ObservableCollection<EadResultRow>(results);
@@ -381,11 +466,17 @@ namespace EconToolbox.Desktop.ViewModels
                 try
                 {
                     ForceCompute();
-                    string combined = string.Join(" | ", Results.Select(r => $"{r.Label}: {r.Result}"));
+                    string combined = string.Join(" | ", Results.Select(r =>
+                        CalculateEqad
+                            ? $"{r.Label}: {r.Result} | EqAD: {r.EqadResult}"
+                            : $"{r.Label}: {r.Result}"));
                     await Task.Run(() => _excelExportService.ExportEad(
                         Rows,
                         DamageColumns.Select(c => c.Name),
                         UseStage,
+                        CalculateEqad,
+                        AnalysisPeriod,
+                        FutureDamages,
                         combined,
                         dlg.FileName));
                 }
@@ -497,6 +588,9 @@ namespace EconToolbox.Desktop.ViewModels
             return new EadData
             {
                 UseStage = UseStage,
+                CalculateEqad = CalculateEqad,
+                AnalysisPeriod = AnalysisPeriod,
+                FutureDamages = FutureDamages,
                 ChartTitle = ChartTitle,
                 DamageColumns = DamageColumns.Select(column => new EadDamageColumnData
                 {
@@ -522,6 +616,9 @@ namespace EconToolbox.Desktop.ViewModels
             try
             {
                 UseStage = data.UseStage;
+                CalculateEqad = data.CalculateEqad;
+                AnalysisPeriod = data.AnalysisPeriod;
+                FutureDamages = data.FutureDamages;
                 if (!string.IsNullOrWhiteSpace(data.ChartTitle))
                 {
                     ChartTitle = data.ChartTitle;
@@ -620,6 +717,22 @@ namespace EconToolbox.Desktop.ViewModels
                     DiagnosticLevel.Warning,
                     "Negative damage values",
                     "One or more damage entries are negative. Verify that all damage estimates are non-negative."));
+            }
+
+            if (CalculateEqad && AnalysisPeriod <= 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Invalid analysis period",
+                    "Enter a positive analysis period to compute EqAD."));
+            }
+
+            if (CalculateEqad && FutureDamages < 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Warning,
+                    "Negative future damages",
+                    "Future damages should be zero or greater when calculating EqAD."));
             }
 
             if (diagnostics.Count == 0)

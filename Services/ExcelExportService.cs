@@ -456,7 +456,7 @@ namespace EconToolbox.Desktop.Services
             });
         }
 
-        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, string result, string filePath)
+        public void ExportEad(IEnumerable<EadViewModel.EadRow> rows, IEnumerable<string> damageColumns, bool useStage, bool calculateEqad, int analysisPeriod, double futureDamages, string result, string filePath)
         {
             ExecuteExport("export the expected annual damage workbook", () =>
             {
@@ -527,6 +527,11 @@ namespace EconToolbox.Desktop.Services
                             var damages = rowList.Select(r => r.Damages.Count > i ? r.Damages[i] : 0.0).ToArray();
                             double eadValue = EadModel.Compute(probabilities, damages);
                             summaryEntries.Add(($"{sanitizedDamageList[i]} EAD", eadValue, "$#,##0.00", "Expected annual damage for this column.", i == 0));
+                            if (calculateEqad)
+                            {
+                                double eqadValue = EadModel.ComputeEquivalentAnnualDamage(eadValue, analysisPeriod, futureDamages);
+                                summaryEntries.Add(($"{sanitizedDamageList[i]} EqAD", eqadValue, "$#,##0.00", "Equivalent annual damage including annualized future damages.", false));
+                            }
                         }
                     }
 
@@ -536,11 +541,16 @@ namespace EconToolbox.Desktop.Services
                     }
 
                     int summaryNextRow = WriteKeyValueTable(summary, 1, 1, "Expected Annual Damage", summaryEntries, context);
-                    int notesRow = WriteCalculationNotes(summary, summaryNextRow, 1, 2, "Calculation Notes", new[]
+                    var calculationNotes = new List<string>
                     {
                         "EAD = ∑(Damage × ΔProbability) using the trapezoidal area under the curve.",
                         "Stage values are retained with each probability when provided."
-                    });
+                    };
+                    if (calculateEqad)
+                    {
+                        calculationNotes.Insert(1, "EqAD = EAD + (Future Damages ÷ Analysis Period) when enabled.");
+                    }
+                    int notesRow = WriteCalculationNotes(summary, summaryNextRow, 1, 2, "Calculation Notes", calculationNotes);
                     AddEadChart(summary, BuildEadPlotPoints(rowList, useStage), notesRow, 1, context);
 
                     context.Save(filePath);
@@ -586,7 +596,11 @@ namespace EconToolbox.Desktop.Services
             }
             eadSheet.Cell(rowIdx + 1, 1).Value = "Result";
             eadSheet.Cell(rowIdx + 1, 1).Style.Font.SetBold();
-            eadSheet.Cell(rowIdx + 1, 2).Value = JoinOrEmpty(" | ", ead.Results.Select(r => $"{r.Label}: {r.Result}"));
+            var eadSummary = ead.Results.Select(r =>
+                ead.CalculateEqad
+                    ? $"{r.Label}: {r.Result} | EqAD: {r.EqadResult}"
+                    : $"{r.Label}: {r.Result}");
+            eadSheet.Cell(rowIdx + 1, 2).Value = JoinOrEmpty(" | ", eadSummary);
             eadSheet.Range(rowIdx + 1, 1, rowIdx + 1, Math.Max(2, eadColumnCount)).Merge();
             eadSheet.Range(1, 1, 1, eadColumnCount).Style.Font.SetBold();
             eadSheet.Columns(1, eadColumnCount).AdjustToContents();

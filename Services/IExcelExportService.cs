@@ -30,6 +30,9 @@ public interface IExcelExportService
         IEnumerable<EadViewModel.EadRow> rows,
         IEnumerable<string> damageColumns,
         bool useStage,
+        bool calculateEqad,
+        int analysisPeriod,
+        double futureDamages,
         string result,
         string filePath);
 
