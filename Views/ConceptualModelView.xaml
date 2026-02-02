@@ -318,6 +318,53 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Links}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type models:ConceptualLink}">
+                                            <ItemsControl ItemsSource="{Binding Vertices}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <Canvas />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemContainerStyle>
+                                                    <Style TargetType="ContentPresenter">
+                                                        <Setter Property="Canvas.Left" Value="{Binding X, Converter={StaticResource OffsetConverter}, ConverterParameter=6}"/>
+                                                        <Setter Property="Canvas.Top" Value="{Binding Y, Converter={StaticResource OffsetConverter}, ConverterParameter=6}"/>
+                                                    </Style>
+                                                </ItemsControl.ItemContainerStyle>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate DataType="{x:Type models:ConceptualVertex}">
+                                                        <Ellipse Width="12"
+                                                                 Height="12"
+                                                                 Cursor="Hand"
+                                                                 Fill="{DynamicResource App.Surface}"
+                                                                 StrokeThickness="2"
+                                                                 Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                 MouseLeftButtonDown="OnVertexMouseLeftButtonDown">
+                                                            <Ellipse.Style>
+                                                                <Style TargetType="Ellipse">
+                                                                    <Setter Property="Stroke" Value="{StaticResource Color.PrimaryBrush}"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                            <Setter Property="Fill" Value="{StaticResource Color.PrimaryBrush}"/>
+                                                                            <Setter Property="Stroke" Value="{StaticResource Color.PrimaryBrush}"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Ellipse.Style>
+                                                        </Ellipse>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                                 <ItemsControl ItemsSource="{Binding Nodes}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>

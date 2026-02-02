@@ -156,7 +156,17 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
+                if (_selectedVertex != null)
+                {
+                    _selectedVertex.IsSelected = false;
+                }
+
                 _selectedVertex = value;
+                if (_selectedVertex != null)
+                {
+                    _selectedVertex.IsSelected = true;
+                }
+
                 OnPropertyChanged();
                 _removeVertexCommand.NotifyCanExecuteChanged();
             }

@@ -6,6 +6,7 @@ namespace EconToolbox.Desktop.Models
     {
         private double _x;
         private double _y;
+        private bool _isSelected;
 
         public double X
         {
@@ -33,6 +34,21 @@ namespace EconToolbox.Desktop.Models
                 }
 
                 _y = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected == value)
+                {
+                    return;
+                }
+
+                _isSelected = value;
                 OnPropertyChanged();
             }
         }
