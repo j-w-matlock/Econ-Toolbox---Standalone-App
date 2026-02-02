@@ -84,6 +84,8 @@ namespace EconToolbox.Desktop.ViewModels
                 new("Magenta", new SolidColorBrush(Color.FromRgb(225, 0, 152))),
                 new("Bright Yellow", new SolidColorBrush(Color.FromRgb(255, 215, 0)))
             };
+            LabelSizeOptions = new ObservableCollection<int>(
+                Enumerable.Range(0, 9).Select(index => 8 + (index * 2)));
 
             LineStyleOptions = new ObservableCollection<LineStyleOption>
             {
@@ -113,6 +115,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<StyleOption> LineStrokeOptions { get; }
         public ObservableCollection<LineStyleOption> LineStyleOptions { get; }
         public ObservableCollection<StyleOption> LabelColorOptions { get; }
+        public ObservableCollection<int> LabelSizeOptions { get; }
 
         public ConceptualNode? SelectedNode
         {
