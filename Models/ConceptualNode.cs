@@ -23,6 +23,7 @@ namespace EconToolbox.Desktop.Models
         private string? _imagePath;
         private ConceptualNodeShape _shape = ConceptualNodeShape.Circle;
         private double _cornerRadius = 45;
+        private bool _isSelected;
 
         public string Name
         {
@@ -142,6 +143,21 @@ namespace EconToolbox.Desktop.Models
                 }
 
                 _strokeThickness = Math.Max(1, value);
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected == value)
+                {
+                    return;
+                }
+
+                _isSelected = value;
                 OnPropertyChanged();
             }
         }
