@@ -101,5 +101,26 @@ namespace EconToolbox.Desktop.Views
 
             e.Handled = true;
         }
+
+        private void OnVertexMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not FrameworkElement element || element.DataContext is not ConceptualVertex vertex)
+            {
+                return;
+            }
+
+            if (DataContext is not ConceptualModelViewModel viewModel)
+            {
+                return;
+            }
+
+            if (element.Tag is ConceptualLink link)
+            {
+                viewModel.SelectedLink = link;
+            }
+
+            viewModel.SelectedVertex = vertex;
+            e.Handled = true;
+        }
     }
 }
