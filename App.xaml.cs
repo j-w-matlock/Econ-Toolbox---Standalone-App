@@ -102,6 +102,7 @@ namespace EconToolbox.Desktop
                     services.AddTransient<WaterDemandViewModel>();
                     services.AddTransient<RecreationCapacityViewModel>();
                     services.AddTransient<GanttViewModel>();
+                    services.AddTransient<ConceptualModelViewModel>();
                     services.AddTransient<StageDamageOrganizerViewModel>();
 
                     services.AddSingleton<MainViewModel>();

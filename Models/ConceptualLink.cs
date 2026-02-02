@@ -1,0 +1,226 @@
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Media;
+
+namespace EconToolbox.Desktop.Models
+{
+    public class ConceptualLink : ObservableObject
+    {
+        private ConceptualNode? _startNode;
+        private ConceptualNode? _endNode;
+        private Brush _stroke = new SolidColorBrush(Color.FromRgb(67, 146, 100));
+        private double _strokeThickness = 2;
+        private DoubleCollection _dashArray = new();
+        private PointCollection _points = new();
+        private string _label = string.Empty;
+
+        public ConceptualLink(ConceptualNode? startNode, ConceptualNode? endNode)
+        {
+            Vertices = new ObservableCollection<ConceptualVertex>();
+            Vertices.CollectionChanged += OnVerticesCollectionChanged;
+            StartNode = startNode;
+            EndNode = endNode;
+            UpdatePoints();
+        }
+
+        public ConceptualNode? StartNode
+        {
+            get => _startNode;
+            set
+            {
+                if (ReferenceEquals(_startNode, value))
+                {
+                    return;
+                }
+
+                if (_startNode != null)
+                {
+                    _startNode.PropertyChanged -= OnNodePropertyChanged;
+                }
+
+                _startNode = value;
+                if (_startNode != null)
+                {
+                    _startNode.PropertyChanged += OnNodePropertyChanged;
+                }
+
+                OnPropertyChanged();
+                UpdatePoints();
+            }
+        }
+
+        public ConceptualNode? EndNode
+        {
+            get => _endNode;
+            set
+            {
+                if (ReferenceEquals(_endNode, value))
+                {
+                    return;
+                }
+
+                if (_endNode != null)
+                {
+                    _endNode.PropertyChanged -= OnNodePropertyChanged;
+                }
+
+                _endNode = value;
+                if (_endNode != null)
+                {
+                    _endNode.PropertyChanged += OnNodePropertyChanged;
+                }
+
+                OnPropertyChanged();
+                UpdatePoints();
+            }
+        }
+
+        public ObservableCollection<ConceptualVertex> Vertices { get; }
+
+        public Brush Stroke
+        {
+            get => _stroke;
+            set
+            {
+                if (Equals(_stroke, value))
+                {
+                    return;
+                }
+
+                _stroke = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double StrokeThickness
+        {
+            get => _strokeThickness;
+            set
+            {
+                if (System.Math.Abs(_strokeThickness - value) < 0.01)
+                {
+                    return;
+                }
+
+                _strokeThickness = System.Math.Max(1, value);
+                OnPropertyChanged();
+            }
+        }
+
+        public DoubleCollection DashArray
+        {
+            get => _dashArray;
+            set
+            {
+                if (Equals(_dashArray, value))
+                {
+                    return;
+                }
+
+                _dashArray = value ?? new DoubleCollection();
+                OnPropertyChanged();
+            }
+        }
+
+        public PointCollection Points
+        {
+            get => _points;
+            private set
+            {
+                if (Equals(_points, value))
+                {
+                    return;
+                }
+
+                _points = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Label
+        {
+            get => _label;
+            set
+            {
+                if (_label == value)
+                {
+                    return;
+                }
+
+                _label = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private void OnNodePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(ConceptualNode.X) or nameof(ConceptualNode.Y) or nameof(ConceptualNode.Width) or nameof(ConceptualNode.Height))
+            {
+                UpdatePoints();
+            }
+        }
+
+        private void OnVerticesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (var item in e.OldItems)
+                {
+                    if (item is ConceptualVertex vertex)
+                    {
+                        vertex.PropertyChanged -= OnVertexPropertyChanged;
+                    }
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (var item in e.NewItems)
+                {
+                    if (item is ConceptualVertex vertex)
+                    {
+                        vertex.PropertyChanged += OnVertexPropertyChanged;
+                    }
+                }
+            }
+
+            UpdatePoints();
+        }
+
+        private void OnVertexPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(ConceptualVertex.X) or nameof(ConceptualVertex.Y))
+            {
+                UpdatePoints();
+            }
+        }
+
+        public void UpdatePoints()
+        {
+            var points = new PointCollection();
+            if (StartNode != null)
+            {
+                points.Add(GetCenter(StartNode));
+            }
+
+            foreach (var vertex in Vertices)
+            {
+                points.Add(new Point(vertex.X, vertex.Y));
+            }
+
+            if (EndNode != null)
+            {
+                points.Add(GetCenter(EndNode));
+            }
+
+            Points = points;
+        }
+
+        private static Point GetCenter(ConceptualNode node)
+        {
+            return new Point(node.X + node.Width / 2, node.Y + node.Height / 2);
+        }
+    }
+}
