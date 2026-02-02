@@ -16,5 +16,6 @@
     <converters:WidthToLayoutModeConverter x:Key="WidthToLayoutModeConverter" Threshold="800"/>
     <converters:CharCountToWidthConverter x:Key="CharCountToWidthConverter"/>
     <converters:PercentToScaleConverter x:Key="PercentToScaleConverter"/>
+    <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 </ResourceDictionary>

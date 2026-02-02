@@ -1,0 +1,356 @@
+<UserControl x:Class="EconToolbox.Desktop.Views.ConceptualModelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:EconToolbox.Desktop.Models"
+             Background="{DynamicResource App.SurfaceAlt}"
+             SnapsToDevicePixels="True"
+             UseLayoutRounding="True">
+    <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
+        <Grid Style="{StaticResource Layout.ContentGrid}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"
+                    Style="{StaticResource Border.Explainer}">
+                <StackPanel>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="Conceptual Model"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
+                        Map complex systems using rich nodes, image-backed icons, and adjustable connection paths. Add vertices to bend connector lines, style node and link colors, and preview how components flow across the system.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Grid Grid.Row="1"
+                  Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.1*"/>
+                    <ColumnDefinition Width="1.6*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <Border Style="{StaticResource Border.Card}">
+                        <StackPanel>
+                            <TextBlock Text="Nodes"
+                                       Style="{StaticResource Text.SectionTitle}"
+                                       Margin="{StaticResource Margin.StackLarge}"/>
+                            <DataGrid ItemsSource="{Binding Nodes}"
+                                      SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="True"
+                                      HeadersVisibility="Column"
+                                      ColumnWidth="SizeToHeader"
+                                      Margin="0,0,0,8">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Label"
+                                                        Binding="{Binding Name, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                    <DataGridTextColumn Header="X"
+                                                        Binding="{Binding X, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                    <DataGridTextColumn Header="Y"
+                                                        Binding="{Binding Y, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                    <DataGridTextColumn Header="W"
+                                                        Binding="{Binding Width, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                    <DataGridTextColumn Header="H"
+                                                        Binding="{Binding Height, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,6">
+                                <Button Command="{Binding AddNodeCommand}"
+                                        Style="{StaticResource Button.Action}"
+                                        Margin="0,0,8,0"
+                                        ToolTip="Add a node to the canvas.">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                        <TextBlock Text="Add Node"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding RemoveNodeCommand}"
+                                        Style="{StaticResource Button.Action}"
+                                        ToolTip="Remove the selected node and its links.">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                        <TextBlock Text="Remove Selected"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <Separator Style="{StaticResource Separator.Subtle}" Margin="0,8"/>
+                            <TextBlock Text="Node styling"
+                                       Style="{StaticResource Text.SectionHeader}"
+                                       Margin="0,0,0,6"/>
+                            <UniformGrid Columns="2" Rows="3" Margin="0,0,0,8">
+                                <StackPanel Margin="0,0,8,8">
+                                    <TextBlock Text="Shape" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding NodeShapes}"
+                                              SelectedItem="{Binding SelectedNode.Shape, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Fill" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding NodeFillOptions}"
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="Brush"
+                                              SelectedValue="{Binding SelectedNode.Fill, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,8">
+                                    <TextBlock Text="Stroke" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding NodeStrokeOptions}"
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="Brush"
+                                              SelectedValue="{Binding SelectedNode.Stroke, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Stroke width" Style="{StaticResource Text.BodySmall}"/>
+                                    <TextBox Text="{Binding SelectedNode.StrokeThickness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Image" Style="{StaticResource Text.BodySmall}"/>
+                                    <TextBox Text="{Binding SelectedNode.ImagePath, Mode=TwoWay}"
+                                             IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,18,0,0">
+                                    <Button Command="{Binding AttachImageCommand}"
+                                            Style="{StaticResource Button.Action}"
+                                            Margin="0,0,8,0"
+                                            ToolTip="Attach an image to the selected node.">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                            <TextBlock Text="Browse"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding ClearImageCommand}"
+                                            Style="{StaticResource Button.Action}"
+                                            ToolTip="Clear the attached image from the selected node.">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                            <TextBlock Text="Clear"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource Border.Card}" Margin="0,16,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Connections"
+                                       Style="{StaticResource Text.SectionTitle}"
+                                       Margin="{StaticResource Margin.StackLarge}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <StackPanel Margin="0,0,8,0" Width="140">
+                                    <TextBlock Text="From" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding Nodes}"
+                                              SelectedItem="{Binding LinkStartSelection, Mode=TwoWay}"
+                                              DisplayMemberPath="Name"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,0" Width="140">
+                                    <TextBlock Text="To" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding Nodes}"
+                                              SelectedItem="{Binding LinkEndSelection, Mode=TwoWay}"
+                                              DisplayMemberPath="Name"/>
+                                </StackPanel>
+                                <Button Command="{Binding AddLinkCommand}"
+                                        Style="{StaticResource Button.Action}"
+                                        Margin="0,18,0,0"
+                                        ToolTip="Create a link between the two selected nodes.">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                        <TextBlock Text="Add Link"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <DataGrid ItemsSource="{Binding Links}"
+                                      SelectedItem="{Binding SelectedLink, Mode=TwoWay}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      HeadersVisibility="Column"
+                                      ColumnWidth="SizeToHeader"
+                                      Margin="0,0,0,8">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="From"
+                                                        Binding="{Binding StartNode.Name}"
+                                                        IsReadOnly="True"
+                                                        Width="SizeToHeader"/>
+                                    <DataGridTextColumn Header="To"
+                                                        Binding="{Binding EndNode.Name}"
+                                                        IsReadOnly="True"
+                                                        Width="SizeToHeader"/>
+                                    <DataGridTextColumn Header="Label"
+                                                        Binding="{Binding Label, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                    <DataGridTextColumn Header="Width"
+                                                        Binding="{Binding StrokeThickness, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Button Command="{Binding RemoveLinkCommand}"
+                                        Style="{StaticResource Button.Action}"
+                                        ToolTip="Remove the selected link.">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                        <TextBlock Text="Remove Link"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <Separator Style="{StaticResource Separator.Subtle}" Margin="0,8"/>
+                            <TextBlock Text="Link styling"
+                                       Style="{StaticResource Text.SectionHeader}"
+                                       Margin="0,0,0,6"/>
+                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                                <StackPanel Margin="0,0,8,8">
+                                    <TextBlock Text="Stroke" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding LineStrokeOptions}"
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="Brush"
+                                              SelectedValue="{Binding SelectedLink.Stroke, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Pattern" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding LineStyleOptions}"
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="DashArray"
+                                              SelectedValue="{Binding SelectedLink.DashArray, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                            </UniformGrid>
+                            <TextBlock Text="Vertices"
+                                       Style="{StaticResource Text.SectionHeader}"
+                                       Margin="0,0,0,6"/>
+                            <DataGrid ItemsSource="{Binding SelectedLink.Vertices}"
+                                      SelectedItem="{Binding SelectedVertex, Mode=TwoWay}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="True"
+                                      HeadersVisibility="Column"
+                                      ColumnWidth="SizeToHeader"
+                                      Margin="0,0,0,8"
+                                      IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="X"
+                                                        Binding="{Binding X, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                    <DataGridTextColumn Header="Y"
+                                                        Binding="{Binding Y, Mode=TwoWay}"
+                                                        Width="SizeToHeader"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{Binding AddVertexCommand}"
+                                        Style="{StaticResource Button.Action}"
+                                        Margin="0,0,8,0"
+                                        ToolTip="Insert a vertex to bend the selected link.">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                        <TextBlock Text="Add Vertex"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding RemoveVertexCommand}"
+                                        Style="{StaticResource Button.Action}"
+                                        ToolTip="Remove the selected vertex from the link.">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                        <TextBlock Text="Remove Vertex"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                <Border Grid.Column="1"
+                        Style="{StaticResource Border.Card}"
+                        Margin="16,0,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Conceptual canvas"
+                                   Style="{StaticResource Text.SectionTitle}"
+                                   Margin="{StaticResource Margin.StackLarge}"/>
+                        <Grid Grid.Row="1"
+                              Background="{DynamicResource App.Surface}">
+                            <Canvas>
+                                <ItemsControl ItemsSource="{Binding Links}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type models:ConceptualLink}">
+                                            <Polyline Points="{Binding Points}"
+                                                      Stroke="{Binding Stroke}"
+                                                      StrokeThickness="{Binding StrokeThickness}"
+                                                      StrokeDashArray="{Binding DashArray}"
+                                                      StrokeStartLineCap="Round"
+                                                      StrokeEndLineCap="Round"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Nodes}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemContainerStyle>
+                                        <Style TargetType="ContentPresenter">
+                                            <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                                            <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                                        </Style>
+                                    </ItemsControl.ItemContainerStyle>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type models:ConceptualNode}">
+                                            <Border Width="{Binding Width}"
+                                                    Height="{Binding Height}"
+                                                    Background="{Binding Fill}"
+                                                    BorderBrush="{Binding Stroke}"
+                                                    BorderThickness="{Binding StrokeThickness}"
+                                                    CornerRadius="{Binding CornerRadius}"
+                                                    ClipToBounds="True">
+                                                <Grid>
+                                                    <Image Source="{Binding ImagePath}"
+                                                           Stretch="UniformToFill"
+                                                           Opacity="0.9"
+                                                           Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                    <Border Background="#66000000"
+                                                            Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                    <TextBlock Text="{Binding Name}"
+                                                               TextWrapping="Wrap"
+                                                               Foreground="{DynamicResource App.Surface}"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="12"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               Margin="6"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Canvas>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

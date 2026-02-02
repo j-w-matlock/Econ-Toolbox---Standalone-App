@@ -56,6 +56,9 @@
             <DataTemplate DataType="{x:Type vm:GanttViewModel}">
                 <views:GanttView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ConceptualModelViewModel}">
+                <views:ConceptualModelView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:StageDamageOrganizerViewModel}">
                 <views:StageDamageOrganizerView/>
             </DataTemplate>

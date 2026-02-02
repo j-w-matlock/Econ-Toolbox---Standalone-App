@@ -407,6 +407,24 @@ namespace EconToolbox.Desktop.ViewModels
                     "Example: A feasibility study includes kickoff, stakeholder workshops, baseline analysis, and a design milestone with finish-to-start dependencies.",
                     typeof(GanttViewModel)),
                 new ModuleDefinition(
+                    "Conceptual Model",
+                    "Map complex systems with image-backed nodes and multi-segment connectors.",
+                    "Creates conceptual diagrams with styled nodes, links, and bendable paths for stakeholder storytelling.",
+                    new[]
+                    {
+                        "Add nodes with labels, positions, and optional imagery to represent actors or systems.",
+                        "Use link vertices to bend paths and avoid overlapping visual clusters.",
+                        "Adjust node and link styles to align with branding or report readability."
+                    },
+                    new[]
+                    {
+                        "Displays a freeform canvas for arranging nodes and curved connector paths.",
+                        "Supports node imagery so concepts can be represented with recognizable icons.",
+                        "Tracks vertex coordinates so multi-segment links can route around dense areas."
+                    },
+                    "Example: Sketch a social influence network by linking channels, influencers, and funding sources with mid-line vertices.",
+                    typeof(ConceptualModelViewModel)),
+                new ModuleDefinition(
                     "Stage Damage Organizer",
                     "Compile FDA 2.0 Stage Damage Functions_StructureStageDamageDetails.csv files by damage category.",
                     "Loads CSV exports, groups by DamageCategory, highlights peak frequent-AEP structure damages, and plots a summary bar chart.",
