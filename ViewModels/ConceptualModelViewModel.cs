@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using EconToolbox.Desktop.Helpers;
 using EconToolbox.Desktop.Models;
@@ -178,6 +179,20 @@ namespace EconToolbox.Desktop.ViewModels
         public RelayCommand RemoveVertexCommand => _removeVertexCommand;
         public RelayCommand AttachImageCommand => _attachImageCommand;
         public RelayCommand ClearImageCommand => _clearImageCommand;
+
+        public void AddVertexAt(ConceptualLink? link, Point position)
+        {
+            if (link == null)
+            {
+                return;
+            }
+
+            var insertIndex = CalculateVertexInsertIndex(link, position);
+            var vertex = new ConceptualVertex { X = position.X, Y = position.Y };
+            link.Vertices.Insert(insertIndex, vertex);
+            SelectedLink = link;
+            SelectedVertex = vertex;
+        }
 
         private void SeedDefaults()
         {
@@ -394,6 +409,44 @@ namespace EconToolbox.Desktop.ViewModels
 
             SelectedNode.ImagePath = null;
             _clearImageCommand.NotifyCanExecuteChanged();
+        }
+
+        private static int CalculateVertexInsertIndex(ConceptualLink link, Point position)
+        {
+            var points = link.Points;
+            if (points == null || points.Count < 2)
+            {
+                return link.Vertices.Count;
+            }
+
+            var bestDistance = double.MaxValue;
+            var bestSegmentIndex = 0;
+            for (var i = 0; i < points.Count - 1; i++)
+            {
+                var distance = DistanceToSegment(position, points[i], points[i + 1]);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    bestSegmentIndex = i;
+                }
+            }
+
+            return Math.Min(bestSegmentIndex, link.Vertices.Count);
+        }
+
+        private static double DistanceToSegment(Point point, Point segmentStart, Point segmentEnd)
+        {
+            var dx = segmentEnd.X - segmentStart.X;
+            var dy = segmentEnd.Y - segmentStart.Y;
+            if (Math.Abs(dx) < 0.001 && Math.Abs(dy) < 0.001)
+            {
+                return (point - segmentStart).Length;
+            }
+
+            var t = ((point.X - segmentStart.X) * dx + (point.Y - segmentStart.Y) * dy) / (dx * dx + dy * dy);
+            t = Math.Max(0, Math.Min(1, t));
+            var projection = new Point(segmentStart.X + t * dx, segmentStart.Y + t * dy);
+            return (point - projection).Length;
         }
 
         public sealed class StyleOption
