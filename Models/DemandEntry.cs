@@ -31,9 +31,9 @@ namespace EconToolbox.Desktop.Models
         [ObservableProperty]
         private double _growthRate;
 
-        public double DemandAcreFeet => _demand * DaysPerYear / GallonsPerAcreFoot;
+        public double DemandAcreFeet => Demand * DaysPerYear / GallonsPerAcreFoot;
 
-        public double AdjustedDemandAcreFeet => _adjustedDemand * DaysPerYear / GallonsPerAcreFoot;
+        public double AdjustedDemandAcreFeet => AdjustedDemand * DaysPerYear / GallonsPerAcreFoot;
 
         partial void OnDemandChanged(double value)
         {
