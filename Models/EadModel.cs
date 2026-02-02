@@ -45,5 +45,16 @@ namespace EconToolbox.Desktop.Models
             }
             return sum;
         }
+
+        public static double ComputeEquivalentAnnualDamage(double expectedAnnualDamage, int analysisPeriodYears, double futureDamages)
+        {
+            if (analysisPeriodYears <= 0)
+                throw new ArgumentOutOfRangeException(nameof(analysisPeriodYears), "Analysis period must be greater than zero.");
+
+            if (futureDamages < 0)
+                throw new ArgumentOutOfRangeException(nameof(futureDamages), "Future damages must be zero or greater.");
+
+            return expectedAnnualDamage + (futureDamages / analysisPeriodYears);
+        }
     }
 }

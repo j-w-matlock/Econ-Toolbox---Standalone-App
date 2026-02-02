@@ -4,5 +4,6 @@ namespace EconToolbox.Desktop.Models
     {
         public string Label { get; set; } = string.Empty;
         public string Result { get; set; } = string.Empty;
+        public string EqadResult { get; set; } = string.Empty;
     }
 }

@@ -34,29 +34,63 @@
 
                 <Border Style="{StaticResource Border.Card}"
                         Margin="0,0,0,12">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                        <Button Command="{Binding AddDamageColumnCommand}"
-                                Style="{StaticResource Button.Action}"
-                                Margin="0,0,12,0"
-                                ToolTip="Append a new damage column for an additional category or scenario. Additional columns create new damage curves included in calculations.">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
-                                <TextBlock Text="Add Damage Column"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding RemoveDamageColumnCommand}"
-                                Style="{StaticResource Button.Action}"
-                                Margin="0,0,12,0"
-                                ToolTip="Remove the most recently added damage column. Removing a column excludes its damage curve from calculations.">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
-                                <TextBlock Text="Remove Damage Column"/>
-                            </StackPanel>
-                        </Button>
-                        <CheckBox IsChecked="{Binding UseStage}"
-                                  VerticalAlignment="Center"
-                                  Content="Include Stage"
-                                  ToolTip="Toggle to add a stage column so you can enter paired stage values. Stage values change how damages align with stage-frequency logic."/>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Button Command="{Binding AddDamageColumnCommand}"
+                                    Style="{StaticResource Button.Action}"
+                                    Margin="0,0,12,0"
+                                    ToolTip="Append a new damage column for an additional category or scenario. Additional columns create new damage curves included in calculations.">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                    <TextBlock Text="Add Damage Column"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding RemoveDamageColumnCommand}"
+                                    Style="{StaticResource Button.Action}"
+                                    Margin="0,0,12,0"
+                                    ToolTip="Remove the most recently added damage column. Removing a column excludes its damage curve from calculations.">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                    <TextBlock Text="Remove Damage Column"/>
+                                </StackPanel>
+                            </Button>
+                            <CheckBox IsChecked="{Binding UseStage}"
+                                      VerticalAlignment="Center"
+                                      Content="Include Stage"
+                                      Margin="0,0,12,0"
+                                      ToolTip="Toggle to add a stage column so you can enter paired stage values. Stage values change how damages align with stage-frequency logic."/>
+                            <CheckBox IsChecked="{Binding CalculateEqad}"
+                                      VerticalAlignment="Center"
+                                      Content="Calculate EqAD"
+                                      ToolTip="Enable equivalent expected annual damage (EqAD) using an analysis period and future damages per USACE guidance."/>
+                        </StackPanel>
+                        <Grid Margin="0,12,0,0"
+                              Visibility="{Binding CalculateEqad, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="180"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="Analysis Period (Years)"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,12,0"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding AnalysisPeriod, Converter={StaticResource SafeNumberConverter}}"
+                                     HorizontalContentAlignment="Right"
+                                     Style="{StaticResource Form.TextBoxWide}"
+                                     ToolTip="Number of years used to annualize future damages when calculating EqAD."/>
+                            <TextBlock Grid.Column="2"
+                                       Text="Future Damages"
+                                       VerticalAlignment="Center"
+                                       Margin="24,0,12,0"/>
+                            <TextBox Grid.Column="3"
+                                     Text="{Binding FutureDamages, Converter={StaticResource SafeNumberConverter}}"
+                                     HorizontalContentAlignment="Right"
+                                     Style="{StaticResource Form.TextBoxWide}"
+                                     ToolTip="Total expected future damages to annualize across the analysis period for EqAD."/>
+                        </Grid>
                     </StackPanel>
                 </Border>
 
@@ -161,6 +195,16 @@
                                     <DataGridTextColumn.HeaderStyle>
                                         <Style TargetType="DataGridColumnHeader">
                                             <Setter Property="ToolTip" Value="Calculated expected annual damage for the column, based on the integrated frequency-damage curve."/>
+                                        </Style>
+                                    </DataGridTextColumn.HeaderStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Equivalent Annual Damage (EqAD)"
+                                                    Binding="{Binding EqadResult}"
+                                                    Width="SizeToHeader"
+                                                    Visibility="{Binding DataContext.CalculateEqad, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <DataGridTextColumn.HeaderStyle>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="ToolTip" Value="Equivalent expected annual damages that combine EAD with annualized future damages."/>
                                         </Style>
                                     </DataGridTextColumn.HeaderStyle>
                                 </DataGridTextColumn>
