@@ -15,6 +15,10 @@ namespace EconToolbox.Desktop.Models
         private DoubleCollection _dashArray = new();
         private PointCollection _points = new();
         private string _label = string.Empty;
+        private Brush _labelBrush = new SolidColorBrush(Color.FromRgb(33, 33, 33));
+        private double _labelFontSize = 11;
+        private bool _labelIsBold;
+        private Point _labelPosition;
         private bool _isUpdatingPoints;
         private bool _isSelected;
 
@@ -156,6 +160,66 @@ namespace EconToolbox.Desktop.Models
             }
         }
 
+        public Brush LabelBrush
+        {
+            get => _labelBrush;
+            set
+            {
+                if (Equals(_labelBrush, value))
+                {
+                    return;
+                }
+
+                _labelBrush = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double LabelFontSize
+        {
+            get => _labelFontSize;
+            set
+            {
+                if (System.Math.Abs(_labelFontSize - value) < 0.01)
+                {
+                    return;
+                }
+
+                _labelFontSize = System.Math.Max(8, value);
+                OnPropertyChanged();
+            }
+        }
+
+        public bool LabelIsBold
+        {
+            get => _labelIsBold;
+            set
+            {
+                if (_labelIsBold == value)
+                {
+                    return;
+                }
+
+                _labelIsBold = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Point LabelPosition
+        {
+            get => _labelPosition;
+            private set
+            {
+                if (_labelPosition.Equals(value))
+                {
+                    return;
+                }
+
+                _labelPosition = value;
+                OnPropertyChanged();
+            }
+        }
+
         public bool IsSelected
         {
             get => _isSelected;
@@ -244,6 +308,12 @@ namespace EconToolbox.Desktop.Models
                 {
                     Points = points;
                 }
+
+                var labelPosition = CalculateLabelPosition(points);
+                if (!_labelPosition.Equals(labelPosition))
+                {
+                    LabelPosition = labelPosition;
+                }
             }
             finally
             {
@@ -254,6 +324,24 @@ namespace EconToolbox.Desktop.Models
         private static Point GetCenter(ConceptualNode node)
         {
             return new Point(node.X + node.Width / 2, node.Y + node.Height / 2);
+        }
+
+        private static Point CalculateLabelPosition(PointCollection points)
+        {
+            if (points.Count == 0)
+            {
+                return new Point();
+            }
+
+            var totalX = 0d;
+            var totalY = 0d;
+            foreach (var point in points)
+            {
+                totalX += point.X;
+                totalY += point.Y;
+            }
+
+            return new Point(totalX / points.Count, totalY / points.Count);
         }
 
         private static bool ArePointsEqual(PointCollection? left, PointCollection? right)

@@ -146,6 +146,29 @@
                                     </Button>
                                 </StackPanel>
                             </UniformGrid>
+                            <TextBlock Text="Label styling"
+                                       Style="{StaticResource Text.SectionHeader}"
+                                       Margin="0,0,0,6"/>
+                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                                <StackPanel Margin="0,0,8,8">
+                                    <TextBlock Text="Label size" Style="{StaticResource Text.BodySmall}"/>
+                                    <TextBox Text="{Binding SelectedNode.LabelFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Label color" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding LabelColorOptions}"
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="Brush"
+                                              SelectedValue="{Binding SelectedNode.LabelBrush, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Label bold" Style="{StaticResource Text.BodySmall}"/>
+                                    <CheckBox IsChecked="{Binding SelectedNode.LabelIsBold, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                            </UniformGrid>
                         </StackPanel>
                     </Border>
                     <Border Style="{StaticResource Border.Card}" Margin="0,16,0,0">
@@ -232,6 +255,29 @@
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
                             </UniformGrid>
+                            <TextBlock Text="Label styling"
+                                       Style="{StaticResource Text.SectionHeader}"
+                                       Margin="0,0,0,6"/>
+                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                                <StackPanel Margin="0,0,8,8">
+                                    <TextBlock Text="Label size" Style="{StaticResource Text.BodySmall}"/>
+                                    <TextBox Text="{Binding SelectedLink.LabelFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Label color" Style="{StaticResource Text.BodySmall}"/>
+                                    <ComboBox ItemsSource="{Binding LabelColorOptions}"
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="Brush"
+                                              SelectedValue="{Binding SelectedLink.LabelBrush, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Label bold" Style="{StaticResource Text.BodySmall}"/>
+                                    <CheckBox IsChecked="{Binding SelectedLink.LabelIsBold, Mode=TwoWay}"
+                                              IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
+                                </StackPanel>
+                            </UniformGrid>
                             <TextBlock Text="Vertices"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
@@ -315,6 +361,39 @@
                                                     </Style>
                                                 </Polyline.Style>
                                             </Polyline>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Links}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemContainerStyle>
+                                        <Style TargetType="ContentPresenter">
+                                            <Setter Property="Canvas.Left" Value="{Binding LabelPosition.X}"/>
+                                            <Setter Property="Canvas.Top" Value="{Binding LabelPosition.Y}"/>
+                                        </Style>
+                                    </ItemsControl.ItemContainerStyle>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type models:ConceptualLink}">
+                                            <TextBlock Text="{Binding Label}"
+                                                       FontSize="{Binding LabelFontSize}"
+                                                       Foreground="{Binding LabelBrush}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="6">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="FontWeight" Value="Normal"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding LabelIsBold}" Value="True">
+                                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
@@ -420,12 +499,22 @@
                                                             Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                                     <TextBlock Text="{Binding Name}"
                                                                TextWrapping="Wrap"
-                                                               Foreground="{DynamicResource App.Surface}"
-                                                               FontWeight="SemiBold"
-                                                               FontSize="12"
+                                                               Foreground="{Binding LabelBrush}"
+                                                               FontSize="{Binding LabelFontSize}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"
-                                                               Margin="6"/>
+                                                               Margin="6">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="FontWeight" Value="Normal"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding LabelIsBold}" Value="True">
+                                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
                                                 </Grid>
                                             </Border>
                                         </DataTemplate>

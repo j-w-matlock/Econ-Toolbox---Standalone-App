@@ -20,6 +20,9 @@ namespace EconToolbox.Desktop.Models
         private Brush _fill = new SolidColorBrush(Color.FromRgb(210, 230, 246));
         private Brush _stroke = new SolidColorBrush(Color.FromRgb(54, 95, 160));
         private double _strokeThickness = 2;
+        private Brush _labelBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+        private double _labelFontSize = 12;
+        private bool _labelIsBold = true;
         private string? _imagePath;
         private ConceptualNodeShape _shape = ConceptualNodeShape.Circle;
         private double _cornerRadius = 45;
@@ -143,6 +146,51 @@ namespace EconToolbox.Desktop.Models
                 }
 
                 _strokeThickness = Math.Max(1, value);
+                OnPropertyChanged();
+            }
+        }
+
+        public Brush LabelBrush
+        {
+            get => _labelBrush;
+            set
+            {
+                if (Equals(_labelBrush, value))
+                {
+                    return;
+                }
+
+                _labelBrush = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double LabelFontSize
+        {
+            get => _labelFontSize;
+            set
+            {
+                if (Math.Abs(_labelFontSize - value) < 0.01)
+                {
+                    return;
+                }
+
+                _labelFontSize = Math.Max(8, value);
+                OnPropertyChanged();
+            }
+        }
+
+        public bool LabelIsBold
+        {
+            get => _labelIsBold;
+            set
+            {
+                if (_labelIsBold == value)
+                {
+                    return;
+                }
+
+                _labelIsBold = value;
                 OnPropertyChanged();
             }
         }

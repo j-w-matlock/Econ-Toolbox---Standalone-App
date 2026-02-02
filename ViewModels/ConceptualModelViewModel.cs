@@ -40,7 +40,12 @@ namespace EconToolbox.Desktop.ViewModels
                 new("Soft Blue", new SolidColorBrush(Color.FromRgb(210, 230, 246))),
                 new("Olive", new SolidColorBrush(Color.FromRgb(182, 205, 125))),
                 new("Sand", new SolidColorBrush(Color.FromRgb(241, 228, 185))),
-                new("Slate", new SolidColorBrush(Color.FromRgb(204, 213, 219)))
+                new("Slate", new SolidColorBrush(Color.FromRgb(204, 213, 219))),
+                new("Electric Blue", new SolidColorBrush(Color.FromRgb(0, 120, 212))),
+                new("Vivid Orange", new SolidColorBrush(Color.FromRgb(247, 99, 12))),
+                new("Lime", new SolidColorBrush(Color.FromRgb(16, 204, 82))),
+                new("Magenta", new SolidColorBrush(Color.FromRgb(225, 0, 152))),
+                new("Bright Yellow", new SolidColorBrush(Color.FromRgb(255, 215, 0)))
             };
 
             NodeStrokeOptions = new ObservableCollection<StyleOption>
@@ -48,7 +53,12 @@ namespace EconToolbox.Desktop.ViewModels
                 new("Deep Blue", new SolidColorBrush(Color.FromRgb(54, 95, 160))),
                 new("Green", new SolidColorBrush(Color.FromRgb(67, 146, 100))),
                 new("Rust", new SolidColorBrush(Color.FromRgb(173, 93, 58))),
-                new("Charcoal", new SolidColorBrush(Color.FromRgb(70, 70, 70)))
+                new("Charcoal", new SolidColorBrush(Color.FromRgb(70, 70, 70))),
+                new("Electric Blue", new SolidColorBrush(Color.FromRgb(0, 120, 212))),
+                new("Vivid Orange", new SolidColorBrush(Color.FromRgb(247, 99, 12))),
+                new("Lime", new SolidColorBrush(Color.FromRgb(16, 204, 82))),
+                new("Magenta", new SolidColorBrush(Color.FromRgb(225, 0, 152))),
+                new("Bright Yellow", new SolidColorBrush(Color.FromRgb(255, 215, 0)))
             };
 
             LineStrokeOptions = new ObservableCollection<StyleOption>
@@ -56,7 +66,23 @@ namespace EconToolbox.Desktop.ViewModels
                 new("Emerald", new SolidColorBrush(Color.FromRgb(54, 142, 92))),
                 new("Cobalt", new SolidColorBrush(Color.FromRgb(74, 115, 170))),
                 new("Amber", new SolidColorBrush(Color.FromRgb(186, 142, 45))),
-                new("Slate", new SolidColorBrush(Color.FromRgb(90, 96, 108)))
+                new("Slate", new SolidColorBrush(Color.FromRgb(90, 96, 108))),
+                new("Electric Blue", new SolidColorBrush(Color.FromRgb(0, 120, 212))),
+                new("Vivid Orange", new SolidColorBrush(Color.FromRgb(247, 99, 12))),
+                new("Lime", new SolidColorBrush(Color.FromRgb(16, 204, 82))),
+                new("Magenta", new SolidColorBrush(Color.FromRgb(225, 0, 152))),
+                new("Bright Yellow", new SolidColorBrush(Color.FromRgb(255, 215, 0)))
+            };
+
+            LabelColorOptions = new ObservableCollection<StyleOption>
+            {
+                new("White", new SolidColorBrush(Color.FromRgb(255, 255, 255))),
+                new("Charcoal", new SolidColorBrush(Color.FromRgb(33, 33, 33))),
+                new("Electric Blue", new SolidColorBrush(Color.FromRgb(0, 120, 212))),
+                new("Vivid Orange", new SolidColorBrush(Color.FromRgb(247, 99, 12))),
+                new("Lime", new SolidColorBrush(Color.FromRgb(16, 204, 82))),
+                new("Magenta", new SolidColorBrush(Color.FromRgb(225, 0, 152))),
+                new("Bright Yellow", new SolidColorBrush(Color.FromRgb(255, 215, 0)))
             };
 
             LineStyleOptions = new ObservableCollection<LineStyleOption>
@@ -86,6 +112,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<StyleOption> NodeStrokeOptions { get; }
         public ObservableCollection<StyleOption> LineStrokeOptions { get; }
         public ObservableCollection<LineStyleOption> LineStyleOptions { get; }
+        public ObservableCollection<StyleOption> LabelColorOptions { get; }
 
         public ConceptualNode? SelectedNode
         {
