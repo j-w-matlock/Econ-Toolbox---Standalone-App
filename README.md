@@ -111,10 +111,11 @@ Selecting **Export** creates a single workbook with:
 
 Create a self-contained `.exe` to distribute without requiring a local .NET install:
 
-```bash
-dotnet publish -c Release -r win-x64 --self-contained true \
-    /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true
-```
+dotnet publish .\EconToolbox.Desktop.csproj -c Release -r win-x64 `
+  -p:SelfContained=true `
+  -p:UseAppHost=true `
+  -p:PublishSingleFile=true
+
 
 The packaged executable is emitted to `bin/Release/net8.0-windows/win-x64/publish/EconToolbox.Desktop.exe`.
 
