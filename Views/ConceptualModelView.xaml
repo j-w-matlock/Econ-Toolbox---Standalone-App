@@ -356,8 +356,19 @@
                                                 <Grid>
                                                     <Image Source="{Binding ImagePath}"
                                                            Stretch="UniformToFill"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
                                                            Opacity="0.9"
-                                                           Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                           Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                        <Image.Clip>
+                                                            <MultiBinding Converter="{StaticResource ConceptualNodeClipConverter}">
+                                                                <Binding Path="Width"/>
+                                                                <Binding Path="Height"/>
+                                                                <Binding Path="Shape"/>
+                                                                <Binding Path="CornerRadius"/>
+                                                            </MultiBinding>
+                                                        </Image.Clip>
+                                                    </Image>
                                                     <Border Background="#66000000"
                                                             Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                                     <TextBlock Text="{Binding Name}"
