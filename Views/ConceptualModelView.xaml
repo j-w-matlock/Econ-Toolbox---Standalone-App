@@ -297,12 +297,24 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate DataType="{x:Type models:ConceptualLink}">
                                             <Polyline Points="{Binding Points}"
-                                                      Stroke="{Binding Stroke}"
-                                                      StrokeThickness="{Binding StrokeThickness}"
-                                                      StrokeDashArray="{Binding DashArray}"
-                                                      StrokeStartLineCap="Round"
-                                                      StrokeEndLineCap="Round"
-                                                      MouseRightButtonDown="OnLinkRightButtonDown"/>
+                                                      MouseLeftButtonDown="OnLinkMouseLeftButtonDown"
+                                                      MouseRightButtonDown="OnLinkRightButtonDown">
+                                                <Polyline.Style>
+                                                    <Style TargetType="Polyline">
+                                                        <Setter Property="Stroke" Value="{Binding Stroke}"/>
+                                                        <Setter Property="StrokeThickness" Value="{Binding StrokeThickness}"/>
+                                                        <Setter Property="StrokeDashArray" Value="{Binding DashArray}"/>
+                                                        <Setter Property="StrokeStartLineCap" Value="Round"/>
+                                                        <Setter Property="StrokeEndLineCap" Value="Round"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                <Setter Property="Stroke" Value="{StaticResource Color.PrimaryBrush}"/>
+                                                                <Setter Property="StrokeThickness" Value="4"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Polyline.Style>
+                                            </Polyline>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
@@ -323,14 +335,24 @@
                                             <Border Width="{Binding Width}"
                                                     Height="{Binding Height}"
                                                     Background="{Binding Fill}"
-                                                    BorderBrush="{Binding Stroke}"
-                                                    BorderThickness="{Binding StrokeThickness}"
                                                     CornerRadius="{Binding CornerRadius}"
                                                     ClipToBounds="True"
                                                     Cursor="Hand"
                                                     MouseLeftButtonDown="OnNodeMouseLeftButtonDown"
                                                     MouseLeftButtonUp="OnNodeMouseLeftButtonUp"
                                                     MouseMove="OnNodeMouseMove">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="BorderBrush" Value="{Binding Stroke}"/>
+                                                        <Setter Property="BorderThickness" Value="{Binding StrokeThickness}"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                                <Setter Property="BorderBrush" Value="{StaticResource Color.PrimaryBrush}"/>
+                                                                <Setter Property="BorderThickness" Value="4"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
                                                 <Grid>
                                                     <Image Source="{Binding ImagePath}"
                                                            Stretch="UniformToFill"

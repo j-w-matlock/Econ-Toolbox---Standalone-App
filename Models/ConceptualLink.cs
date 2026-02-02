@@ -16,6 +16,7 @@ namespace EconToolbox.Desktop.Models
         private PointCollection _points = new();
         private string _label = string.Empty;
         private bool _isUpdatingPoints;
+        private bool _isSelected;
 
         public ConceptualLink(ConceptualNode? startNode, ConceptualNode? endNode)
         {
@@ -151,6 +152,21 @@ namespace EconToolbox.Desktop.Models
                 }
 
                 _label = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected == value)
+                {
+                    return;
+                }
+
+                _isSelected = value;
                 OnPropertyChanged();
             }
         }

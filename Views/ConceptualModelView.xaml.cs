@@ -86,5 +86,20 @@ namespace EconToolbox.Desktop.Views
             viewModel.AddVertexAt(link, position);
             e.Handled = true;
         }
+
+        private void OnLinkMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not FrameworkElement element || element.DataContext is not ConceptualLink link)
+            {
+                return;
+            }
+
+            if (DataContext is ConceptualModelViewModel viewModel)
+            {
+                viewModel.SelectedLink = link;
+            }
+
+            e.Handled = true;
+        }
     }
 }

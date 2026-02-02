@@ -97,7 +97,19 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
+                if (_selectedNode != null)
+                {
+                    _selectedNode.IsSelected = false;
+                }
+
                 _selectedNode = value;
+                if (_selectedNode != null)
+                {
+                    _selectedNode.IsSelected = true;
+                    SelectedLink = null;
+                    SelectedVertex = null;
+                }
+
                 OnPropertyChanged();
                 _removeNodeCommand.NotifyCanExecuteChanged();
                 _attachImageCommand.NotifyCanExecuteChanged();
@@ -115,7 +127,18 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
+                if (_selectedLink != null)
+                {
+                    _selectedLink.IsSelected = false;
+                }
+
                 _selectedLink = value;
+                if (_selectedLink != null)
+                {
+                    _selectedLink.IsSelected = true;
+                    SelectedNode = null;
+                }
+
                 OnPropertyChanged();
                 SelectedVertex = null;
                 _removeLinkCommand.NotifyCanExecuteChanged();
