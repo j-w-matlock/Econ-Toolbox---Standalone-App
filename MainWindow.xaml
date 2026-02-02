@@ -318,12 +318,6 @@
                                    Style="{StaticResource Text.PaneCaption}"
                                    Margin="{StaticResource Margin.BottomSmall}"/>
                     </StackPanel>
-                    <Expander DockPanel.Dock="Top"
-                              Header="Project Manager"
-                              IsExpanded="True"
-                              Margin="{StaticResource Margin.BottomMedium}">
-                        <local:ProjectView DataContext="{Binding ProjectManager}"/>
-                    </Expander>
                     <TextBlock DockPanel.Dock="Top"
                                Text="Modules"
                                Style="{StaticResource Text.PaneTitle}"
@@ -477,7 +471,17 @@
             <Border Grid.Column="4"
                     Style="{StaticResource Border.EditorPane}">
                 <Grid Margin="{StaticResource Padding.Medium}">
-                    <ContentControl Content="{Binding CurrentViewModel}"
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Expander Header="Project Manager"
+                              IsExpanded="True"
+                              Margin="{StaticResource Margin.BottomMedium}">
+                        <local:ProjectView DataContext="{Binding ProjectManager}"/>
+                    </Expander>
+                    <ContentControl Grid.Row="1"
+                                    Content="{Binding CurrentViewModel}"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     TextElement.FontSize="12"/>
@@ -505,6 +509,7 @@
                             Maximum="200"
                             TickFrequency="10"
                             IsSnapToTickEnabled="True"
+                            Style="{StaticResource Slider.Standard}"
                             Value="{Binding ZoomPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
             </StatusBarItem>
