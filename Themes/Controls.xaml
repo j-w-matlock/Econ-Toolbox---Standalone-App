@@ -1093,6 +1093,12 @@
         <Setter Property="Height" Value="1"/>
     </Style>
 
+    <Style x:Key="Separator.Subtle"
+           TargetType="Separator"
+           BasedOn="{StaticResource {x:Type Separator}}">
+        <Setter Property="Opacity" Value="0.6"/>
+    </Style>
+
     <Style TargetType="GroupBox">
         <Setter Property="Background" Value="{StaticResource Color.CardBackgroundBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource Color.TextPrimaryBrush}"/>
