@@ -15,6 +15,7 @@ namespace EconToolbox.Desktop.Models
         private DoubleCollection _dashArray = new();
         private PointCollection _points = new();
         private string _label = string.Empty;
+        private bool _isUpdatingPoints;
 
         public ConceptualLink(ConceptualNode? startNode, ConceptualNode? endNode)
         {
@@ -199,28 +200,72 @@ namespace EconToolbox.Desktop.Models
 
         public void UpdatePoints()
         {
-            var points = new PointCollection();
-            if (StartNode != null)
+            if (_isUpdatingPoints)
             {
-                points.Add(GetCenter(StartNode));
+                return;
             }
 
-            foreach (var vertex in Vertices)
+            _isUpdatingPoints = true;
+            try
             {
-                points.Add(new Point(vertex.X, vertex.Y));
-            }
+                var points = new PointCollection();
+                if (StartNode != null)
+                {
+                    points.Add(GetCenter(StartNode));
+                }
 
-            if (EndNode != null)
+                foreach (var vertex in Vertices)
+                {
+                    points.Add(new Point(vertex.X, vertex.Y));
+                }
+
+                if (EndNode != null)
+                {
+                    points.Add(GetCenter(EndNode));
+                }
+
+                if (!ArePointsEqual(_points, points))
+                {
+                    Points = points;
+                }
+            }
+            finally
             {
-                points.Add(GetCenter(EndNode));
+                _isUpdatingPoints = false;
             }
-
-            Points = points;
         }
 
         private static Point GetCenter(ConceptualNode node)
         {
             return new Point(node.X + node.Width / 2, node.Y + node.Height / 2);
+        }
+
+        private static bool ArePointsEqual(PointCollection? left, PointCollection? right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return true;
+            }
+
+            if (left == null || right == null)
+            {
+                return false;
+            }
+
+            if (left.Count != right.Count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < left.Count; i++)
+            {
+                if (!left[i].Equals(right[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
