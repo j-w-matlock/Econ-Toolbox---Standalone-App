@@ -17,5 +17,6 @@
     <converters:CharCountToWidthConverter x:Key="CharCountToWidthConverter"/>
     <converters:PercentToScaleConverter x:Key="PercentToScaleConverter"/>
     <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
+    <converters:ConceptualNodeClipConverter x:Key="ConceptualNodeClipConverter"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 </ResourceDictionary>
