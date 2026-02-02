@@ -108,6 +108,13 @@
         <Setter Property="FontSize" Value="12"/>
     </Style>
 
+    <Style x:Key="Slider.Standard" TargetType="Slider">
+        <Setter Property="MinWidth" Value="160"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="IsMoveToPointEnabled" Value="True"/>
+    </Style>
+
     <!-- Validation -->
     <ControlTemplate x:Key="Validation.ErrorTemplate">
         <StackPanel>

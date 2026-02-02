@@ -1,142 +1,180 @@
 <UserControl x:Class="EconToolbox.Desktop.Views.ProjectView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="{StaticResource BackgroundBrush}"
+             Background="{DynamicResource App.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
-    <ScrollViewer Padding="{StaticResource PaddingLarge}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="220"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="3*"/>
-            </Grid.ColumnDefinitions>
-
-            <GroupBox Header="Controls"
-                      Grid.Column="0"
-                      Margin="{StaticResource MarginSmall}">
+    <ScrollViewer Style="{StaticResource ScrollViewer.Page}">
+        <StackPanel Style="{StaticResource Layout.ContentStack}">
+            <Border Style="{StaticResource Border.Explainer}">
                 <StackPanel>
-                    <Button Content="Add Task"
-                            Command="{Binding AddTaskCommand}"
-                            Style="{StaticResource PrimaryButtonStyle}"
-                            Margin="{StaticResource MarginSmall}"/>
-                    <Button Content="Recalculate Priorities"
-                            Command="{Binding RecalculatePrioritiesCommand}"
-                            Style="{StaticResource OutlineButtonStyle}"/>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="Project Manager"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
+                        Capture tasks, score priorities, and recalculate the ranking as project conditions change. Adjust the weight sliders to emphasize urgency, importance, or complexity.
+                    </TextBlock>
                 </StackPanel>
-            </GroupBox>
+            </Border>
 
-            <GroupBox Header="Input"
-                      Grid.Column="1"
-                      Margin="{StaticResource MarginSmall}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+            <Grid Style="{StaticResource Layout.ContentGrid}"
+                  Margin="{StaticResource Margin.BottomMedium}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Row="0"
-                                Margin="{StaticResource MarginSmall}">
-                        <TextBlock Text="Task Details"
-                                   Style="{StaticResource BodyStrongTextStyle}"
-                                   Margin="{StaticResource MarginSmall}"/>
-                        <Grid Grid.IsSharedSizeScope="True">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="ProjectInputLabels"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Task Name" VerticalAlignment="Center" Margin="{StaticResource MarginSmall}"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewTaskName, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource MarginSmall}"/>
-
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Urgency" VerticalAlignment="Center" Margin="{StaticResource MarginSmall}"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewTaskUrgency, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource MarginSmall}"/>
-
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Importance" VerticalAlignment="Center" Margin="{StaticResource MarginSmall}"/>
-                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewTaskImportance, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource MarginSmall}"/>
-
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Complexity" VerticalAlignment="Center" Margin="{StaticResource MarginSmall}"/>
-                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NewTaskComplexity, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource MarginSmall}"/>
-                        </Grid>
+                <Border Grid.Column="0"
+                        Style="{StaticResource Border.Card}"
+                        Margin="{StaticResource Margin.RightMedium}">
+                    <StackPanel>
+                        <TextBlock Text="Controls"
+                                   Style="{StaticResource Text.SectionHeader}"
+                                   Margin="{StaticResource Margin.BottomSmall}"/>
+                        <Button Content="Add Task"
+                                Command="{Binding AddTaskCommand}"
+                                Style="{StaticResource Button.Action}"
+                                Margin="{StaticResource Margin.BottomSmall}"/>
+                        <Button Content="Recalculate Priorities"
+                                Command="{Binding RecalculatePrioritiesCommand}"
+                                Style="{StaticResource Button.ActionSecondaryCompact}"/>
                     </StackPanel>
+                </Border>
 
-                    <StackPanel Grid.Row="1"
-                                Margin="{StaticResource MarginSmall}">
-                        <TextBlock Text="Priority Weights"
-                                   Style="{StaticResource BodyStrongTextStyle}"
-                                   Margin="{StaticResource MarginSmall}"/>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="160"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="60"/>
-                            </Grid.ColumnDefinitions>
+                <Border Grid.Column="1"
+                        Style="{StaticResource Border.Card}"
+                        Margin="{StaticResource Margin.RightMedium}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Urgency Weight" VerticalAlignment="Center" Margin="{StaticResource MarginSmall}"/>
-                            <Slider Grid.Row="0" Grid.Column="1"
-                                    Minimum="0.1"
-                                    Maximum="5.0"
-                                    Value="{Binding Weights.UrgencyWeight, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="{StaticResource MarginSmall}"/>
-                            <TextBlock Grid.Row="0" Grid.Column="2"
-                                       Text="{Binding Weights.UrgencyWeight, StringFormat=F2}"
-                                       VerticalAlignment="Center"
-                                       Margin="{StaticResource MarginSmall}"/>
+                        <StackPanel Grid.Row="0"
+                                    Margin="{StaticResource Margin.BottomMedium}">
+                            <TextBlock Text="Task Details"
+                                       Style="{StaticResource Text.SectionHeader}"
+                                       Margin="{StaticResource Margin.BottomSmall}"/>
+                            <Grid Grid.IsSharedSizeScope="True">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ProjectInputLabels"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Importance Weight" VerticalAlignment="Center" Margin="{StaticResource MarginSmall}"/>
-                            <Slider Grid.Row="1" Grid.Column="1"
-                                    Minimum="0.1"
-                                    Maximum="5.0"
-                                    Value="{Binding Weights.ImportanceWeight, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="{StaticResource MarginSmall}"/>
-                            <TextBlock Grid.Row="1" Grid.Column="2"
-                                       Text="{Binding Weights.ImportanceWeight, StringFormat=F2}"
-                                       VerticalAlignment="Center"
-                                       Margin="{StaticResource MarginSmall}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Task Name" VerticalAlignment="Center" Margin="{StaticResource Margin.RightMedium}"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewTaskName, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource Margin.BottomSmall}"/>
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Complexity Weight" VerticalAlignment="Center" Margin="{StaticResource MarginSmall}"/>
-                            <Slider Grid.Row="2" Grid.Column="1"
-                                    Minimum="0.1"
-                                    Maximum="5.0"
-                                    Value="{Binding Weights.ComplexityWeight, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="{StaticResource MarginSmall}"/>
-                            <TextBlock Grid.Row="2" Grid.Column="2"
-                                       Text="{Binding Weights.ComplexityWeight, StringFormat=F2}"
-                                       VerticalAlignment="Center"
-                                       Margin="{StaticResource MarginSmall}"/>
-                        </Grid>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Urgency" VerticalAlignment="Center" Margin="{StaticResource Margin.RightMedium}"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewTaskUrgency, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource Margin.BottomSmall}"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Importance" VerticalAlignment="Center" Margin="{StaticResource Margin.RightMedium}"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewTaskImportance, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource Margin.BottomSmall}"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Complexity" VerticalAlignment="Center" Margin="{StaticResource Margin.RightMedium}"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NewTaskComplexity, UpdateSourceTrigger=PropertyChanged}"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1">
+                            <TextBlock Text="Priority Weights"
+                                       Style="{StaticResource Text.SectionHeader}"
+                                       Margin="{StaticResource Margin.BottomSmall}"/>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Urgency Weight" VerticalAlignment="Center" Margin="{StaticResource Margin.RightMedium}"/>
+                                <Slider Grid.Row="0" Grid.Column="1"
+                                        Minimum="0.1"
+                                        Maximum="5.0"
+                                        TickFrequency="0.1"
+                                        IsSnapToTickEnabled="True"
+                                        Style="{StaticResource Slider.Standard}"
+                                        Value="{Binding Weights.UrgencyWeight, UpdateSourceTrigger=PropertyChanged}"
+                                        Margin="{StaticResource Margin.BottomSmall}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="2"
+                                           Text="{Binding Weights.UrgencyWeight, StringFormat=F2}"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Importance Weight" VerticalAlignment="Center" Margin="{StaticResource Margin.RightMedium}"/>
+                                <Slider Grid.Row="1" Grid.Column="1"
+                                        Minimum="0.1"
+                                        Maximum="5.0"
+                                        TickFrequency="0.1"
+                                        IsSnapToTickEnabled="True"
+                                        Style="{StaticResource Slider.Standard}"
+                                        Value="{Binding Weights.ImportanceWeight, UpdateSourceTrigger=PropertyChanged}"
+                                        Margin="{StaticResource Margin.BottomSmall}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="2"
+                                           Text="{Binding Weights.ImportanceWeight, StringFormat=F2}"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Complexity Weight" VerticalAlignment="Center" Margin="{StaticResource Margin.RightMedium}"/>
+                                <Slider Grid.Row="2" Grid.Column="1"
+                                        Minimum="0.1"
+                                        Maximum="5.0"
+                                        TickFrequency="0.1"
+                                        IsSnapToTickEnabled="True"
+                                        Style="{StaticResource Slider.Standard}"
+                                        Value="{Binding Weights.ComplexityWeight, UpdateSourceTrigger=PropertyChanged}"
+                                        Margin="{StaticResource Margin.BottomSmall}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="2"
+                                           Text="{Binding Weights.ComplexityWeight, StringFormat=F2}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2"
+                        Style="{StaticResource Border.Card}">
+                    <StackPanel>
+                        <TextBlock Text="Output"
+                                   Style="{StaticResource Text.SectionHeader}"
+                                   Margin="{StaticResource Margin.BottomSmall}"/>
+                        <DataGrid ItemsSource="{Binding Tasks}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column"
+                                  ColumnWidth="*"
+                                  Margin="{StaticResource Margin.None}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Task" Binding="{Binding TaskName}"/>
+                                <DataGridTextColumn Header="Urgency" Binding="{Binding Urgency}"/>
+                                <DataGridTextColumn Header="Importance" Binding="{Binding Importance}"/>
+                                <DataGridTextColumn Header="Complexity" Binding="{Binding Complexity}"/>
+                                <DataGridTextColumn Header="Priority Score" Binding="{Binding PriorityScore, StringFormat=F2}" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </StackPanel>
-                </Grid>
-            </GroupBox>
-
-            <GroupBox Header="Output"
-                      Grid.Column="2"
-                      Margin="{StaticResource MarginSmall}">
-                <DataGrid ItemsSource="{Binding Tasks}"
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          HeadersVisibility="Column"
-                          ColumnWidth="*">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Task" Binding="{Binding TaskName}"/>
-                        <DataGridTextColumn Header="Urgency" Binding="{Binding Urgency}"/>
-                        <DataGridTextColumn Header="Importance" Binding="{Binding Importance}"/>
-                        <DataGridTextColumn Header="Complexity" Binding="{Binding Complexity}"/>
-                        <DataGridTextColumn Header="Priority Score" Binding="{Binding PriorityScore, StringFormat=F2}" IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </GroupBox>
-        </Grid>
+                </Border>
+            </Grid>
+        </StackPanel>
     </ScrollViewer>
 </UserControl>
