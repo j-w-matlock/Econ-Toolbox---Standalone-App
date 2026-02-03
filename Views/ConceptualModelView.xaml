@@ -153,8 +153,7 @@
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Label size" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelSizeOptions}"
-                                              SelectedValuePath="."
-                                              SelectedValue="{Binding SelectedNode.LabelFontSize, Mode=TwoWay}"
+                                              SelectedItem="{Binding SelectedNode.LabelFontSize, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
                                 <StackPanel Margin="0,0,0,8">
@@ -264,8 +263,7 @@
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Label size" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelSizeOptions}"
-                                              SelectedValuePath="."
-                                              SelectedValue="{Binding SelectedLink.LabelFontSize, Mode=TwoWay}"
+                                              SelectedItem="{Binding SelectedLink.LabelFontSize, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
                                 <StackPanel Margin="0,0,0,8">
