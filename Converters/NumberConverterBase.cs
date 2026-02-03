@@ -114,10 +114,27 @@ public abstract class NumberConverterBase : IValueConverter
     {
         if (value is string stringValue)
         {
-            return double.TryParse(stringValue, ParsingStyles, culture, out result);
+            if (double.TryParse(stringValue, ParsingStyles, culture, out result))
+            {
+                return true;
+            }
+
+            if (!Equals(culture, CultureInfo.InvariantCulture)
+                && double.TryParse(stringValue, ParsingStyles, CultureInfo.InvariantCulture, out result))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         var stringified = System.Convert.ToString(value, culture);
-        return double.TryParse(stringified, ParsingStyles, culture, out result);
+        if (double.TryParse(stringified, ParsingStyles, culture, out result))
+        {
+            return true;
+        }
+
+        return !Equals(culture, CultureInfo.InvariantCulture)
+            && double.TryParse(stringified, ParsingStyles, CultureInfo.InvariantCulture, out result);
     }
 }
