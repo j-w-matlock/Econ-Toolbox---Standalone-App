@@ -429,7 +429,9 @@
                                                                  Fill="{DynamicResource App.Surface}"
                                                                  StrokeThickness="2"
                                                                  Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                                 MouseLeftButtonDown="OnVertexMouseLeftButtonDown">
+                                                                 MouseLeftButtonDown="OnVertexMouseLeftButtonDown"
+                                                                 MouseLeftButtonUp="OnVertexMouseLeftButtonUp"
+                                                                 MouseMove="OnVertexMouseMove">
                                                             <Ellipse.Style>
                                                                 <Style TargetType="Ellipse">
                                                                     <Setter Property="Stroke" Value="{StaticResource Color.PrimaryBrush}"/>

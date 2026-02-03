@@ -12,6 +12,10 @@ namespace EconToolbox.Desktop.Views
         private Point _dragStart;
         private Point _nodeStart;
         private ConceptualNode? _dragNode;
+        private bool _isVertexDragging;
+        private Point _vertexDragStart;
+        private Point _vertexStart;
+        private ConceptualVertex? _dragVertex;
 
         public ConceptualModelView()
         {
@@ -120,6 +124,42 @@ namespace EconToolbox.Desktop.Views
             }
 
             viewModel.SelectedVertex = vertex;
+            _dragVertex = vertex;
+            _vertexDragStart = e.GetPosition(ConceptualCanvas);
+            _vertexStart = new Point(vertex.X, vertex.Y);
+            _isVertexDragging = true;
+            element.CaptureMouse();
+            e.Handled = true;
+        }
+
+        private void OnVertexMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isVertexDragging || _dragVertex == null)
+            {
+                return;
+            }
+
+            var currentPosition = e.GetPosition(ConceptualCanvas);
+            var delta = currentPosition - _vertexDragStart;
+            _dragVertex.X = _vertexStart.X + delta.X;
+            _dragVertex.Y = _vertexStart.Y + delta.Y;
+            e.Handled = true;
+        }
+
+        private void OnVertexMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isVertexDragging)
+            {
+                return;
+            }
+
+            if (sender is UIElement element)
+            {
+                element.ReleaseMouseCapture();
+            }
+
+            _isVertexDragging = false;
+            _dragVertex = null;
             e.Handled = true;
         }
     }
