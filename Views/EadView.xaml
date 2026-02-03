@@ -68,9 +68,9 @@
                               Visibility="{Binding CalculateEqad, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="180"/>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
                                        Text="Analysis Period (Years)"
