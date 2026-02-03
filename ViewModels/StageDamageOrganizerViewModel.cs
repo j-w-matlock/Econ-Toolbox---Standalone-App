@@ -20,6 +20,7 @@ namespace EconToolbox.Desktop.ViewModels
         private readonly ObservableCollection<StageDamageRecord> _records = new();
         private readonly ObservableCollection<string> _aepHeaders = new();
         private List<AepColumn> _aepColumns = new();
+        private List<AepColumn> _depthAboveFirstFloorColumns = new();
         private string _statusMessage = "Load one or more Stage Damage Functions_StructureStageDamageDetails.csv files to summarize damages by category.";
         private bool _isBusy;
 
@@ -113,6 +114,7 @@ namespace EconToolbox.Desktop.ViewModels
             AepHeaders.Clear();
             Summaries.Clear();
             _aepColumns.Clear();
+            _depthAboveFirstFloorColumns.Clear();
             StatusMessage = "Cleared results. Load new CSV files to regenerate summaries.";
             RefreshDiagnostics();
         }
@@ -139,6 +141,11 @@ namespace EconToolbox.Desktop.ViewModels
                     SummaryName = record.SummaryName,
                     SourceKey = record.SourceKey,
                     AepDamages = record.AepDamages.Select(aep => new StageDamageAepValueData
+                    {
+                        Label = aep.Label,
+                        Value = aep.Value
+                    }).ToList(),
+                    DepthAboveFirstFloorByAep = record.DepthAboveFirstFloorByAep.Select(aep => new StageDamageAepValueData
                     {
                         Label = aep.Label,
                         Value = aep.Value
@@ -186,7 +193,10 @@ namespace EconToolbox.Desktop.ViewModels
                     OccTypeName = recordData.OccTypeName,
                     SummaryName = recordData.SummaryName,
                     SourceKey = recordData.SourceKey,
-                    AepDamages = recordData.AepDamages.Select(aep => new StageDamageAepValue(aep.Label, aep.Value)).ToList()
+                    AepDamages = recordData.AepDamages.Select(aep => new StageDamageAepValue(aep.Label, aep.Value)).ToList(),
+                    DepthAboveFirstFloorByAep = (recordData.DepthAboveFirstFloorByAep ?? new List<StageDamageAepValueData>())
+                        .Select(aep => new StageDamageAepValue(aep.Label, aep.Value))
+                        .ToList()
                 });
             }
 
@@ -350,7 +360,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             writer.WriteLine();
             writer.WriteLine("Top structures by frequent AEP structure damage");
-            writer.WriteLine("Summary Name,Structure FID,Damage Category,Impact Area,Description,Highest AEP,Structure Damage");
+            writer.WriteLine("Summary Name,Structure FID,Damage Category,Impact Area,Description,Highest AEP,Depth Above First Floor,Structure Damage");
             foreach (var highlight in Highlights)
             {
                 writer.WriteLine(string.Join(",", new[]
@@ -361,6 +371,7 @@ namespace EconToolbox.Desktop.ViewModels
                     Escape(highlight.ImpactArea),
                     Escape(highlight.Description),
                     Escape(highlight.HighestAepLabel),
+                    highlight.DepthAboveFirstFloorAtHighestAep.ToString("0.##", CultureInfo.InvariantCulture),
                     highlight.HighestStructureDamage.ToString("0.##", CultureInfo.InvariantCulture)
                 }));
             }
@@ -438,6 +449,7 @@ namespace EconToolbox.Desktop.ViewModels
                         Description = r.Description,
                         ImpactArea = r.ImpactArea,
                         HighestAepLabel = r.FrequentPeakAepLabel,
+                        DepthAboveFirstFloorAtHighestAep = r.FrequentPeakDepthAboveFirstFloor,
                         HighestStructureDamage = r.FrequentPeakDamage
                     });
 
@@ -485,6 +497,7 @@ namespace EconToolbox.Desktop.ViewModels
             var results = new List<StageDamageRecord>();
             var summaries = new List<StageDamageSummaryInfo>();
             _aepColumns = new List<AepColumn>();
+            _depthAboveFirstFloorColumns = new List<AepColumn>();
             foreach (var path in filePaths)
             {
                 if (!File.Exists(path))
@@ -510,12 +523,14 @@ namespace EconToolbox.Desktop.ViewModels
 
                 var headerMap = BuildHeaderMap(header!);
                 var aepColumns = FindAepColumns(header!);
+                var depthColumns = FindDepthAboveFirstFloorColumns(header!);
                 if (aepColumns.Count == 0)
                 {
                     continue;
                 }
 
                 MergeAepColumns(aepColumns, results);
+                MergeDepthAboveFirstFloorColumns(depthColumns, results);
 
                 while (!parser.EndOfData)
                 {
@@ -525,7 +540,7 @@ namespace EconToolbox.Desktop.ViewModels
                         continue;
                     }
 
-                    var record = ParseRow(row, headerMap, _aepColumns, summaryInfo.Name, summaryInfo.SourceKey);
+                    var record = ParseRow(row, headerMap, _aepColumns, _depthAboveFirstFloorColumns, summaryInfo.Name, summaryInfo.SourceKey);
                     if (record != null)
                     {
                         results.Add(record);
@@ -568,7 +583,30 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private static StageDamageRecord? ParseRow(string[] row, IReadOnlyDictionary<string, int> map, IReadOnlyList<AepColumn> aepColumns, string summaryName, string sourceKey)
+        private void MergeDepthAboveFirstFloorColumns(IEnumerable<AepColumn> discoveredColumns, List<StageDamageRecord> existingRecords)
+        {
+            foreach (var column in discoveredColumns)
+            {
+                if (_depthAboveFirstFloorColumns.Any(c => c.NormalizedKey.Equals(column.NormalizedKey, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                _depthAboveFirstFloorColumns.Add(column);
+                foreach (var record in existingRecords)
+                {
+                    record.DepthAboveFirstFloorByAep.Add(new StageDamageAepValue(column.Label, 0d));
+                }
+            }
+        }
+
+        private static StageDamageRecord? ParseRow(
+            string[] row,
+            IReadOnlyDictionary<string, int> map,
+            IReadOnlyList<AepColumn> aepColumns,
+            IReadOnlyList<AepColumn> depthAboveFirstFloorColumns,
+            string summaryName,
+            string sourceKey)
         {
             string structureFid = ReadString(row, map, "structurefid", "structureid");
             string damageCategory = ReadString(row, map, "damagecatagory", "damagecategory");
@@ -582,6 +620,10 @@ namespace EconToolbox.Desktop.ViewModels
                 .Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey)))
                 .ToList();
 
+            var depthValues = depthAboveFirstFloorColumns
+                .Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey)))
+                .ToList();
+
             return new StageDamageRecord
             {
                 StructureFid = string.IsNullOrWhiteSpace(structureFid) ? "Unknown" : structureFid.Trim(),
@@ -590,6 +632,7 @@ namespace EconToolbox.Desktop.ViewModels
                 ImpactArea = ReadString(row, map, "impactarearownumberinimpactareaset", "impactarea"),
                 OccTypeName = ReadString(row, map, "occtypename", "occupancytype"),
                 AepDamages = aepValues,
+                DepthAboveFirstFloorByAep = depthValues,
                 SummaryName = summaryName,
                 SourceKey = sourceKey
             };
@@ -639,6 +682,36 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 var normalized = NormalizeHeader(column);
                 if (!normalized.Contains("structuredamage") || !normalized.Contains("aep"))
+                {
+                    continue;
+                }
+
+                if (columns.Any(c => c.NormalizedKey.Equals(normalized, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                var label = ExtractAepLabel(column);
+                columns.Add(new AepColumn(normalized, label));
+            }
+
+            return columns;
+        }
+
+        private static List<AepColumn> FindDepthAboveFirstFloorColumns(string[] header)
+        {
+            var columns = new List<AepColumn>();
+            foreach (var column in header)
+            {
+                var normalized = NormalizeHeader(column);
+                if (!normalized.Contains("aep"))
+                {
+                    continue;
+                }
+
+                if (!normalized.Contains("depthabovefirstfloor")
+                    && !normalized.Contains("depthabove1stfloor")
+                    && !normalized.Contains("depthaboveff"))
                 {
                     continue;
                 }

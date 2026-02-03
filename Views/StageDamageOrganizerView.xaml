@@ -207,6 +207,9 @@
                                             <DataGridTextColumn Header="Highest AEP"
                                                                  Binding="{Binding HighestAepLabel}"
                                                                  Width="SizeToHeader"/>
+                                            <DataGridTextColumn Header="Depth Above First Floor"
+                                                                 Binding="{Binding DepthAboveFirstFloorAtHighestAep, StringFormat=0.##}"
+                                                                 Width="SizeToHeader"/>
                                             <DataGridTextColumn Header="Structure Damage"
                                                                  Binding="{Binding HighestStructureDamage, StringFormat=C0}"
                                                                  Width="SizeToHeader"/>
