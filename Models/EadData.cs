@@ -7,7 +7,7 @@ namespace EconToolbox.Desktop.Models
         public bool UseStage { get; set; }
         public bool CalculateEqad { get; set; }
         public int AnalysisPeriod { get; set; }
-        public double FutureDamages { get; set; }
+        public double DiscountRate { get; set; }
         public string? ChartTitle { get; set; }
         public List<EadDamageColumnData> DamageColumns { get; set; } = new();
         public List<EadRowData> Rows { get; set; } = new();

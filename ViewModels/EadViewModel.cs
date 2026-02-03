@@ -31,7 +31,7 @@ namespace EconToolbox.Desktop.ViewModels
         private bool _useStage;
         private bool _calculateEqad;
         private int _analysisPeriod = 50;
-        private double _futureDamages;
+        private double _discountRate;
         private readonly DispatcherTimer _computeDebounceTimer;
         private bool _suppressAutoCompute;
         private bool _isComputing;
@@ -64,6 +64,7 @@ namespace EconToolbox.Desktop.ViewModels
 
                 _calculateEqad = value;
                 OnPropertyChanged();
+                UpdateColumnDefinitions();
                 Compute();
                 RefreshDiagnostics();
             }
@@ -86,17 +87,17 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public double FutureDamages
+        public double DiscountRate
         {
-            get => _futureDamages;
+            get => _discountRate;
             set
             {
-                if (Math.Abs(_futureDamages - value) < 0.0001)
+                if (Math.Abs(_discountRate - value) < 0.0001)
                 {
                     return;
                 }
 
-                _futureDamages = value;
+                _discountRate = value;
                 OnPropertyChanged();
                 ScheduleCompute();
                 RefreshDiagnostics();
@@ -341,7 +342,19 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
-                if (CalculateEqad && FutureDamages < 0)
+                if (CalculateEqad && DiscountRate < 0)
+                {
+                    Results = new ObservableCollection<EadResultRow>
+                    {
+                        new() { Label = "Status", Result = "Discount rate must be zero or greater for EqAD." }
+                    };
+                    LegendItems.Clear();
+                    ChartSeries = new ObservableCollection<ChartSeries>();
+                    ChartStatusMessage = "Enter a non-negative discount rate to compute EqAD.";
+                    return;
+                }
+
+                if (CalculateEqad && Rows.Any(r => r.FutureDamages < 0))
                 {
                     Results = new ObservableCollection<EadResultRow>
                     {
@@ -355,6 +368,12 @@ namespace EconToolbox.Desktop.ViewModels
 
                 var sortedRows = Rows.OrderByDescending(r => r.Probability).ToList();
                 var probabilities = sortedRows.Select(r => r.Probability).ToArray();
+                var futureDamages = CalculateEqad
+                    ? sortedRows.Select(r => r.FutureDamages).ToArray()
+                    : Array.Empty<double>();
+                double expectedFutureDamages = CalculateEqad
+                    ? EadModel.Compute(probabilities, futureDamages)
+                    : 0.0;
                 var results = new System.Collections.Generic.List<EadResultRow>();
                 for (int i = 0; i < DamageColumns.Count; i++)
                 {
@@ -363,7 +382,11 @@ namespace EconToolbox.Desktop.ViewModels
                     string eqadResult = string.Empty;
                     if (CalculateEqad)
                     {
-                        double eqad = EadModel.ComputeEquivalentAnnualDamage(ead, AnalysisPeriod, FutureDamages);
+                        double eqad = EadModel.ComputeEquivalentAnnualDamage(
+                            ead,
+                            expectedFutureDamages,
+                            AnalysisPeriod,
+                            DiscountRate / 100.0);
                         eqadResult = eqad.ToString("C2");
                     }
                     results.Add(new EadResultRow
@@ -476,7 +499,7 @@ namespace EconToolbox.Desktop.ViewModels
                         UseStage,
                         CalculateEqad,
                         AnalysisPeriod,
-                        FutureDamages,
+                        DiscountRate,
                         combined,
                         dlg.FileName));
                 }
@@ -520,6 +543,16 @@ namespace EconToolbox.Desktop.ViewModels
                     ToolTip = "Damage amount for this category at the selected probability. These values are integrated to compute expected annual damage."
                 });
             }
+
+            if (CalculateEqad)
+            {
+                ColumnDefinitions.Add(new DataGridColumnDescriptor(nameof(EadRow.FutureDamages))
+                {
+                    HeaderText = "Future Damages",
+                    MinWidth = 140,
+                    ToolTip = "Future damage values (present value) aligned to each probability for EqAD calculations."
+                });
+            }
         }
 
         private Brush GetSeriesBrush(int index)
@@ -552,7 +585,9 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void Row_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(EadRow.Probability) || e.PropertyName == nameof(EadRow.Stage))
+            if (e.PropertyName == nameof(EadRow.Probability)
+                || e.PropertyName == nameof(EadRow.Stage)
+                || e.PropertyName == nameof(EadRow.FutureDamages))
             {
                 MarkDirty();
                 ScheduleCompute();
@@ -590,7 +625,7 @@ namespace EconToolbox.Desktop.ViewModels
                 UseStage = UseStage,
                 CalculateEqad = CalculateEqad,
                 AnalysisPeriod = AnalysisPeriod,
-                FutureDamages = FutureDamages,
+                DiscountRate = DiscountRate,
                 ChartTitle = ChartTitle,
                 DamageColumns = DamageColumns.Select(column => new EadDamageColumnData
                 {
@@ -600,6 +635,7 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     Probability = row.Probability,
                     Stage = row.Stage,
+                    FutureDamages = row.FutureDamages,
                     Damages = row.Damages.ToList()
                 }).ToList()
             };
@@ -618,7 +654,7 @@ namespace EconToolbox.Desktop.ViewModels
                 UseStage = data.UseStage;
                 CalculateEqad = data.CalculateEqad;
                 AnalysisPeriod = data.AnalysisPeriod;
-                FutureDamages = data.FutureDamages;
+                DiscountRate = data.DiscountRate;
                 if (!string.IsNullOrWhiteSpace(data.ChartTitle))
                 {
                     ChartTitle = data.ChartTitle;
@@ -641,7 +677,8 @@ namespace EconToolbox.Desktop.ViewModels
                     var newRow = new EadRow
                     {
                         Probability = row.Probability,
-                        Stage = row.Stage
+                        Stage = row.Stage,
+                        FutureDamages = row.FutureDamages
                     };
 
                     for (int i = 0; i < DamageColumns.Count; i++)
@@ -727,7 +764,15 @@ namespace EconToolbox.Desktop.ViewModels
                     "Enter a positive analysis period to compute EqAD."));
             }
 
-            if (CalculateEqad && FutureDamages < 0)
+            if (CalculateEqad && DiscountRate < 0)
+            {
+                diagnostics.Add(new DiagnosticItem(
+                    DiagnosticLevel.Error,
+                    "Invalid discount rate",
+                    "Discount rate should be zero or greater when calculating EqAD."));
+            }
+
+            if (CalculateEqad && Rows.Any(r => r.FutureDamages < 0))
             {
                 diagnostics.Add(new DiagnosticItem(
                     DiagnosticLevel.Warning,
@@ -750,6 +795,7 @@ namespace EconToolbox.Desktop.ViewModels
         {
             private double _probability;
             private double? _stage;
+            private double _futureDamages;
 
             public double Probability
             {
@@ -761,6 +807,12 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 get => _stage;
                 set { _stage = value; OnPropertyChanged(); }
+            }
+
+            public double FutureDamages
+            {
+                get => _futureDamages;
+                set { _futureDamages = value; OnPropertyChanged(); }
             }
 
             public ObservableCollection<double> Damages { get; } = new();

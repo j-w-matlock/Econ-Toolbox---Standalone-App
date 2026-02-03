@@ -62,7 +62,7 @@
                             <CheckBox IsChecked="{Binding CalculateEqad}"
                                       VerticalAlignment="Center"
                                       Content="Calculate EqAD"
-                                      ToolTip="Enable equivalent expected annual damage (EqAD) using an analysis period and future damages per USACE guidance."/>
+                                      ToolTip="Enable equivalent expected annual damage (EqAD) using the analysis period, discount rate, and future damages column per USACE guidance."/>
                         </StackPanel>
                         <Grid Margin="0,12,0,0"
                               Visibility="{Binding CalculateEqad, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -82,14 +82,14 @@
                                      Style="{StaticResource Form.TextBoxWide}"
                                      ToolTip="Number of years used to annualize future damages when calculating EqAD."/>
                             <TextBlock Grid.Column="2"
-                                       Text="Future Damages"
+                                       Text="Discount Rate (%)"
                                        VerticalAlignment="Center"
                                        Margin="24,0,12,0"/>
                             <TextBox Grid.Column="3"
-                                     Text="{Binding FutureDamages, Converter={StaticResource SafeNumberConverter}}"
+                                     Text="{Binding DiscountRate, Converter={StaticResource SafeNumberConverter}}"
                                      HorizontalContentAlignment="Right"
                                      Style="{StaticResource Form.TextBoxWide}"
-                                     ToolTip="Total expected future damages to annualize across the analysis period for EqAD."/>
+                                     ToolTip="Discount rate used to annualize future damages for EqAD per USACE guidance."/>
                         </Grid>
                     </StackPanel>
                 </Border>

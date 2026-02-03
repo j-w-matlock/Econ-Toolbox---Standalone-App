@@ -46,15 +46,19 @@ namespace EconToolbox.Desktop.Models
             return sum;
         }
 
-        public static double ComputeEquivalentAnnualDamage(double expectedAnnualDamage, int analysisPeriodYears, double futureDamages)
+        public static double ComputeEquivalentAnnualDamage(double expectedAnnualDamage, double expectedFutureDamages, int analysisPeriodYears, double discountRate)
         {
             if (analysisPeriodYears <= 0)
                 throw new ArgumentOutOfRangeException(nameof(analysisPeriodYears), "Analysis period must be greater than zero.");
 
-            if (futureDamages < 0)
-                throw new ArgumentOutOfRangeException(nameof(futureDamages), "Future damages must be zero or greater.");
+            if (expectedFutureDamages < 0)
+                throw new ArgumentOutOfRangeException(nameof(expectedFutureDamages), "Future damages must be zero or greater.");
 
-            return expectedAnnualDamage + (futureDamages / analysisPeriodYears);
+            if (discountRate < 0)
+                throw new ArgumentOutOfRangeException(nameof(discountRate), "Discount rate must be zero or greater.");
+
+            double crf = CapitalRecoveryModel.Calculate(discountRate, analysisPeriodYears);
+            return expectedAnnualDamage + (expectedFutureDamages * crf);
         }
     }
 }

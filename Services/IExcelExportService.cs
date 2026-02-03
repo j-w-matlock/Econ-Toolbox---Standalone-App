@@ -32,7 +32,7 @@ public interface IExcelExportService
         bool useStage,
         bool calculateEqad,
         int analysisPeriod,
-        double futureDamages,
+        double discountRate,
         string result,
         string filePath);
 
