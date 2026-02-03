@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -31,6 +32,8 @@ namespace EconToolbox.Desktop.Behaviors
             if (e.NewValue is true)
             {
                 AttachContextMenu(element);
+                element.PreviewMouseRightButtonDown -= OnPreviewMouseRightButtonDown;
+                element.PreviewMouseRightButtonDown += OnPreviewMouseRightButtonDown;
             }
         }
 
@@ -54,6 +57,27 @@ namespace EconToolbox.Desktop.Behaviors
             contextMenu.Items.Insert(0, menuItem);
 
             element.ContextMenu ??= contextMenu;
+        }
+
+        private static void OnPreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (sender is not FrameworkElement element)
+            {
+                return;
+            }
+
+            var contextMenu = element.ContextMenu;
+            if (contextMenu == null)
+            {
+                return;
+            }
+
+            contextMenu.PlacementTarget = element;
+            contextMenu.Placement = PlacementMode.MousePoint;
+            if (!contextMenu.IsOpen)
+            {
+                contextMenu.IsOpen = true;
+            }
         }
 
         private static void CopyElementToClipboard(FrameworkElement element)
