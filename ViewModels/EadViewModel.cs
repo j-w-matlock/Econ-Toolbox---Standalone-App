@@ -140,10 +140,14 @@ namespace EconToolbox.Desktop.ViewModels
 
         public IRelayCommand AddDamageColumnCommand { get; }
         public IRelayCommand RemoveDamageColumnCommand => _removeDamageColumnCommand;
+        public IRelayCommand DeleteSelectedRowCommand { get; }
+        public IRelayCommand ResetTableCommand { get; }
         public ICommand ComputeCommand { get; }
         public IAsyncRelayCommand ExportCommand { get; }
 
         private readonly RelayCommand _removeDamageColumnCommand;
+        private readonly RelayCommand _deleteSelectedRowCommand;
+        private readonly RelayCommand _resetTableCommand;
         private readonly IExcelExportService _excelExportService;
         private static readonly string[] ChartSeriesBrushKeys =
         {
@@ -170,6 +174,10 @@ namespace EconToolbox.Desktop.ViewModels
             Rows.CollectionChanged += Rows_CollectionChanged;
             AddDamageColumnCommand = new RelayCommand(AddDamageColumn);
             _removeDamageColumnCommand = new RelayCommand(RemoveDamageColumn, () => DamageColumns.Count > 1);
+            _deleteSelectedRowCommand = new RelayCommand(DeleteSelectedRow, () => SelectedRow is not null);
+            DeleteSelectedRowCommand = _deleteSelectedRowCommand;
+            _resetTableCommand = new RelayCommand(ResetTable);
+            ResetTableCommand = _resetTableCommand;
             ComputeCommand = new RelayCommand(Compute);
             ExportCommand = new AsyncRelayCommand(ExportAsync);
             DamageColumns.CollectionChanged += DamageColumns_CollectionChanged;
@@ -293,6 +301,53 @@ namespace EconToolbox.Desktop.ViewModels
             if (DamageColumns.Count == 0) return;
             DamageColumns.RemoveAt(DamageColumns.Count - 1);
             _removeDamageColumnCommand.NotifyCanExecuteChanged();
+        }
+
+        private EadRow? _selectedRow;
+        public EadRow? SelectedRow
+        {
+            get => _selectedRow;
+            set
+            {
+                if (_selectedRow == value)
+                {
+                    return;
+                }
+
+                _selectedRow = value;
+                OnPropertyChanged();
+                _deleteSelectedRowCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        private void DeleteSelectedRow()
+        {
+            if (SelectedRow is null)
+            {
+                return;
+            }
+
+            var rowToRemove = SelectedRow;
+            SelectedRow = null;
+            Rows.Remove(rowToRemove);
+        }
+
+        private void ResetTable()
+        {
+            _suppressAutoCompute = true;
+            try
+            {
+                Rows.Clear();
+                InitializeDefaultRows();
+            }
+            finally
+            {
+                _suppressAutoCompute = false;
+            }
+
+            MarkDirty();
+            Compute();
+            RefreshDiagnostics();
         }
 
         private void Compute()
