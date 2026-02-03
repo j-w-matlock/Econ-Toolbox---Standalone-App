@@ -54,6 +54,24 @@
                                     <TextBlock Text="Remove Damage Column"/>
                                 </StackPanel>
                             </Button>
+                            <Button Command="{Binding DeleteSelectedRowCommand}"
+                                    Style="{StaticResource Button.Action}"
+                                    Margin="0,0,12,0"
+                                    ToolTip="Remove the currently selected input row from the table.">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                    <TextBlock Text="Delete Selected Row"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding ResetTableCommand}"
+                                    Style="{StaticResource Button.Action}"
+                                    Margin="0,0,12,0"
+                                    ToolTip="Reset the EAD input table back to the default probability and damage entries.">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                    <TextBlock Text="Reset Table"/>
+                                </StackPanel>
+                            </Button>
                             <CheckBox IsChecked="{Binding UseStage}"
                                       VerticalAlignment="Center"
                                       Content="Include Stage"
@@ -104,6 +122,7 @@
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="True"
                                   CanUserDeleteRows="True"
+                                  SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                                   HeadersVisibility="Column"
                                   ColumnWidth="SizeToHeader"
                                   ScrollViewer.HorizontalScrollBarVisibility="Auto"

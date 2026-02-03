@@ -156,7 +156,7 @@ namespace EconToolbox.Desktop.Behaviors
                 var binding = new Binding(descriptor.BindingPath)
                 {
                     Mode = descriptor.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
-                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                    UpdateSourceTrigger = UpdateSourceTrigger.LostFocus,
                     ValidatesOnDataErrors = true,
                     ValidatesOnExceptions = true,
                     Converter = new SafeNumberConverter()
