@@ -113,7 +113,6 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.Resources>
                                         <Style x:Key="WaterDemandInputBoxStyle"
@@ -121,17 +120,17 @@
                                                BasedOn="{StaticResource Form.TextBox}">
                                             <Setter Property="Width" Value="180"/>
                                             <Setter Property="MaxLength" Value="50"/>
-                                            <Setter Property="Margin" Value="0,0,2,0"/>
+                                            <Setter Property="Margin" Value="0"/>
                                         </Style>
                                     </Grid.Resources>
 
                                     <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Forecast Years"/>
-                                    <TextBox Grid.Row="0"
-                                             Grid.Column="1"
-                                             Style="{StaticResource WaterDemandInputBoxStyle}"
-                                             Text="{Binding DataContext.ForecastYears, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                             ToolTip="Number of years to extend the demand projection. This sets how many forecast rows are calculated beyond the base year."/>
-                                    <TextBlock Text="years" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBox Style="{StaticResource WaterDemandInputBoxStyle}"
+                                                 Text="{Binding DataContext.ForecastYears, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                 ToolTip="Number of years to extend the demand projection. This sets how many forecast rows are calculated beyond the base year."/>
+                                        <TextBlock Text="years" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    </StackPanel>
 
                                     <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Year"/>
                                     <TextBox Grid.Row="1"
@@ -141,38 +140,38 @@
                                              ToolTip="Year that anchors the historical data and forecast. The base year establishes the starting point for growth and per-capita adjustments."/>
 
                                     <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Population"/>
-                                    <TextBox Grid.Row="2"
-                                             Grid.Column="1"
-                                             Style="{StaticResource WaterDemandInputBoxStyle}"
-                                             Text="{Binding BasePopulation}"
-                                             ToolTip="Population served in the base year. This value scales per-capita demand into total demand for all forecast years."/>
-                                    <TextBlock Text="people" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBox Style="{StaticResource WaterDemandInputBoxStyle}"
+                                                 Text="{Binding BasePopulation}"
+                                                 ToolTip="Population served in the base year. This value scales per-capita demand into total demand for all forecast years."/>
+                                        <TextBlock Text="people" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    </StackPanel>
 
                                     <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Base Per Capita"/>
-                                    <TextBox Grid.Row="3"
-                                             Grid.Column="1"
-                                             Style="{StaticResource WaterDemandInputBoxStyle}"
-                                             Text="{Binding BasePerCapitaDemand}"
-                                             ToolTip="Current per capita water demand for the base year. This is the starting per-capita value that is adjusted forward each year."/>
-                                    <TextBlock Text="gallons/person/day" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBox Style="{StaticResource WaterDemandInputBoxStyle}"
+                                                 Text="{Binding BasePerCapitaDemand}"
+                                                 ToolTip="Current per capita water demand for the base year. This is the starting per-capita value that is adjusted forward each year."/>
+                                        <TextBlock Text="gallons/person/day" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    </StackPanel>
 
                                     <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Population Growth %"/>
-                                    <TextBox Grid.Row="4"
-                                             Grid.Column="1"
-                                             Style="{StaticResource WaterDemandInputBoxStyle}"
-                                             Text="{Binding PopulationGrowthRate}"
-                                             ToolTip="Expected annual population growth rate for the service area. Higher growth increases projected population and total demand."/>
-                                    <TextBlock Text="%" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBox Style="{StaticResource WaterDemandInputBoxStyle}"
+                                                 Text="{Binding PopulationGrowthRate}"
+                                                 ToolTip="Expected annual population growth rate for the service area. Higher growth increases projected population and total demand."/>
+                                        <TextBlock Text="%" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    </StackPanel>
 
                                     <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,5,0" Text="Per Capita Change %"/>
-                                    <TextBox Grid.Row="5"
-                                             Grid.Column="1"
-                                             Style="{StaticResource WaterDemandInputBoxStyle}"
-                                             Text="{Binding PerCapitaDemandChangeRate}"
-                                             ToolTip="Annual percentage change expected in per capita demand. This rate modifies per-capita demand each year, affecting total demand."/>
-                                    <TextBlock Text="%" Grid.Row="5" Grid.Column="2" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBox Style="{StaticResource WaterDemandInputBoxStyle}"
+                                                 Text="{Binding PerCapitaDemandChangeRate}"
+                                                 ToolTip="Annual percentage change expected in per capita demand. This rate modifies per-capita demand each year, affecting total demand."/>
+                                        <TextBlock Text="%" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    </StackPanel>
 
-                                    <DataGrid CanUserResizeColumns="True" Grid.Row="6" Grid.ColumnSpan="3" ItemsSource="{Binding Sectors}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" Margin="0,5,0,5" ColumnWidth="SizeToHeader">
+                                    <DataGrid CanUserResizeColumns="True" Grid.Row="6" Grid.ColumnSpan="2" ItemsSource="{Binding Sectors}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" Margin="0,5,0,5" ColumnWidth="SizeToHeader">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Sector" Binding="{Binding Name}" IsReadOnly="True"/>
                                             <DataGridTextColumn Header="Current %"
@@ -194,7 +193,7 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
 
-                                    <Expander Grid.Row="7" Grid.ColumnSpan="3" Header="Advanced Adjustments" Margin="0,5,0,5">
+                                    <Expander Grid.Row="7" Grid.ColumnSpan="2" Header="Advanced Adjustments" Margin="0,5,0,5">
                                         <Grid Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="Label"/>
@@ -230,7 +229,7 @@
                                     </Expander>
 
                                     <Border Grid.Row="8"
-                                            Grid.ColumnSpan="3"
+                                            Grid.ColumnSpan="2"
                                             Background="{DynamicResource App.ChartFill}"
                                             BorderBrush="{DynamicResource App.Border}"
                                             BorderThickness="1"
