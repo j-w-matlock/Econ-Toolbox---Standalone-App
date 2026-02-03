@@ -83,7 +83,7 @@ public class ViewSmokeTests
         {
         }
 
-        public void ExportEad(System.Collections.Generic.IEnumerable<EadViewModel.EadRow> rows, System.Collections.Generic.IEnumerable<string> damageColumns, bool useStage, bool calculateEqad, int analysisPeriod, double futureDamages, string result, string filePath)
+        public void ExportEad(System.Collections.Generic.IEnumerable<EadViewModel.EadRow> rows, System.Collections.Generic.IEnumerable<string> damageColumns, bool useStage, bool calculateEqad, int analysisPeriod, double discountRate, string result, string filePath)
         {
         }
 
