@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using EconToolbox.Desktop.Converters;
 
 namespace EconToolbox.Desktop.Behaviors
 {
@@ -157,7 +158,8 @@ namespace EconToolbox.Desktop.Behaviors
                     Mode = descriptor.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
                     ValidatesOnDataErrors = true,
-                    ValidatesOnExceptions = true
+                    ValidatesOnExceptions = true,
+                    Converter = new SafeNumberConverter()
                 };
 
                 var column = new DataGridTextColumn
