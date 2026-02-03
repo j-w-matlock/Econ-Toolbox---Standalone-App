@@ -325,6 +325,7 @@ namespace EconToolbox.Desktop.Models
         public string SummaryName { get; set; } = string.Empty;
         public string SourceKey { get; set; } = string.Empty;
         public List<StageDamageAepValueData> AepDamages { get; set; } = new();
+        public List<StageDamageAepValueData> DepthAboveFirstFloorByAep { get; set; } = new();
     }
 
     public class StageDamageAepValueData

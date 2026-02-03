@@ -15,6 +15,7 @@ namespace EconToolbox.Desktop.Models
         public string SourceKey { get; set; } = string.Empty;
 
         public List<StageDamageAepValue> AepDamages { get; set; } = new();
+        public List<StageDamageAepValue> DepthAboveFirstFloorByAep { get; set; } = new();
 
         public double FrequentPeakDamage
         {
@@ -22,6 +23,15 @@ namespace EconToolbox.Desktop.Models
             {
                 var peak = GetPeakAep();
                 return peak.Value;
+            }
+        }
+
+        public double FrequentPeakDepthAboveFirstFloor
+        {
+            get
+            {
+                var peak = GetPeakAep();
+                return GetDepthAboveFirstFloor(peak.Label);
             }
         }
 
@@ -64,6 +74,19 @@ namespace EconToolbox.Desktop.Models
 
             return best;
         }
+
+        private double GetDepthAboveFirstFloor(string aepLabel)
+        {
+            if (DepthAboveFirstFloorByAep.Count == 0 || string.IsNullOrWhiteSpace(aepLabel))
+            {
+                return 0d;
+            }
+
+            var match = DepthAboveFirstFloorByAep
+                .FirstOrDefault(value => value.Label.Equals(aepLabel, StringComparison.OrdinalIgnoreCase));
+
+            return match?.Value ?? 0d;
+        }
     }
 
     public class StageDamageCategorySummary
@@ -83,6 +106,7 @@ namespace EconToolbox.Desktop.Models
         public string Description { get; init; } = string.Empty;
         public string ImpactArea { get; init; } = string.Empty;
         public string HighestAepLabel { get; init; } = string.Empty;
+        public double DepthAboveFirstFloorAtHighestAep { get; init; }
         public double HighestStructureDamage { get; init; }
     }
 
