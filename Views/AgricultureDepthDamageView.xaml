@@ -1,6 +1,7 @@
 <UserControl x:Class="EconToolbox.Desktop.Views.AgricultureDepthDamageView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="clr-namespace:EconToolbox.Desktop.Behaviors"
              Background="{DynamicResource App.SurfaceAlt}"
              SnapsToDevicePixels="True"
              UseLayoutRounding="True">
@@ -629,7 +630,8 @@
                                      Stretch="Uniform"
                                      HorizontalAlignment="Stretch"
                                      MinHeight="220"
-                                     Margin="0,0,24,0">
+                                     Margin="0,0,24,0"
+                                     behaviors:ChartCopyBehavior.Enable="True">
                                 <Grid Width="400" Height="240">
                                     <Border Style="{StaticResource Border.Chart}"
                                             Background="{DynamicResource App.ChartFill}"
