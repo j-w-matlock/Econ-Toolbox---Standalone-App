@@ -621,6 +621,16 @@
                             <Run Text="{Binding CropScapeTotalAcreageDisplay, Mode=OneWay}" FontWeight="SemiBold"/>
                             <Run Text=" highlights the acreage exposed at each inundation depth."/>
                         </TextBlock>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Ellipse Width="12"
+                                     Height="12"
+                                     Fill="{DynamicResource App.Accent}"
+                                     Stroke="{DynamicResource App.Border}"
+                                     StrokeThickness="0.5"
+                                     Margin="0,0,6,0"/>
+                            <TextBlock Text="CropScape damage curve"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
                         <Grid Margin="{StaticResource Margin.Stack}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" MinWidth="280"/>

@@ -38,6 +38,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<StageDamageCategorySummary> CategorySummaries { get; } = new();
         public ObservableCollection<StageDamageHighlight> Highlights { get; } = new();
         public ObservableCollection<ChartSeries> ChartSeries { get; } = new();
+        public ObservableCollection<LegendItem> LegendItems { get; } = new();
         public ObservableCollection<string> AepHeaders => _aepHeaders;
 
         public ObservableCollection<StageDamageSummaryInfo> Summaries { get; } = new();
@@ -111,6 +112,7 @@ namespace EconToolbox.Desktop.ViewModels
             CategorySummaries.Clear();
             Highlights.Clear();
             ChartSeries.Clear();
+            LegendItems.Clear();
             AepHeaders.Clear();
             Summaries.Clear();
             _aepColumns.Clear();
@@ -395,6 +397,7 @@ namespace EconToolbox.Desktop.ViewModels
             CategorySummaries.Clear();
             Highlights.Clear();
             ChartSeries.Clear();
+            LegendItems.Clear();
 
             if (Records.Count == 0 || _aepColumns.Count == 0)
             {
@@ -488,6 +491,11 @@ namespace EconToolbox.Desktop.ViewModels
                 };
 
                 ChartSeries.Add(chartSeries);
+                LegendItems.Add(new LegendItem
+                {
+                    Name = chartSeries.Name,
+                    Color = chartSeries.Stroke ?? System.Windows.Media.Brushes.SteelBlue
+                });
                 paletteIndex++;
             }
         }
