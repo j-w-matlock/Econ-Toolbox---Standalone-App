@@ -223,6 +223,28 @@
                         <TextBlock Text="Total structure damage by DamageCategory"
                                    Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,8"/>
+                        <ItemsControl ItemsSource="{Binding LegendItems}"
+                                      Margin="0,0,0,12">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,12,4">
+                                        <Ellipse Width="12"
+                                                 Height="12"
+                                                 Fill="{Binding Color}"
+                                                 Stroke="{DynamicResource App.Border}"
+                                                 StrokeThickness="0.5"
+                                                 Margin="0,0,6,0"/>
+                                        <TextBlock Text="{Binding Name}"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                         <Border Style="{StaticResource Border.Panel}"
                                 Background="{DynamicResource App.ChartFill}"
                                 BorderBrush="{DynamicResource App.Border}"

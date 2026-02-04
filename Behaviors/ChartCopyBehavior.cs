@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using EconToolbox.Desktop.Themes;
 
 namespace EconToolbox.Desktop.Behaviors
 {
@@ -12,6 +13,7 @@ namespace EconToolbox.Desktop.Behaviors
     {
         private const string CopyDarkMenuItemTag = "ChartCopyBehavior.CopyMenuItem.Dark";
         private const string CopyLightMenuItemTag = "ChartCopyBehavior.CopyMenuItem.Light";
+        private const double RenderScale = 2.0;
 
         public static readonly DependencyProperty EnableProperty = DependencyProperty.RegisterAttached(
             "Enable",
@@ -98,12 +100,8 @@ namespace EconToolbox.Desktop.Behaviors
 
             try
             {
-                var bitmap = RenderElementBitmap(element);
-                var outputBitmap = mode == ChartCopyMode.Light
-                    ? CreateLightModeBitmap(bitmap)
-                    : bitmap;
-
-                Clipboard.SetImage(outputBitmap);
+                var bitmap = RenderElementBitmap(element, mode);
+                Clipboard.SetImage(bitmap);
             }
             catch (Exception)
             {
@@ -111,22 +109,31 @@ namespace EconToolbox.Desktop.Behaviors
             }
         }
 
-        private static RenderTargetBitmap RenderElementBitmap(FrameworkElement element)
+        private static RenderTargetBitmap RenderElementBitmap(FrameworkElement element, ChartCopyMode mode)
         {
             var dpi = VisualTreeHelper.GetDpi(element);
-            int pixelWidth = (int)Math.Ceiling(element.ActualWidth * dpi.DpiScaleX);
-            int pixelHeight = (int)Math.Ceiling(element.ActualHeight * dpi.DpiScaleY);
+            int pixelWidth = (int)Math.Ceiling(element.ActualWidth * dpi.DpiScaleX * RenderScale);
+            int pixelHeight = (int)Math.Ceiling(element.ActualHeight * dpi.DpiScaleY * RenderScale);
 
             var renderTarget = new RenderTargetBitmap(
                 pixelWidth,
                 pixelHeight,
-                dpi.PixelsPerInchX,
-                dpi.PixelsPerInchY,
+                dpi.PixelsPerInchX * RenderScale,
+                dpi.PixelsPerInchY * RenderScale,
                 PixelFormats.Pbgra32);
 
             var drawingVisual = new DrawingVisual();
             using (var context = drawingVisual.RenderOpen())
             {
+                var backgroundBrush = mode == ChartCopyMode.Light
+                    ? ThemeResourceHelper.GetBrush("App.ChartFill", Brushes.White)
+                    : ThemeResourceHelper.GetBrush("App.Surface", Brushes.Black);
+
+                context.DrawRectangle(
+                    backgroundBrush,
+                    null,
+                    new Rect(new Point(), new Size(element.ActualWidth, element.ActualHeight)));
+
                 context.DrawRectangle(
                     new VisualBrush(element),
                     null,
@@ -135,33 +142,6 @@ namespace EconToolbox.Desktop.Behaviors
 
             renderTarget.Render(drawingVisual);
             return renderTarget;
-        }
-
-        private static BitmapSource CreateLightModeBitmap(BitmapSource source)
-        {
-            var convertedSource = new FormatConvertedBitmap(source, PixelFormats.Bgra32, null, 0);
-            int width = convertedSource.PixelWidth;
-            int height = convertedSource.PixelHeight;
-            int stride = width * 4;
-            var pixels = new byte[height * stride];
-            convertedSource.CopyPixels(pixels, stride, 0);
-
-            for (int i = 0; i < pixels.Length; i += 4)
-            {
-                pixels[i] = (byte)(255 - pixels[i]);
-                pixels[i + 1] = (byte)(255 - pixels[i + 1]);
-                pixels[i + 2] = (byte)(255 - pixels[i + 2]);
-            }
-
-            return BitmapSource.Create(
-                width,
-                height,
-                convertedSource.DpiX,
-                convertedSource.DpiY,
-                PixelFormats.Bgra32,
-                null,
-                pixels,
-                stride);
         }
 
         private enum ChartCopyMode
