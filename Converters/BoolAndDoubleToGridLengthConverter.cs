@@ -55,6 +55,18 @@ namespace EconToolbox.Desktop.Converters
                 results[i] = Binding.DoNothing;
             }
 
+            if (targetTypes.Length > 1)
+            {
+                if (value is GridLength gridLength)
+                {
+                    results[1] = gridLength.Value;
+                }
+                else if (value is double doubleValue)
+                {
+                    results[1] = doubleValue;
+                }
+            }
+
             return results;
         }
     }

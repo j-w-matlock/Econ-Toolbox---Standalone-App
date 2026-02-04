@@ -266,7 +266,9 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="ExplorerColumn">
                     <ColumnDefinition.Width>
-                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
+                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}"
+                                      Mode="TwoWay"
+                                      UpdateSourceTrigger="PropertyChanged">
                             <Binding Path="IsExplorerPaneVisible"/>
                             <Binding Path="ExplorerPaneWidth"/>
                         </MultiBinding>
@@ -287,7 +289,9 @@
                 </ColumnDefinition>
                 <ColumnDefinition x:Name="DetailsColumn">
                     <ColumnDefinition.Width>
-                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}">
+                        <MultiBinding Converter="{StaticResource BoolAndDoubleToGridLengthConverter}"
+                                      Mode="TwoWay"
+                                      UpdateSourceTrigger="PropertyChanged">
                             <Binding Path="IsDetailsPaneVisible"/>
                             <Binding Path="DetailsPaneWidth"/>
                         </MultiBinding>
