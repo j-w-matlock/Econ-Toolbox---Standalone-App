@@ -274,29 +274,53 @@ namespace EconToolbox.Desktop.ViewModels
                 : 0;
 
             Statistics.Clear();
-            AddStatistic("Selected Category", SelectedCategory);
-            AddStatistic("Selected Attribute", SelectedAttribute);
-            AddStatistic("Observation Count", count.ToString(CultureInfo.InvariantCulture));
-            AddStatistic("Excluded by Filters", excludedByFilter.ToString(CultureInfo.InvariantCulture));
-            AddStatistic("Ignore Zero Values", IgnoreZeroValues ? "Yes" : "No");
-            AddStatistic("Ignore Negative Values", IgnoreNegativeValues ? "Yes" : "No");
-            AddStatistic("Exclude IQR Outliers", ExcludeIqrOutliers ? "Yes" : "No");
+            AddStatistic(
+                "Selected Category",
+                SelectedCategory,
+                "The uncertainty category currently selected in the module. Statistics are computed only from records that belong to this category.");
+            AddStatistic(
+                "Selected Attribute",
+                SelectedAttribute,
+                "The numeric DBF/shapefile attribute field used as input values for all calculations shown below.");
+            AddStatistic(
+                "Observation Count",
+                count.ToString(CultureInfo.InvariantCulture),
+                "Number of values included in the final computation after all enabled filters are applied.");
+            AddStatistic(
+                "Excluded by Filters",
+                excludedByFilter.ToString(CultureInfo.InvariantCulture),
+                "Count of candidate numeric values removed by active statistical filters (zero-value filter, negative-value filter, and/or IQR outlier filter).");
+            AddStatistic(
+                "Ignore Zero Values",
+                IgnoreZeroValues ? "Yes" : "No",
+                "Indicates whether exact zero values were removed before computing summary statistics.");
+            AddStatistic(
+                "Ignore Negative Values",
+                IgnoreNegativeValues ? "Yes" : "No",
+                "Indicates whether values less than 0 were removed before computing summary statistics.");
+            AddStatistic(
+                "Exclude IQR Outliers",
+                ExcludeIqrOutliers ? "Yes" : "No",
+                "Indicates whether Tukey IQR outlier removal was applied using bounds [Q1 - 1.5*IQR, Q3 + 1.5*IQR].");
             if (!string.IsNullOrWhiteSpace(outlierThresholdDescription))
             {
-                AddStatistic("IQR Outlier Threshold", outlierThresholdDescription);
+                AddStatistic(
+                    "IQR Outlier Threshold",
+                    outlierThresholdDescription,
+                    "Accepted range for outlier filtering computed as lower = Q1 - 1.5*IQR and upper = Q3 + 1.5*IQR, where IQR = Q3 - Q1.");
             }
-            AddStatistic("Minimum", FormatNumber(min));
-            AddStatistic("Maximum", FormatNumber(max));
-            AddStatistic("Range", FormatNumber(max - min));
-            AddStatistic("Mean", FormatNumber(mean));
-            AddStatistic("Median (P50)", FormatNumber(median));
-            AddStatistic("First Quartile (P25)", FormatNumber(q1));
-            AddStatistic("Third Quartile (P75)", FormatNumber(q3));
-            AddStatistic("Population Variance", FormatNumber(variancePopulation));
-            AddStatistic("Population Standard Deviation", FormatNumber(stdPopulation));
-            AddStatistic("Sample Standard Deviation", FormatNumber(stdSample));
-            AddStatistic("Coefficient of Variation", coefficientOfVariation.ToString("P2", CultureInfo.InvariantCulture));
-            AddStatistic("Skewness", FormatNumber(skewness));
+            AddStatistic("Minimum", FormatNumber(min), "Smallest value in the filtered dataset: min(x).");
+            AddStatistic("Maximum", FormatNumber(max), "Largest value in the filtered dataset: max(x).");
+            AddStatistic("Range", FormatNumber(max - min), "Overall spread of values computed as Range = Maximum - Minimum.");
+            AddStatistic("Mean", FormatNumber(mean), "Arithmetic average computed as Mean = (Σxᵢ) / n.");
+            AddStatistic("Median (P50)", FormatNumber(median), "50th percentile of sorted values (middle value, or average of the two middle positions via percentile interpolation).");
+            AddStatistic("First Quartile (P25)", FormatNumber(q1), "25th percentile (Q1) of sorted values using linear interpolation between neighboring ranks.");
+            AddStatistic("Third Quartile (P75)", FormatNumber(q3), "75th percentile (Q3) of sorted values using linear interpolation between neighboring ranks.");
+            AddStatistic("Population Variance", FormatNumber(variancePopulation), "Second central moment for the filtered values treated as the full population: σ² = (Σ(xᵢ - μ)²) / n.");
+            AddStatistic("Population Standard Deviation", FormatNumber(stdPopulation), "Square root of population variance: σ = √[(Σ(xᵢ - μ)²) / n].");
+            AddStatistic("Sample Standard Deviation", FormatNumber(stdSample), "Unbiased sample spread estimate using Bessel's correction: s = √[(Σ(xᵢ - x̄)²) / (n - 1)].");
+            AddStatistic("Coefficient of Variation", coefficientOfVariation.ToString("P2", CultureInfo.InvariantCulture), "Relative dispersion measured as CV = (Sample Standard Deviation / Mean) × 100%. Returns 0 when mean is near zero.");
+            AddStatistic("Skewness", FormatNumber(skewness), "Asymmetry of the distribution computed from the standardized third central moment. Positive values indicate right-skew; negative values indicate left-skew.");
 
             StatusMessage = $"Computed uncertainty statistics for '{SelectedAttribute}' using {count} record(s) after filtering {excludedByFilter} record(s).";
             RefreshDiagnostics();
@@ -613,9 +637,9 @@ namespace EconToolbox.Desktop.ViewModels
             return sorted[lower] + (sorted[upper] - sorted[lower]) * weight;
         }
 
-        private void AddStatistic(string metric, string value)
+        private void AddStatistic(string metric, string value, string? valueTooltip = null)
         {
-            Statistics.Add(new AttributeStatistic(metric, value));
+            Statistics.Add(new AttributeStatistic(metric, value, valueTooltip));
         }
 
         private static string FormatNumber(double value)
