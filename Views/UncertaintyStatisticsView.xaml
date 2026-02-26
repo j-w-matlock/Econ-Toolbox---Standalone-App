@@ -54,16 +54,27 @@
                         Padding="18,10"/>
 
                 <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,12,16,0">
-                    <TextBlock Text="Statistical Options" Style="{StaticResource Text.Label}"/>
+                    <TextBlock Text="Statistical Options"
+                               Style="{StaticResource Text.Label}"
+                               ToolTip="Controls that filter the input values before statistics are calculated. Enabling any option can change observation count, central tendency, spread, and distribution-shape metrics."/>
                     <WrapPanel Margin="0,4,0,0">
                         <CheckBox Content="Ignore zero values"
                                   IsChecked="{Binding IgnoreZeroValues}"
-                                  Margin="0,0,20,0"/>
+                                  Margin="0,0,20,0"
+                                  ToolTip="Removes all values equal to 0 before calculation.
+
+Impact: Reduces the Observation Count and can increase or decrease mean, variance, standard deviation, and coefficient of variation depending on how many zeros are present."/>
                         <CheckBox Content="Ignore negative values"
                                   IsChecked="{Binding IgnoreNegativeValues}"
-                                  Margin="0,0,20,0"/>
+                                  Margin="0,0,20,0"
+                                  ToolTip="Removes all values less than 0 before calculation.
+
+Impact: Useful when negatives are invalid for the selected attribute; this can shift the mean upward and reduce spread/asymmetry if negative tails are removed."/>
                         <CheckBox Content="Exclude IQR outliers"
-                                  IsChecked="{Binding ExcludeIqrOutliers}"/>
+                                  IsChecked="{Binding ExcludeIqrOutliers}"
+                                  ToolTip="Applies Tukey IQR filtering after other enabled filters. Values outside [Q1 - 1.5×IQR, Q3 + 1.5×IQR] are excluded, where IQR = Q3 - Q1.
+
+Impact: Typically reduces the influence of extreme values on mean, range, variance, standard deviation, coefficient of variation, and skewness."/>
                     </WrapPanel>
                 </StackPanel>
             </Grid>
@@ -93,7 +104,13 @@
                           ItemsSource="{Binding Statistics}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Metric" Binding="{Binding Metric}" Width="2*"/>
-                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                        <DataGridTemplateColumn Header="Value" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Value}" ToolTip="{Binding ValueTooltip}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
