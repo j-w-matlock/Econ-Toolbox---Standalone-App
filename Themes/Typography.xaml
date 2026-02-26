@@ -94,6 +94,11 @@
         <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
 
+    <Style x:Key="Text.Label" TargetType="TextBlock" BasedOn="{StaticResource Text.BodySmall}">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{DynamicResource App.TextPrimary}"/>
+    </Style>
+
     <Style x:Key="Text.StatusBar" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontSize" Value="11"/>
