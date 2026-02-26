@@ -319,7 +319,7 @@ namespace EconToolbox.Desktop.ViewModels
             AddStatistic("Population Variance", FormatNumber(variancePopulation), "Second central moment for the filtered values treated as the full population: σ² = (Σ(xᵢ - μ)²) / n.");
             AddStatistic("Population Standard Deviation", FormatNumber(stdPopulation), "Square root of population variance: σ = √[(Σ(xᵢ - μ)²) / n].");
             AddStatistic("Sample Standard Deviation", FormatNumber(stdSample), "Unbiased sample spread estimate using Bessel's correction: s = √[(Σ(xᵢ - x̄)²) / (n - 1)].");
-            AddStatistic("Coefficient of Variation", coefficientOfVariation.ToString("P2", CultureInfo.InvariantCulture), "Relative dispersion measured as CV = (Sample Standard Deviation / Mean) × 100%. Returns 0 when mean is near zero.");
+            AddStatistic("Coefficient of Variation", coefficientOfVariation.ToString("P2", CultureInfo.InvariantCulture), "Relative dispersion measured as CV = (Population Standard Deviation / |Mean|) × 100%. Returns 0 when mean is near zero.");
             AddStatistic("Skewness", FormatNumber(skewness), "Asymmetry of the distribution computed from the standardized third central moment. Positive values indicate right-skew; negative values indicate left-skew.");
 
             StatusMessage = $"Computed uncertainty statistics for '{SelectedAttribute}' using {count} record(s) after filtering {excludedByFilter} record(s).";
