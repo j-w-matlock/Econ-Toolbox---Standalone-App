@@ -27,6 +27,9 @@ namespace EconToolbox.Desktop.ViewModels
         private string _selectedCategory = "Structure Value";
         private string? _selectedAttribute;
         private string _shapefilePath = string.Empty;
+        private bool _ignoreZeroValues;
+        private bool _ignoreNegativeValues;
+        private bool _excludeIqrOutliers;
 
         public ObservableCollection<string> CategoryOptions { get; } = new(new[]
         {
@@ -73,8 +76,48 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 if (SetProperty(ref _selectedAttribute, value))
                 {
+                    TryAutoComputeStatistics();
                     RefreshDiagnostics();
                     (ComputeCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                }
+            }
+        }
+
+        public bool IgnoreZeroValues
+        {
+            get => _ignoreZeroValues;
+            set
+            {
+                if (SetProperty(ref _ignoreZeroValues, value))
+                {
+                    TryAutoComputeStatistics();
+                    RefreshDiagnostics();
+                }
+            }
+        }
+
+        public bool IgnoreNegativeValues
+        {
+            get => _ignoreNegativeValues;
+            set
+            {
+                if (SetProperty(ref _ignoreNegativeValues, value))
+                {
+                    TryAutoComputeStatistics();
+                    RefreshDiagnostics();
+                }
+            }
+        }
+
+        public bool ExcludeIqrOutliers
+        {
+            get => _excludeIqrOutliers;
+            set
+            {
+                if (SetProperty(ref _excludeIqrOutliers, value))
+                {
+                    TryAutoComputeStatistics();
+                    RefreshDiagnostics();
                 }
             }
         }
@@ -200,7 +243,16 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            var ordered = values.OrderBy(v => v).ToArray();
+            var filteredValues = ApplyStatisticalFilters(values, out var excludedByFilter, out var outlierThresholdDescription);
+            if (filteredValues.Count == 0)
+            {
+                Statistics.Clear();
+                StatusMessage = "All values were removed by the active statistical filters. Adjust options and try again.";
+                RefreshDiagnostics();
+                return;
+            }
+
+            var ordered = filteredValues.OrderBy(v => v).ToArray();
             var count = ordered.Length;
             var mean = ordered.Average();
             var min = ordered.First();
@@ -225,6 +277,14 @@ namespace EconToolbox.Desktop.ViewModels
             AddStatistic("Selected Category", SelectedCategory);
             AddStatistic("Selected Attribute", SelectedAttribute);
             AddStatistic("Observation Count", count.ToString(CultureInfo.InvariantCulture));
+            AddStatistic("Excluded by Filters", excludedByFilter.ToString(CultureInfo.InvariantCulture));
+            AddStatistic("Ignore Zero Values", IgnoreZeroValues ? "Yes" : "No");
+            AddStatistic("Ignore Negative Values", IgnoreNegativeValues ? "Yes" : "No");
+            AddStatistic("Exclude IQR Outliers", ExcludeIqrOutliers ? "Yes" : "No");
+            if (!string.IsNullOrWhiteSpace(outlierThresholdDescription))
+            {
+                AddStatistic("IQR Outlier Threshold", outlierThresholdDescription);
+            }
             AddStatistic("Minimum", FormatNumber(min));
             AddStatistic("Maximum", FormatNumber(max));
             AddStatistic("Range", FormatNumber(max - min));
@@ -238,8 +298,52 @@ namespace EconToolbox.Desktop.ViewModels
             AddStatistic("Coefficient of Variation", coefficientOfVariation.ToString("P2", CultureInfo.InvariantCulture));
             AddStatistic("Skewness", FormatNumber(skewness));
 
-            StatusMessage = $"Computed uncertainty statistics for '{SelectedAttribute}' using {count} record(s).";
+            StatusMessage = $"Computed uncertainty statistics for '{SelectedAttribute}' using {count} record(s) after filtering {excludedByFilter} record(s).";
             RefreshDiagnostics();
+        }
+
+        private void TryAutoComputeStatistics()
+        {
+            if (CanComputeStatistics())
+            {
+                ComputeStatistics();
+            }
+            else
+            {
+                Statistics.Clear();
+            }
+        }
+
+        private List<double> ApplyStatisticalFilters(List<double> values, out int excludedCount, out string outlierThresholdDescription)
+        {
+            var filtered = values.AsEnumerable();
+
+            if (IgnoreZeroValues)
+            {
+                filtered = filtered.Where(v => Math.Abs(v) > double.Epsilon);
+            }
+
+            if (IgnoreNegativeValues)
+            {
+                filtered = filtered.Where(v => v >= 0);
+            }
+
+            outlierThresholdDescription = string.Empty;
+            var postBasicFilters = filtered.ToList();
+            if (ExcludeIqrOutliers && postBasicFilters.Count >= 4)
+            {
+                var sorted = postBasicFilters.OrderBy(v => v).ToArray();
+                var q1 = Percentile(sorted, 0.25);
+                var q3 = Percentile(sorted, 0.75);
+                var iqr = q3 - q1;
+                var lowerFence = q1 - (1.5 * iqr);
+                var upperFence = q3 + (1.5 * iqr);
+                outlierThresholdDescription = $"[{FormatNumber(lowerFence)}, {FormatNumber(upperFence)}]";
+                postBasicFilters = postBasicFilters.Where(v => v >= lowerFence && v <= upperFence).ToList();
+            }
+
+            excludedCount = values.Count - postBasicFilters.Count;
+            return postBasicFilters;
         }
 
         protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
@@ -262,6 +366,11 @@ namespace EconToolbox.Desktop.ViewModels
                 string.IsNullOrWhiteSpace(SelectedAttribute)
                     ? "Choose a numeric field from the shapefile table."
                     : SelectedAttribute);
+
+            yield return new DiagnosticItem(
+                DiagnosticLevel.Info,
+                "Statistical filters",
+                $"Ignore zeros: {(IgnoreZeroValues ? "On" : "Off")}, Ignore negatives: {(IgnoreNegativeValues ? "On" : "Off")}, Exclude IQR outliers: {(ExcludeIqrOutliers ? "On" : "Off")}");
 
             if (Statistics.Count > 0)
             {
