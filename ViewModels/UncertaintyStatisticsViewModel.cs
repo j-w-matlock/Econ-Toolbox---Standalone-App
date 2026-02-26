@@ -5,12 +5,23 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels
 {
     public sealed class UncertaintyStatisticsViewModel : DiagnosticViewModelBase, IComputeModule
     {
+        private static readonly CultureInfo[] NumericCultures = new[]
+        {
+            CultureInfo.InvariantCulture,
+            CultureInfo.CurrentCulture,
+            CultureInfo.GetCultureInfo("en-US"),
+            CultureInfo.GetCultureInfo("en-GB"),
+            CultureInfo.GetCultureInfo("fr-FR"),
+            CultureInfo.GetCultureInfo("de-DE")
+        };
+
         private readonly Dictionary<string, List<double>> _numericAttributeValues = new(StringComparer.OrdinalIgnoreCase);
         private string _statusMessage = "Load a shapefile to analyze uncertainty statistics for structure-related attributes.";
         private string _selectedCategory = "Structure Value";
@@ -264,6 +275,8 @@ namespace EconToolbox.Desktop.ViewModels
 
         private static Dictionary<string, List<double>> LoadNumericAttributesFromDbf(string dbfPath)
         {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
             using var stream = File.OpenRead(dbfPath);
             using var reader = new BinaryReader(stream);
 
@@ -272,7 +285,11 @@ namespace EconToolbox.Desktop.ViewModels
             _ = reader.ReadInt32();
             var headerLength = reader.ReadInt16();
             var recordLength = reader.ReadInt16();
-            _ = reader.ReadBytes(20);
+            _ = reader.ReadBytes(12);
+            var languageDriverId = reader.ReadByte();
+            _ = reader.ReadBytes(7);
+
+            var encoding = ResolveDbfEncoding(dbfPath, languageDriverId);
 
             var descriptors = new List<DbfFieldDescriptor>();
             while (true)
@@ -292,7 +309,6 @@ namespace EconToolbox.Desktop.ViewModels
 
             stream.Seek(headerLength, SeekOrigin.Begin);
             var results = descriptors.ToDictionary(d => d.Name, _ => new List<double>(), StringComparer.OrdinalIgnoreCase);
-            var encoding = Encoding.GetEncoding(1252);
 
             while (stream.Position + recordLength <= stream.Length)
             {
@@ -312,8 +328,7 @@ namespace EconToolbox.Desktop.ViewModels
                     }
 
                     var text = encoding.GetString(raw).Trim();
-                    if (double.TryParse(text, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var value) ||
-                        double.TryParse(text, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out value))
+                    if (TryParseNumericText(text, out var value))
                     {
                         results[descriptor.Name].Add(value);
                     }
@@ -322,6 +337,143 @@ namespace EconToolbox.Desktop.ViewModels
 
             return results.Where(item => item.Value.Count > 0)
                 .ToDictionary(item => item.Key, item => item.Value, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static bool TryParseNumericText(string text, out double value)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                value = 0;
+                return false;
+            }
+
+            var normalized = text.Trim();
+            foreach (var culture in NumericCultures)
+            {
+                if (double.TryParse(normalized, NumberStyles.Float | NumberStyles.AllowThousands, culture, out value))
+                {
+                    return true;
+                }
+            }
+
+            normalized = normalized.Replace(" ", string.Empty, StringComparison.Ordinal)
+                .Replace("\u00A0", string.Empty, StringComparison.Ordinal)
+                .Replace("'", string.Empty, StringComparison.Ordinal);
+
+            foreach (var candidate in BuildNumericCandidates(normalized))
+            {
+                if (double.TryParse(candidate, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out value))
+                {
+                    return true;
+                }
+            }
+
+            value = 0;
+            return false;
+        }
+
+        private static IEnumerable<string> BuildNumericCandidates(string text)
+        {
+            yield return text;
+
+            if (text.Contains(',', StringComparison.Ordinal) && !text.Contains('.', StringComparison.Ordinal))
+            {
+                yield return text.Replace(',', '.');
+            }
+
+            if (text.Contains('.', StringComparison.Ordinal) && text.Contains(',', StringComparison.Ordinal))
+            {
+                var commaAsDecimal = text.Replace(".", string.Empty, StringComparison.Ordinal).Replace(',', '.');
+                var dotAsDecimal = text.Replace(",", string.Empty, StringComparison.Ordinal);
+                yield return commaAsDecimal;
+                yield return dotAsDecimal;
+            }
+        }
+
+        private static Encoding ResolveDbfEncoding(string dbfPath, byte languageDriverId)
+        {
+            var cpgEncoding = TryReadCpgEncoding(dbfPath);
+            if (cpgEncoding != null)
+            {
+                return cpgEncoding;
+            }
+
+            var byLanguageDriver = TryMapLanguageDriver(languageDriverId);
+            if (byLanguageDriver != null)
+            {
+                return byLanguageDriver;
+            }
+
+            return Encoding.GetEncoding(1252);
+        }
+
+        private static Encoding? TryReadCpgEncoding(string dbfPath)
+        {
+            var cpgPath = Path.ChangeExtension(dbfPath, ".cpg");
+            if (!File.Exists(cpgPath))
+            {
+                return null;
+            }
+
+            var cpgText = File.ReadAllText(cpgPath).Trim();
+            if (string.IsNullOrWhiteSpace(cpgText))
+            {
+                return null;
+            }
+
+            try
+            {
+                return Encoding.GetEncoding(cpgText);
+            }
+            catch (ArgumentException)
+            {
+                var digits = Regex.Match(cpgText, "\\d+").Value;
+                if (int.TryParse(digits, NumberStyles.Integer, CultureInfo.InvariantCulture, out var codePage))
+                {
+                    try
+                    {
+                        return Encoding.GetEncoding(codePage);
+                    }
+                    catch (ArgumentException)
+                    {
+                        return null;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        private static Encoding? TryMapLanguageDriver(byte languageDriverId)
+        {
+            return languageDriverId switch
+            {
+                0x01 => Encoding.GetEncoding(437),
+                0x02 => Encoding.GetEncoding(850),
+                0x03 => Encoding.GetEncoding(1252),
+                0x57 => Encoding.GetEncoding(1252),
+                0x64 => Encoding.GetEncoding(852),
+                0x65 => Encoding.GetEncoding(866),
+                0x66 => Encoding.GetEncoding(865),
+                0x67 => Encoding.GetEncoding(861),
+                0x6A => Encoding.GetEncoding(737),
+                0x6B => Encoding.GetEncoding(857),
+                0x78 => Encoding.GetEncoding(950),
+                0x79 => Encoding.GetEncoding(949),
+                0x7A => Encoding.GetEncoding(936),
+                0x7B => Encoding.GetEncoding(932),
+                0x7C => Encoding.GetEncoding(874),
+                0x86 => Encoding.GetEncoding(737),
+                0x87 => Encoding.GetEncoding(852),
+                0x88 => Encoding.GetEncoding(857),
+                0xC8 => Encoding.GetEncoding(1250),
+                0xC9 => Encoding.GetEncoding(1251),
+                0xCA => Encoding.GetEncoding(1254),
+                0xCB => Encoding.GetEncoding(1253),
+                0xCC => Encoding.GetEncoding(1257),
+                0x00 => Encoding.GetEncoding(1252),
+                _ => null
+            };
         }
 
         private static DbfFieldDescriptor ParseDescriptor(byte[] bytes)
