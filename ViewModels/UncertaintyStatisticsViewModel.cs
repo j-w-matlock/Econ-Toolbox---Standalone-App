@@ -234,16 +234,19 @@ namespace EconToolbox.Desktop.ViewModels
         protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
         {
             yield return new DiagnosticItem(
+                DiagnosticLevel.Advisory,
                 "EM 1110-2-1619 context",
                 "Use Structure Value, Content Value, and First Floor Elevation attributes to characterize uncertainty in economic inputs for flood risk management studies.");
 
             yield return new DiagnosticItem(
+                DiagnosticLevel.Info,
                 "Input source",
                 string.IsNullOrWhiteSpace(ShapefilePath)
                     ? "No shapefile selected."
                     : $"Loaded: {Path.GetFileName(ShapefilePath)}");
 
             yield return new DiagnosticItem(
+                DiagnosticLevel.Info,
                 "Selected attribute",
                 string.IsNullOrWhiteSpace(SelectedAttribute)
                     ? "Choose a numeric field from the shapefile table."
@@ -252,7 +255,10 @@ namespace EconToolbox.Desktop.ViewModels
             if (Statistics.Count > 0)
             {
                 var cv = Statistics.FirstOrDefault(item => item.Metric == "Coefficient of Variation")?.Value ?? "n/a";
-                yield return new DiagnosticItem("Key uncertainty indicator", $"Coefficient of variation: {cv}");
+                yield return new DiagnosticItem(
+                    DiagnosticLevel.Info,
+                    "Key uncertainty indicator",
+                    $"Coefficient of variation: {cv}");
             }
         }
 
