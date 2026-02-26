@@ -48,7 +48,7 @@
                 <Button Grid.Row="1" Grid.Column="2"
                         Content="Load Shapefile"
                         Command="{Binding LoadShapefileCommand}"
-                        Style="{StaticResource Button.ActionSecondary}"
+                        Style="{StaticResource Button.ActionSecondaryCompact}"
                         Margin="0,28,0,0"
                         Padding="18,10"/>
             </Grid>
