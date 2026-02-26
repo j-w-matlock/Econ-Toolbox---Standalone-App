@@ -441,7 +441,25 @@ namespace EconToolbox.Desktop.ViewModels
                         "Exports a concise CSV summary that includes category totals and highlighted structures."
                     },
                     "Example: Organize multiple impact areas and report which DamageCategory drives the highest frequent-AEP structure damages.",
-                    typeof(StageDamageOrganizerViewModel))
+                    typeof(StageDamageOrganizerViewModel)),
+                new ModuleDefinition(
+                    "Shapefile Uncertainty Statistics",
+                    "Upload a shapefile and compute statistics that describe uncertainty in structure-related values.",
+                    "Calculates descriptive statistics (including standard deviation and coefficient of variation) for selected numeric DBF attributes.",
+                    new[]
+                    {
+                        "Load a shapefile (.shp) that includes a matching .dbf attribute table.",
+                        "Choose the uncertainty category (Structure Value, Content Value, or First Floor Elevation).",
+                        "Confirm the numeric attribute selection and run Calculate to generate summary statistics."
+                    },
+                    new[]
+                    {
+                        "Computes population and sample standard deviations for the selected attribute.",
+                        "Reports coefficient of variation, quartiles, skewness, and other descriptive metrics.",
+                        "Supports uncertainty documentation workflows aligned with EM 1110-2-1619 Chapter 5 discussions."
+                    },
+                    "Example: Evaluate variation in first-floor elevation values to characterize economic uncertainty assumptions for a flood risk reduction study.",
+                    typeof(UncertaintyStatisticsViewModel))
             };
 
             ApplyLayoutSettings();
