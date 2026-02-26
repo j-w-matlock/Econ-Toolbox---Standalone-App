@@ -62,6 +62,9 @@
             <DataTemplate DataType="{x:Type vm:StageDamageOrganizerViewModel}">
                 <views:StageDamageOrganizerView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UncertaintyStatisticsViewModel}">
+                <views:UncertaintyStatisticsView/>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type vm:DiagnosticItem}">
                 <Border Style="{StaticResource Diagnostic.Border}">
                     <Grid>
