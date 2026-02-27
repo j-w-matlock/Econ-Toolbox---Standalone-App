@@ -12,7 +12,9 @@ namespace EconToolbox.Desktop.ViewModels
 {
     public sealed class UncertaintyStatisticsViewModel : DiagnosticViewModelBase, IComputeModule
     {
-        private static readonly CultureInfo[] NumericCultures = new[]
+        private const string NoFilterOption = "(None)";
+
+        private static readonly CultureInfo[] NumericCultures =
         {
             CultureInfo.InvariantCulture,
             CultureInfo.CurrentCulture,
@@ -22,10 +24,17 @@ namespace EconToolbox.Desktop.ViewModels
             CultureInfo.GetCultureInfo("de-DE")
         };
 
+        private readonly List<ShapefileRecord> _records = new();
         private readonly Dictionary<string, List<double>> _numericAttributeValues = new(StringComparer.OrdinalIgnoreCase);
+
         private string _statusMessage = "Load a shapefile to analyze uncertainty statistics for structure-related attributes.";
         private string _selectedCategory = "Structure Value";
         private string? _selectedAttribute;
+        private string _selectedRefinementAttribute = NoFilterOption;
+        private string? _selectedRefinementValue;
+        private string _selectedStatisticalTest = "Auto (Recommended)";
+        private string _recommendedStatisticalTest = "Auto (Recommended)";
+        private string _nullHypothesisValue = "0";
         private string _shapefilePath = string.Empty;
         private bool _ignoreZeroValues;
         private bool _ignoreNegativeValues;
@@ -40,7 +49,20 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<string> AvailableAttributes { get; } = new();
 
+        public ObservableCollection<string> RefinementAttributeOptions { get; } = new();
+
+        public ObservableCollection<string> RefinementValueOptions { get; } = new();
+
+        public ObservableCollection<string> StatisticalTestOptions { get; } = new(new[]
+        {
+            "Auto (Recommended)",
+            "One-Sample Z-Test (Mean)",
+            "One-Sample Sign Test (Median)"
+        });
+
         public ObservableCollection<AttributeStatistic> Statistics { get; } = new();
+
+        public ObservableCollection<SurveyPopulationItem> SurveyPopulation { get; } = new();
 
         public IRelayCommand LoadShapefileCommand { get; }
 
@@ -76,9 +98,69 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 if (SetProperty(ref _selectedAttribute, value))
                 {
+                    UpdateRefinementAttributeOptions();
                     TryAutoComputeStatistics();
                     RefreshDiagnostics();
                     (ComputeCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                }
+            }
+        }
+
+        public string SelectedRefinementAttribute
+        {
+            get => _selectedRefinementAttribute;
+            set
+            {
+                if (SetProperty(ref _selectedRefinementAttribute, value))
+                {
+                    UpdateRefinementValueOptions();
+                    TryAutoComputeStatistics();
+                    RefreshDiagnostics();
+                }
+            }
+        }
+
+        public string? SelectedRefinementValue
+        {
+            get => _selectedRefinementValue;
+            set
+            {
+                if (SetProperty(ref _selectedRefinementValue, value))
+                {
+                    TryAutoComputeStatistics();
+                    RefreshDiagnostics();
+                }
+            }
+        }
+
+        public string SelectedStatisticalTest
+        {
+            get => _selectedStatisticalTest;
+            set
+            {
+                if (SetProperty(ref _selectedStatisticalTest, value))
+                {
+                    TryAutoComputeStatistics();
+                    RefreshDiagnostics();
+                }
+            }
+        }
+
+        public string RecommendedStatisticalTest
+        {
+            get => _recommendedStatisticalTest;
+            private set => SetProperty(ref _recommendedStatisticalTest, value);
+        }
+
+        public string NullHypothesisValue
+        {
+            get => _nullHypothesisValue;
+            set
+            {
+                if (SetProperty(ref _nullHypothesisValue, value))
+                {
+                    TryAutoComputeStatistics();
+                    RefreshDiagnostics();
                 }
             }
         }
@@ -136,6 +218,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         public UncertaintyStatisticsViewModel()
         {
+            RefinementAttributeOptions.Add(NoFilterOption);
             LoadShapefileCommand = new RelayCommand(LoadShapefile);
             ComputeCommand = new RelayCommand(ComputeStatistics, CanComputeStatistics);
             RefreshDiagnostics();
@@ -143,9 +226,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private bool CanComputeStatistics()
         {
-            return !string.IsNullOrWhiteSpace(SelectedAttribute) &&
-                   _numericAttributeValues.TryGetValue(SelectedAttribute!, out var values) &&
-                   values.Count > 0;
+            return !string.IsNullOrWhiteSpace(SelectedAttribute) && _records.Count > 0;
         }
 
         private void LoadShapefile()
@@ -170,15 +251,15 @@ namespace EconToolbox.Desktop.ViewModels
                     return;
                 }
 
-                var parsedAttributes = LoadNumericAttributesFromDbf(dbfPath);
-                _numericAttributeValues.Clear();
-                AvailableAttributes.Clear();
-                Statistics.Clear();
+                var loadedRecords = LoadRecordsFromDbf(dbfPath);
+                _records.Clear();
+                _records.AddRange(loadedRecords);
 
-                foreach (var pair in parsedAttributes.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase))
+                RebuildNumericAttributeValues();
+                AvailableAttributes.Clear();
+                foreach (var field in _numericAttributeValues.Keys.OrderBy(name => name, StringComparer.OrdinalIgnoreCase))
                 {
-                    _numericAttributeValues[pair.Key] = pair.Value;
-                    AvailableAttributes.Add(pair.Key);
+                    AvailableAttributes.Add(field);
                 }
 
                 ShapefilePath = dialog.FileName;
@@ -190,7 +271,7 @@ namespace EconToolbox.Desktop.ViewModels
                 }
                 else
                 {
-                    StatusMessage = $"Loaded {AvailableAttributes.Count} numeric attribute(s) from {Path.GetFileName(dialog.FileName)}.";
+                    StatusMessage = $"Loaded {_records.Count} row(s) and {AvailableAttributes.Count} numeric attribute(s) from {Path.GetFileName(dialog.FileName)}.";
                 }
             }
             catch (Exception ex)
@@ -201,6 +282,25 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 (ComputeCommand as RelayCommand)?.NotifyCanExecuteChanged();
                 RefreshDiagnostics();
+            }
+        }
+
+        private void RebuildNumericAttributeValues()
+        {
+            _numericAttributeValues.Clear();
+
+            foreach (var record in _records)
+            {
+                foreach (var pair in record.NumericValues)
+                {
+                    if (!_numericAttributeValues.TryGetValue(pair.Key, out var values))
+                    {
+                        values = new List<double>();
+                        _numericAttributeValues[pair.Key] = values;
+                    }
+
+                    values.Add(pair.Value);
+                }
             }
         }
 
@@ -233,20 +333,84 @@ namespace EconToolbox.Desktop.ViewModels
             SelectedAttribute = bestMatch?.Field ?? AvailableAttributes.FirstOrDefault();
         }
 
+        private void UpdateRefinementAttributeOptions()
+        {
+            RefinementAttributeOptions.Clear();
+            RefinementAttributeOptions.Add(NoFilterOption);
+
+            foreach (var candidate in _records.SelectMany(r => r.RawValues.Keys)
+                         .Where(k => !string.Equals(k, SelectedAttribute, StringComparison.OrdinalIgnoreCase))
+                         .Distinct(StringComparer.OrdinalIgnoreCase)
+                         .OrderBy(k => k, StringComparer.OrdinalIgnoreCase))
+            {
+                RefinementAttributeOptions.Add(candidate);
+            }
+
+            if (!RefinementAttributeOptions.Contains(SelectedRefinementAttribute))
+            {
+                SelectedRefinementAttribute = NoFilterOption;
+            }
+            else
+            {
+                UpdateRefinementValueOptions();
+            }
+        }
+
+        private void UpdateRefinementValueOptions()
+        {
+            RefinementValueOptions.Clear();
+            SelectedRefinementValue = null;
+
+            if (SelectedRefinementAttribute == NoFilterOption)
+            {
+                return;
+            }
+
+            var values = _records
+                .Select(r => r.RawValues.TryGetValue(SelectedRefinementAttribute, out var raw) ? raw : string.Empty)
+                .Where(raw => !string.IsNullOrWhiteSpace(raw))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(raw => raw, StringComparer.OrdinalIgnoreCase)
+                .Take(500)
+                .ToList();
+
+            foreach (var value in values)
+            {
+                RefinementValueOptions.Add(value);
+            }
+
+            SelectedRefinementValue = RefinementValueOptions.FirstOrDefault();
+        }
+
         private void ComputeStatistics()
         {
-            if (SelectedAttribute == null ||
-                !_numericAttributeValues.TryGetValue(SelectedAttribute, out var values) ||
-                values.Count == 0)
+            if (SelectedAttribute == null)
             {
                 StatusMessage = "Select an attribute with numeric values before calculating.";
                 return;
             }
 
-            var filteredValues = ApplyStatisticalFilters(values, out var excludedByFilter, out var outlierThresholdDescription);
+            var candidateRecords = GetRecordsForCurrentSelection(SelectedAttribute).ToList();
+            var candidateValues = candidateRecords
+                .Select(r => r.NumericValues.TryGetValue(SelectedAttribute, out var value) ? (double?)value : null)
+                .Where(v => v.HasValue)
+                .Select(v => v!.Value)
+                .ToList();
+
+            if (candidateValues.Count == 0)
+            {
+                Statistics.Clear();
+                SurveyPopulation.Clear();
+                StatusMessage = "No numeric values remain after applying the selected attribute refinement.";
+                RefreshDiagnostics();
+                return;
+            }
+
+            var filteredValues = ApplyStatisticalFilters(candidateValues, out var excludedByFilter, out var outlierThresholdDescription);
             if (filteredValues.Count == 0)
             {
                 Statistics.Clear();
+                SurveyPopulation.Clear();
                 StatusMessage = "All values were removed by the active statistical filters. Adjust options and try again.";
                 RefreshDiagnostics();
                 return;
@@ -259,56 +423,46 @@ namespace EconToolbox.Desktop.ViewModels
             var max = ordered.Last();
             var variancePopulation = ordered.Sum(value => Math.Pow(value - mean, 2)) / count;
             var stdPopulation = Math.Sqrt(variancePopulation);
-            var varianceSample = count > 1
-                ? ordered.Sum(value => Math.Pow(value - mean, 2)) / (count - 1)
-                : 0;
+            var varianceSample = count > 1 ? ordered.Sum(value => Math.Pow(value - mean, 2)) / (count - 1) : 0;
             var stdSample = Math.Sqrt(varianceSample);
-            var coefficientOfVariation = Math.Abs(mean) > double.Epsilon
-                ? stdPopulation / Math.Abs(mean)
-                : 0;
+            var coefficientOfVariation = Math.Abs(mean) > double.Epsilon ? stdPopulation / Math.Abs(mean) : 0;
             var median = Percentile(ordered, 0.5);
             var q1 = Percentile(ordered, 0.25);
             var q3 = Percentile(ordered, 0.75);
-            var skewness = stdPopulation > 0
-                ? ordered.Sum(v => Math.Pow((v - mean) / stdPopulation, 3)) / count
-                : 0;
+            var skewness = stdPopulation > 0 ? ordered.Sum(v => Math.Pow((v - mean) / stdPopulation, 3)) / count : 0;
+
+            RecommendedStatisticalTest = RecommendTest(count, skewness);
+            var chosenTest = SelectedStatisticalTest == "Auto (Recommended)" ? RecommendedStatisticalTest : SelectedStatisticalTest;
+            var nullHypothesis = TryParseNumericText(NullHypothesisValue, out var parsedNull) ? parsedNull : 0;
+            var (testStatistic, pValue, testInterpretation) = RunStatisticalTest(chosenTest, ordered, mean, median, stdSample, nullHypothesis);
+
+            var representativeSampleSize = ComputeRepresentativeSampleSize(candidateRecords.Count);
+            BuildSurveyPopulation(candidateRecords, representativeSampleSize);
 
             Statistics.Clear();
-            AddStatistic(
-                "Selected Category",
-                SelectedCategory,
-                "The uncertainty category currently selected in the module. Statistics are computed only from records that belong to this category.");
-            AddStatistic(
-                "Selected Attribute",
-                SelectedAttribute,
-                "The numeric DBF/shapefile attribute field used as input values for all calculations shown below.");
-            AddStatistic(
-                "Observation Count",
-                count.ToString(CultureInfo.InvariantCulture),
-                "Number of values included in the final computation after all enabled filters are applied.");
-            AddStatistic(
-                "Excluded by Filters",
-                excludedByFilter.ToString(CultureInfo.InvariantCulture),
-                "Count of candidate numeric values removed by active statistical filters (zero-value filter, negative-value filter, and/or IQR outlier filter).");
-            AddStatistic(
-                "Ignore Zero Values",
-                IgnoreZeroValues ? "Yes" : "No",
-                "Indicates whether exact zero values were removed before computing summary statistics.");
-            AddStatistic(
-                "Ignore Negative Values",
-                IgnoreNegativeValues ? "Yes" : "No",
-                "Indicates whether values less than 0 were removed before computing summary statistics.");
-            AddStatistic(
-                "Exclude IQR Outliers",
-                ExcludeIqrOutliers ? "Yes" : "No",
-                "Indicates whether Tukey IQR outlier removal was applied using bounds [Q1 - 1.5*IQR, Q3 + 1.5*IQR].");
+            AddStatistic("Selected Category", SelectedCategory, "The uncertainty category currently selected in the module. Statistics are computed only from records that belong to this category.");
+            AddStatistic("Selected Attribute", SelectedAttribute, "The numeric DBF/shapefile attribute field used as input values for all calculations shown below.");
+            AddStatistic("Refinement Attribute", SelectedRefinementAttribute, "Optional secondary attribute used to subset the shapefile records before calculating statistics.");
+            AddStatistic("Refinement Value", SelectedRefinementValue ?? "(All)", "Specific value selected within the refinement attribute. Only matching records are retained.");
+            AddStatistic("Observation Count", count.ToString(CultureInfo.InvariantCulture), "Number of values included in the final computation after all enabled filters are applied.");
+            AddStatistic("Excluded by Filters", excludedByFilter.ToString(CultureInfo.InvariantCulture), "Count of candidate numeric values removed by active statistical filters (zero-value filter, negative-value filter, and/or IQR outlier filter).");
+            AddStatistic("Ignore Zero Values", IgnoreZeroValues ? "Yes" : "No", "Indicates whether exact zero values were removed before computing summary statistics.");
+            AddStatistic("Ignore Negative Values", IgnoreNegativeValues ? "Yes" : "No", "Indicates whether values less than 0 were removed before computing summary statistics.");
+            AddStatistic("Exclude IQR Outliers", ExcludeIqrOutliers ? "Yes" : "No", "Indicates whether Tukey IQR outlier removal was applied using bounds [Q1 - 1.5*IQR, Q3 + 1.5*IQR].");
             if (!string.IsNullOrWhiteSpace(outlierThresholdDescription))
             {
-                AddStatistic(
-                    "IQR Outlier Threshold",
-                    outlierThresholdDescription,
-                    "Accepted range for outlier filtering computed as lower = Q1 - 1.5*IQR and upper = Q3 + 1.5*IQR, where IQR = Q3 - Q1.");
+                AddStatistic("IQR Outlier Threshold", outlierThresholdDescription, "Accepted range for outlier filtering computed as lower = Q1 - 1.5*IQR and upper = Q3 + 1.5*IQR, where IQR = Q3 - Q1.");
             }
+
+            AddStatistic("Recommended Statistical Test", RecommendedStatisticalTest, "Module recommendation based on sample size and distribution skewness.");
+            AddStatistic("Applied Statistical Test", chosenTest, "Test actually executed. When Auto is selected, the recommended test is applied.");
+            AddStatistic("Null Hypothesis Value", FormatNumber(nullHypothesis), "Reference mean/median value used by the selected test.");
+            AddStatistic("Test Statistic", FormatNumber(testStatistic), "Numeric test statistic produced by the selected test.");
+            AddStatistic("Two-Tailed p-value", pValue.ToString("N6", CultureInfo.InvariantCulture), "Probability of observing a test statistic at least this extreme under the null hypothesis.");
+            AddStatistic("Test Interpretation", testInterpretation, "Interpretation using α = 0.05. Reject H0 when p-value < 0.05.");
+            AddStatistic("Representative Sample Size", representativeSampleSize.ToString(CultureInfo.InvariantCulture), "Suggested survey sample size using Cochran's finite-population correction (95% confidence, ±5% margin, p=0.5).");
+            AddStatistic("Population Records for Survey", candidateRecords.Count.ToString(CultureInfo.InvariantCulture), "Count of records in the refined population from which random survey members are drawn.");
+
             AddStatistic("Minimum", FormatNumber(min), "Smallest value in the filtered dataset: min(x).");
             AddStatistic("Maximum", FormatNumber(max), "Largest value in the filtered dataset: max(x).");
             AddStatistic("Range", FormatNumber(max - min), "Overall spread of values computed as Range = Maximum - Minimum.");
@@ -322,8 +476,151 @@ namespace EconToolbox.Desktop.ViewModels
             AddStatistic("Coefficient of Variation", coefficientOfVariation.ToString("P2", CultureInfo.InvariantCulture), "Relative dispersion measured as CV = (Population Standard Deviation / |Mean|) × 100%. Returns 0 when mean is near zero.");
             AddStatistic("Skewness", FormatNumber(skewness), "Asymmetry of the distribution computed from the standardized third central moment. Positive values indicate right-skew; negative values indicate left-skew.");
 
-            StatusMessage = $"Computed uncertainty statistics for '{SelectedAttribute}' using {count} record(s) after filtering {excludedByFilter} record(s).";
+            StatusMessage = $"Computed statistics/test results for '{SelectedAttribute}' using {count} record(s). Suggested survey sample: {representativeSampleSize}.";
             RefreshDiagnostics();
+        }
+
+        private IEnumerable<ShapefileRecord> GetRecordsForCurrentSelection(string numericAttribute)
+        {
+            return _records.Where(record =>
+            {
+                if (!record.NumericValues.ContainsKey(numericAttribute))
+                {
+                    return false;
+                }
+
+                if (SelectedRefinementAttribute == NoFilterOption || string.IsNullOrWhiteSpace(SelectedRefinementValue))
+                {
+                    return true;
+                }
+
+                return record.RawValues.TryGetValue(SelectedRefinementAttribute, out var value) &&
+                       string.Equals(value, SelectedRefinementValue, StringComparison.OrdinalIgnoreCase);
+            });
+        }
+
+        private void BuildSurveyPopulation(IReadOnlyList<ShapefileRecord> candidateRecords, int representativeSampleSize)
+        {
+            SurveyPopulation.Clear();
+            if (candidateRecords.Count == 0 || representativeSampleSize <= 0)
+            {
+                return;
+            }
+
+            var shuffled = candidateRecords.OrderBy(_ => Random.Shared.Next()).Take(representativeSampleSize).ToList();
+            foreach (var record in shuffled)
+            {
+                SurveyPopulation.Add(new SurveyPopulationItem(record.RowNumber, record.Identifier));
+            }
+        }
+
+        private static int ComputeRepresentativeSampleSize(int populationSize)
+        {
+            if (populationSize <= 0)
+            {
+                return 0;
+            }
+
+            const double z = 1.96;
+            const double p = 0.5;
+            const double e = 0.05;
+            var n0 = (z * z * p * (1 - p)) / (e * e);
+            var n = n0 / (1 + ((n0 - 1) / populationSize));
+            return Math.Min(populationSize, (int)Math.Ceiling(n));
+        }
+
+        private static (double Statistic, double PValue, string Interpretation) RunStatisticalTest(string testName, IReadOnlyList<double> ordered, double mean, double median, double sampleStd, double nullHypothesis)
+        {
+            return testName switch
+            {
+                "One-Sample Sign Test (Median)" => RunSignTest(ordered, nullHypothesis),
+                _ => RunZTest(mean, sampleStd, ordered.Count, nullHypothesis)
+            };
+        }
+
+        private static (double Statistic, double PValue, string Interpretation) RunZTest(double mean, double sampleStd, int count, double nullHypothesis)
+        {
+            if (count <= 1 || sampleStd <= double.Epsilon)
+            {
+                return (0, 1, "Insufficient variability to evaluate the z-test.");
+            }
+
+            var z = (mean - nullHypothesis) / (sampleStd / Math.Sqrt(count));
+            var p = 2 * (1 - NormalCdf(Math.Abs(z)));
+            var interpretation = p < 0.05
+                ? "Reject H0 at α=0.05 (mean differs from null value)."
+                : "Fail to reject H0 at α=0.05.";
+            return (z, p, interpretation);
+        }
+
+        private static (double Statistic, double PValue, string Interpretation) RunSignTest(IReadOnlyList<double> values, double nullHypothesis)
+        {
+            var positives = values.Count(v => v > nullHypothesis);
+            var negatives = values.Count(v => v < nullHypothesis);
+            var n = positives + negatives;
+            if (n == 0)
+            {
+                return (0, 1, "All observations equal the null median; sign test is inconclusive.");
+            }
+
+            var k = Math.Min(positives, negatives);
+            var cumulative = 0.0;
+            for (var i = 0; i <= k; i++)
+            {
+                cumulative += BinomialProbability(n, i, 0.5);
+            }
+
+            var p = Math.Min(1.0, 2 * cumulative);
+            var interpretation = p < 0.05
+                ? "Reject H0 at α=0.05 (median differs from null value)."
+                : "Fail to reject H0 at α=0.05.";
+            return (positives - negatives, p, interpretation);
+        }
+
+        private static double BinomialProbability(int n, int k, double p)
+        {
+            var logCoeff = LogFactorial(n) - LogFactorial(k) - LogFactorial(n - k);
+            return Math.Exp(logCoeff + (k * Math.Log(p)) + ((n - k) * Math.Log(1 - p)));
+        }
+
+        private static double LogFactorial(int n)
+        {
+            double result = 0;
+            for (var i = 2; i <= n; i++)
+            {
+                result += Math.Log(i);
+            }
+
+            return result;
+        }
+
+        private static double NormalCdf(double value)
+        {
+            return 0.5 * (1 + Erf(value / Math.Sqrt(2)));
+        }
+
+        private static double Erf(double x)
+        {
+            var sign = Math.Sign(x);
+            x = Math.Abs(x);
+
+            const double a1 = 0.254829592;
+            const double a2 = -0.284496736;
+            const double a3 = 1.421413741;
+            const double a4 = -1.453152027;
+            const double a5 = 1.061405429;
+            const double p = 0.3275911;
+
+            var t = 1.0 / (1.0 + (p * x));
+            var y = 1.0 - (((((a5 * t) + a4) * t + a3) * t + a2) * t + a1) * t * Math.Exp(-x * x);
+            return sign * y;
+        }
+
+        private static string RecommendTest(int count, double skewness)
+        {
+            return count >= 30 && Math.Abs(skewness) <= 1
+                ? "One-Sample Z-Test (Mean)"
+                : "One-Sample Sign Test (Median)";
         }
 
         private void TryAutoComputeStatistics()
@@ -335,6 +632,7 @@ namespace EconToolbox.Desktop.ViewModels
             else
             {
                 Statistics.Clear();
+                SurveyPopulation.Clear();
             }
         }
 
@@ -380,33 +678,25 @@ namespace EconToolbox.Desktop.ViewModels
             yield return new DiagnosticItem(
                 DiagnosticLevel.Info,
                 "Input source",
-                string.IsNullOrWhiteSpace(ShapefilePath)
-                    ? "No shapefile selected."
-                    : $"Loaded: {Path.GetFileName(ShapefilePath)}");
+                string.IsNullOrWhiteSpace(ShapefilePath) ? "No shapefile selected." : $"Loaded: {Path.GetFileName(ShapefilePath)}");
 
             yield return new DiagnosticItem(
                 DiagnosticLevel.Info,
                 "Selected attribute",
-                string.IsNullOrWhiteSpace(SelectedAttribute)
-                    ? "Choose a numeric field from the shapefile table."
-                    : SelectedAttribute);
+                string.IsNullOrWhiteSpace(SelectedAttribute) ? "Choose a numeric field from the shapefile table." : SelectedAttribute);
 
             yield return new DiagnosticItem(
                 DiagnosticLevel.Info,
-                "Statistical filters",
-                $"Ignore zeros: {(IgnoreZeroValues ? "On" : "Off")}, Ignore negatives: {(IgnoreNegativeValues ? "On" : "Off")}, Exclude IQR outliers: {(ExcludeIqrOutliers ? "On" : "Off")}");
+                "Refinement",
+                SelectedRefinementAttribute == NoFilterOption ? "No additional attribute refinement selected." : $"{SelectedRefinementAttribute} = {SelectedRefinementValue ?? "(not set)"}");
 
-            if (Statistics.Count > 0)
-            {
-                var cv = Statistics.FirstOrDefault(item => item.Metric == "Coefficient of Variation")?.Value ?? "n/a";
-                yield return new DiagnosticItem(
-                    DiagnosticLevel.Info,
-                    "Key uncertainty indicator",
-                    $"Coefficient of variation: {cv}");
-            }
+            yield return new DiagnosticItem(
+                DiagnosticLevel.Info,
+                "Recommended test",
+                RecommendedStatisticalTest);
         }
 
-        private static Dictionary<string, List<double>> LoadNumericAttributesFromDbf(string dbfPath)
+        private static List<ShapefileRecord> LoadRecordsFromDbf(string dbfPath)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -441,8 +731,8 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             stream.Seek(headerLength, SeekOrigin.Begin);
-            var results = descriptors.ToDictionary(d => d.Name, _ => new List<double>(), StringComparer.OrdinalIgnoreCase);
-
+            var records = new List<ShapefileRecord>();
+            var rowNumber = 1;
             while (stream.Position + recordLength <= stream.Length)
             {
                 var deletionFlag = reader.ReadByte();
@@ -452,24 +742,42 @@ namespace EconToolbox.Desktop.ViewModels
                     continue;
                 }
 
+                var rawValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                var numericValues = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+
                 foreach (var descriptor in descriptors)
                 {
                     var raw = reader.ReadBytes(descriptor.Length);
-                    if (!descriptor.IsNumeric)
-                    {
-                        continue;
-                    }
-
                     var text = encoding.GetString(raw).Trim();
-                    if (TryParseNumericText(text, out var value))
+                    rawValues[descriptor.Name] = text;
+
+                    if (descriptor.IsNumeric && TryParseNumericText(text, out var value))
                     {
-                        results[descriptor.Name].Add(value);
+                        numericValues[descriptor.Name] = value;
                     }
+                }
+
+                var identifier = ResolveIdentifier(rawValues, rowNumber);
+                records.Add(new ShapefileRecord(rowNumber, identifier, rawValues, numericValues));
+                rowNumber++;
+            }
+
+            return records;
+        }
+
+        private static string ResolveIdentifier(IReadOnlyDictionary<string, string> values, int rowNumber)
+        {
+            var preferredFields = new[] { "id", "fid", "objectid", "name", "parcel", "address" };
+            foreach (var field in values.Keys)
+            {
+                if (preferredFields.Any(token => field.Contains(token, StringComparison.OrdinalIgnoreCase)) &&
+                    !string.IsNullOrWhiteSpace(values[field]))
+                {
+                    return values[field];
                 }
             }
 
-            return results.Where(item => item.Value.Count > 0)
-                .ToDictionary(item => item.Key, item => item.Value, StringComparer.OrdinalIgnoreCase);
+            return $"Row {rowNumber}";
         }
 
         private static bool TryParseNumericText(string text, out double value)
@@ -651,5 +959,11 @@ namespace EconToolbox.Desktop.ViewModels
         {
             public bool IsNumeric => Type is 'N' or 'F' or 'B' or 'I' or 'Y';
         }
+
+        private readonly record struct ShapefileRecord(
+            int RowNumber,
+            string Identifier,
+            IReadOnlyDictionary<string, string> RawValues,
+            IReadOnlyDictionary<string, double> NumericValues);
     }
 }
