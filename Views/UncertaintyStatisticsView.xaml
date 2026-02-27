@@ -19,6 +19,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -35,7 +36,8 @@
                     <ComboBox ItemsSource="{Binding CategoryOptions}"
                               SelectedItem="{Binding SelectedCategory}"
                               Margin="0,4,0,0"
-                              MinWidth="220"/>
+                              MinWidth="220"
+                              ToolTip="Select the uncertainty category used to auto-prioritize relevant value fields (for example structure value or first-floor elevation)."/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,12,16,0">
@@ -43,7 +45,8 @@
                     <ComboBox ItemsSource="{Binding AvailableAttributes}"
                               SelectedItem="{Binding SelectedAttribute}"
                               Margin="0,4,0,0"
-                              MinWidth="260"/>
+                              MinWidth="260"
+                              ToolTip="Primary numeric attribute used for summary statistics, test calculations, and representative survey sampling."/>
                 </StackPanel>
 
                 <Button Grid.Row="1" Grid.Column="2"
@@ -51,69 +54,140 @@
                         Command="{Binding LoadShapefileCommand}"
                         Style="{StaticResource Button.ActionSecondaryCompact}"
                         Margin="0,28,0,0"
-                        Padding="18,10"/>
+                        Padding="18,10"
+                        ToolTip="Open a .shp file. The module reads the matching .dbf table and exposes available fields for analysis."/>
 
-                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,12,16,0">
-                    <TextBlock Text="Statistical Options"
+                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,12,16,0">
+                    <TextBlock Text="Refinement Attribute" Style="{StaticResource Text.Label}"/>
+                    <ComboBox ItemsSource="{Binding RefinementAttributeOptions}"
+                              SelectedItem="{Binding SelectedRefinementAttribute}"
+                              Margin="0,4,0,0"
+                              MinWidth="220"
+                              ToolTip="Optional secondary attribute used to refine the dataset before statistics are computed."/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,12,16,0">
+                    <TextBlock Text="Refinement Value" Style="{StaticResource Text.Label}"/>
+                    <ComboBox ItemsSource="{Binding RefinementValueOptions}"
+                              SelectedItem="{Binding SelectedRefinementValue}"
+                              Margin="0,4,0,0"
+                              MinWidth="260"
+                              ToolTip="Specific value inside the refinement attribute. Only matching records are included in the analysis population."/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,12,16,0">
+                    <TextBlock Text="Statistical Test" Style="{StaticResource Text.Label}"/>
+                    <ComboBox ItemsSource="{Binding StatisticalTestOptions}"
+                              SelectedItem="{Binding SelectedStatisticalTest}"
+                              Margin="0,4,0,0"
+                              MinWidth="220"
+                              ToolTip="Choose Auto to apply the module recommendation, or manually select a hypothesis test for the current dataset."/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,12,16,0">
+                    <TextBlock Text="Null Hypothesis Value" Style="{StaticResource Text.Label}"/>
+                    <TextBox Text="{Binding NullHypothesisValue, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,4,0,0"
+                             MinWidth="160"
+                             ToolTip="Reference mean/median value for the selected hypothesis test. Example: use 0 when testing whether values differ from zero."/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Margin="0,28,0,0">
+                    <TextBlock Text="Recommended"
                                Style="{StaticResource Text.Label}"
-                               ToolTip="Controls that filter the input values before statistics are calculated. Enabling any option can change observation count, central tendency, spread, and distribution-shape metrics."/>
-                    <WrapPanel Margin="0,4,0,0">
-                        <CheckBox Content="Ignore zero values"
-                                  IsChecked="{Binding IgnoreZeroValues}"
-                                  Margin="0,0,20,0"
-                                  ToolTip="Removes all values equal to 0 before calculation.
-
-Impact: Reduces the Observation Count and can increase or decrease mean, variance, standard deviation, and coefficient of variation depending on how many zeros are present."/>
-                        <CheckBox Content="Ignore negative values"
-                                  IsChecked="{Binding IgnoreNegativeValues}"
-                                  Margin="0,0,20,0"
-                                  ToolTip="Removes all values less than 0 before calculation.
-
-Impact: Useful when negatives are invalid for the selected attribute; this can shift the mean upward and reduce spread/asymmetry if negative tails are removed."/>
-                        <CheckBox Content="Exclude IQR outliers"
-                                  IsChecked="{Binding ExcludeIqrOutliers}"
-                                  ToolTip="Applies Tukey IQR filtering after other enabled filters. Values outside [Q1 - 1.5×IQR, Q3 + 1.5×IQR] are excluded, where IQR = Q3 - Q1.
-
-Impact: Typically reduces the influence of extreme values on mean, range, variance, standard deviation, coefficient of variation, and skewness."/>
-                    </WrapPanel>
+                               ToolTip="Automated recommendation based on sample size and skewness of the filtered dataset."/>
+                    <TextBlock Text="{Binding RecommendedStatisticalTest}" Margin="0,4,0,0" TextWrapping="Wrap" Width="180"/>
                 </StackPanel>
             </Grid>
         </Border>
 
         <Border Grid.Row="1" Style="{StaticResource Border.Panel}" Margin="0,12,0,0">
             <StackPanel>
-                <TextBlock Text="Status" Style="{StaticResource Text.Label}"/>
+                <TextBlock Text="Statistical Options"
+                           Style="{StaticResource Text.Label}"
+                           ToolTip="Controls that filter the input values before statistics are calculated. Enabling any option can change observation count, central tendency, spread, and distribution-shape metrics."/>
+                <WrapPanel Margin="0,4,0,0">
+                    <CheckBox Content="Ignore zero values"
+                              IsChecked="{Binding IgnoreZeroValues}"
+                              Margin="0,0,20,0"
+                              ToolTip="Removes all values equal to 0 before calculation.
+
+Impact: Reduces the Observation Count and can increase or decrease mean, variance, standard deviation, and coefficient of variation depending on how many zeros are present."/>
+                    <CheckBox Content="Ignore negative values"
+                              IsChecked="{Binding IgnoreNegativeValues}"
+                              Margin="0,0,20,0"
+                              ToolTip="Removes all values less than 0 before calculation.
+
+Impact: Useful when negatives are invalid for the selected attribute; this can shift the mean upward and reduce spread/asymmetry if negative tails are removed."/>
+                    <CheckBox Content="Exclude IQR outliers"
+                              IsChecked="{Binding ExcludeIqrOutliers}"
+                              ToolTip="Applies Tukey IQR filtering after other enabled filters. Values outside [Q1 - 1.5×IQR, Q3 + 1.5×IQR] are excluded, where IQR = Q3 - Q1.
+
+Impact: Typically reduces the influence of extreme values on mean, range, variance, standard deviation, coefficient of variation, and skewness."/>
+                </WrapPanel>
+                <TextBlock Text="Status" Style="{StaticResource Text.Label}" Margin="0,10,0,0"/>
                 <TextBlock Text="{Binding StatusMessage}" Margin="0,4,0,0" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding ShapefilePath}" Margin="0,4,0,0" TextWrapping="Wrap" Opacity="0.75"/>
             </StackPanel>
         </Border>
 
-        <Border Grid.Row="2" Style="{StaticResource Border.Panel}" Margin="0,12,0,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="Detailed Statistics"
-                           Style="{StaticResource Text.SectionTitle}"/>
-                <DataGrid Grid.Row="1"
-                          Margin="0,10,0,0"
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          IsReadOnly="True"
-                          ItemsSource="{Binding Statistics}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Metric" Binding="{Binding Metric}" Width="2*"/>
-                        <DataGridTemplateColumn Header="Value" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Value}" ToolTip="{Binding ValueTooltip}"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </Border>
+        <Grid Grid.Row="2" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource Border.Panel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Detailed Statistics"
+                               Style="{StaticResource Text.SectionTitle}"/>
+                    <DataGrid Grid.Row="1"
+                              Margin="0,10,0,0"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              ItemsSource="{Binding Statistics}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Metric" Binding="{Binding Metric}" Width="2*"/>
+                            <DataGridTemplateColumn Header="Value" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Value}" ToolTip="{Binding ValueTooltip}" TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource Border.Panel}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Random Survey Population"
+                               Style="{StaticResource Text.SectionTitle}"
+                               ToolTip="Randomly sampled members from the refined population. Use this list as a representative subset for survey outreach."/>
+                    <DataGrid Grid.Row="1"
+                              Margin="0,10,0,0"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              ItemsSource="{Binding SurveyPopulation}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Row" Binding="{Binding RowNumber}" Width="70"/>
+                            <DataGridTextColumn Header="Identifier" Binding="{Binding Identifier}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>
