@@ -26,6 +26,7 @@ namespace EconToolbox.Desktop.Views
             if (e.NewValue is StageDamageOrganizerViewModel newVm)
             {
                 newVm.AepHeaders.CollectionChanged += OnAepHeadersChanged;
+                RebuildStructureCountByAepColumns(newVm);
                 RebuildCategorySummaryColumns(newVm);
                 RebuildDamageSummaryColumns(ContentCategorySummaryGrid, newVm, "AepDamages", "Content Total AEP Sum");
                 RebuildDamageSummaryColumns(OtherCategorySummaryGrid, newVm, "AepDamages", "Other Total AEP Sum");
@@ -37,6 +38,7 @@ namespace EconToolbox.Desktop.Views
         {
             if (ViewModel != null)
             {
+                RebuildStructureCountByAepColumns(ViewModel);
                 RebuildCategorySummaryColumns(ViewModel);
                 RebuildDamageSummaryColumns(ContentCategorySummaryGrid, ViewModel, "AepDamages", "Content Total AEP Sum");
                 RebuildDamageSummaryColumns(OtherCategorySummaryGrid, ViewModel, "AepDamages", "Other Total AEP Sum");
@@ -49,6 +51,42 @@ namespace EconToolbox.Desktop.Views
             RebuildDamageSummaryColumns(CategorySummaryGrid, viewModel, "AepDamages", "Total AEP Sum");
         }
 
+        private void RebuildStructureCountByAepColumns(StageDamageOrganizerViewModel viewModel)
+        {
+            StructureCountByAepSummaryGrid.Columns.Clear();
+
+            StructureCountByAepSummaryGrid.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Summary Name",
+                Binding = new Binding("SummaryName"),
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
+            });
+
+            StructureCountByAepSummaryGrid.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Impact Area",
+                Binding = new Binding("ImpactArea"),
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
+            });
+
+            StructureCountByAepSummaryGrid.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Structures",
+                Binding = new Binding("StructureCount"),
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
+            });
+
+            for (int i = 0; i < viewModel.AepHeaders.Count; i++)
+            {
+                StructureCountByAepSummaryGrid.Columns.Add(new DataGridTextColumn
+                {
+                    Header = viewModel.AepHeaders[i],
+                    Binding = new Binding($"StructureCountsByAep[{i}]"),
+                    Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
+                });
+            }
+        }
+
         private static void RebuildDamageSummaryColumns(DataGrid grid, StageDamageOrganizerViewModel viewModel, string damageBindingPath, string totalHeader)
         {
             grid.Columns.Clear();
@@ -57,6 +95,13 @@ namespace EconToolbox.Desktop.Views
             {
                 Header = "Summary Name",
                 Binding = new Binding("SummaryName"),
+                Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
+            });
+
+            grid.Columns.Add(new DataGridTextColumn
+            {
+                Header = "Impact Area",
+                Binding = new Binding("ImpactArea"),
                 Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
 

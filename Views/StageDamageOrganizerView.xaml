@@ -99,6 +99,16 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="0,8,0,0"
+                                            VerticalAlignment="Center">
+                                    <TextBlock Text="Impact Area filter:"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,8,0"/>
+                                    <ComboBox Width="220"
+                                              ItemsSource="{Binding ImpactAreaOptions}"
+                                              SelectedItem="{Binding SelectedImpactArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
                             </StackPanel>
 
                             <Button Grid.Column="2"
@@ -135,6 +145,31 @@
 
                             <StackPanel Grid.Row="0"
                                         Margin="0,0,0,12">
+                                <Border Style="{StaticResource Border.Card}"
+                                        Margin="0,0,0,12">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Structure count by AEP"
+                                                   Style="{StaticResource Text.SectionTitle}"
+                                                   Margin="0,0,0,8"/>
+                                        <DataGrid CanUserResizeColumns="True" x:Name="StructureCountByAepSummaryGrid"
+                                                  Grid.Row="1"
+                                                  ItemsSource="{Binding StructureCountByAepSummaries}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  IsReadOnly="True"
+                                                  HeadersVisibility="Column"
+                                                  ColumnWidth="SizeToHeader"
+                                                  MinHeight="140"
+                                                  MaxHeight="240"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                    </Grid>
+                                </Border>
                                 <Border Style="{StaticResource Border.Card}"
                                         Margin="0,0,0,12">
                                     <Grid>

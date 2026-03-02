@@ -39,6 +39,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<StageDamageRecord> Records => _records;
         public ObservableCollection<StageDamageCategorySummary> CategorySummaries { get; } = new();
+        public ObservableCollection<StageDamageAepStructureCountSummary> StructureCountByAepSummaries { get; } = new();
         public ObservableCollection<StageDamageCategorySummary> ContentCategorySummaries { get; } = new();
         public ObservableCollection<StageDamageCategorySummary> OtherCategorySummaries { get; } = new();
         public ObservableCollection<StageDamageCategorySummary> VehicleCategorySummaries { get; } = new();
@@ -46,8 +47,24 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<ChartSeries> ChartSeries { get; } = new();
         public ObservableCollection<LegendItem> LegendItems { get; } = new();
         public ObservableCollection<string> AepHeaders => _aepHeaders;
+        public ObservableCollection<string> ImpactAreaOptions { get; } = new();
 
         public ObservableCollection<StageDamageSummaryInfo> Summaries { get; } = new();
+
+        private const string AllImpactAreasOption = "All Impact Areas";
+        private string _selectedImpactArea = AllImpactAreasOption;
+
+        public string SelectedImpactArea
+        {
+            get => _selectedImpactArea;
+            set
+            {
+                if (SetProperty(ref _selectedImpactArea, value))
+                {
+                    ComputeSummaries();
+                }
+            }
+        }
 
         public string FrequentAepLabelSummary
         {
@@ -95,6 +112,8 @@ namespace EconToolbox.Desktop.ViewModels
             ClearCommand = new RelayCommand(ClearAll, () => Records.Count > 0);
             SaveSummaryCommand = new AsyncRelayCommand(SaveSummaryAsync, () => Records.Count > 0);
 
+            ImpactAreaOptions.Add(AllImpactAreasOption);
+
             Records.CollectionChanged += (_, _) =>
             {
                 OnPropertyChanged(nameof(HasRecords));
@@ -115,6 +134,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void ClearAll()
         {
             Records.Clear();
+            StructureCountByAepSummaries.Clear();
             CategorySummaries.Clear();
             ContentCategorySummaries.Clear();
             OtherCategorySummaries.Clear();
@@ -123,6 +143,9 @@ namespace EconToolbox.Desktop.ViewModels
             ChartSeries.Clear();
             LegendItems.Clear();
             AepHeaders.Clear();
+            ImpactAreaOptions.Clear();
+            ImpactAreaOptions.Add(AllImpactAreasOption);
+            SelectedImpactArea = AllImpactAreasOption;
             Summaries.Clear();
             _structureAepColumns.Clear();
             _contentAepColumns.Clear();
@@ -242,6 +265,7 @@ namespace EconToolbox.Desktop.ViewModels
             _otherAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.OtherAepDamages));
             _vehicleAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.VehicleAepDamages));
 
+            PopulateImpactAreaOptions();
             ComputeSummaries();
             StatusMessage = string.IsNullOrWhiteSpace(data.StatusMessage)
                 ? "Project data loaded."
@@ -282,6 +306,8 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     Records.Add(record);
                 }
+
+                PopulateImpactAreaOptions();
 
                 foreach (var header in _structureAepColumns.Select(c => c.Label))
                 {
@@ -380,6 +406,8 @@ namespace EconToolbox.Desktop.ViewModels
             using var writer = new StreamWriter(filePath);
             WriteSummarySection(writer, "Structure", CategorySummaries);
             writer.WriteLine();
+            WriteStructureCountByAepSection(writer);
+            writer.WriteLine();
             WriteSummarySection(writer, "Content", ContentCategorySummaries);
             writer.WriteLine();
             WriteSummarySection(writer, "Other", OtherCategorySummaries);
@@ -407,7 +435,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void WriteSummarySection(StreamWriter writer, string label, IEnumerable<StageDamageCategorySummary> summaries)
         {
             writer.WriteLine($"Stage Damage Organizer - {label} damage totals by category");
-            var headerColumns = new List<string> { "Summary Name", "Damage Category", "Structures" };
+            var headerColumns = new List<string> { "Summary Name", "Impact Area", "Damage Category", "Structures" };
             headerColumns.AddRange(AepHeaders.Select(h => $"{label} Damage @{h}"));
             headerColumns.Add("Total AEP Sum");
             writer.WriteLine(string.Join(",", headerColumns));
@@ -417,6 +445,7 @@ namespace EconToolbox.Desktop.ViewModels
                 var values = new List<string>
                 {
                     Escape(summary.SummaryName),
+                    Escape(summary.ImpactArea),
                     Escape(summary.DamageCategory),
                     summary.StructureCount.ToString(CultureInfo.InvariantCulture)
                 };
@@ -425,6 +454,27 @@ namespace EconToolbox.Desktop.ViewModels
                     .Select(v => v.ToString("0.##", CultureInfo.InvariantCulture)));
 
                 values.Add(summary.FrequentSumDamage.ToString("0.##", CultureInfo.InvariantCulture));
+                writer.WriteLine(string.Join(",", values));
+            }
+        }
+
+        private void WriteStructureCountByAepSection(StreamWriter writer)
+        {
+            writer.WriteLine("Stage Damage Organizer - structure count by AEP");
+            var headerColumns = new List<string> { "Summary Name", "Impact Area", "Structures" };
+            headerColumns.AddRange(AepHeaders.Select(h => $"Damaged Structures @{h}"));
+            writer.WriteLine(string.Join(",", headerColumns));
+
+            foreach (var summary in StructureCountByAepSummaries)
+            {
+                var values = new List<string>
+                {
+                    Escape(summary.SummaryName),
+                    Escape(summary.ImpactArea),
+                    summary.StructureCount.ToString(CultureInfo.InvariantCulture)
+                };
+
+                values.AddRange(summary.StructureCountsByAep.Select(v => v.ToString(CultureInfo.InvariantCulture)));
                 writer.WriteLine(string.Join(",", values));
             }
         }
@@ -445,6 +495,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void ComputeSummaries()
         {
             CategorySummaries.Clear();
+            StructureCountByAepSummaries.Clear();
             ContentCategorySummaries.Clear();
             OtherCategorySummaries.Clear();
             VehicleCategorySummaries.Clear();
@@ -458,7 +509,14 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            var groupedBySummary = Records
+            var filteredRecords = GetFilteredRecords().ToList();
+            if (filteredRecords.Count == 0)
+            {
+                StatusMessage = "No rows match the selected impact area filter.";
+                return;
+            }
+
+            var groupedBySummary = filteredRecords
                 .GroupBy(r => string.IsNullOrWhiteSpace(r.SummaryName) ? "StageDamageSummary" : r.SummaryName.Trim())
                 .ToList();
 
@@ -469,11 +527,17 @@ namespace EconToolbox.Desktop.ViewModels
             foreach (var summaryGroup in groupedBySummary)
             {
                 var structureSummaries = BuildCategorySummaries(summaryGroup, _structureAepColumns, r => r.AepDamages, summaryGroup.Key);
+                var structureCountByAepSummaries = BuildStructureCountByAepSummaries(summaryGroup, _structureAepColumns, summaryGroup.Key);
                 var contentSummaries = BuildCategorySummaries(summaryGroup, _contentAepColumns, r => r.ContentAepDamages, summaryGroup.Key);
                 var otherSummaries = BuildCategorySummaries(summaryGroup, _otherAepColumns, r => r.OtherAepDamages, summaryGroup.Key);
                 var vehicleSummaries = BuildCategorySummaries(summaryGroup, _vehicleAepColumns, r => r.VehicleAepDamages, summaryGroup.Key);
 
                 summaryBundles.Add((summaryGroup.Key, structureSummaries));
+
+                foreach (var summary in structureCountByAepSummaries)
+                {
+                    StructureCountByAepSummaries.Add(summary);
+                }
 
                 foreach (var summary in structureSummaries)
                 {
@@ -565,17 +629,78 @@ namespace EconToolbox.Desktop.ViewModels
             string summaryName)
         {
             return records
-                .GroupBy(r => string.IsNullOrWhiteSpace(r.DamageCategory) ? "Uncategorized" : r.DamageCategory.Trim())
+                                .GroupBy(r => new
+                {
+                    ImpactArea = NormalizeImpactArea(r.ImpactArea),
+                    DamageCategory = string.IsNullOrWhiteSpace(r.DamageCategory) ? "Uncategorized" : r.DamageCategory.Trim()
+                })
                 .Select(g => new StageDamageCategorySummary
                 {
                     SummaryName = summaryName,
-                    DamageCategory = g.Key,
+                    ImpactArea = g.Key.ImpactArea,
+                    DamageCategory = g.Key.DamageCategory,
                     StructureCount = g.Count(),
                     AepDamages = columns.Select((_, index) => g.Sum(r => index < selector(r).Count ? selector(r)[index].Value : 0d)).ToList(),
                     FrequentSumDamage = g.Sum(r => selector(r).Sum(v => v.Value))
                 })
                 .OrderByDescending(s => s.FrequentSumDamage)
                 .ToList();
+        }
+
+        private static List<StageDamageAepStructureCountSummary> BuildStructureCountByAepSummaries(
+            IEnumerable<StageDamageRecord> records,
+            IReadOnlyList<AepColumn> columns,
+            string summaryName)
+        {
+            return records
+                .GroupBy(r => NormalizeImpactArea(r.ImpactArea))
+                .Select(g => new StageDamageAepStructureCountSummary
+                {
+                    SummaryName = summaryName,
+                    ImpactArea = g.Key,
+                    StructureCount = g.Count(),
+                    StructureCountsByAep = columns
+                        .Select((_, index) => g.Count(r => index < r.AepDamages.Count && r.AepDamages[index].Value != 0d))
+                        .ToList()
+                })
+                .OrderBy(s => s.ImpactArea)
+                .ToList();
+        }
+
+        private IEnumerable<StageDamageRecord> GetFilteredRecords()
+        {
+            if (string.IsNullOrWhiteSpace(SelectedImpactArea)
+                || SelectedImpactArea.Equals(AllImpactAreasOption, StringComparison.OrdinalIgnoreCase))
+            {
+                return Records;
+            }
+
+            return Records.Where(r => string.Equals(NormalizeImpactArea(r.ImpactArea), SelectedImpactArea, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void PopulateImpactAreaOptions()
+        {
+            var previousSelection = SelectedImpactArea;
+            ImpactAreaOptions.Clear();
+            ImpactAreaOptions.Add(AllImpactAreasOption);
+
+            foreach (var impactArea in Records
+                .Select(r => NormalizeImpactArea(r.ImpactArea))
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(v => v, StringComparer.OrdinalIgnoreCase))
+            {
+                ImpactAreaOptions.Add(impactArea);
+            }
+
+            SelectedImpactArea = ImpactAreaOptions.Contains(previousSelection)
+                ? previousSelection
+                : AllImpactAreasOption;
+        }
+
+        private static string NormalizeImpactArea(string impactArea)
+        {
+            return string.IsNullOrWhiteSpace(impactArea) ? "Not Set" : impactArea.Trim();
         }
 
         private StageDamageLoadResult LoadRecords(IEnumerable<string> filePaths)
@@ -929,6 +1054,7 @@ namespace EconToolbox.Desktop.ViewModels
             _otherAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.OtherAepDamages));
             _vehicleAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.VehicleAepDamages));
 
+            PopulateImpactAreaOptions();
             ComputeSummaries();
             RefreshDiagnostics();
         }
