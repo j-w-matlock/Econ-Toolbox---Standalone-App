@@ -19,7 +19,10 @@ namespace EconToolbox.Desktop.ViewModels
     {
         private readonly ObservableCollection<StageDamageRecord> _records = new();
         private readonly ObservableCollection<string> _aepHeaders = new();
-        private List<AepColumn> _aepColumns = new();
+        private List<AepColumn> _structureAepColumns = new();
+        private List<AepColumn> _contentAepColumns = new();
+        private List<AepColumn> _otherAepColumns = new();
+        private List<AepColumn> _vehicleAepColumns = new();
         private List<AepColumn> _depthAboveFirstFloorColumns = new();
         private string _statusMessage = "Load one or more Stage Damage Functions_StructureStageDamageDetails.csv files to summarize damages by category.";
         private bool _isBusy;
@@ -36,6 +39,9 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<StageDamageRecord> Records => _records;
         public ObservableCollection<StageDamageCategorySummary> CategorySummaries { get; } = new();
+        public ObservableCollection<StageDamageCategorySummary> ContentCategorySummaries { get; } = new();
+        public ObservableCollection<StageDamageCategorySummary> OtherCategorySummaries { get; } = new();
+        public ObservableCollection<StageDamageCategorySummary> VehicleCategorySummaries { get; } = new();
         public ObservableCollection<StageDamageHighlight> Highlights { get; } = new();
         public ObservableCollection<ChartSeries> ChartSeries { get; } = new();
         public ObservableCollection<LegendItem> LegendItems { get; } = new();
@@ -110,12 +116,18 @@ namespace EconToolbox.Desktop.ViewModels
         {
             Records.Clear();
             CategorySummaries.Clear();
+            ContentCategorySummaries.Clear();
+            OtherCategorySummaries.Clear();
+            VehicleCategorySummaries.Clear();
             Highlights.Clear();
             ChartSeries.Clear();
             LegendItems.Clear();
             AepHeaders.Clear();
             Summaries.Clear();
-            _aepColumns.Clear();
+            _structureAepColumns.Clear();
+            _contentAepColumns.Clear();
+            _otherAepColumns.Clear();
+            _vehicleAepColumns.Clear();
             _depthAboveFirstFloorColumns.Clear();
             StatusMessage = "Cleared results. Load new CSV files to regenerate summaries.";
             RefreshDiagnostics();
@@ -147,6 +159,21 @@ namespace EconToolbox.Desktop.ViewModels
                         Label = aep.Label,
                         Value = aep.Value
                     }).ToList(),
+                    ContentAepDamages = record.ContentAepDamages.Select(aep => new StageDamageAepValueData
+                    {
+                        Label = aep.Label,
+                        Value = aep.Value
+                    }).ToList(),
+                    OtherAepDamages = record.OtherAepDamages.Select(aep => new StageDamageAepValueData
+                    {
+                        Label = aep.Label,
+                        Value = aep.Value
+                    }).ToList(),
+                    VehicleAepDamages = record.VehicleAepDamages.Select(aep => new StageDamageAepValueData
+                    {
+                        Label = aep.Label,
+                        Value = aep.Value
+                    }).ToList(),
                     DepthAboveFirstFloorByAep = record.DepthAboveFirstFloorByAep.Select(aep => new StageDamageAepValueData
                     {
                         Label = aep.Label,
@@ -165,8 +192,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             ClearAll();
 
-            _aepColumns = data.AepHeaders
-                .Select(label => new AepColumn(NormalizeHeader(label), label))
+            _structureAepColumns = data.AepHeaders
+                .Select(label => new AepColumn(NormalizeHeader($"Structure Damage At {label}"), label))
                 .ToList();
 
             foreach (var header in data.AepHeaders)
@@ -196,11 +223,24 @@ namespace EconToolbox.Desktop.ViewModels
                     SummaryName = recordData.SummaryName,
                     SourceKey = recordData.SourceKey,
                     AepDamages = recordData.AepDamages.Select(aep => new StageDamageAepValue(aep.Label, aep.Value)).ToList(),
+                    ContentAepDamages = (recordData.ContentAepDamages ?? new List<StageDamageAepValueData>())
+                        .Select(aep => new StageDamageAepValue(aep.Label, aep.Value))
+                        .ToList(),
+                    OtherAepDamages = (recordData.OtherAepDamages ?? new List<StageDamageAepValueData>())
+                        .Select(aep => new StageDamageAepValue(aep.Label, aep.Value))
+                        .ToList(),
+                    VehicleAepDamages = (recordData.VehicleAepDamages ?? new List<StageDamageAepValueData>())
+                        .Select(aep => new StageDamageAepValue(aep.Label, aep.Value))
+                        .ToList(),
                     DepthAboveFirstFloorByAep = (recordData.DepthAboveFirstFloorByAep ?? new List<StageDamageAepValueData>())
                         .Select(aep => new StageDamageAepValue(aep.Label, aep.Value))
                         .ToList()
                 });
             }
+
+            _contentAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.ContentAepDamages));
+            _otherAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.OtherAepDamages));
+            _vehicleAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.VehicleAepDamages));
 
             ComputeSummaries();
             StatusMessage = string.IsNullOrWhiteSpace(data.StatusMessage)
@@ -243,7 +283,7 @@ namespace EconToolbox.Desktop.ViewModels
                     Records.Add(record);
                 }
 
-                foreach (var header in _aepColumns.Select(c => c.Label))
+                foreach (var header in _structureAepColumns.Select(c => c.Label))
                 {
                     AepHeaders.Add(header);
                 }
@@ -338,28 +378,13 @@ namespace EconToolbox.Desktop.ViewModels
         private void WriteSummaryCsv(string filePath)
         {
             using var writer = new StreamWriter(filePath);
-            writer.WriteLine("Stage Damage Organizer - Damage totals by category");
-            var headerColumns = new List<string> { "Summary Name", "Damage Category", "Structures" };
-            headerColumns.AddRange(AepHeaders.Select(h => $"Structure Damage @{h}"));
-            headerColumns.Add("Total AEP Sum");
-            writer.WriteLine(string.Join(",", headerColumns));
-            foreach (var summary in CategorySummaries)
-            {
-                var values = new List<string>
-                {
-                    Escape(summary.SummaryName),
-                    Escape(summary.DamageCategory),
-                    summary.StructureCount.ToString(CultureInfo.InvariantCulture)
-                };
-
-                values.AddRange(summary.AepDamages
-                    .Select(v => v.ToString("0.##", CultureInfo.InvariantCulture)));
-
-                values.Add(summary.FrequentSumDamage.ToString("0.##", CultureInfo.InvariantCulture));
-
-                writer.WriteLine(string.Join(",", values));
-            }
-
+            WriteSummarySection(writer, "Structure", CategorySummaries);
+            writer.WriteLine();
+            WriteSummarySection(writer, "Content", ContentCategorySummaries);
+            writer.WriteLine();
+            WriteSummarySection(writer, "Other", OtherCategorySummaries);
+            writer.WriteLine();
+            WriteSummarySection(writer, "Vehicle", VehicleCategorySummaries);
             writer.WriteLine();
             writer.WriteLine("Top structures by frequent AEP structure damage");
             writer.WriteLine("Summary Name,Structure FID,Damage Category,Impact Area,Description,Highest AEP,Depth Above First Floor,Structure Damage");
@@ -379,6 +404,31 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        private void WriteSummarySection(StreamWriter writer, string label, IEnumerable<StageDamageCategorySummary> summaries)
+        {
+            writer.WriteLine($"Stage Damage Organizer - {label} damage totals by category");
+            var headerColumns = new List<string> { "Summary Name", "Damage Category", "Structures" };
+            headerColumns.AddRange(AepHeaders.Select(h => $"{label} Damage @{h}"));
+            headerColumns.Add("Total AEP Sum");
+            writer.WriteLine(string.Join(",", headerColumns));
+
+            foreach (var summary in summaries)
+            {
+                var values = new List<string>
+                {
+                    Escape(summary.SummaryName),
+                    Escape(summary.DamageCategory),
+                    summary.StructureCount.ToString(CultureInfo.InvariantCulture)
+                };
+
+                values.AddRange(summary.AepDamages
+                    .Select(v => v.ToString("0.##", CultureInfo.InvariantCulture)));
+
+                values.Add(summary.FrequentSumDamage.ToString("0.##", CultureInfo.InvariantCulture));
+                writer.WriteLine(string.Join(",", values));
+            }
+        }
+
         private static string Escape(string value)
         {
             if (value.Contains(',')
@@ -395,11 +445,14 @@ namespace EconToolbox.Desktop.ViewModels
         private void ComputeSummaries()
         {
             CategorySummaries.Clear();
+            ContentCategorySummaries.Clear();
+            OtherCategorySummaries.Clear();
+            VehicleCategorySummaries.Clear();
             Highlights.Clear();
             ChartSeries.Clear();
             LegendItems.Clear();
 
-            if (Records.Count == 0 || _aepColumns.Count == 0)
+            if (Records.Count == 0 || _structureAepColumns.Count == 0)
             {
                 StatusMessage = "No rows available. Load CSV files to generate results.";
                 return;
@@ -415,29 +468,34 @@ namespace EconToolbox.Desktop.ViewModels
 
             foreach (var summaryGroup in groupedBySummary)
             {
-                var summaries = summaryGroup
-                    .GroupBy(r => string.IsNullOrWhiteSpace(r.DamageCategory) ? "Uncategorized" : r.DamageCategory.Trim())
-                    .Select(g => new StageDamageCategorySummary
-                    {
-                        SummaryName = summaryGroup.Key,
-                        DamageCategory = g.Key,
-                        StructureCount = g.Count(),
-                        AepDamages = _aepColumns
-                            .Select((_, index) => g.Sum(r => index < r.AepDamages.Count ? r.AepDamages[index].Value : 0))
-                            .ToList(),
-                        FrequentSumDamage = g.Sum(r => r.FrequentSumDamage)
-                    })
-                    .OrderByDescending(s => s.FrequentSumDamage)
-                    .ToList();
+                var structureSummaries = BuildCategorySummaries(summaryGroup, _structureAepColumns, r => r.AepDamages, summaryGroup.Key);
+                var contentSummaries = BuildCategorySummaries(summaryGroup, _contentAepColumns, r => r.ContentAepDamages, summaryGroup.Key);
+                var otherSummaries = BuildCategorySummaries(summaryGroup, _otherAepColumns, r => r.OtherAepDamages, summaryGroup.Key);
+                var vehicleSummaries = BuildCategorySummaries(summaryGroup, _vehicleAepColumns, r => r.VehicleAepDamages, summaryGroup.Key);
 
-                summaryBundles.Add((summaryGroup.Key, summaries));
+                summaryBundles.Add((summaryGroup.Key, structureSummaries));
 
-                foreach (var summary in summaries)
+                foreach (var summary in structureSummaries)
                 {
                     CategorySummaries.Add(summary);
                     categoryTotals[summary.DamageCategory] = categoryTotals.TryGetValue(summary.DamageCategory, out var current)
                         ? current + summary.FrequentSumDamage
                         : summary.FrequentSumDamage;
+                }
+
+                foreach (var summary in contentSummaries)
+                {
+                    ContentCategorySummaries.Add(summary);
+                }
+
+                foreach (var summary in otherSummaries)
+                {
+                    OtherCategorySummaries.Add(summary);
+                }
+
+                foreach (var summary in vehicleSummaries)
+                {
+                    VehicleCategorySummaries.Add(summary);
                 }
 
                 var topStructures = summaryGroup
@@ -500,11 +558,34 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        private static List<StageDamageCategorySummary> BuildCategorySummaries(
+            IEnumerable<StageDamageRecord> records,
+            IReadOnlyList<AepColumn> columns,
+            Func<StageDamageRecord, IReadOnlyList<StageDamageAepValue>> selector,
+            string summaryName)
+        {
+            return records
+                .GroupBy(r => string.IsNullOrWhiteSpace(r.DamageCategory) ? "Uncategorized" : r.DamageCategory.Trim())
+                .Select(g => new StageDamageCategorySummary
+                {
+                    SummaryName = summaryName,
+                    DamageCategory = g.Key,
+                    StructureCount = g.Count(),
+                    AepDamages = columns.Select((_, index) => g.Sum(r => index < selector(r).Count ? selector(r)[index].Value : 0d)).ToList(),
+                    FrequentSumDamage = g.Sum(r => selector(r).Sum(v => v.Value))
+                })
+                .OrderByDescending(s => s.FrequentSumDamage)
+                .ToList();
+        }
+
         private StageDamageLoadResult LoadRecords(IEnumerable<string> filePaths)
         {
             var results = new List<StageDamageRecord>();
             var summaries = new List<StageDamageSummaryInfo>();
-            _aepColumns = new List<AepColumn>();
+            _structureAepColumns = new List<AepColumn>();
+            _contentAepColumns = new List<AepColumn>();
+            _otherAepColumns = new List<AepColumn>();
+            _vehicleAepColumns = new List<AepColumn>();
             _depthAboveFirstFloorColumns = new List<AepColumn>();
             foreach (var path in filePaths)
             {
@@ -530,14 +611,20 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 var headerMap = BuildHeaderMap(header!);
-                var aepColumns = FindAepColumns(header!);
+                var structureAepColumns = FindDamageColumns(header!, "structure");
+                var contentAepColumns = FindDamageColumns(header!, "content");
+                var otherAepColumns = FindDamageColumns(header!, "other");
+                var vehicleAepColumns = FindDamageColumns(header!, "vehicle");
                 var depthColumns = FindDepthAboveFirstFloorColumns(header!);
-                if (aepColumns.Count == 0)
+                if (structureAepColumns.Count == 0)
                 {
                     continue;
                 }
 
-                MergeAepColumns(aepColumns, results);
+                MergeDamageColumns(structureAepColumns, _structureAepColumns, results, r => r.AepDamages);
+                MergeDamageColumns(contentAepColumns, _contentAepColumns, results, r => r.ContentAepDamages);
+                MergeDamageColumns(otherAepColumns, _otherAepColumns, results, r => r.OtherAepDamages);
+                MergeDamageColumns(vehicleAepColumns, _vehicleAepColumns, results, r => r.VehicleAepDamages);
                 MergeDepthAboveFirstFloorColumns(depthColumns, results);
 
                 while (!parser.EndOfData)
@@ -548,7 +635,7 @@ namespace EconToolbox.Desktop.ViewModels
                         continue;
                     }
 
-                    var record = ParseRow(row, headerMap, _aepColumns, _depthAboveFirstFloorColumns, summaryInfo.Name, summaryInfo.SourceKey);
+                    var record = ParseRow(row, headerMap, _structureAepColumns, _contentAepColumns, _otherAepColumns, _vehicleAepColumns, _depthAboveFirstFloorColumns, summaryInfo.Name, summaryInfo.SourceKey);
                     if (record != null)
                     {
                         results.Add(record);
@@ -574,19 +661,31 @@ namespace EconToolbox.Desktop.ViewModels
             return map;
         }
 
-        private void MergeAepColumns(IEnumerable<AepColumn> discoveredColumns, List<StageDamageRecord> existingRecords)
+        private static List<AepColumn> BuildColumnsFromRecords(IEnumerable<StageDamageAepValue> values)
+        {
+            return values
+                .Select(value => new AepColumn(NormalizeHeader(value.Label), value.Label))
+                .DistinctBy(column => column.NormalizedKey)
+                .ToList();
+        }
+
+        private static void MergeDamageColumns(
+            IEnumerable<AepColumn> discoveredColumns,
+            List<AepColumn> aggregateColumns,
+            List<StageDamageRecord> existingRecords,
+            Func<StageDamageRecord, List<StageDamageAepValue>> selector)
         {
             foreach (var column in discoveredColumns)
             {
-                if (_aepColumns.Any(c => c.NormalizedKey.Equals(column.NormalizedKey, StringComparison.OrdinalIgnoreCase)))
+                if (aggregateColumns.Any(c => c.NormalizedKey.Equals(column.NormalizedKey, StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
                 }
 
-                _aepColumns.Add(column);
+                aggregateColumns.Add(column);
                 foreach (var record in existingRecords)
                 {
-                    record.AepDamages.Add(new StageDamageAepValue(column.Label, 0d));
+                    selector(record).Add(new StageDamageAepValue(column.Label, 0d));
                 }
             }
         }
@@ -611,7 +710,10 @@ namespace EconToolbox.Desktop.ViewModels
         private static StageDamageRecord? ParseRow(
             string[] row,
             IReadOnlyDictionary<string, int> map,
-            IReadOnlyList<AepColumn> aepColumns,
+            IReadOnlyList<AepColumn> structureAepColumns,
+            IReadOnlyList<AepColumn> contentAepColumns,
+            IReadOnlyList<AepColumn> otherAepColumns,
+            IReadOnlyList<AepColumn> vehicleAepColumns,
             IReadOnlyList<AepColumn> depthAboveFirstFloorColumns,
             string summaryName,
             string sourceKey)
@@ -624,14 +726,6 @@ namespace EconToolbox.Desktop.ViewModels
                 return null;
             }
 
-            var aepValues = aepColumns
-                .Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey)))
-                .ToList();
-
-            var depthValues = depthAboveFirstFloorColumns
-                .Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey)))
-                .ToList();
-
             return new StageDamageRecord
             {
                 StructureFid = string.IsNullOrWhiteSpace(structureFid) ? "Unknown" : structureFid.Trim(),
@@ -639,8 +733,11 @@ namespace EconToolbox.Desktop.ViewModels
                 Description = ReadString(row, map, "description"),
                 ImpactArea = ReadString(row, map, "impactarearownumberinimpactareaset", "impactarea"),
                 OccTypeName = ReadString(row, map, "occtypename", "occupancytype"),
-                AepDamages = aepValues,
-                DepthAboveFirstFloorByAep = depthValues,
+                AepDamages = structureAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
+                ContentAepDamages = contentAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
+                OtherAepDamages = otherAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
+                VehicleAepDamages = vehicleAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
+                DepthAboveFirstFloorByAep = depthAboveFirstFloorColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
                 SummaryName = summaryName,
                 SourceKey = sourceKey
             };
@@ -683,13 +780,13 @@ namespace EconToolbox.Desktop.ViewModels
             return new string(filtered.ToArray()).ToLowerInvariant();
         }
 
-        private static List<AepColumn> FindAepColumns(string[] header)
+        private static List<AepColumn> FindDamageColumns(string[] header, string damageType)
         {
             var columns = new List<AepColumn>();
             foreach (var column in header)
             {
                 var normalized = NormalizeHeader(column);
-                if (!normalized.Contains("structuredamage") || !normalized.Contains("aep"))
+                if (!normalized.Contains($"{damageType}damage") || !normalized.Contains("aep"))
                 {
                     continue;
                 }
@@ -827,6 +924,10 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 record.SummaryName = newName;
             }
+
+            _contentAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.ContentAepDamages));
+            _otherAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.OtherAepDamages));
+            _vehicleAepColumns = BuildColumnsFromRecords(Records.SelectMany(r => r.VehicleAepDamages));
 
             ComputeSummaries();
             RefreshDiagnostics();

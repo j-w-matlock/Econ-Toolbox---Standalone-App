@@ -133,32 +133,108 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <Border Grid.Row="0"
-                                    Style="{StaticResource Border.Card}"
-                                    Margin="0,0,0,12">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Text="DamageCategory summary"
-                                               Style="{StaticResource Text.SectionTitle}"
-                                               Margin="0,0,0,8"/>
-                                    <DataGrid CanUserResizeColumns="True" x:Name="CategorySummaryGrid"
-                                              Grid.Row="1"
-                                              ItemsSource="{Binding CategorySummaries}"
-                                              AutoGenerateColumns="False"
-                                              CanUserAddRows="False"
-                                              CanUserDeleteRows="False"
-                                              IsReadOnly="True"
-                                              HeadersVisibility="Column"
-                                              ColumnWidth="SizeToHeader"
-                                              MinHeight="220"
-                                              MaxHeight="360"
-                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
-                                </Grid>
-                            </Border>
+                            <StackPanel Grid.Row="0"
+                                        Margin="0,0,0,12">
+                                <Border Style="{StaticResource Border.Card}"
+                                        Margin="0,0,0,12">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Structure DamageCategory summary"
+                                                   Style="{StaticResource Text.SectionTitle}"
+                                                   Margin="0,0,0,8"/>
+                                        <DataGrid CanUserResizeColumns="True" x:Name="CategorySummaryGrid"
+                                                  Grid.Row="1"
+                                                  ItemsSource="{Binding CategorySummaries}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  IsReadOnly="True"
+                                                  HeadersVisibility="Column"
+                                                  ColumnWidth="SizeToHeader"
+                                                  MinHeight="160"
+                                                  MaxHeight="260"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                    </Grid>
+                                </Border>
+                                <Border Style="{StaticResource Border.Card}"
+                                        Margin="0,0,0,12">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Content DamageCategory summary"
+                                                   Style="{StaticResource Text.SectionTitle}"
+                                                   Margin="0,0,0,8"/>
+                                        <DataGrid CanUserResizeColumns="True" x:Name="ContentCategorySummaryGrid"
+                                                  Grid.Row="1"
+                                                  ItemsSource="{Binding ContentCategorySummaries}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  IsReadOnly="True"
+                                                  HeadersVisibility="Column"
+                                                  ColumnWidth="SizeToHeader"
+                                                  MinHeight="160"
+                                                  MaxHeight="260"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                    </Grid>
+                                </Border>
+                                <Border Style="{StaticResource Border.Card}"
+                                        Margin="0,0,0,12">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Other DamageCategory summary"
+                                                   Style="{StaticResource Text.SectionTitle}"
+                                                   Margin="0,0,0,8"/>
+                                        <DataGrid CanUserResizeColumns="True" x:Name="OtherCategorySummaryGrid"
+                                                  Grid.Row="1"
+                                                  ItemsSource="{Binding OtherCategorySummaries}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  IsReadOnly="True"
+                                                  HeadersVisibility="Column"
+                                                  ColumnWidth="SizeToHeader"
+                                                  MinHeight="160"
+                                                  MaxHeight="260"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                    </Grid>
+                                </Border>
+                                <Border Style="{StaticResource Border.Card}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="Vehicle DamageCategory summary"
+                                                   Style="{StaticResource Text.SectionTitle}"
+                                                   Margin="0,0,0,8"/>
+                                        <DataGrid CanUserResizeColumns="True" x:Name="VehicleCategorySummaryGrid"
+                                                  Grid.Row="1"
+                                                  ItemsSource="{Binding VehicleCategorySummaries}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  IsReadOnly="True"
+                                                  HeadersVisibility="Column"
+                                                  ColumnWidth="SizeToHeader"
+                                                  MinHeight="160"
+                                                  MaxHeight="260"
+                                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
 
                             <Border Grid.Row="1"
                                     Style="{StaticResource Border.Card}"
