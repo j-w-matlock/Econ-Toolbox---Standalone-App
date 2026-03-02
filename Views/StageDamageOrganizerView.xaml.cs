@@ -27,6 +27,9 @@ namespace EconToolbox.Desktop.Views
             {
                 newVm.AepHeaders.CollectionChanged += OnAepHeadersChanged;
                 RebuildCategorySummaryColumns(newVm);
+                RebuildDamageSummaryColumns(ContentCategorySummaryGrid, newVm, "AepDamages", "Content Total AEP Sum");
+                RebuildDamageSummaryColumns(OtherCategorySummaryGrid, newVm, "AepDamages", "Other Total AEP Sum");
+                RebuildDamageSummaryColumns(VehicleCategorySummaryGrid, newVm, "AepDamages", "Vehicle Total AEP Sum");
             }
         }
 
@@ -35,28 +38,36 @@ namespace EconToolbox.Desktop.Views
             if (ViewModel != null)
             {
                 RebuildCategorySummaryColumns(ViewModel);
+                RebuildDamageSummaryColumns(ContentCategorySummaryGrid, ViewModel, "AepDamages", "Content Total AEP Sum");
+                RebuildDamageSummaryColumns(OtherCategorySummaryGrid, ViewModel, "AepDamages", "Other Total AEP Sum");
+                RebuildDamageSummaryColumns(VehicleCategorySummaryGrid, ViewModel, "AepDamages", "Vehicle Total AEP Sum");
             }
         }
 
         private void RebuildCategorySummaryColumns(StageDamageOrganizerViewModel viewModel)
         {
-            CategorySummaryGrid.Columns.Clear();
+            RebuildDamageSummaryColumns(CategorySummaryGrid, viewModel, "AepDamages", "Total AEP Sum");
+        }
 
-            CategorySummaryGrid.Columns.Add(new DataGridTextColumn
+        private static void RebuildDamageSummaryColumns(DataGrid grid, StageDamageOrganizerViewModel viewModel, string damageBindingPath, string totalHeader)
+        {
+            grid.Columns.Clear();
+
+            grid.Columns.Add(new DataGridTextColumn
             {
                 Header = "Summary Name",
                 Binding = new Binding("SummaryName"),
                 Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
 
-            CategorySummaryGrid.Columns.Add(new DataGridTextColumn
+            grid.Columns.Add(new DataGridTextColumn
             {
                 Header = "Damage Category",
                 Binding = new Binding("DamageCategory"),
                 Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
 
-            CategorySummaryGrid.Columns.Add(new DataGridTextColumn
+            grid.Columns.Add(new DataGridTextColumn
             {
                 Header = "Structures",
                 Binding = new Binding("StructureCount"),
@@ -65,17 +76,17 @@ namespace EconToolbox.Desktop.Views
 
             for (int i = 0; i < viewModel.AepHeaders.Count; i++)
             {
-                CategorySummaryGrid.Columns.Add(new DataGridTextColumn
+                grid.Columns.Add(new DataGridTextColumn
                 {
                     Header = viewModel.AepHeaders[i],
-                    Binding = new Binding($"AepDamages[{i}]") { StringFormat = "C0" },
+                    Binding = new Binding($"{damageBindingPath}[{i}]") { StringFormat = "C0" },
                     Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
                 });
             }
 
-            CategorySummaryGrid.Columns.Add(new DataGridTextColumn
+            grid.Columns.Add(new DataGridTextColumn
             {
-                Header = "Total AEP Sum",
+                Header = totalHeader,
                 Binding = new Binding("FrequentSumDamage") { StringFormat = "C0" },
                 Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });

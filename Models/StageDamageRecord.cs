@@ -15,6 +15,9 @@ namespace EconToolbox.Desktop.Models
         public string SourceKey { get; set; } = string.Empty;
 
         public List<StageDamageAepValue> AepDamages { get; set; } = new();
+        public List<StageDamageAepValue> ContentAepDamages { get; set; } = new();
+        public List<StageDamageAepValue> OtherAepDamages { get; set; } = new();
+        public List<StageDamageAepValue> VehicleAepDamages { get; set; } = new();
         public List<StageDamageAepValue> DepthAboveFirstFloorByAep { get; set; } = new();
 
         public double FrequentPeakDamage
