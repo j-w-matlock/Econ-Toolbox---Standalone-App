@@ -95,10 +95,19 @@ namespace EconToolbox.Desktop.Models
     public class StageDamageCategorySummary
     {
         public string SummaryName { get; init; } = string.Empty;
+        public string ImpactArea { get; init; } = string.Empty;
         public string DamageCategory { get; init; } = string.Empty;
         public int StructureCount { get; init; }
         public IReadOnlyList<double> AepDamages { get; init; } = Array.Empty<double>();
         public double FrequentSumDamage { get; init; }
+    }
+
+    public class StageDamageAepStructureCountSummary
+    {
+        public string SummaryName { get; init; } = string.Empty;
+        public string ImpactArea { get; init; } = string.Empty;
+        public int StructureCount { get; init; }
+        public IReadOnlyList<int> StructureCountsByAep { get; init; } = Array.Empty<int>();
     }
 
     public class StageDamageHighlight
