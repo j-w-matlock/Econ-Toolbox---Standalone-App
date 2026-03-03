@@ -500,8 +500,8 @@ namespace EconToolbox.Desktop.ViewModels
             if (IsDetailsPaneVisible)
             {
                 _detailsPaneWidthBeforeCollapse = DetailsPaneWidth > 0 ? DetailsPaneWidth : _detailsPaneWidthBeforeCollapse;
-                DetailsPaneWidth = 0;
                 IsDetailsPaneVisible = false;
+                DetailsPaneWidth = 0;
                 return;
             }
 
@@ -514,8 +514,8 @@ namespace EconToolbox.Desktop.ViewModels
             if (IsExplorerPaneVisible)
             {
                 _explorerPaneWidthBeforeCollapse = ExplorerPaneWidth > 0 ? ExplorerPaneWidth : _explorerPaneWidthBeforeCollapse;
-                ExplorerPaneWidth = 0;
                 IsExplorerPaneVisible = false;
+                ExplorerPaneWidth = 0;
                 return;
             }
 
