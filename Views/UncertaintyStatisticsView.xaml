@@ -151,16 +151,21 @@ Impact: Typically reduces the influence of extreme values on mean, range, varian
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               IsReadOnly="True"
+                              ClipboardCopyMode="IncludeHeader"
                               ItemsSource="{Binding Statistics}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Metric" Binding="{Binding Metric}" Width="2*"/>
-                            <DataGridTemplateColumn Header="Value" Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Value}" ToolTip="{Binding ValueTooltip}" TextWrapping="Wrap"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Value"
+                                                Binding="{Binding Value}"
+                                                ClipboardContentBinding="{Binding Value}"
+                                                Width="*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                        <Setter Property="ToolTip" Value="{Binding ValueTooltip}"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
