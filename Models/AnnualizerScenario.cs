@@ -34,6 +34,8 @@ namespace EconToolbox.Desktop.Models
         [ObservableProperty]
         private double _annualCost;
 
+        public double NetBenefits => AnnualBenefits - AnnualCost;
+
         [ObservableProperty]
         private double _bcr;
 
@@ -42,5 +44,15 @@ namespace EconToolbox.Desktop.Models
 
         [ObservableProperty]
         private string? _notes;
+
+        partial void OnAnnualBenefitsChanged(double value)
+        {
+            OnPropertyChanged(nameof(NetBenefits));
+        }
+
+        partial void OnAnnualCostChanged(double value)
+        {
+            OnPropertyChanged(nameof(NetBenefits));
+        }
     }
 }
