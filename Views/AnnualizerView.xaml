@@ -252,6 +252,16 @@
                                                 </Style>
                                             </DataGridTextColumn.HeaderStyle>
                                         </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Net Benefits"
+                                                            Binding="{Binding NetBenefits, StringFormat=C0}"
+                                                            IsReadOnly="True"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="ToolTip" Value="Annual benefits minus annual cost. Positive values indicate annual benefits exceed annualized costs by that amount."/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+                                        </DataGridTextColumn>
                                         <DataGridTextColumn Header="Unity BCR First Cost"
                                                             Binding="{Binding UnityBcrFirstCost, StringFormat=C0}"
                                                             IsReadOnly="True"
