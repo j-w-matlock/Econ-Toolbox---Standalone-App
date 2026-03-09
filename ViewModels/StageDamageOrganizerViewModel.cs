@@ -26,6 +26,8 @@ namespace EconToolbox.Desktop.ViewModels
         private List<AepColumn> _depthAboveFirstFloorColumns = new();
         private string _statusMessage = "Load one or more Stage Damage Functions_StructureStageDamageDetails.csv files to summarize damages by category.";
         private bool _isBusy;
+        private double _mapZoom = 1d;
+        private StageDamageMapPoint? _selectedMapPoint;
 
         private static readonly string[] ChartSeriesBrushKeys =
         {
@@ -103,6 +105,38 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        public double MapZoom
+        {
+            get => _mapZoom;
+            set
+            {
+                double clamped = Math.Clamp(value, 1d, 8d);
+                if (SetProperty(ref _mapZoom, clamped))
+                {
+                    OnPropertyChanged(nameof(MapZoomLabel));
+                }
+            }
+        }
+
+        public string MapZoomLabel => $"Zoom: {MapZoom:0.0}x";
+
+        public StageDamageMapPoint? SelectedMapPoint
+        {
+            get => _selectedMapPoint;
+            set
+            {
+                if (SetProperty(ref _selectedMapPoint, value))
+                {
+                    OnPropertyChanged(nameof(SelectedMapPointSummary));
+                }
+            }
+        }
+
+        public string SelectedMapPointSummary
+            => SelectedMapPoint is null
+                ? "Select a point to inspect coordinates and structure ID."
+                : $"Selected: {SelectedMapPoint.SummaryName} | FID {SelectedMapPoint.StructureFid} | X: {SelectedMapPoint.XCoordinate:0.###}, Y: {SelectedMapPoint.YCoordinate:0.###}";
+
         public IAsyncRelayCommand ImportCsvCommand { get; }
         public IRelayCommand ClearCommand { get; }
         public IAsyncRelayCommand SaveSummaryCommand { get; }
@@ -143,6 +177,8 @@ namespace EconToolbox.Desktop.ViewModels
             Highlights.Clear();
             ChartSeries.Clear();
             TopStructureMapPoints.Clear();
+            SelectedMapPoint = null;
+            MapZoom = 1d;
             LegendItems.Clear();
             AepHeaders.Clear();
             ImpactAreaOptions.Clear();
@@ -639,6 +675,8 @@ namespace EconToolbox.Desktop.ViewModels
         private void BuildTopStructureMapPoints()
         {
             TopStructureMapPoints.Clear();
+            SelectedMapPoint = null;
+            MapZoom = 1d;
             var points = Highlights
                 .Where(h => !(double.IsNaN(h.XCoordinate) || double.IsInfinity(h.XCoordinate) || double.IsNaN(h.YCoordinate) || double.IsInfinity(h.YCoordinate)))
                 .ToList();
@@ -674,6 +712,8 @@ namespace EconToolbox.Desktop.ViewModels
                     ScaledY = scaledY
                 });
             }
+
+            SelectedMapPoint = TopStructureMapPoints.FirstOrDefault();
         }
 
         private static List<StageDamageCategorySummary> BuildCategorySummaries(
