@@ -57,6 +57,8 @@ namespace EconToolbox.Desktop.ViewModels
         {
             "Auto (Recommended)",
             "One-Sample Z-Test (Mean)",
+            "One-Sample T-Test (Mean)",
+            "Wilcoxon Signed-Rank Test (Median)",
             "One-Sample Sign Test (Median)"
         });
 
@@ -433,7 +435,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             RecommendedStatisticalTest = RecommendTest(count, skewness);
             var chosenTest = SelectedStatisticalTest == "Auto (Recommended)" ? RecommendedStatisticalTest : SelectedStatisticalTest;
-            var nullHypothesis = TryParseNumericText(NullHypothesisValue, out var parsedNull) ? parsedNull : 0;
+            UpdateNullHypothesisWithMedian(median);
+            var nullHypothesis = TryParseNumericText(_nullHypothesisValue, out var parsedNull) ? parsedNull : median;
             var (testStatistic, pValue, testInterpretation) = RunStatisticalTest(chosenTest, ordered, mean, median, stdSample, nullHypothesis);
 
             var representativeSampleSize = ComputeRepresentativeSampleSize(candidateRecords.Count);
@@ -533,9 +536,23 @@ namespace EconToolbox.Desktop.ViewModels
         {
             return testName switch
             {
+                "One-Sample T-Test (Mean)" => RunTTest(mean, sampleStd, ordered.Count, nullHypothesis),
+                "Wilcoxon Signed-Rank Test (Median)" => RunWilcoxonSignedRankTest(ordered, nullHypothesis),
                 "One-Sample Sign Test (Median)" => RunSignTest(ordered, nullHypothesis),
                 _ => RunZTest(mean, sampleStd, ordered.Count, nullHypothesis)
             };
+        }
+
+        private void UpdateNullHypothesisWithMedian(double median)
+        {
+            var medianText = FormatNumber(median);
+            if (string.Equals(_nullHypothesisValue, medianText, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            _nullHypothesisValue = medianText;
+            OnPropertyChanged(nameof(NullHypothesisValue));
         }
 
         private static (double Statistic, double PValue, string Interpretation) RunZTest(double mean, double sampleStd, int count, double nullHypothesis)
@@ -575,6 +592,86 @@ namespace EconToolbox.Desktop.ViewModels
                 ? "Reject H0 at α=0.05 (median differs from null value)."
                 : "Fail to reject H0 at α=0.05.";
             return (positives - negatives, p, interpretation);
+        }
+
+        private static (double Statistic, double PValue, string Interpretation) RunTTest(double mean, double sampleStd, int count, double nullHypothesis)
+        {
+            if (count <= 1 || sampleStd <= double.Epsilon)
+            {
+                return (0, 1, "Insufficient variability to evaluate the t-test.");
+            }
+
+            var t = (mean - nullHypothesis) / (sampleStd / Math.Sqrt(count));
+            var p = 2 * (1 - NormalCdf(Math.Abs(t)));
+            var interpretation = p < 0.05
+                ? "Reject H0 at α=0.05 (mean differs from null value)."
+                : "Fail to reject H0 at α=0.05.";
+            return (t, p, interpretation);
+        }
+
+        private static (double Statistic, double PValue, string Interpretation) RunWilcoxonSignedRankTest(IReadOnlyList<double> values, double nullHypothesis)
+        {
+            var differences = values
+                .Select(v => v - nullHypothesis)
+                .Where(d => Math.Abs(d) > double.Epsilon)
+                .ToList();
+
+            if (differences.Count == 0)
+            {
+                return (0, 1, "All observations equal the null median; Wilcoxon test is inconclusive.");
+            }
+
+            var ranked = differences
+                .Select((difference, index) => new
+                {
+                    Index = index,
+                    Difference = difference,
+                    AbsoluteDifference = Math.Abs(difference)
+                })
+                .OrderBy(item => item.AbsoluteDifference)
+                .ToList();
+
+            var ranks = new double[ranked.Count];
+            var position = 0;
+            while (position < ranked.Count)
+            {
+                var start = position;
+                var tieValue = ranked[position].AbsoluteDifference;
+                while (position < ranked.Count && Math.Abs(ranked[position].AbsoluteDifference - tieValue) < 1e-12)
+                {
+                    position++;
+                }
+
+                var averageRank = (start + 1 + position) / 2.0;
+                for (var i = start; i < position; i++)
+                {
+                    ranks[i] = averageRank;
+                }
+            }
+
+            var positiveRankSum = 0.0;
+            for (var i = 0; i < ranked.Count; i++)
+            {
+                if (ranked[i].Difference > 0)
+                {
+                    positiveRankSum += ranks[i];
+                }
+            }
+
+            var n = ranked.Count;
+            var expected = n * (n + 1) / 4.0;
+            var variance = n * (n + 1) * (2 * n + 1) / 24.0;
+            if (variance <= double.Epsilon)
+            {
+                return (0, 1, "Insufficient variability to evaluate the Wilcoxon test.");
+            }
+
+            var z = (positiveRankSum - expected) / Math.Sqrt(variance);
+            var p = 2 * (1 - NormalCdf(Math.Abs(z)));
+            var interpretation = p < 0.05
+                ? "Reject H0 at α=0.05 (median differs from null value)."
+                : "Fail to reject H0 at α=0.05.";
+            return (z, p, interpretation);
         }
 
         private static double BinomialProbability(int n, int k, double p)
@@ -618,9 +715,14 @@ namespace EconToolbox.Desktop.ViewModels
 
         private static string RecommendTest(int count, double skewness)
         {
-            return count >= 30 && Math.Abs(skewness) <= 1
+            if (Math.Abs(skewness) > 1.25)
+            {
+                return "One-Sample Sign Test (Median)";
+            }
+
+            return count >= 30
                 ? "One-Sample Z-Test (Mean)"
-                : "One-Sample Sign Test (Median)";
+                : "One-Sample T-Test (Mean)";
         }
 
         private void TryAutoComputeStatistics()

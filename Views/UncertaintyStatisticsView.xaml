@@ -81,7 +81,12 @@
                               SelectedItem="{Binding SelectedStatisticalTest}"
                               Margin="0,4,0,0"
                               MinWidth="220"
-                              ToolTip="Choose Auto to apply the module recommendation, or manually select a hypothesis test for the current dataset."/>
+                              ToolTip="Choose Auto to apply the module recommendation, or manually select a hypothesis test:
+
+• One-Sample Z-Test (Mean): Best for larger samples (typically n ≥ 30) with roughly symmetric data.
+• One-Sample T-Test (Mean): Mean-based test for smaller samples when data are approximately normal.
+• Wilcoxon Signed-Rank Test (Median): Nonparametric paired-sign/rank test for median shift when data are not strongly normal but differences are reasonably symmetric.
+• One-Sample Sign Test (Median): Most robust nonparametric median test; uses only sign of differences and is suitable for skewed data or heavy outliers."/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,12,16,0">
@@ -89,13 +94,18 @@
                     <TextBox Text="{Binding NullHypothesisValue, UpdateSourceTrigger=PropertyChanged}"
                              Margin="0,4,0,0"
                              MinWidth="160"
-                             ToolTip="Reference mean/median value for the selected hypothesis test. Example: use 0 when testing whether values differ from zero."/>
+                             ToolTip="Reference value for the selected hypothesis test. This field is automatically populated with the current dataset median after filtering/refinement so a robust default is always available."/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" Margin="0,28,0,0">
                     <TextBlock Text="Recommended"
                                Style="{StaticResource Text.Label}"
-                               ToolTip="Automated recommendation based on sample size and skewness of the filtered dataset."/>
+                               ToolTip="Automated recommendation based on filtered sample size and skewness.
+
+General logic:
+• Highly skewed data → Sign Test (median-focused, most robust)
+• Lower skew with smaller sample sizes → T-Test (mean-focused)
+• Lower skew with larger sample sizes → Z-Test (mean-focused)"/>
                     <TextBlock Text="{Binding RecommendedStatisticalTest}" Margin="0,4,0,0" TextWrapping="Wrap" Width="180"/>
                 </StackPanel>
             </Grid>
