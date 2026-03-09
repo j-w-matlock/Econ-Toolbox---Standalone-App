@@ -384,6 +384,8 @@
                                                             <Line X1="12" Y1="268" X2="448" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
                                                             <ListBox ItemsSource="{Binding TopStructureMapPoints}"
                                                                      SelectedItem="{Binding SelectedMapPoint, Mode=TwoWay}"
+                                                                     Width="460"
+                                                                     Height="280"
                                                                      BorderThickness="0"
                                                                      Background="Transparent"
                                                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
