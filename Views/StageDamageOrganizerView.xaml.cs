@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using System.Windows.Input;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,6 +9,11 @@ namespace EconToolbox.Desktop.Views
 {
     public partial class StageDamageOrganizerView : UserControl
     {
+        private bool _isMapPanning;
+        private Point _mapPanStart;
+        private double _mapPanStartHorizontalOffset;
+        private double _mapPanStartVerticalOffset;
+
         public StageDamageOrganizerView()
         {
             InitializeComponent();
@@ -135,6 +141,80 @@ namespace EconToolbox.Desktop.Views
                 Binding = new Binding("FrequentSumDamage") { StringFormat = "C0" },
                 Width = new DataGridLength(1, DataGridLengthUnitType.SizeToHeader)
             });
+        }
+
+        private void MapScrollViewer_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not ScrollViewer scrollViewer)
+            {
+                return;
+            }
+
+            _isMapPanning = true;
+            _mapPanStart = e.GetPosition(scrollViewer);
+            _mapPanStartHorizontalOffset = scrollViewer.HorizontalOffset;
+            _mapPanStartVerticalOffset = scrollViewer.VerticalOffset;
+            scrollViewer.CaptureMouse();
+            Mouse.OverrideCursor = Cursors.SizeAll;
+            e.Handled = true;
+        }
+
+        private void MapScrollViewer_OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isMapPanning || sender is not ScrollViewer scrollViewer)
+            {
+                return;
+            }
+
+            var current = e.GetPosition(scrollViewer);
+            var delta = current - _mapPanStart;
+
+            scrollViewer.ScrollToHorizontalOffset(_mapPanStartHorizontalOffset - delta.X);
+            scrollViewer.ScrollToVerticalOffset(_mapPanStartVerticalOffset - delta.Y);
+        }
+
+        private void MapScrollViewer_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not ScrollViewer scrollViewer)
+            {
+                return;
+            }
+
+            EndMapPan(scrollViewer);
+        }
+
+
+        private void MapScrollViewer_OnPreviewMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (sender is not ScrollViewer scrollViewer)
+            {
+                return;
+            }
+
+            EndMapPan(scrollViewer);
+        }
+
+        private void MapScrollViewer_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (ViewModel is null)
+            {
+                return;
+            }
+
+            ViewModel.MapZoom += e.Delta > 0 ? 0.2d : -0.2d;
+            e.Handled = true;
+        }
+
+        private void EndMapPan(ScrollViewer scrollViewer)
+        {
+            if (!_isMapPanning)
+            {
+                return;
+            }
+
+            _isMapPanning = false;
+            scrollViewer.ReleaseMouseCapture();
+            Mouse.OverrideCursor = null;
         }
     }
 }
