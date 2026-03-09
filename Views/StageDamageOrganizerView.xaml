@@ -373,7 +373,7 @@
                                                           PreviewMouseLeftButtonDown="MapScrollViewer_OnPreviewMouseLeftButtonDown"
                                                           PreviewMouseLeftButtonUp="MapScrollViewer_OnPreviewMouseLeftButtonUp"
                                                           PreviewMouseMove="MapScrollViewer_OnPreviewMouseMove"
-                                                          PreviewMouseLeave="MapScrollViewer_OnPreviewMouseLeave"
+                                                          MouseLeave="MapScrollViewer_OnPreviewMouseLeave"
                                                           PreviewMouseWheel="MapScrollViewer_OnPreviewMouseWheel">
                                                 <Grid x:Name="MapSurface"
                                                       Width="460"
