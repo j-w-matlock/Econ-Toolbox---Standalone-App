@@ -141,6 +141,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0"
@@ -329,6 +330,116 @@
                                     </DataGrid>
                                 </Grid>
                             </Border>
+
+                            <Border Grid.Row="2"
+                                    Style="{StaticResource Border.Card}"
+                                    Margin="0,12,0,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Top structure map check (X/Y coordinates)"
+                                               Style="{StaticResource Text.SectionTitle}"
+                                               Margin="0,0,0,8"/>
+                                    <StackPanel Grid.Row="1">
+                                        <DockPanel Margin="0,0,0,8">
+                                            <TextBlock Text="{Binding SelectedMapPointSummary}"
+                                                       TextWrapping="Wrap"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource App.TextSecondary}"
+                                                       Margin="0,0,8,0"
+                                                       DockPanel.Dock="Left"/>
+                                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                                                <TextBlock Text="{Binding MapZoomLabel}"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,8,0"/>
+                                                <Slider Width="140"
+                                                        Minimum="1"
+                                                        Maximum="8"
+                                                        TickFrequency="0.5"
+                                                        IsSnapToTickEnabled="True"
+                                                        Value="{Binding MapZoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </StackPanel>
+                                        </DockPanel>
+                                        <Border Style="{StaticResource Border.Panel}"
+                                                Padding="8"
+                                                Background="{DynamicResource App.SurfaceAlt}"
+                                                MinHeight="420">
+                                            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                                          VerticalScrollBarVisibility="Auto"
+                                                          CanContentScroll="False">
+                                                <Viewbox Stretch="Uniform"
+                                                         StretchDirection="Both">
+                                                    <Grid Width="460" Height="280"
+                                                          Background="{DynamicResource App.Surface}"
+                                                          RenderTransformOrigin="0,0">
+                                                        <Grid.RenderTransform>
+                                                            <ScaleTransform ScaleX="{Binding MapZoom}" ScaleY="{Binding MapZoom}"/>
+                                                        </Grid.RenderTransform>
+                                                        <Rectangle Fill="#14307A7A"/>
+                                                        <Rectangle Stroke="#66307A7A" StrokeThickness="1" Margin="12"/>
+                                                        <Canvas>
+                                                            <Line X1="12" Y1="12" X2="12" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
+                                                            <Line X1="12" Y1="268" X2="448" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
+                                                            <ListBox ItemsSource="{Binding TopStructureMapPoints}"
+                                                                     SelectedItem="{Binding SelectedMapPoint, Mode=TwoWay}"
+                                                                     BorderThickness="0"
+                                                                     Background="Transparent"
+                                                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                                     HorizontalContentAlignment="Stretch"
+                                                                     VerticalContentAlignment="Stretch">
+                                                                <ListBox.ItemsPanel>
+                                                                    <ItemsPanelTemplate>
+                                                                        <Canvas />
+                                                                    </ItemsPanelTemplate>
+                                                                </ListBox.ItemsPanel>
+                                                                <ListBox.ItemContainerStyle>
+                                                                    <Style TargetType="ListBoxItem">
+                                                                        <Setter Property="Canvas.Left" Value="{Binding ScaledX}"/>
+                                                                        <Setter Property="Canvas.Top" Value="{Binding ScaledY}"/>
+                                                                        <Setter Property="ToolTip" Value="{Binding Tooltip}"/>
+                                                                        <Setter Property="Padding" Value="0"/>
+                                                                        <Setter Property="Margin" Value="0"/>
+                                                                        <Setter Property="BorderThickness" Value="0"/>
+                                                                        <Setter Property="Background" Value="Transparent"/>
+                                                                        <Setter Property="Focusable" Value="False"/>
+                                                                        <Setter Property="Template">
+                                                                            <Setter.Value>
+                                                                                <ControlTemplate TargetType="ListBoxItem">
+                                                                                    <Ellipse Width="8" Height="8"
+                                                                                             Fill="{DynamicResource App.Chart.Series1}"
+                                                                                             Stroke="{DynamicResource App.Surface}"
+                                                                                             StrokeThickness="1"/>
+                                                                                </ControlTemplate>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                        <Style.Triggers>
+                                                                            <Trigger Property="IsSelected" Value="True">
+                                                                                <Setter Property="Template">
+                                                                                    <Setter.Value>
+                                                                                        <ControlTemplate TargetType="ListBoxItem">
+                                                                                            <Ellipse Width="11" Height="11"
+                                                                                                     Fill="{DynamicResource App.Chart.Series2}"
+                                                                                                     Stroke="{DynamicResource App.TextPrimary}"
+                                                                                                     StrokeThickness="1.5"/>
+                                                                                        </ControlTemplate>
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                            </Trigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </ListBox.ItemContainerStyle>
+                                                            </ListBox>
+                                                        </Canvas>
+                                                    </Grid>
+                                                </Viewbox>
+                                            </ScrollViewer>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -374,110 +485,6 @@
                                                       HorizontalAlignment="Stretch"
                                                       Series="{Binding ChartSeries}"
                                                       EmptyMessage="{Binding StatusMessage}"/>
-                        </Border>
-                        <Border Style="{StaticResource Border.Card}"
-                                Margin="0,12,0,0">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Top structure map check (X/Y coordinates)"
-                                           Style="{StaticResource Text.SectionTitle}"
-                                           Margin="0,0,0,8"/>
-                                <StackPanel Grid.Row="1">
-                                    <DockPanel Margin="0,0,0,8">
-                                        <TextBlock Text="{Binding SelectedMapPointSummary}"
-                                                   TextWrapping="Wrap"
-                                                   VerticalAlignment="Center"
-                                                   Foreground="{DynamicResource App.TextSecondary}"
-                                                   Margin="0,0,8,0"
-                                                   DockPanel.Dock="Left"/>
-                                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                                            <TextBlock Text="{Binding MapZoomLabel}"
-                                                       VerticalAlignment="Center"
-                                                       Margin="0,0,8,0"/>
-                                            <Slider Width="140"
-                                                    Minimum="1"
-                                                    Maximum="8"
-                                                    TickFrequency="0.5"
-                                                    IsSnapToTickEnabled="True"
-                                                    Value="{Binding MapZoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </StackPanel>
-                                    </DockPanel>
-                                    <Border Style="{StaticResource Border.Panel}"
-                                            Padding="8"
-                                            Background="{DynamicResource App.SurfaceAlt}">
-                                        <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                                                      VerticalScrollBarVisibility="Auto"
-                                                      CanContentScroll="False">
-                                            <Grid Width="460" Height="280"
-                                                  Background="{DynamicResource App.Surface}"
-                                                  RenderTransformOrigin="0,0">
-                                                <Grid.RenderTransform>
-                                                    <ScaleTransform ScaleX="{Binding MapZoom}" ScaleY="{Binding MapZoom}"/>
-                                                </Grid.RenderTransform>
-                                                <Rectangle Fill="#14307A7A"/>
-                                                <Rectangle Stroke="#66307A7A" StrokeThickness="1" Margin="12"/>
-                                                <Canvas>
-                                                    <Line X1="12" Y1="12" X2="12" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
-                                                    <Line X1="12" Y1="268" X2="448" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
-                                                    <ListBox ItemsSource="{Binding TopStructureMapPoints}"
-                                                             SelectedItem="{Binding SelectedMapPoint, Mode=TwoWay}"
-                                                             BorderThickness="0"
-                                                             Background="Transparent"
-                                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                                             HorizontalContentAlignment="Stretch"
-                                                             VerticalContentAlignment="Stretch">
-                                                        <ListBox.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <Canvas />
-                                                            </ItemsPanelTemplate>
-                                                        </ListBox.ItemsPanel>
-                                                        <ListBox.ItemContainerStyle>
-                                                            <Style TargetType="ListBoxItem">
-                                                                <Setter Property="Canvas.Left" Value="{Binding ScaledX}"/>
-                                                                <Setter Property="Canvas.Top" Value="{Binding ScaledY}"/>
-                                                                <Setter Property="ToolTip" Value="{Binding Tooltip}"/>
-                                                                <Setter Property="Padding" Value="0"/>
-                                                                <Setter Property="Margin" Value="0"/>
-                                                                <Setter Property="BorderThickness" Value="0"/>
-                                                                <Setter Property="Background" Value="Transparent"/>
-                                                                <Setter Property="Focusable" Value="False"/>
-                                                                <Setter Property="Template">
-                                                                    <Setter.Value>
-                                                                        <ControlTemplate TargetType="ListBoxItem">
-                                                                            <Ellipse Width="8" Height="8"
-                                                                                     Fill="{DynamicResource App.Chart.Series1}"
-                                                                                     Stroke="{DynamicResource App.Surface}"
-                                                                                     StrokeThickness="1"/>
-                                                                        </ControlTemplate>
-                                                                    </Setter.Value>
-                                                                </Setter>
-                                                                <Style.Triggers>
-                                                                    <Trigger Property="IsSelected" Value="True">
-                                                                        <Setter Property="Template">
-                                                                            <Setter.Value>
-                                                                                <ControlTemplate TargetType="ListBoxItem">
-                                                                                    <Ellipse Width="11" Height="11"
-                                                                                             Fill="{DynamicResource App.Chart.Series2}"
-                                                                                             Stroke="{DynamicResource App.TextPrimary}"
-                                                                                             StrokeThickness="1.5"/>
-                                                                                </ControlTemplate>
-                                                                            </Setter.Value>
-                                                                        </Setter>
-                                                                    </Trigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </ListBox.ItemContainerStyle>
-                                                    </ListBox>
-                                                </Canvas>
-                                            </Grid>
-                                        </ScrollViewer>
-                                    </Border>
-                                </StackPanel>
-                            </Grid>
                         </Border>
                         <TextBlock Text="{Binding FrequentAepLabelSummary}"
                                    Margin="0,8,0,0"
