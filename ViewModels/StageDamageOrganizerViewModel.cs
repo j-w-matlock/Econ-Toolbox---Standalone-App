@@ -44,6 +44,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<StageDamageCategorySummary> OtherCategorySummaries { get; } = new();
         public ObservableCollection<StageDamageCategorySummary> VehicleCategorySummaries { get; } = new();
         public ObservableCollection<StageDamageHighlight> Highlights { get; } = new();
+        public ObservableCollection<StageDamageMapPoint> TopStructureMapPoints { get; } = new();
         public ObservableCollection<ChartSeries> ChartSeries { get; } = new();
         public ObservableCollection<LegendItem> LegendItems { get; } = new();
         public ObservableCollection<string> AepHeaders => _aepHeaders;
@@ -141,6 +142,7 @@ namespace EconToolbox.Desktop.ViewModels
             VehicleCategorySummaries.Clear();
             Highlights.Clear();
             ChartSeries.Clear();
+            TopStructureMapPoints.Clear();
             LegendItems.Clear();
             AepHeaders.Clear();
             ImpactAreaOptions.Clear();
@@ -177,6 +179,8 @@ namespace EconToolbox.Desktop.ViewModels
                     OccTypeName = record.OccTypeName,
                     SummaryName = record.SummaryName,
                     SourceKey = record.SourceKey,
+                    XCoordinate = record.XCoordinate,
+                    YCoordinate = record.YCoordinate,
                     AepDamages = record.AepDamages.Select(aep => new StageDamageAepValueData
                     {
                         Label = aep.Label,
@@ -245,6 +249,8 @@ namespace EconToolbox.Desktop.ViewModels
                     OccTypeName = recordData.OccTypeName,
                     SummaryName = recordData.SummaryName,
                     SourceKey = recordData.SourceKey,
+                    XCoordinate = recordData.XCoordinate,
+                    YCoordinate = recordData.YCoordinate,
                     AepDamages = recordData.AepDamages.Select(aep => new StageDamageAepValue(aep.Label, aep.Value)).ToList(),
                     ContentAepDamages = (recordData.ContentAepDamages ?? new List<StageDamageAepValueData>())
                         .Select(aep => new StageDamageAepValue(aep.Label, aep.Value))
@@ -415,7 +421,7 @@ namespace EconToolbox.Desktop.ViewModels
             WriteSummarySection(writer, "Vehicle", VehicleCategorySummaries);
             writer.WriteLine();
             writer.WriteLine("Top structures by frequent AEP structure damage");
-            writer.WriteLine("Summary Name,Structure FID,Damage Category,Impact Area,Description,Highest AEP,Depth Above First Floor,Structure Damage");
+            writer.WriteLine("Summary Name,Structure FID,Damage Category,Impact Area,Description,Highest AEP,Depth Above First Floor,Structure Damage,X Coordinate,Y Coordinate");
             foreach (var highlight in Highlights)
             {
                 writer.WriteLine(string.Join(",", new[]
@@ -427,7 +433,9 @@ namespace EconToolbox.Desktop.ViewModels
                     Escape(highlight.Description),
                     Escape(highlight.HighestAepLabel),
                     highlight.DepthAboveFirstFloorAtHighestAep.ToString("0.##", CultureInfo.InvariantCulture),
-                    highlight.HighestStructureDamage.ToString("0.##", CultureInfo.InvariantCulture)
+                    highlight.HighestStructureDamage.ToString("0.##", CultureInfo.InvariantCulture),
+                    highlight.XCoordinate.ToString("0.###", CultureInfo.InvariantCulture),
+                    highlight.YCoordinate.ToString("0.###", CultureInfo.InvariantCulture)
                 }));
             }
         }
@@ -501,6 +509,7 @@ namespace EconToolbox.Desktop.ViewModels
             VehicleCategorySummaries.Clear();
             Highlights.Clear();
             ChartSeries.Clear();
+            TopStructureMapPoints.Clear();
             LegendItems.Clear();
 
             if (Records.Count == 0 || _structureAepColumns.Count == 0)
@@ -575,7 +584,9 @@ namespace EconToolbox.Desktop.ViewModels
                         ImpactArea = r.ImpactArea,
                         HighestAepLabel = r.FrequentPeakAepLabel,
                         DepthAboveFirstFloorAtHighestAep = r.FrequentPeakDepthAboveFirstFloor,
-                        HighestStructureDamage = r.FrequentPeakDamage
+                        HighestStructureDamage = r.FrequentPeakDamage,
+                        XCoordinate = r.XCoordinate,
+                        YCoordinate = r.YCoordinate
                     });
 
                 foreach (var highlight in topStructures)
@@ -583,6 +594,8 @@ namespace EconToolbox.Desktop.ViewModels
                     Highlights.Add(highlight);
                 }
             }
+
+            BuildTopStructureMapPoints();
 
             var categoryOrder = categoryTotals
                 .OrderByDescending(kv => kv.Value)
@@ -619,6 +632,47 @@ namespace EconToolbox.Desktop.ViewModels
                     Color = chartSeries.Stroke ?? System.Windows.Media.Brushes.SteelBlue
                 });
                 paletteIndex++;
+            }
+        }
+
+
+        private void BuildTopStructureMapPoints()
+        {
+            TopStructureMapPoints.Clear();
+            var points = Highlights
+                .Where(h => !(double.IsNaN(h.XCoordinate) || double.IsInfinity(h.XCoordinate) || double.IsNaN(h.YCoordinate) || double.IsInfinity(h.YCoordinate)))
+                .ToList();
+
+            if (points.Count == 0)
+            {
+                return;
+            }
+
+            double minX = points.Min(p => p.XCoordinate);
+            double maxX = points.Max(p => p.XCoordinate);
+            double minY = points.Min(p => p.YCoordinate);
+            double maxY = points.Max(p => p.YCoordinate);
+
+            const double width = 460d;
+            const double height = 280d;
+            const double padding = 12d;
+            double xRange = Math.Max(maxX - minX, 1d);
+            double yRange = Math.Max(maxY - minY, 1d);
+
+            foreach (var point in points)
+            {
+                double scaledX = padding + ((point.XCoordinate - minX) / xRange) * (width - (padding * 2));
+                double scaledY = padding + ((maxY - point.YCoordinate) / yRange) * (height - (padding * 2));
+
+                TopStructureMapPoints.Add(new StageDamageMapPoint
+                {
+                    SummaryName = point.SummaryName,
+                    StructureFid = point.StructureFid,
+                    XCoordinate = point.XCoordinate,
+                    YCoordinate = point.YCoordinate,
+                    ScaledX = scaledX,
+                    ScaledY = scaledY
+                });
             }
         }
 
@@ -858,6 +912,8 @@ namespace EconToolbox.Desktop.ViewModels
                 Description = ReadString(row, map, "description"),
                 ImpactArea = ReadString(row, map, "impactarearownumberinimpactareaset", "impactarea"),
                 OccTypeName = ReadString(row, map, "occtypename", "occupancytype"),
+                XCoordinate = ReadDouble(row, map, "xcoordinate"),
+                YCoordinate = ReadDouble(row, map, "ycoordinate"),
                 AepDamages = structureAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
                 ContentAepDamages = contentAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
                 OtherAepDamages = otherAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),

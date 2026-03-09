@@ -13,6 +13,8 @@ namespace EconToolbox.Desktop.Models
         public string OccTypeName { get; set; } = string.Empty;
         public string SummaryName { get; set; } = string.Empty;
         public string SourceKey { get; set; } = string.Empty;
+        public double XCoordinate { get; set; }
+        public double YCoordinate { get; set; }
 
         public List<StageDamageAepValue> AepDamages { get; set; } = new();
         public List<StageDamageAepValue> ContentAepDamages { get; set; } = new();
@@ -120,7 +122,20 @@ namespace EconToolbox.Desktop.Models
         public string HighestAepLabel { get; init; } = string.Empty;
         public double DepthAboveFirstFloorAtHighestAep { get; init; }
         public double HighestStructureDamage { get; init; }
+        public double XCoordinate { get; init; }
+        public double YCoordinate { get; init; }
     }
 
     public record StageDamageAepValue(string Label, double Value);
+
+    public class StageDamageMapPoint
+    {
+        public string SummaryName { get; init; } = string.Empty;
+        public string StructureFid { get; init; } = string.Empty;
+        public double XCoordinate { get; init; }
+        public double YCoordinate { get; init; }
+        public double ScaledX { get; init; }
+        public double ScaledY { get; init; }
+        public string Tooltip => $"{SummaryName} | FID {StructureFid} | X: {XCoordinate:0.###}, Y: {YCoordinate:0.###}";
+    }
 }
