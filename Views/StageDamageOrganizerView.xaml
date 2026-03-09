@@ -339,33 +339,74 @@
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="Top structure map check (X/Y coordinates)"
+                                    <TextBlock Text="Top structure map explorer (X/Y coordinates)"
                                                Style="{StaticResource Text.SectionTitle}"
                                                Margin="0,0,0,8"/>
-                                    <StackPanel Grid.Row="1">
-                                        <DockPanel Margin="0,0,0,8">
+                                    <Grid Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <DockPanel Grid.Row="0" Margin="0,0,0,8">
                                             <TextBlock Text="{Binding SelectedMapPointSummary}"
                                                        TextWrapping="Wrap"
                                                        VerticalAlignment="Center"
                                                        Foreground="{DynamicResource App.TextSecondary}"
                                                        Margin="0,0,8,0"
                                                        DockPanel.Dock="Left"/>
-                                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                                                <TextBlock Text="{Binding MapZoomLabel}"
-                                                           VerticalAlignment="Center"
-                                                           Margin="0,0,8,0"/>
-                                                <Slider Width="140"
-                                                        Minimum="1"
-                                                        Maximum="8"
-                                                        TickFrequency="0.5"
-                                                        IsSnapToTickEnabled="True"
-                                                        Value="{Binding MapZoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                            </StackPanel>
+                                            <TextBlock Text="{Binding MapPointCountSummary}"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource App.TextSecondary}"
+                                                       FontStyle="Italic"
+                                                       DockPanel.Dock="Right"/>
                                         </DockPanel>
+                                        <Grid Grid.Row="1" Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="0"
+                                                    Command="{Binding ZoomOutMapCommand}"
+                                                    Style="{StaticResource Button.Action}">
+                                                <TextBlock Text="-" FontWeight="Bold"/>
+                                            </Button>
+                                            <Button Grid.Column="1"
+                                                    Command="{Binding ZoomInMapCommand}"
+                                                    Style="{StaticResource Button.Action}"
+                                                    Margin="8,0,0,0">
+                                                <TextBlock Text="+" FontWeight="Bold"/>
+                                            </Button>
+                                            <Button Grid.Column="2"
+                                                    Command="{Binding ResetMapViewCommand}"
+                                                    Style="{StaticResource Button.Action}"
+                                                    Margin="8,0,0,0">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                                    <TextBlock Text="Reset view"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <TextBlock Grid.Column="4"
+                                                       Text="{Binding MapZoomLabel}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0"/>
+                                            <Slider Grid.Column="5"
+                                                    Width="200"
+                                                    Minimum="0.5"
+                                                    Maximum="12"
+                                                    TickFrequency="0.5"
+                                                    IsSnapToTickEnabled="True"
+                                                    Value="{Binding MapZoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </Grid>
                                         <Border Style="{StaticResource Border.Panel}"
+                                                Grid.Row="2"
                                                 Padding="8"
                                                 Background="{DynamicResource App.SurfaceAlt}"
-                                                MinHeight="420">
+                                                MinHeight="660">
                                             <ScrollViewer x:Name="MapScrollViewer"
                                                           HorizontalScrollBarVisibility="Auto"
                                                           VerticalScrollBarVisibility="Auto"
@@ -376,22 +417,24 @@
                                                           MouseLeave="MapScrollViewer_OnPreviewMouseLeave"
                                                           PreviewMouseWheel="MapScrollViewer_OnPreviewMouseWheel">
                                                 <Grid x:Name="MapSurface"
-                                                      Width="460"
-                                                      Height="280"
+                                                      Width="{Binding MapCanvasWidth}"
+                                                      Height="{Binding MapCanvasHeight}"
                                                       Background="{DynamicResource App.Surface}"
                                                       RenderTransformOrigin="0,0">
                                                     <Grid.LayoutTransform>
                                                         <ScaleTransform ScaleX="{Binding MapZoom}" ScaleY="{Binding MapZoom}"/>
                                                     </Grid.LayoutTransform>
                                                     <Rectangle Fill="#14307A7A"/>
-                                                    <Rectangle Stroke="#66307A7A" StrokeThickness="1" Margin="12"/>
+                                                    <Rectangle Stroke="#66307A7A" StrokeThickness="1" Margin="24"/>
                                                     <Canvas>
-                                                        <Line X1="12" Y1="12" X2="12" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
-                                                        <Line X1="12" Y1="268" X2="448" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
+                                                        <Line X1="24" Y1="24" X2="24" Y2="596" Stroke="#884A5568" StrokeThickness="1"/>
+                                                        <Line X1="24" Y1="596" X2="956" Y2="596" Stroke="#884A5568" StrokeThickness="1"/>
+                                                        <Line X1="490" Y1="24" X2="490" Y2="596" Stroke="#66307A7A" StrokeThickness="0.7" StrokeDashArray="4,6"/>
+                                                        <Line X1="24" Y1="310" X2="956" Y2="310" Stroke="#66307A7A" StrokeThickness="0.7" StrokeDashArray="4,6"/>
                                                         <ListBox ItemsSource="{Binding TopStructureMapPoints}"
                                                                  SelectedItem="{Binding SelectedMapPoint, Mode=TwoWay}"
-                                                                 Width="460"
-                                                                 Height="280"
+                                                                 Width="{Binding MapCanvasWidth}"
+                                                                 Height="{Binding MapCanvasHeight}"
                                                                  BorderThickness="0"
                                                                  Background="Transparent"
                                                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -416,10 +459,10 @@
                                                                         <Setter Property="Template">
                                                                             <Setter.Value>
                                                                                 <ControlTemplate TargetType="ListBoxItem">
-                                                                                    <Ellipse Width="8" Height="8"
+                                                                                    <Ellipse Width="10" Height="10"
                                                                                              Fill="{DynamicResource App.Chart.Series1}"
                                                                                              Stroke="{DynamicResource App.Surface}"
-                                                                                             StrokeThickness="1"/>
+                                                                                             StrokeThickness="1.2"/>
                                                                                 </ControlTemplate>
                                                                             </Setter.Value>
                                                                         </Setter>
@@ -428,10 +471,10 @@
                                                                                 <Setter Property="Template">
                                                                                     <Setter.Value>
                                                                                         <ControlTemplate TargetType="ListBoxItem">
-                                                                                            <Ellipse Width="11" Height="11"
+                                                                                            <Ellipse Width="14" Height="14"
                                                                                                      Fill="{DynamicResource App.Chart.Series2}"
                                                                                                      Stroke="{DynamicResource App.TextPrimary}"
-                                                                                                     StrokeThickness="1.5"/>
+                                                                                                     StrokeThickness="2"/>
                                                                                         </ControlTemplate>
                                                                                     </Setter.Value>
                                                                                 </Setter>
@@ -440,11 +483,21 @@
                                                                     </Style>
                                                                 </ListBox.ItemContainerStyle>
                                                         </ListBox>
+                                                        <TextBlock Text="{Binding MapExtentTopLeft}"
+                                                                   Foreground="{DynamicResource App.TextSecondary}"
+                                                                   FontSize="11"
+                                                                   Canvas.Left="6"
+                                                                   Canvas.Top="4"/>
+                                                        <TextBlock Text="{Binding MapExtentBottomRight}"
+                                                                   Foreground="{DynamicResource App.TextSecondary}"
+                                                                   FontSize="11"
+                                                                   Canvas.Left="650"
+                                                                   Canvas.Top="600"/>
                                                     </Canvas>
                                                 </Grid>
                                             </ScrollViewer>
                                         </Border>
-                                    </StackPanel>
+                                    </Grid>
                                 </Grid>
                             </Border>
                         </Grid>

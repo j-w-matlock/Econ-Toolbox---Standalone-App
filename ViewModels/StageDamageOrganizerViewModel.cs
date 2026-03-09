@@ -28,6 +28,14 @@ namespace EconToolbox.Desktop.ViewModels
         private bool _isBusy;
         private double _mapZoom = 1d;
         private StageDamageMapPoint? _selectedMapPoint;
+        private double _mapMinX;
+        private double _mapMaxX;
+        private double _mapMinY;
+        private double _mapMaxY;
+
+        private const double DefaultMapCanvasWidth = 980d;
+        private const double DefaultMapCanvasHeight = 620d;
+        private const double MapPadding = 24d;
 
         private static readonly string[] ChartSeriesBrushKeys =
         {
@@ -110,7 +118,7 @@ namespace EconToolbox.Desktop.ViewModels
             get => _mapZoom;
             set
             {
-                double clamped = Math.Clamp(value, 1d, 8d);
+                double clamped = Math.Clamp(value, 0.5d, 12d);
                 if (SetProperty(ref _mapZoom, clamped))
                 {
                     OnPropertyChanged(nameof(MapZoomLabel));
@@ -137,15 +145,55 @@ namespace EconToolbox.Desktop.ViewModels
                 ? "Select a point to inspect coordinates and structure ID."
                 : $"Selected: {SelectedMapPoint.SummaryName} | FID {SelectedMapPoint.StructureFid} | X: {SelectedMapPoint.XCoordinate:0.###}, Y: {SelectedMapPoint.YCoordinate:0.###}";
 
+        public double MapCanvasWidth => DefaultMapCanvasWidth;
+
+        public double MapCanvasHeight => DefaultMapCanvasHeight;
+
+        public string MapPointCountSummary => $"{TopStructureMapPoints.Count} mapped top-damage structures";
+
+        public string MapExtentTopLeft => $"NW: X {MapMinX:0.###}, Y {MapMaxY:0.###}";
+
+        public string MapExtentBottomRight => $"SE: X {MapMaxX:0.###}, Y {MapMinY:0.###}";
+
+        public double MapMinX
+        {
+            get => _mapMinX;
+            private set => SetProperty(ref _mapMinX, value);
+        }
+
+        public double MapMaxX
+        {
+            get => _mapMaxX;
+            private set => SetProperty(ref _mapMaxX, value);
+        }
+
+        public double MapMinY
+        {
+            get => _mapMinY;
+            private set => SetProperty(ref _mapMinY, value);
+        }
+
+        public double MapMaxY
+        {
+            get => _mapMaxY;
+            private set => SetProperty(ref _mapMaxY, value);
+        }
+
         public IAsyncRelayCommand ImportCsvCommand { get; }
         public IRelayCommand ClearCommand { get; }
         public IAsyncRelayCommand SaveSummaryCommand { get; }
+        public IRelayCommand ZoomInMapCommand { get; }
+        public IRelayCommand ZoomOutMapCommand { get; }
+        public IRelayCommand ResetMapViewCommand { get; }
 
         public StageDamageOrganizerViewModel()
         {
             ImportCsvCommand = new AsyncRelayCommand(ImportCsvAsync);
             ClearCommand = new RelayCommand(ClearAll, () => Records.Count > 0);
             SaveSummaryCommand = new AsyncRelayCommand(SaveSummaryAsync, () => Records.Count > 0);
+            ZoomInMapCommand = new RelayCommand(() => MapZoom += 0.5d);
+            ZoomOutMapCommand = new RelayCommand(() => MapZoom -= 0.5d);
+            ResetMapViewCommand = new RelayCommand(ResetMapView);
 
             ImpactAreaOptions.Add(AllImpactAreasOption);
 
@@ -179,6 +227,10 @@ namespace EconToolbox.Desktop.ViewModels
             TopStructureMapPoints.Clear();
             SelectedMapPoint = null;
             MapZoom = 1d;
+            MapMinX = 0d;
+            MapMaxX = 0d;
+            MapMinY = 0d;
+            MapMaxY = 0d;
             LegendItems.Clear();
             AepHeaders.Clear();
             ImpactAreaOptions.Clear();
@@ -683,24 +735,24 @@ namespace EconToolbox.Desktop.ViewModels
 
             if (points.Count == 0)
             {
+                OnPropertyChanged(nameof(MapPointCountSummary));
+                OnPropertyChanged(nameof(MapExtentTopLeft));
+                OnPropertyChanged(nameof(MapExtentBottomRight));
                 return;
             }
 
-            double minX = points.Min(p => p.XCoordinate);
-            double maxX = points.Max(p => p.XCoordinate);
-            double minY = points.Min(p => p.YCoordinate);
-            double maxY = points.Max(p => p.YCoordinate);
+            MapMinX = points.Min(p => p.XCoordinate);
+            MapMaxX = points.Max(p => p.XCoordinate);
+            MapMinY = points.Min(p => p.YCoordinate);
+            MapMaxY = points.Max(p => p.YCoordinate);
 
-            const double width = 460d;
-            const double height = 280d;
-            const double padding = 12d;
-            double xRange = Math.Max(maxX - minX, 1d);
-            double yRange = Math.Max(maxY - minY, 1d);
+            double xRange = Math.Max(MapMaxX - MapMinX, 1d);
+            double yRange = Math.Max(MapMaxY - MapMinY, 1d);
 
             foreach (var point in points)
             {
-                double scaledX = padding + ((point.XCoordinate - minX) / xRange) * (width - (padding * 2));
-                double scaledY = padding + ((maxY - point.YCoordinate) / yRange) * (height - (padding * 2));
+                double scaledX = MapPadding + ((point.XCoordinate - MapMinX) / xRange) * (MapCanvasWidth - (MapPadding * 2));
+                double scaledY = MapPadding + ((MapMaxY - point.YCoordinate) / yRange) * (MapCanvasHeight - (MapPadding * 2));
 
                 TopStructureMapPoints.Add(new StageDamageMapPoint
                 {
@@ -714,6 +766,14 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             SelectedMapPoint = TopStructureMapPoints.FirstOrDefault();
+            OnPropertyChanged(nameof(MapPointCountSummary));
+            OnPropertyChanged(nameof(MapExtentTopLeft));
+            OnPropertyChanged(nameof(MapExtentBottomRight));
+        }
+
+        private void ResetMapView()
+        {
+            MapZoom = 1d;
         }
 
         private static List<StageDamageCategorySummary> BuildCategorySummaries(
