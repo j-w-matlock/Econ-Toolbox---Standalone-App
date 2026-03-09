@@ -366,32 +366,38 @@
                                                 Padding="8"
                                                 Background="{DynamicResource App.SurfaceAlt}"
                                                 MinHeight="420">
-                                            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                            <ScrollViewer x:Name="MapScrollViewer"
+                                                          HorizontalScrollBarVisibility="Auto"
                                                           VerticalScrollBarVisibility="Auto"
-                                                          CanContentScroll="False">
-                                                <Viewbox Stretch="Uniform"
-                                                         StretchDirection="Both">
-                                                    <Grid Width="460" Height="280"
-                                                          Background="{DynamicResource App.Surface}"
-                                                          RenderTransformOrigin="0,0">
-                                                        <Grid.RenderTransform>
-                                                            <ScaleTransform ScaleX="{Binding MapZoom}" ScaleY="{Binding MapZoom}"/>
-                                                        </Grid.RenderTransform>
-                                                        <Rectangle Fill="#14307A7A"/>
-                                                        <Rectangle Stroke="#66307A7A" StrokeThickness="1" Margin="12"/>
-                                                        <Canvas>
-                                                            <Line X1="12" Y1="12" X2="12" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
-                                                            <Line X1="12" Y1="268" X2="448" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
-                                                            <ListBox ItemsSource="{Binding TopStructureMapPoints}"
-                                                                     SelectedItem="{Binding SelectedMapPoint, Mode=TwoWay}"
-                                                                     Width="460"
-                                                                     Height="280"
-                                                                     BorderThickness="0"
-                                                                     Background="Transparent"
-                                                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                                                     HorizontalContentAlignment="Stretch"
-                                                                     VerticalContentAlignment="Stretch">
+                                                          CanContentScroll="False"
+                                                          PreviewMouseLeftButtonDown="MapScrollViewer_OnPreviewMouseLeftButtonDown"
+                                                          PreviewMouseLeftButtonUp="MapScrollViewer_OnPreviewMouseLeftButtonUp"
+                                                          PreviewMouseMove="MapScrollViewer_OnPreviewMouseMove"
+                                                          PreviewMouseLeave="MapScrollViewer_OnPreviewMouseLeave"
+                                                          PreviewMouseWheel="MapScrollViewer_OnPreviewMouseWheel">
+                                                <Grid x:Name="MapSurface"
+                                                      Width="460"
+                                                      Height="280"
+                                                      Background="{DynamicResource App.Surface}"
+                                                      RenderTransformOrigin="0,0">
+                                                    <Grid.LayoutTransform>
+                                                        <ScaleTransform ScaleX="{Binding MapZoom}" ScaleY="{Binding MapZoom}"/>
+                                                    </Grid.LayoutTransform>
+                                                    <Rectangle Fill="#14307A7A"/>
+                                                    <Rectangle Stroke="#66307A7A" StrokeThickness="1" Margin="12"/>
+                                                    <Canvas>
+                                                        <Line X1="12" Y1="12" X2="12" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
+                                                        <Line X1="12" Y1="268" X2="448" Y2="268" Stroke="#884A5568" StrokeThickness="1"/>
+                                                        <ListBox ItemsSource="{Binding TopStructureMapPoints}"
+                                                                 SelectedItem="{Binding SelectedMapPoint, Mode=TwoWay}"
+                                                                 Width="460"
+                                                                 Height="280"
+                                                                 BorderThickness="0"
+                                                                 Background="Transparent"
+                                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                                 HorizontalContentAlignment="Stretch"
+                                                                 VerticalContentAlignment="Stretch">
                                                                 <ListBox.ItemsPanel>
                                                                     <ItemsPanelTemplate>
                                                                         <Canvas />
@@ -433,10 +439,9 @@
                                                                         </Style.Triggers>
                                                                     </Style>
                                                                 </ListBox.ItemContainerStyle>
-                                                            </ListBox>
-                                                        </Canvas>
-                                                    </Grid>
-                                                </Viewbox>
+                                                        </ListBox>
+                                                    </Canvas>
+                                                </Grid>
                                             </ScrollViewer>
                                         </Border>
                                     </StackPanel>
