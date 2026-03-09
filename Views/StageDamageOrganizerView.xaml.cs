@@ -196,12 +196,30 @@ namespace EconToolbox.Desktop.Views
 
         private void MapScrollViewer_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (ViewModel is null)
+            if (ViewModel is null || sender is not ScrollViewer scrollViewer)
             {
                 return;
             }
 
-            ViewModel.MapZoom += e.Delta > 0 ? 0.2d : -0.2d;
+            var pointer = e.GetPosition(scrollViewer);
+            double previousZoom = ViewModel.MapZoom;
+            double zoomStep = e.Delta > 0 ? 0.5d : -0.5d;
+
+            ViewModel.MapZoom += zoomStep;
+            double nextZoom = ViewModel.MapZoom;
+
+            if (Math.Abs(nextZoom - previousZoom) < 0.0001d)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            double zoomFactor = nextZoom / previousZoom;
+            double newHorizontalOffset = ((scrollViewer.HorizontalOffset + pointer.X) * zoomFactor) - pointer.X;
+            double newVerticalOffset = ((scrollViewer.VerticalOffset + pointer.Y) * zoomFactor) - pointer.Y;
+
+            scrollViewer.ScrollToHorizontalOffset(newHorizontalOffset);
+            scrollViewer.ScrollToVerticalOffset(newVerticalOffset);
             e.Handled = true;
         }
 
