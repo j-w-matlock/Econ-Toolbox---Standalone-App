@@ -111,15 +111,25 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <Button Grid.Column="2"
-                                    Command="{Binding SaveSummaryCommand}"
-                                    Style="{StaticResource Button.Action}"
-                                    IsEnabled="{Binding HasRecords}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
-                                    <TextBlock Text="Save Summary"/>
-                                </StackPanel>
-                            </Button>
+                            <StackPanel Grid.Column="2">
+                                <Button Command="{Binding SaveSummaryCommand}"
+                                        Style="{StaticResource Button.Action}"
+                                        IsEnabled="{Binding HasRecords}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                        <TextBlock Text="Save Summary"/>
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding SavePivotTableCommand}"
+                                        Style="{StaticResource Button.Action}"
+                                        Margin="0,8,0,0"
+                                        IsEnabled="{Binding HasRecords}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
+                                        <TextBlock Text="Save as Pivot Table"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
                         </Grid>
                     </Border>
 

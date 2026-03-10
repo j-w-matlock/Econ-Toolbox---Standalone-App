@@ -184,6 +184,7 @@ namespace EconToolbox.Desktop.ViewModels
         public IAsyncRelayCommand ImportCsvCommand { get; }
         public IRelayCommand ClearCommand { get; }
         public IAsyncRelayCommand SaveSummaryCommand { get; }
+        public IAsyncRelayCommand SavePivotTableCommand { get; }
         public IRelayCommand ZoomInMapCommand { get; }
         public IRelayCommand ZoomOutMapCommand { get; }
         public IRelayCommand ResetMapViewCommand { get; }
@@ -193,6 +194,7 @@ namespace EconToolbox.Desktop.ViewModels
             ImportCsvCommand = new AsyncRelayCommand(ImportCsvAsync);
             ClearCommand = new RelayCommand(ClearAll, () => Records.Count > 0);
             SaveSummaryCommand = new AsyncRelayCommand(SaveSummaryAsync, () => Records.Count > 0);
+            SavePivotTableCommand = new AsyncRelayCommand(SavePivotTableAsync, () => Records.Count > 0);
             ZoomInMapCommand = new RelayCommand(() => MapZoom += 0.5d);
             ZoomOutMapCommand = new RelayCommand(() => MapZoom -= 0.5d);
             ResetMapViewCommand = new RelayCommand(ResetMapView);
@@ -204,6 +206,7 @@ namespace EconToolbox.Desktop.ViewModels
                 OnPropertyChanged(nameof(HasRecords));
                 (ClearCommand as RelayCommand)?.NotifyCanExecuteChanged();
                 (SaveSummaryCommand as AsyncRelayCommand)?.NotifyCanExecuteChanged();
+                (SavePivotTableCommand as AsyncRelayCommand)?.NotifyCanExecuteChanged();
                 RefreshDiagnostics();
             };
 
@@ -425,6 +428,39 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        private async Task SavePivotTableAsync()
+        {
+            if (Records.Count == 0)
+            {
+                StatusMessage = "No data to save. Import CSV files first.";
+                return;
+            }
+
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                DefaultExt = ".xlsx",
+                FileName = "StageDamagePivotTable.xlsx",
+                Title = "Save stage damage pivot table"
+            };
+
+            if (dialog.ShowDialog() != true || string.IsNullOrWhiteSpace(dialog.FileName))
+            {
+                return;
+            }
+
+            try
+            {
+                await Task.Run(() => WritePivotWorkbook(dialog.FileName));
+                StatusMessage = $"Saved pivot table to \"{Path.GetFileName(dialog.FileName)}\".";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Failed to save pivot table: {ex.Message}";
+            }
+            RefreshDiagnostics();
+        }
+
         private async Task SaveSummaryAsync()
         {
             if (Records.Count == 0)
@@ -495,6 +531,69 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             return diagnostics;
+        }
+
+        private void WritePivotWorkbook(string filePath)
+        {
+            using var workbook = new XLWorkbook();
+
+            var sourceWorksheet = workbook.Worksheets.Add("PivotSource");
+            var headers = new List<string> { "Summary Name", "Impact Area", "Damage Type", "Damage Category", "AEP", "Value" };
+            WriteHeaders(sourceWorksheet, headers);
+
+            int row = 2;
+            row = WritePivotSourceRows(sourceWorksheet, row, "Structure", CategorySummaries, summary => summary.AepDamages);
+            row = WritePivotSourceRows(sourceWorksheet, row, "Content", ContentCategorySummaries, summary => summary.AepDamages);
+            row = WritePivotSourceRows(sourceWorksheet, row, "Other", OtherCategorySummaries, summary => summary.AepDamages);
+            WritePivotSourceRows(sourceWorksheet, row, "Vehicle", VehicleCategorySummaries, summary => summary.AepDamages);
+
+            int lastRow = Math.Max(sourceWorksheet.LastRowUsed()?.RowNumber() ?? 1, 2);
+            int lastColumn = headers.Count;
+            var sourceRange = sourceWorksheet.Range(1, 1, lastRow, lastColumn);
+            var sourceTable = sourceRange.CreateTable("StageDamagePivotSource");
+            sourceTable.Theme = XLTableTheme.TableStyleLight9;
+
+            var pivotWorksheet = workbook.Worksheets.Add("Pivot Table");
+            var pivotTable = pivotWorksheet.PivotTables.Add("StageDamagePivot", pivotWorksheet.Cell(1, 1), sourceTable.AsRange());
+            pivotTable.Layout = XLPivotLayout.Tabular;
+            pivotTable.SetShowGrandTotalsRows(true);
+            pivotTable.SetShowGrandTotalsColumns(true);
+
+            pivotTable.RowLabels.Add("Damage Type");
+            pivotTable.RowLabels.Add("Damage Category");
+            pivotTable.RowLabels.Add("Summary Name");
+            pivotTable.RowLabels.Add("Impact Area");
+            pivotTable.ColumnLabels.Add("AEP");
+
+            var valuesField = pivotTable.Values.Add("Value", "Total Damage");
+            valuesField.SummaryFormula = XLPivotSummary.Sum;
+            valuesField.NumberFormat.Format = "$#,##0.00";
+
+            sourceWorksheet.Columns().AdjustToContents();
+            pivotWorksheet.Columns().AdjustToContents();
+
+            workbook.SaveAs(filePath);
+        }
+
+        private int WritePivotSourceRows(IXLWorksheet worksheet, int startRow, string damageType, IEnumerable<StageDamageCategorySummary> summaries, Func<StageDamageCategorySummary, IReadOnlyList<double>> selector)
+        {
+            int row = startRow;
+            foreach (var summary in summaries)
+            {
+                var values = selector(summary);
+                for (int i = 0; i < values.Count; i++)
+                {
+                    worksheet.Cell(row, 1).Value = summary.SummaryName;
+                    worksheet.Cell(row, 2).Value = summary.ImpactArea;
+                    worksheet.Cell(row, 3).Value = damageType;
+                    worksheet.Cell(row, 4).Value = summary.DamageCategory;
+                    worksheet.Cell(row, 5).Value = i < AepHeaders.Count ? AepHeaders[i] : $"AEP {i + 1}";
+                    worksheet.Cell(row, 6).Value = values[i];
+                    row++;
+                }
+            }
+
+            return row;
         }
 
         private void WriteSummaryWorkbook(string filePath)
