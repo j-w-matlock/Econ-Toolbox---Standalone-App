@@ -12,8 +12,7 @@
             <TabControl Margin="0"
                         Padding="0"
                         HorizontalContentAlignment="Stretch"
-                        HorizontalAlignment="Left"
-                        MaxWidth="{StaticResource Layout.MaxContentWidth}">
+                        HorizontalAlignment="Stretch">
                 <TabItem Header="Annualization" Padding="0">
                     <StackPanel Margin="0">
                         <Border Style="{StaticResource Border.Explainer}">
