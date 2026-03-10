@@ -8,8 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using ClosedXML.Excel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Services;
 using EconToolbox.Desktop.Themes;
 using Microsoft.VisualBasic.FileIO;
 
@@ -433,8 +435,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             var dialog = new Microsoft.Win32.SaveFileDialog
             {
-                Filter = "CSV files (*.csv)|*.csv",
-                FileName = "StageDamageSummaries.csv",
+                Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                FileName = "StageDamageSummaries.xlsx",
                 Title = "Save summarized stage damage results"
             };
 
@@ -445,7 +447,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             try
             {
-                await Task.Run(() => WriteSummaryCsv(dialog.FileName));
+                await Task.Run(() => WriteSummaryWorkbook(dialog.FileName));
                 StatusMessage = $"Saved summary to \"{Path.GetFileName(dialog.FileName)}\".";
             }
             catch (Exception ex)
@@ -495,97 +497,128 @@ namespace EconToolbox.Desktop.ViewModels
             return diagnostics;
         }
 
-        private void WriteSummaryCsv(string filePath)
+        private void WriteSummaryWorkbook(string filePath)
         {
-            using var writer = new StreamWriter(filePath);
-            WriteSummarySection(writer, "Structure", CategorySummaries);
-            writer.WriteLine();
-            WriteStructureCountByAepSection(writer);
-            writer.WriteLine();
-            WriteSummarySection(writer, "Content", ContentCategorySummaries);
-            writer.WriteLine();
-            WriteSummarySection(writer, "Other", OtherCategorySummaries);
-            writer.WriteLine();
-            WriteSummarySection(writer, "Vehicle", VehicleCategorySummaries);
-            writer.WriteLine();
-            writer.WriteLine("Top structures by frequent AEP structure damage");
-            writer.WriteLine("Summary Name,Structure FID,Damage Category,Impact Area,Description,Highest AEP,Depth Above First Floor,Structure Damage,X Coordinate,Y Coordinate");
-            foreach (var highlight in Highlights)
-            {
-                writer.WriteLine(string.Join(",", new[]
-                {
-                    Escape(highlight.SummaryName),
-                    Escape(highlight.StructureFid),
-                    Escape(highlight.DamageCategory),
-                    Escape(highlight.ImpactArea),
-                    Escape(highlight.Description),
-                    Escape(highlight.HighestAepLabel),
-                    highlight.DepthAboveFirstFloorAtHighestAep.ToString("0.##", CultureInfo.InvariantCulture),
-                    highlight.HighestStructureDamage.ToString("0.##", CultureInfo.InvariantCulture),
-                    highlight.XCoordinate.ToString("0.###", CultureInfo.InvariantCulture),
-                    highlight.YCoordinate.ToString("0.###", CultureInfo.InvariantCulture)
-                }));
-            }
+            using var workbook = new XLWorkbook();
+            var usedTableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            WriteDamageSummaryWorksheet(workbook, usedTableNames, "Structure Damage Summary", "Structure", CategorySummaries);
+            WriteStructureCountByAepWorksheet(workbook, usedTableNames);
+            WriteDamageSummaryWorksheet(workbook, usedTableNames, "Content Damage Summary", "Content", ContentCategorySummaries);
+            WriteDamageSummaryWorksheet(workbook, usedTableNames, "Other Damage Summary", "Other", OtherCategorySummaries);
+            WriteDamageSummaryWorksheet(workbook, usedTableNames, "Vehicle Damage Summary", "Vehicle", VehicleCategorySummaries);
+            WriteHighlightsWorksheet(workbook, usedTableNames);
+
+            workbook.SaveAs(filePath);
         }
 
-        private void WriteSummarySection(StreamWriter writer, string label, IEnumerable<StageDamageCategorySummary> summaries)
+        private void WriteDamageSummaryWorksheet(XLWorkbook workbook, HashSet<string> usedTableNames, string worksheetName, string damageLabel, IEnumerable<StageDamageCategorySummary> summaries)
         {
-            writer.WriteLine($"Stage Damage Organizer - {label} damage totals by category");
-            var headerColumns = new List<string> { "Summary Name", "Impact Area", "Damage Category", "Structures" };
-            headerColumns.AddRange(AepHeaders.Select(h => $"{label} Damage @{h}"));
-            headerColumns.Add("Total AEP Sum");
-            writer.WriteLine(string.Join(",", headerColumns));
+            var worksheet = workbook.Worksheets.Add(ExcelNamingPolicy.CreateWorksheetName(workbook, worksheetName));
 
+            var headerColumns = new List<string> { "Summary Name", "Impact Area", "Damage Category", "Structures" };
+            headerColumns.AddRange(AepHeaders.Select(h => $"{damageLabel} Damage @{h}"));
+            headerColumns.Add("Total AEP Sum");
+            WriteHeaders(worksheet, headerColumns);
+
+            int row = 2;
             foreach (var summary in summaries)
             {
-                var values = new List<string>
+                int col = 1;
+                worksheet.Cell(row, col++).Value = summary.SummaryName;
+                worksheet.Cell(row, col++).Value = summary.ImpactArea;
+                worksheet.Cell(row, col++).Value = summary.DamageCategory;
+                worksheet.Cell(row, col++).Value = summary.StructureCount;
+
+                foreach (var value in summary.AepDamages)
                 {
-                    Escape(summary.SummaryName),
-                    Escape(summary.ImpactArea),
-                    Escape(summary.DamageCategory),
-                    summary.StructureCount.ToString(CultureInfo.InvariantCulture)
-                };
+                    worksheet.Cell(row, col++).Value = value;
+                }
 
-                values.AddRange(summary.AepDamages
-                    .Select(v => v.ToString("0.##", CultureInfo.InvariantCulture)));
-
-                values.Add(summary.FrequentSumDamage.ToString("0.##", CultureInfo.InvariantCulture));
-                writer.WriteLine(string.Join(",", values));
+                worksheet.Cell(row, col).Value = summary.FrequentSumDamage;
+                row++;
             }
+
+            CreateFormattedTable(worksheet, usedTableNames, $"{damageLabel}DamageSummary", row - 1, headerColumns.Count);
         }
 
-        private void WriteStructureCountByAepSection(StreamWriter writer)
+        private void WriteStructureCountByAepWorksheet(XLWorkbook workbook, HashSet<string> usedTableNames)
         {
-            writer.WriteLine("Stage Damage Organizer - structure count by AEP");
+            var worksheet = workbook.Worksheets.Add(ExcelNamingPolicy.CreateWorksheetName(workbook, "Structure Count by AEP"));
             var headerColumns = new List<string> { "Summary Name", "Impact Area", "Structures" };
             headerColumns.AddRange(AepHeaders.Select(h => $"Damaged Structures @{h}"));
-            writer.WriteLine(string.Join(",", headerColumns));
+            WriteHeaders(worksheet, headerColumns);
 
+            int row = 2;
             foreach (var summary in StructureCountByAepSummaries)
             {
-                var values = new List<string>
-                {
-                    Escape(summary.SummaryName),
-                    Escape(summary.ImpactArea),
-                    summary.StructureCount.ToString(CultureInfo.InvariantCulture)
-                };
+                int col = 1;
+                worksheet.Cell(row, col++).Value = summary.SummaryName;
+                worksheet.Cell(row, col++).Value = summary.ImpactArea;
+                worksheet.Cell(row, col++).Value = summary.StructureCount;
 
-                values.AddRange(summary.StructureCountsByAep.Select(v => v.ToString(CultureInfo.InvariantCulture)));
-                writer.WriteLine(string.Join(",", values));
+                foreach (var value in summary.StructureCountsByAep)
+                {
+                    worksheet.Cell(row, col++).Value = value;
+                }
+
+                row++;
+            }
+
+            CreateFormattedTable(worksheet, usedTableNames, "StructureCountByAEP", row - 1, headerColumns.Count);
+        }
+
+        private void WriteHighlightsWorksheet(XLWorkbook workbook, HashSet<string> usedTableNames)
+        {
+            var worksheet = workbook.Worksheets.Add(ExcelNamingPolicy.CreateWorksheetName(workbook, "Top Structures"));
+            var headers = new[]
+            {
+                "Summary Name", "Structure FID", "Damage Category", "Impact Area", "Description",
+                "Highest AEP", "Depth Above First Floor", "Structure Damage", "X Coordinate", "Y Coordinate"
+            };
+            WriteHeaders(worksheet, headers);
+
+            int row = 2;
+            foreach (var highlight in Highlights)
+            {
+                worksheet.Cell(row, 1).Value = highlight.SummaryName;
+                worksheet.Cell(row, 2).Value = highlight.StructureFid;
+                worksheet.Cell(row, 3).Value = highlight.DamageCategory;
+                worksheet.Cell(row, 4).Value = highlight.ImpactArea;
+                worksheet.Cell(row, 5).Value = highlight.Description;
+                worksheet.Cell(row, 6).Value = highlight.HighestAepLabel;
+                worksheet.Cell(row, 7).Value = highlight.DepthAboveFirstFloorAtHighestAep;
+                worksheet.Cell(row, 8).Value = highlight.HighestStructureDamage;
+                worksheet.Cell(row, 9).Value = highlight.XCoordinate;
+                worksheet.Cell(row, 10).Value = highlight.YCoordinate;
+                row++;
+            }
+
+            CreateFormattedTable(worksheet, usedTableNames, "TopStructuresByDamage", row - 1, headers.Length);
+        }
+
+        private static void WriteHeaders(IXLWorksheet worksheet, IReadOnlyList<string> headers)
+        {
+            for (int i = 0; i < headers.Count; i++)
+            {
+                worksheet.Cell(1, i + 1).Value = headers[i];
             }
         }
 
-        private static string Escape(string value)
+        private static void CreateFormattedTable(IXLWorksheet worksheet, HashSet<string> usedTableNames, string baseTableName, int lastRow, int columnCount)
         {
-            if (value.Contains(',')
-                || value.Contains('"')
-                || value.Contains('\n')
-                || value.Contains('\r'))
-            {
-                return $"\"{value.Replace("\"", "\"\"")}\"";
-            }
+            int effectiveLastRow = Math.Max(lastRow, 2);
+            var tableRange = worksheet.Range(1, 1, effectiveLastRow, columnCount);
+            var tableName = ExcelNamingPolicy.CreateUniqueName(
+                baseTableName,
+                usedTableNames,
+                ExcelNamingPolicy.ExcelMaxTableNameLength,
+                "Tbl",
+                requireLetterStart: true);
 
-            return value;
+            var table = tableRange.CreateTable(tableName);
+            table.Theme = XLTableTheme.TableStyleLight11;
+            worksheet.Columns().AdjustToContents();
         }
 
         private void ComputeSummaries()
