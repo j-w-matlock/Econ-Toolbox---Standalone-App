@@ -1038,6 +1038,10 @@ namespace EconToolbox.Desktop.ViewModels
                 return null;
             }
 
+            double xCoordinate = ReadDouble(row, map, "xcoordinate");
+            double yCoordinate = ReadDouble(row, map, "ycoordinate");
+            (xCoordinate, yCoordinate) = NormalizeCoordinatesToDecimalDegrees(xCoordinate, yCoordinate);
+
             return new StageDamageRecord
             {
                 StructureFid = string.IsNullOrWhiteSpace(structureFid) ? "Unknown" : structureFid.Trim(),
@@ -1045,8 +1049,8 @@ namespace EconToolbox.Desktop.ViewModels
                 Description = ReadString(row, map, "description"),
                 ImpactArea = ReadString(row, map, "impactarearownumberinimpactareaset", "impactarea"),
                 OccTypeName = ReadString(row, map, "occtypename", "occupancytype"),
-                XCoordinate = ReadDouble(row, map, "xcoordinate"),
-                YCoordinate = ReadDouble(row, map, "ycoordinate"),
+                XCoordinate = xCoordinate,
+                YCoordinate = yCoordinate,
                 AepDamages = structureAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
                 ContentAepDamages = contentAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
                 OtherAepDamages = otherAepColumns.Select(c => new StageDamageAepValue(c.Label, ReadDouble(row, map, c.NormalizedKey))).ToList(),
@@ -1055,6 +1059,49 @@ namespace EconToolbox.Desktop.ViewModels
                 SummaryName = summaryName,
                 SourceKey = sourceKey
             };
+        }
+
+        private static (double XCoordinate, double YCoordinate) NormalizeCoordinatesToDecimalDegrees(double xCoordinate, double yCoordinate)
+        {
+            if (IsDecimalDegrees(xCoordinate, yCoordinate))
+            {
+                return (xCoordinate, yCoordinate);
+            }
+
+            if (IsDecimalDegrees(yCoordinate, xCoordinate))
+            {
+                return (yCoordinate, xCoordinate);
+            }
+
+            if (TryConvertWebMercatorToDecimalDegrees(xCoordinate, yCoordinate, out double longitude, out double latitude))
+            {
+                return (longitude, latitude);
+            }
+
+            return (xCoordinate, yCoordinate);
+        }
+
+        private static bool IsDecimalDegrees(double longitude, double latitude)
+        {
+            return Math.Abs(longitude) <= 180d && Math.Abs(latitude) <= 90d;
+        }
+
+        private static bool TryConvertWebMercatorToDecimalDegrees(double xCoordinate, double yCoordinate, out double longitude, out double latitude)
+        {
+            longitude = 0d;
+            latitude = 0d;
+
+            const double maxWebMercatorExtent = 20037508.3427892d;
+            if (Math.Abs(xCoordinate) > maxWebMercatorExtent || Math.Abs(yCoordinate) > maxWebMercatorExtent)
+            {
+                return false;
+            }
+
+            longitude = (xCoordinate / maxWebMercatorExtent) * 180d;
+            double latRadians = (yCoordinate / maxWebMercatorExtent) * Math.PI;
+            latitude = (180d / Math.PI) * (2d * Math.Atan(Math.Exp(latRadians)) - (Math.PI / 2d));
+
+            return IsDecimalDegrees(longitude, latitude);
         }
 
         private static bool TryReadHeader(TextFieldParser parser, out string[]? header)
