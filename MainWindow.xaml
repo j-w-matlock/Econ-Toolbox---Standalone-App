@@ -18,7 +18,7 @@
         ToolTipService.Placement="Mouse"
         ToolTipService.HorizontalOffset="12"
         ToolTipService.VerticalOffset="12"
-        Background="{DynamicResource App.Background}">
+        Background="{DynamicResource App.Surface}">
     <Window.InputBindings>
         <KeyBinding Key="E"
                     Modifiers="Control+Alt"
@@ -476,7 +476,7 @@
 
             <Border Grid.Column="4"
                     Style="{StaticResource Border.EditorPane}">
-                <Grid Margin="{StaticResource Padding.Medium}">
+                <Grid Margin="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>

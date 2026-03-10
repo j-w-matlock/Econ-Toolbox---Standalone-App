@@ -5,7 +5,7 @@
     <SolidColorBrush x:Key="DestructiveActionBrush" Color="#C62828"/>
     <SolidColorBrush x:Key="BorderBrush" Color="#6F6F6F"/>
     <SolidColorBrush x:Key="TextBrush" Color="#1F1F1F"/>
-    <SolidColorBrush x:Key="BackgroundBrush" Color="#F8F8F8"/>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#FFFFFF"/>
 
     <!-- Design tokens: core brushes -->
     <SolidColorBrush x:Key="Color.PrimaryBrush" Color="#0F6CBD"/>
@@ -20,16 +20,16 @@
     <SolidColorBrush x:Key="Color.TextPrimaryBrush" Color="#1B1A19"/>
     <SolidColorBrush x:Key="Color.TextSecondaryBrush" Color="#605E5C"/>
     <SolidColorBrush x:Key="Color.TextDisabledBrush" Color="#A19F9D"/>
-    <SolidColorBrush x:Key="Color.BackgroundBrush" Color="#F5F5F5"/>
+    <SolidColorBrush x:Key="Color.BackgroundBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Color.SurfaceBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Color.CardBackgroundBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Color.FocusBrush" Color="#005A9E"/>
 
     <!-- Core colors -->
-    <Color x:Key="App.Background.Color">#F5F5F5</Color>
+    <Color x:Key="App.Background.Color">#FFFFFF</Color>
     <Color x:Key="App.Surface.Color">#FFFFFF</Color>
-    <Color x:Key="App.SurfaceAlt.Color">#F8F8F8</Color>
-    <Color x:Key="App.Surface2.Color">#F9F9F9</Color>
+    <Color x:Key="App.SurfaceAlt.Color">#FFFFFF</Color>
+    <Color x:Key="App.Surface2.Color">#FFFFFF</Color>
     <Color x:Key="App.Surface2Border.Color">#DADADA</Color>
     <Color x:Key="App.Border.Color">#D1D1D1</Color>
     <Color x:Key="App.Divider.Color">#D1D1D1</Color>
@@ -49,14 +49,14 @@
     <Color x:Key="App.Focus.Color">#005A9E</Color>
 
     <!-- Shell colors -->
-    <Color x:Key="App.NavigationBackground.Color">#F3F3F3</Color>
+    <Color x:Key="App.NavigationBackground.Color">#FFFFFF</Color>
     <Color x:Key="App.NavigationSelectedBackground.Color">#E5E5E5</Color>
     <Color x:Key="App.NavigationBorder.Color">#D0D0D0</Color>
     <Color x:Key="App.NavigationText.Color">#1E1E1E</Color>
     <Color x:Key="App.HighlightBackground.Color">#E5F1FB</Color>
     <Color x:Key="App.HighlightBorder.Color">#9CC7F7</Color>
-    <Color x:Key="App.TitleBarBackground.Color">#E7E7E7</Color>
-    <Color x:Key="App.StatusBarBackground.Color">#E7E7E7</Color>
+    <Color x:Key="App.TitleBarBackground.Color">#FFFFFF</Color>
+    <Color x:Key="App.StatusBarBackground.Color">#FFFFFF</Color>
     <Color x:Key="App.EditorBackground.Color">#FFFFFF</Color>
 
     <!-- Feedback colors -->

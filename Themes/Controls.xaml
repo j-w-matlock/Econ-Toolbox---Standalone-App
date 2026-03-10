@@ -19,8 +19,7 @@
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Standard}"/>
         <Setter Property="CornerRadius" Value="{StaticResource Radius.MD}"/>
         <Setter Property="Padding" Value="{StaticResource Padding.Content}"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="MaxWidth" Value="{StaticResource Layout.CardMaxWidth}"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
     </Style>
 
     <Style x:Key="Border.Explainer" TargetType="Border" BasedOn="{StaticResource Border.Base}">
@@ -164,8 +163,8 @@
     </Style>
 
     <Style x:Key="Border.EditorPane" TargetType="Border">
-        <Setter Property="Background" Value="{DynamicResource App.EditorBackground}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
+        <Setter Property="Background" Value="{DynamicResource App.Surface}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource App.Border}"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
