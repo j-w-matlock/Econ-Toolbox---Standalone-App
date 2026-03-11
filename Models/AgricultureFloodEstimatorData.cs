@@ -5,6 +5,7 @@ namespace EconToolbox.Desktop.Models
         public string Name { get; set; } = string.Empty;
         public double DepthFeet { get; set; }
         public int FloodMonth { get; set; }
+        public string AnnualExceedanceProbabilitiesCsv { get; set; } = string.Empty;
         public double ReturnPeriodYears { get; set; }
     }
 

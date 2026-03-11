@@ -1308,7 +1308,7 @@ namespace EconToolbox.Desktop.ViewModels
                 Rect? polygonRect = null;
                 if (EstimatorUsePolygonUniformDepth && !string.IsNullOrWhiteSpace(EstimatorPolygonShapefilePath) && File.Exists(EstimatorPolygonShapefilePath))
                 {
-                    polygonData = ReadShapefilePolygon(EstimatorPolygonShapefilePath);
+                    polygonData = ReadShapefilePolygon(EstimatorPolygonShapefilePath, cdl);
                     polygonRect = polygonData.Bounds;
                 }
 
@@ -1329,7 +1329,7 @@ namespace EconToolbox.Desktop.ViewModels
                         double sampledDepth = 0;
                         if (EstimatorUsePolygonUniformDepth)
                         {
-                            if (!polygonRect.HasValue || !CellInBounds(cdl, x, y, polygonRect.Value)) continue;
+                            if (polygonData == null || !CellInPolygon(cdl, x, y, polygonData.Vertices)) continue;
                             sampledDepth = EstimatorUniformPolygonDepth;
                         }
                         else if (depth != null)
@@ -1367,6 +1367,7 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 var cdlBounds = GetRasterBounds(cdl);
+                var cdlActiveBounds = GetRasterActiveBounds(cdl);
                 var depthBounds = depth != null ? GetRasterBounds(depth) : (Rect?)null;
                 var previewFrame = new Rect(20, 20, 300, 200);
                 var worldBounds = cdlBounds;
@@ -1379,18 +1380,20 @@ namespace EconToolbox.Desktop.ViewModels
                     worldBounds.Union(polygonRect.Value);
                 }
 
-                EstimatorCdlRect = ProjectWorldRect(cdlBounds, worldBounds, previewFrame);
+                EstimatorCdlRect = ProjectWorldRect(cdlActiveBounds ?? cdlBounds, worldBounds, previewFrame);
                 EstimatorDepthRect = depthBounds.HasValue ? ProjectWorldRect(depthBounds.Value, worldBounds, previewFrame) : new Rect(0, 0, 0, 0);
                 if (polygonData != null)
                 {
                     EstimatorPolygonPreviewPoints = BuildPolygonPreview(polygonData.Vertices, worldBounds, previewFrame);
                 }
 
+                var cdlProjection = string.IsNullOrWhiteSpace(cdl.ProjectionName) ? "Unknown" : cdl.ProjectionName;
+                var depthProjection = depth != null ? (string.IsNullOrWhiteSpace(depth.SourceProjectionName) ? "Unknown" : depth.SourceProjectionName) : "N/A";
                 EstimatorProjectionSyncStatus = depth == null
-                    ? "Projection sync: using CDL + polygon bounds in CDL coordinates."
+                    ? $"Projection sync: CDL={cdlProjection}; depth=N/A; polygon aligned to CDL coordinates."
                     : depth.WasReprojected
-                        ? $"Projection sync: reprojected depth raster from {depth.SourceProjectionName} to match CDL projection {cdl.ProjectionName}."
-                        : $"Projection sync: CDL and depth rasters already share projection {cdl.ProjectionName}.";
+                        ? $"Projection sync: CDL={cdlProjection}; depth source={depthProjection}; depth was reprojected to CDL grid."
+                        : $"Projection sync: CDL={cdlProjection}; depth source={depthProjection}; no reprojection required.";
                 EstimatorSpatialStatus = $"Spatial sampling complete. {EstimatorSpatialCropRows.Count} impacted crop classes and {EstimatorCdlSummaryRows.Count} CDL classes populated.";
             }
             catch (Exception ex)
@@ -1399,11 +1402,34 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private static bool CellInBounds(RasterData raster, int x, int y, Rect bounds)
+        private static bool CellInPolygon(RasterData raster, int x, int y, IReadOnlyList<Point> polygon)
         {
             var cx = raster.OriginX + ((x + 0.5) * raster.PixelWidth);
             var cy = raster.OriginY + ((y + 0.5) * raster.PixelHeight);
-            return bounds.Contains(new Point(cx, cy));
+            return IsPointInPolygon(new Point(cx, cy), polygon);
+        }
+
+        private static bool IsPointInPolygon(Point point, IReadOnlyList<Point> polygon)
+        {
+            if (polygon.Count < 3)
+            {
+                return false;
+            }
+
+            var inside = false;
+            for (int i = 0, j = polygon.Count - 1; i < polygon.Count; j = i++)
+            {
+                var pi = polygon[i];
+                var pj = polygon[j];
+                bool intersects = ((pi.Y > point.Y) != (pj.Y > point.Y))
+                    && (point.X < ((pj.X - pi.X) * (point.Y - pi.Y) / ((pj.Y - pi.Y) + 1e-12)) + pi.X);
+                if (intersects)
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
         }
 
         private static RasterData ReprojectRasterIfNeeded(RasterData source, RasterData target)
@@ -1487,7 +1513,7 @@ namespace EconToolbox.Desktop.ViewModels
             return preview;
         }
 
-        private static PolygonShapeData ReadShapefilePolygon(string shpPath)
+        private static PolygonShapeData ReadShapefilePolygon(string shpPath, RasterData targetRaster)
         {
             using var stream = File.OpenRead(shpPath);
             using var reader = new BinaryReader(stream);
@@ -1548,7 +1574,48 @@ namespace EconToolbox.Desktop.ViewModels
                 stream.Seek(contentStart + contentBytes, SeekOrigin.Begin);
             }
 
+            var polygonProjectionWkt = ReadShapefileProjectionWkt(shpPath);
+            if (!string.IsNullOrWhiteSpace(polygonProjectionWkt)
+                && !string.IsNullOrWhiteSpace(targetRaster.ProjectionWkt)
+                && !string.Equals(polygonProjectionWkt, targetRaster.ProjectionWkt, StringComparison.Ordinal)
+                && vertices.Count > 0)
+            {
+                try
+                {
+                    var sourceProjection = ProjectionInfo.FromEsriString(polygonProjectionWkt);
+                    var targetProjection = ProjectionInfo.FromEsriString(targetRaster.ProjectionWkt);
+                    for (int i = 0; i < vertices.Count; i++)
+                    {
+                        var xy = new[] { vertices[i].X, vertices[i].Y };
+                        var z = new[] { 0d };
+                        Reproject.ReprojectPoints(xy, z, sourceProjection, targetProjection, 0, 1);
+                        vertices[i] = new Point(xy[0], xy[1]);
+                    }
+
+                    var minX2 = vertices.Min(v => v.X);
+                    var minY2 = vertices.Min(v => v.Y);
+                    var maxX2 = vertices.Max(v => v.X);
+                    var maxY2 = vertices.Max(v => v.Y);
+                    bounds = new Rect(new Point(minX2, minY2), new Point(maxX2, maxY2));
+                }
+                catch
+                {
+                    // Keep original coordinates when projection transform fails.
+                }
+            }
+
             return new PolygonShapeData(bounds, vertices);
+        }
+
+        private static string ReadShapefileProjectionWkt(string shpPath)
+        {
+            var prjPath = Path.ChangeExtension(shpPath, ".prj");
+            if (!File.Exists(prjPath))
+            {
+                return string.Empty;
+            }
+
+            return File.ReadAllText(prjPath).Trim();
         }
 
         private static int ReadInt32BigEndian(BinaryReader reader)
@@ -1565,6 +1632,42 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             return BitConverter.ToInt32(bytes, 0);
+        }
+
+        private static Rect? GetRasterActiveBounds(RasterData raster)
+        {
+            int minX = int.MaxValue;
+            int minY = int.MaxValue;
+            int maxX = int.MinValue;
+            int maxY = int.MinValue;
+
+            for (int y = 0; y < raster.Height; y++)
+            {
+                for (int x = 0; x < raster.Width; x++)
+                {
+                    int idx = (y * raster.Width) + x;
+                    if (raster.Values[idx] <= 0)
+                    {
+                        continue;
+                    }
+
+                    minX = Math.Min(minX, x);
+                    minY = Math.Min(minY, y);
+                    maxX = Math.Max(maxX, x);
+                    maxY = Math.Max(maxY, y);
+                }
+            }
+
+            if (minX == int.MaxValue)
+            {
+                return null;
+            }
+
+            var left = raster.OriginX + (minX * raster.PixelWidth);
+            var right = raster.OriginX + ((maxX + 1) * raster.PixelWidth);
+            var top = raster.OriginY + (minY * raster.PixelHeight);
+            var bottom = raster.OriginY + ((maxY + 1) * raster.PixelHeight);
+            return new Rect(new Point(Math.Min(left, right), Math.Min(top, bottom)), new Point(Math.Max(left, right), Math.Max(top, bottom)));
         }
 
         private static Rect GetRasterBounds(RasterData raster)
@@ -1687,9 +1790,9 @@ namespace EconToolbox.Desktop.ViewModels
         private void SeedEstimatorInputs()
         {
             EstimatorEvents.Clear();
-            EstimatorEvents.Add(new EstimatorEventRow("10-year", 1.2, 5, 10));
-            EstimatorEvents.Add(new EstimatorEventRow("50-year", 2.4, 6, 50));
-            EstimatorEvents.Add(new EstimatorEventRow("100-year", 3.2, 6, 100));
+            EstimatorEvents.Add(new EstimatorEventRow("10-year", 1.2, 5, "0.1", 10));
+            EstimatorEvents.Add(new EstimatorEventRow("50-year", 2.4, 6, "0.02", 50));
+            EstimatorEvents.Add(new EstimatorEventRow("100-year", 3.2, 6, "0.01", 100));
 
             EstimatorCropRows.Clear();
             EstimatorCropRows.Add(new EstimatorCropRow(1, "Corn", "10-year", 350, 0, "4,5,6,7,8,9", ""));
@@ -1715,7 +1818,7 @@ namespace EconToolbox.Desktop.ViewModels
                     .ToDictionary(group => group.Key, group => group.First().AverageDepthFeet);
 
                 var request = new FloodImpactAnalysisRequest(
-                    EstimatorEvents.Select(evt => new FloodEventInput(evt.Name, evt.DepthFeet, evt.FloodMonth, evt.ReturnPeriodYears)).ToList(),
+                    EstimatorEvents.Select(evt => new FloodEventInput(evt.Name, evt.DepthFeet, evt.FloodMonth, evt.AnnualExceedanceProbabilitiesCsv, evt.ReturnPeriodYears)).ToList(),
                     EstimatorCropRows.Select(crop => new CropImpactInput(
                         crop.CropCode,
                         crop.CropName,
@@ -1933,6 +2036,7 @@ namespace EconToolbox.Desktop.ViewModels
                     Name = evt.Name,
                     DepthFeet = evt.DepthFeet,
                     FloodMonth = evt.FloodMonth,
+                    AnnualExceedanceProbabilitiesCsv = evt.AnnualExceedanceProbabilitiesCsv,
                     ReturnPeriodYears = evt.ReturnPeriodYears
                 }).ToList(),
                 EstimatorCropRows = EstimatorCropRows.Select(row => new EstimatorCropData
@@ -2084,7 +2188,7 @@ namespace EconToolbox.Desktop.ViewModels
                     EstimatorEvents.Clear();
                     foreach (var evt in data.EstimatorEvents)
                     {
-                        EstimatorEvents.Add(new EstimatorEventRow(evt.Name, evt.DepthFeet, evt.FloodMonth, evt.ReturnPeriodYears));
+                        EstimatorEvents.Add(new EstimatorEventRow(evt.Name, evt.DepthFeet, evt.FloodMonth, evt.AnnualExceedanceProbabilitiesCsv, evt.ReturnPeriodYears));
                     }
                 }
 
@@ -3145,19 +3249,22 @@ namespace EconToolbox.Desktop.ViewModels
             private string _name;
             private double _depthFeet;
             private int _floodMonth;
+            private string _annualExceedanceProbabilitiesCsv;
             private double _returnPeriodYears;
 
-            public EstimatorEventRow(string name, double depthFeet, int floodMonth, double returnPeriodYears)
+            public EstimatorEventRow(string name, double depthFeet, int floodMonth, string annualExceedanceProbabilitiesCsv, double returnPeriodYears)
             {
                 _name = name;
                 _depthFeet = depthFeet;
                 _floodMonth = floodMonth;
+                _annualExceedanceProbabilitiesCsv = annualExceedanceProbabilitiesCsv;
                 _returnPeriodYears = returnPeriodYears;
             }
 
             public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
             public double DepthFeet { get => _depthFeet; set { _depthFeet = Math.Max(0.0, value); OnPropertyChanged(); } }
             public int FloodMonth { get => _floodMonth; set { _floodMonth = Math.Clamp(value, 1, 12); OnPropertyChanged(); } }
+            public string AnnualExceedanceProbabilitiesCsv { get => _annualExceedanceProbabilitiesCsv; set { _annualExceedanceProbabilitiesCsv = value; OnPropertyChanged(); } }
             public double ReturnPeriodYears { get => _returnPeriodYears; set { _returnPeriodYears = Math.Max(0.1, value); OnPropertyChanged(); } }
         }
 

@@ -132,7 +132,8 @@
                             <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
                             <DataGridTextColumn Header="Depth (ft)" Binding="{Binding DepthFeet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
                             <DataGridTextColumn Header="Month" Binding="{Binding FloodMonth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
-                            <DataGridTextColumn Header="Return period" Binding="{Binding ReturnPeriodYears, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                            <DataGridTextColumn Header="AEP(s)" Binding="{Binding AnnualExceedanceProbabilitiesCsv, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                            <DataGridTextColumn Header="Return period (fallback)" Binding="{Binding ReturnPeriodYears, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>

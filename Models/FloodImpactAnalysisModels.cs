@@ -2,7 +2,12 @@ using System.Collections.Generic;
 
 namespace EconToolbox.Desktop.Models
 {
-    public record FloodEventInput(string Name, double DepthFeet, int FloodMonth, double ReturnPeriodYears);
+    public record FloodEventInput(
+        string Name,
+        double DepthFeet,
+        int FloodMonth,
+        string AnnualExceedanceProbabilitiesCsv,
+        double ReturnPeriodYears);
 
     public record CropImpactInput(
         int CropCode,

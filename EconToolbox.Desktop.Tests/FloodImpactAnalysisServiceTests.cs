@@ -13,7 +13,7 @@ namespace EconToolbox.Desktop.Tests
         {
             var service = new FloodImpactAnalysisService();
             var request = new FloodImpactAnalysisRequest(
-                new[] { new FloodEventInput("10-year", 2.0, 6, 10) },
+                new[] { new FloodEventInput("10-year", 2.0, 6, "0.1", 10) },
                 new[] { new CropImpactInput(1, "Corn", "10-year", 100, 1000, "6", "0:0,1:0.5,2:1", 2.0) },
                 new FloodImpactUncertaintySettings("0:0,1:0.5,2:1", 1000, 0, 0, 0, 2, 2, 42, false));
 
@@ -31,7 +31,7 @@ namespace EconToolbox.Desktop.Tests
         {
             var service = new FloodImpactAnalysisService();
             var request = new FloodImpactAnalysisRequest(
-                new[] { new FloodEventInput("spring", 2.0, 3, 5) },
+                new[] { new FloodEventInput("spring", 2.0, 3, "", 5) },
                 new[] { new CropImpactInput(1, "Corn", "spring", 100, 1000, "7,8", "0:0,1:0.5,2:1", 2.0) },
                 new FloodImpactUncertaintySettings("0:0,1:0.5,2:1", 1000, 0, 0, 0, 1, 1, 1, false));
 
@@ -39,6 +39,20 @@ namespace EconToolbox.Desktop.Tests
 
             Assert.AreEqual(0, result.Events.Single().MeanDamage, 1e-6);
             Assert.AreEqual(0, result.Summary.TotalDiscreteEad, 1e-6);
+        }
+
+        [TestMethod]
+        public void Run_UsesMultipleAepsPerEvent()
+        {
+            var service = new FloodImpactAnalysisService();
+            var request = new FloodImpactAnalysisRequest(
+                new[] { new FloodEventInput("combo", 2.0, 6, "0.1,2%", 10) },
+                new[] { new CropImpactInput(1, "Corn", "combo", 100, 1000, "6", "0:0,1:0.5,2:1", 2.0) },
+                new FloodImpactUncertaintySettings("0:0,1:0.5,2:1", 1000, 0, 0, 0, 1, 1, 42, false));
+
+            var result = service.Run(request);
+
+            Assert.AreEqual(12000, result.Events.Single().DiscreteEadContribution, 1e-6);
         }
     }
 }
