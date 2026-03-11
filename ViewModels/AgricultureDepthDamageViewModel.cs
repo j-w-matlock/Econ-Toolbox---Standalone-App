@@ -51,6 +51,7 @@ namespace EconToolbox.Desktop.ViewModels
         public ObservableCollection<EstimatorCropRow> EstimatorCropRows { get; } = new();
         public ObservableCollection<EstimatorResultRow> EstimatorResults { get; } = new();
         public ObservableCollection<EstimatorSpatialCropRow> EstimatorSpatialCropRows { get; } = new();
+        public ObservableCollection<EstimatorCdlSummaryRow> EstimatorCdlSummaryRows { get; } = new();
         public ObservableCollection<EstimatorSummaryRow> EstimatorSummaryRows { get; } = new();
 
         private string _estimatorDefaultCurve = "0:0,1:0.5,2:1";
@@ -69,6 +70,7 @@ namespace EconToolbox.Desktop.ViewModels
         private double _estimatorUniformPolygonDepth;
         private string _estimatorSpatialStatus = "Load a CDL raster and either a depth raster or polygon shapefile.";
         private double _estimatorSpatialCropAcreage;
+        private double _estimatorCdlTotalAcreage;
         private bool _estimatorUsePolygonUniformDepth;
         private string _estimatorProjectionSyncStatus = "Projection sync pending.";
         private Rect _estimatorCdlRect = new(20, 20, 280, 200);
@@ -526,6 +528,20 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public string EstimatorSpatialCropAcreageDisplay => $"{EstimatorSpatialCropAcreage:N1} acres";
+
+        public double EstimatorCdlTotalAcreage
+        {
+            get => _estimatorCdlTotalAcreage;
+            private set
+            {
+                if (Math.Abs(_estimatorCdlTotalAcreage - value) < 1e-6) return;
+                _estimatorCdlTotalAcreage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(EstimatorCdlTotalAcreageDisplay));
+            }
+        }
+
+        public string EstimatorCdlTotalAcreageDisplay => $"{EstimatorCdlTotalAcreage:N1} acres";
 
         public string EstimatorProjectionSyncStatus
         {
@@ -1269,6 +1285,8 @@ namespace EconToolbox.Desktop.ViewModels
         private void RefreshEstimatorSpatialData()
         {
             EstimatorSpatialCropRows.Clear();
+            EstimatorCdlSummaryRows.Clear();
+            EstimatorPolygonPreviewPoints = new PointCollection();
             if (string.IsNullOrWhiteSpace(EstimatorCdlRasterPath) || !File.Exists(EstimatorCdlRasterPath))
             {
                 EstimatorSpatialStatus = "Load a CDL raster and either a depth raster or polygon shapefile.";
@@ -1279,6 +1297,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 var cdl = ReadSingleBandRaster(EstimatorCdlRasterPath);
                 RasterData? depth = null;
+                PolygonShapeData? polygonData = null;
                 if (!EstimatorUsePolygonUniformDepth && !string.IsNullOrWhiteSpace(EstimatorDepthRasterPath) && File.Exists(EstimatorDepthRasterPath))
                 {
                     depth = ReadSingleBandRaster(EstimatorDepthRasterPath);
@@ -1287,10 +1306,12 @@ namespace EconToolbox.Desktop.ViewModels
                 Rect? polygonRect = null;
                 if (EstimatorUsePolygonUniformDepth && !string.IsNullOrWhiteSpace(EstimatorPolygonShapefilePath) && File.Exists(EstimatorPolygonShapefilePath))
                 {
-                    polygonRect = ReadShapefileBounds(EstimatorPolygonShapefilePath);
-                    EstimatorPolygonPreviewPoints = BuildPolygonPreview(polygonRect.Value);
+                    polygonData = ReadShapefilePolygon(EstimatorPolygonShapefilePath);
+                    polygonRect = polygonData.Bounds;
                 }
 
+                double acresPerPixel = Math.Abs(cdl.PixelWidth * cdl.PixelHeight) / 4046.8564224;
+                var cdlPixels = new Dictionary<int, long>();
                 var byCrop = new Dictionary<int, (long Count,double DepthTotal)>();
                 for (int y = 0; y < cdl.Height; y++)
                 {
@@ -1299,6 +1320,9 @@ namespace EconToolbox.Desktop.ViewModels
                         int idx = y * cdl.Width + x;
                         int code = (int)Math.Round(cdl.Values[idx]);
                         if (code <= 0) continue;
+
+                        cdlPixels.TryGetValue(code, out long pixelCount);
+                        cdlPixels[code] = pixelCount + 1;
 
                         double sampledDepth = 0;
                         if (EstimatorUsePolygonUniformDepth)
@@ -1316,7 +1340,15 @@ namespace EconToolbox.Desktop.ViewModels
                     }
                 }
 
-                double acresPerPixel = Math.Abs(cdl.PixelWidth * cdl.PixelHeight) / 4046.8564224;
+                long totalPixels = cdlPixels.Values.Sum();
+                foreach (var kvp in cdlPixels.OrderByDescending(k => k.Value))
+                {
+                    double acres = kvp.Value * acresPerPixel;
+                    double percent = totalPixels > 0 ? kvp.Value / (double)totalPixels : 0;
+                    EstimatorCdlSummaryRows.Add(new EstimatorCdlSummaryRow(kvp.Key, CropScapeLegend.Lookup(kvp.Key, new Dictionary<int, string>()), kvp.Value, acres, percent));
+                }
+                EstimatorCdlTotalAcreage = EstimatorCdlSummaryRows.Sum(row => row.Acres);
+
                 foreach (var kvp in byCrop.OrderByDescending(k=>k.Value.Count))
                 {
                     double acres = kvp.Value.Count * acresPerPixel;
@@ -1332,12 +1364,30 @@ namespace EconToolbox.Desktop.ViewModels
                     EstimatorCropRows.Add(new EstimatorCropRow(row.CropCode, row.CropName, firstEvent, row.Acres, 0, "", ""));
                 }
 
-                EstimatorCdlRect = new Rect(20, 20, 280, 200);
-                EstimatorDepthRect = new Rect(depth == null ? 20 : 35, depth == null ? 20 : 35, 280, 200);
+                var cdlBounds = GetRasterBounds(cdl);
+                var depthBounds = depth != null ? GetRasterBounds(depth) : (Rect?)null;
+                var previewFrame = new Rect(20, 20, 300, 200);
+                var worldBounds = cdlBounds;
+                if (depthBounds.HasValue)
+                {
+                    worldBounds.Union(depthBounds.Value);
+                }
+                if (polygonRect.HasValue)
+                {
+                    worldBounds.Union(polygonRect.Value);
+                }
+
+                EstimatorCdlRect = ProjectWorldRect(cdlBounds, worldBounds, previewFrame);
+                EstimatorDepthRect = depthBounds.HasValue ? ProjectWorldRect(depthBounds.Value, worldBounds, previewFrame) : new Rect(0, 0, 0, 0);
+                if (polygonData != null)
+                {
+                    EstimatorPolygonPreviewPoints = BuildPolygonPreview(polygonData.Vertices, worldBounds, previewFrame);
+                }
+
                 EstimatorProjectionSyncStatus = depth == null
                     ? "Projection sync: using CDL + polygon bounds in CDL coordinates."
                     : $"Projection sync: {cdl.ProjectionName} -> {depth.ProjectionName} sampled by georeferenced extents.";
-                EstimatorSpatialStatus = $"Spatial sampling complete. {EstimatorSpatialCropRows.Count} crop classes populated.";
+                EstimatorSpatialStatus = $"Spatial sampling complete. {EstimatorSpatialCropRows.Count} impacted crop classes and {EstimatorCdlSummaryRows.Count} CDL classes populated.";
             }
             catch (Exception ex)
             {
@@ -1363,19 +1413,28 @@ namespace EconToolbox.Desktop.ViewModels
             return source.Values[(sy * source.Width) + sx];
         }
 
-        private static PointCollection BuildPolygonPreview(Rect bounds)
+        private static PointCollection BuildPolygonPreview(IReadOnlyList<Point> polygonPoints, Rect worldBounds, Rect previewFrame)
         {
-            return new PointCollection
+            var preview = new PointCollection();
+            if (polygonPoints.Count == 0)
             {
-                new Point(60, 50),
-                new Point(260, 50),
-                new Point(260, 210),
-                new Point(60, 210),
-                new Point(60, 50)
-            };
+                return preview;
+            }
+
+            foreach (var point in polygonPoints)
+            {
+                preview.Add(ProjectPoint(point, worldBounds, previewFrame));
+            }
+
+            if (preview.Count > 0 && preview[0] != preview[^1])
+            {
+                preview.Add(preview[0]);
+            }
+
+            return preview;
         }
 
-        private static Rect ReadShapefileBounds(string shpPath)
+        private static PolygonShapeData ReadShapefilePolygon(string shpPath)
         {
             using var stream = File.OpenRead(shpPath);
             using var reader = new BinaryReader(stream);
@@ -1384,7 +1443,100 @@ namespace EconToolbox.Desktop.ViewModels
             double minY = reader.ReadDouble();
             double maxX = reader.ReadDouble();
             double maxY = reader.ReadDouble();
-            return new Rect(new Point(minX, minY), new Point(maxX, maxY));
+            var bounds = new Rect(new Point(minX, minY), new Point(maxX, maxY));
+
+            stream.Seek(100, SeekOrigin.Begin);
+            var vertices = new List<Point>();
+            while (stream.Position + 12 <= stream.Length)
+            {
+                _ = ReadInt32BigEndian(reader);
+                int contentLengthWords = ReadInt32BigEndian(reader);
+                long contentBytes = contentLengthWords * 2L;
+                long contentStart = stream.Position;
+                if (contentBytes < 4 || contentStart + contentBytes > stream.Length)
+                {
+                    break;
+                }
+
+                int shapeType = reader.ReadInt32();
+                if (shapeType is 5 or 15 or 25)
+                {
+                    _ = reader.ReadDouble();
+                    _ = reader.ReadDouble();
+                    _ = reader.ReadDouble();
+                    _ = reader.ReadDouble();
+                    int partCount = reader.ReadInt32();
+                    int pointCount = reader.ReadInt32();
+                    var parts = new int[partCount];
+                    for (int i = 0; i < partCount; i++)
+                    {
+                        parts[i] = reader.ReadInt32();
+                    }
+
+                    var points = new Point[pointCount];
+                    for (int i = 0; i < pointCount; i++)
+                    {
+                        points[i] = new Point(reader.ReadDouble(), reader.ReadDouble());
+                    }
+
+                    if (partCount > 0)
+                    {
+                        int start = parts[0];
+                        int end = (partCount > 1 ? parts[1] : pointCount) - 1;
+                        for (int i = start; i <= end && i < points.Length; i++)
+                        {
+                            vertices.Add(points[i]);
+                        }
+                    }
+
+                    break;
+                }
+
+                stream.Seek(contentStart + contentBytes, SeekOrigin.Begin);
+            }
+
+            return new PolygonShapeData(bounds, vertices);
+        }
+
+        private static int ReadInt32BigEndian(BinaryReader reader)
+        {
+            var bytes = reader.ReadBytes(sizeof(int));
+            if (bytes.Length < sizeof(int))
+            {
+                throw new EndOfStreamException();
+            }
+
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(bytes);
+            }
+
+            return BitConverter.ToInt32(bytes, 0);
+        }
+
+        private static Rect GetRasterBounds(RasterData raster)
+        {
+            double x1 = raster.OriginX;
+            double x2 = raster.OriginX + (raster.Width * raster.PixelWidth);
+            double y1 = raster.OriginY;
+            double y2 = raster.OriginY + (raster.Height * raster.PixelHeight);
+            return new Rect(new Point(Math.Min(x1, x2), Math.Min(y1, y2)), new Point(Math.Max(x1, x2), Math.Max(y1, y2)));
+        }
+
+        private static Rect ProjectWorldRect(Rect source, Rect worldBounds, Rect frame)
+        {
+            var topLeft = ProjectPoint(new Point(source.Left, source.Top), worldBounds, frame);
+            var bottomRight = ProjectPoint(new Point(source.Right, source.Bottom), worldBounds, frame);
+            return new Rect(topLeft, bottomRight);
+        }
+
+        private static Point ProjectPoint(Point point, Rect worldBounds, Rect frame)
+        {
+            double worldWidth = Math.Max(worldBounds.Width, 1e-6);
+            double worldHeight = Math.Max(worldBounds.Height, 1e-6);
+            double x = frame.Left + ((point.X - worldBounds.Left) / worldWidth) * frame.Width;
+            double y = frame.Top + (1.0 - ((point.Y - worldBounds.Top) / worldHeight)) * frame.Height;
+            return new Point(x, y);
         }
 
         private static RasterData ReadSingleBandRaster(string path)
@@ -2866,6 +3018,9 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         private sealed record RasterData(int Width, int Height, double[] Values, double PixelWidth, double PixelHeight, double OriginX, double OriginY, string ProjectionName);
+        private sealed record PolygonShapeData(Rect Bounds, IReadOnlyList<Point> Vertices);
+
+        public record EstimatorCdlSummaryRow(int CropCode, string CropName, long PixelCount, double Acres, double PercentOfRaster);
 
         public class EstimatorSpatialCropRow : BaseViewModel
         {
