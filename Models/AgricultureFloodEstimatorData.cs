@@ -18,4 +18,12 @@ namespace EconToolbox.Desktop.Models
         public string GrowingMonthsCsv { get; set; } = string.Empty;
         public string SpecificCurve { get; set; } = string.Empty;
     }
+
+    public class EstimatorSpatialCropData
+    {
+        public int CropCode { get; set; }
+        public string CropName { get; set; } = string.Empty;
+        public double Acres { get; set; }
+        public double AverageDepthFeet { get; set; }
+    }
 }

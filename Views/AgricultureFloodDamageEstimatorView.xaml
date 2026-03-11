@@ -8,12 +8,55 @@
         <StackPanel Style="{StaticResource Layout.ContentStack}">
             <Border Style="{StaticResource Border.Card}">
                 <StackPanel>
-                    <TextBlock Text="Ag Flood Damage Estimator"
-                               Style="{StaticResource Text.SectionTitleAccent}"/>
-                    <TextBlock Text="Translate the ArcGIS Python tool workflow into a quick desktop estimate using crop/event tables, depth-damage curves, and Monte Carlo uncertainty."
-                               Style="{StaticResource Text.Body}"
-                               TextWrapping="Wrap"
-                               Margin="{StaticResource Margin.TopLarge}"/>
+                    <TextBlock Text="Ag Flood Damage Estimator" Style="{StaticResource Text.SectionTitleAccent}"/>
+                    <TextBlock Text="HEC-FIA-style workflow: load CDL + flood depth source, sync projection context, and run event-frequency damage estimation."
+                               Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopLarge}"/>
+
+                    <UniformGrid Columns="3" Margin="{StaticResource Margin.Stack}">
+                        <Button Content="Upload CDL raster (.tif)" Command="{Binding ImportEstimatorCdlRasterCommand}" Margin="{StaticResource Margin.Inline}"/>
+                        <Button Content="Upload depth raster (.tif)" Command="{Binding ImportEstimatorDepthRasterCommand}" Margin="{StaticResource Margin.Inline}"/>
+                        <Button Content="Upload flood polygon (.shp)" Command="{Binding ImportEstimatorPolygonShapefileCommand}" Margin="{StaticResource Margin.Inline}"/>
+                    </UniformGrid>
+
+                    <UniformGrid Columns="2" Margin="{StaticResource Margin.StackSmall}">
+                        <StackPanel Margin="{StaticResource Margin.Inline}">
+                            <TextBlock Text="CDL raster" Style="{StaticResource Text.Caption}"/>
+                            <TextBlock Text="{Binding EstimatorCdlRasterPath}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <StackPanel Margin="{StaticResource Margin.Inline}">
+                            <TextBlock Text="Depth raster" Style="{StaticResource Text.Caption}"/>
+                            <TextBlock Text="{Binding EstimatorDepthRasterPath}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </UniformGrid>
+                    <TextBlock Text="{Binding EstimatorPolygonShapefilePath}" Style="{StaticResource Text.Caption}" Margin="{StaticResource Margin.TopSmall}"/>
+
+                    <UniformGrid Columns="4" Margin="{StaticResource Margin.StackSmall}">
+                        <CheckBox Content="Use polygon uniform depth" IsChecked="{Binding EstimatorUsePolygonUniformDepth}" VerticalAlignment="Center"/>
+                        <StackPanel Margin="{StaticResource Margin.Inline}">
+                            <TextBlock Text="Uniform polygon depth (ft)" Style="{StaticResource Text.Caption}"/>
+                            <TextBox Text="{Binding EstimatorUniformPolygonDepth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                        <StackPanel Margin="{StaticResource Margin.Inline}">
+                            <TextBlock Text="Spatial acres" Style="{StaticResource Text.Caption}"/>
+                            <TextBlock Text="{Binding EstimatorSpatialCropAcreageDisplay}"/>
+                        </StackPanel>
+                        <StackPanel Margin="{StaticResource Margin.Inline}">
+                            <TextBlock Text="Projection sync" Style="{StaticResource Text.Caption}"/>
+                            <TextBlock Text="{Binding EstimatorProjectionSyncStatus}" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <TextBlock Text="{Binding EstimatorSpatialStatus}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.StackSmall}"/>
+
+                    <Border BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="6" Height="260" Margin="{StaticResource Margin.StackSmall}">
+                        <Canvas Background="#F7FAFC">
+                            <Rectangle Width="{Binding EstimatorCdlRect.Width}" Height="{Binding EstimatorCdlRect.Height}" Canvas.Left="{Binding EstimatorCdlRect.X}" Canvas.Top="{Binding EstimatorCdlRect.Y}" Fill="#7BB661" Opacity="0.45" Stroke="#407A2A" StrokeThickness="2"/>
+                            <Rectangle Width="{Binding EstimatorDepthRect.Width}" Height="{Binding EstimatorDepthRect.Height}" Canvas.Left="{Binding EstimatorDepthRect.X}" Canvas.Top="{Binding EstimatorDepthRect.Y}" Fill="#4A90E2" Opacity="0.35" Stroke="#2C5F95" StrokeThickness="2"/>
+                            <Polyline Points="{Binding EstimatorPolygonPreviewPoints}" Stroke="#B55400" StrokeThickness="3"/>
+                            <TextBlock Canvas.Left="24" Canvas.Top="226" Text="Green=CDL, Blue=Depth Raster, Orange=Polygon"/>
+                        </Canvas>
+                    </Border>
+
                     <UniformGrid Columns="4" Margin="{StaticResource Margin.Stack}">
                         <StackPanel Margin="{StaticResource Margin.Inline}">
                             <TextBlock Text="Default value (USD/ac)" Style="{StaticResource Text.Caption}"/>
@@ -33,26 +76,13 @@
                         </StackPanel>
                     </UniformGrid>
                     <UniformGrid Columns="4" Margin="{StaticResource Margin.StackSmall}">
-                        <StackPanel Margin="{StaticResource Margin.Inline}">
-                            <TextBlock Text="Monte Carlo runs" Style="{StaticResource Text.Caption}"/>
-                            <TextBox Text="{Binding EstimatorMonteCarloRuns, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                        <StackPanel Margin="{StaticResource Margin.Inline}">
-                            <TextBlock Text="Analysis years" Style="{StaticResource Text.Caption}"/>
-                            <TextBox Text="{Binding EstimatorAnalysisYears, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                        <StackPanel Margin="{StaticResource Margin.Inline}">
-                            <TextBlock Text="Random seed" Style="{StaticResource Text.Caption}"/>
-                            <TextBox Text="{Binding EstimatorRandomSeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                        <StackPanel Margin="{StaticResource Margin.Inline}" VerticalAlignment="Bottom">
-                            <Button Content="Calculate estimator"
-                                    Command="{Binding ComputeEstimatorCommand}"/>
-                        </StackPanel>
+                        <StackPanel Margin="{StaticResource Margin.Inline}"><TextBlock Text="Monte Carlo runs" Style="{StaticResource Text.Caption}"/><TextBox Text="{Binding EstimatorMonteCarloRuns, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Margin.Inline}"><TextBlock Text="Analysis years" Style="{StaticResource Text.Caption}"/><TextBox Text="{Binding EstimatorAnalysisYears, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Margin.Inline}"><TextBlock Text="Random seed" Style="{StaticResource Text.Caption}"/><TextBox Text="{Binding EstimatorRandomSeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Margin.Inline}" VerticalAlignment="Bottom"><Button Content="Calculate estimator" Command="{Binding ComputeEstimatorCommand}"/></StackPanel>
                     </UniformGrid>
                     <CheckBox Content="Randomize flood month" IsChecked="{Binding EstimatorRandomizeMonth}" Margin="{StaticResource Margin.StackSmall}"/>
-                    <TextBlock Text="Default depth-damage curve (depth:damage)"
-                               Style="{StaticResource Text.Caption}" Margin="{StaticResource Margin.TopSmall}"/>
+                    <TextBlock Text="Default depth-damage curve (depth:damage)" Style="{StaticResource Text.Caption}" Margin="{StaticResource Margin.TopSmall}"/>
                     <TextBox Text="{Binding EstimatorDefaultCurve, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource Margin.TopSmall}"/>
                     <TextBlock Text="{Binding EstimatorSummary}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.StackSmall}"/>
                 </StackPanel>
@@ -60,7 +90,21 @@
 
             <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
-                    <TextBlock Text="Flood events" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
+                    <TextBlock Text="Spatial crop depth summary" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
+                    <DataGrid ItemsSource="{Binding EstimatorSpatialCropRows}" AutoGenerateColumns="False" CanUserAddRows="False" MinHeight="120">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Crop code" Binding="{Binding CropCode}" Width="90"/>
+                            <DataGridTextColumn Header="Crop" Binding="{Binding CropName}" Width="*"/>
+                            <DataGridTextColumn Header="Acres" Binding="{Binding Acres, StringFormat={}{0:N1}}" Width="130"/>
+                            <DataGridTextColumn Header="Avg depth (ft)" Binding="{Binding AverageDepthFeet, StringFormat={}{0:0.##}}" Width="130"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
+                <StackPanel>
+                    <TextBlock Text="Flood events (editable frequencies)" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
                     <DataGrid ItemsSource="{Binding EstimatorEvents}" AutoGenerateColumns="False" CanUserAddRows="False" MinHeight="120">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
@@ -74,24 +118,7 @@
 
             <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
-                    <TextBlock Text="Crop exposure rows" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
-                    <DataGrid ItemsSource="{Binding EstimatorCropRows}" AutoGenerateColumns="False" CanUserAddRows="False" MinHeight="140">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Crop code" Binding="{Binding CropCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
-                            <DataGridTextColumn Header="Crop name" Binding="{Binding CropName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
-                            <DataGridTextColumn Header="Event" Binding="{Binding EventName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
-                            <DataGridTextColumn Header="Acres" Binding="{Binding Acres, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="90"/>
-                            <DataGridTextColumn Header="Value/ac" Binding="{Binding ValuePerAcre, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="90"/>
-                            <DataGridTextColumn Header="Months" Binding="{Binding GrowingMonthsCsv, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="110"/>
-                            <DataGridTextColumn Header="Specific curve" Binding="{Binding SpecificCurve, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </StackPanel>
-            </Border>
-
-            <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
-                <StackPanel>
-                    <TextBlock Text="Results by event" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
+                    <TextBlock Text="Comprehensive event report" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
                     <DataGrid ItemsSource="{Binding EstimatorResults}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" MinHeight="120">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Event" Binding="{Binding EventName}" Width="*"/>
@@ -99,7 +126,7 @@
                             <DataGridTextColumn Header="Std dev" Binding="{Binding StdDamage, StringFormat={}{0:C0}}" Width="120"/>
                             <DataGridTextColumn Header="P5" Binding="{Binding P5Damage, StringFormat={}{0:C0}}" Width="120"/>
                             <DataGridTextColumn Header="P95" Binding="{Binding P95Damage, StringFormat={}{0:C0}}" Width="120"/>
-                            <DataGridTextColumn Header="EAD 1/RP" Binding="{Binding DiscreteEadContribution, StringFormat={}{0:C0}}" Width="110"/>
+                            <DataGridTextColumn Header="EAD contribution" Binding="{Binding DiscreteEadContribution, StringFormat={}{0:C0}}" Width="140"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
