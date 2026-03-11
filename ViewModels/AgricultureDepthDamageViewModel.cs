@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 using BitMiracle.LibTiff.Classic;
+using DotSpatial.Projections;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 
@@ -1301,6 +1302,7 @@ namespace EconToolbox.Desktop.ViewModels
                 if (!EstimatorUsePolygonUniformDepth && !string.IsNullOrWhiteSpace(EstimatorDepthRasterPath) && File.Exists(EstimatorDepthRasterPath))
                 {
                     depth = ReadSingleBandRaster(EstimatorDepthRasterPath);
+                    depth = ReprojectRasterIfNeeded(depth, cdl);
                 }
 
                 Rect? polygonRect = null;
@@ -1332,7 +1334,7 @@ namespace EconToolbox.Desktop.ViewModels
                         }
                         else if (depth != null)
                         {
-                            sampledDepth = SampleAligned(depth, cdl, x, y);
+                            sampledDepth = depth.Values[idx];
                         }
 
                         byCrop.TryGetValue(code, out var cur);
@@ -1386,7 +1388,9 @@ namespace EconToolbox.Desktop.ViewModels
 
                 EstimatorProjectionSyncStatus = depth == null
                     ? "Projection sync: using CDL + polygon bounds in CDL coordinates."
-                    : $"Projection sync: {cdl.ProjectionName} -> {depth.ProjectionName} sampled by georeferenced extents.";
+                    : depth.WasReprojected
+                        ? $"Projection sync: reprojected depth raster from {depth.SourceProjectionName} to match CDL projection {cdl.ProjectionName}."
+                        : $"Projection sync: CDL and depth rasters already share projection {cdl.ProjectionName}.";
                 EstimatorSpatialStatus = $"Spatial sampling complete. {EstimatorSpatialCropRows.Count} impacted crop classes and {EstimatorCdlSummaryRows.Count} CDL classes populated.";
             }
             catch (Exception ex)
@@ -1402,15 +1406,64 @@ namespace EconToolbox.Desktop.ViewModels
             return bounds.Contains(new Point(cx, cy));
         }
 
-        private static double SampleAligned(RasterData source, RasterData targetGrid, int tx, int ty)
+        private static RasterData ReprojectRasterIfNeeded(RasterData source, RasterData target)
         {
-            double worldX = targetGrid.OriginX + ((tx + 0.5) * targetGrid.PixelWidth);
-            double worldY = targetGrid.OriginY + ((ty + 0.5) * targetGrid.PixelHeight);
-            int sx = (int)Math.Floor((worldX - source.OriginX) / source.PixelWidth);
-            int sy = (int)Math.Floor((worldY - source.OriginY) / source.PixelHeight);
-            sx = Math.Clamp(sx, 0, source.Width - 1);
-            sy = Math.Clamp(sy, 0, source.Height - 1);
-            return source.Values[(sy * source.Width) + sx];
+            if (string.IsNullOrWhiteSpace(source.ProjectionWkt) || string.IsNullOrWhiteSpace(target.ProjectionWkt))
+            {
+                return source;
+            }
+
+            if (string.Equals(source.ProjectionWkt, target.ProjectionWkt, StringComparison.Ordinal))
+            {
+                return source;
+            }
+
+            ProjectionInfo sourceProjection;
+            ProjectionInfo targetProjection;
+            try
+            {
+                sourceProjection = ProjectionInfo.FromEsriString(source.ProjectionWkt);
+                targetProjection = ProjectionInfo.FromEsriString(target.ProjectionWkt);
+            }
+            catch
+            {
+                return source;
+            }
+
+            var reprojected = new double[target.Width * target.Height];
+            for (int y = 0; y < target.Height; y++)
+            {
+                for (int x = 0; x < target.Width; x++)
+                {
+                    int idx = (y * target.Width) + x;
+                    var point = new[]
+                    {
+                        target.OriginX + ((x + 0.5) * target.PixelWidth),
+                        target.OriginY + ((y + 0.5) * target.PixelHeight)
+                    };
+                    var z = new[] { 0d };
+                    Reproject.ReprojectPoints(point, z, targetProjection, sourceProjection, 0, 1);
+
+                    int sx = (int)Math.Floor((point[0] - source.OriginX) / source.PixelWidth);
+                    int sy = (int)Math.Floor((point[1] - source.OriginY) / source.PixelHeight);
+                    sx = Math.Clamp(sx, 0, source.Width - 1);
+                    sy = Math.Clamp(sy, 0, source.Height - 1);
+                    reprojected[idx] = source.Values[(sy * source.Width) + sx];
+                }
+            }
+
+            return new RasterData(
+                target.Width,
+                target.Height,
+                reprojected,
+                target.PixelWidth,
+                target.PixelHeight,
+                target.OriginX,
+                target.OriginY,
+                target.ProjectionName,
+                target.ProjectionWkt,
+                true,
+                source.ProjectionName);
         }
 
         private static PointCollection BuildPolygonPreview(IReadOnlyList<Point> polygonPoints, Rect worldBounds, Rect previewFrame)
@@ -1595,7 +1648,40 @@ namespace EconToolbox.Desktop.ViewModels
                 }
             }
 
-            return new RasterData(width,height,values,pixelWidth,pixelHeight,originX,originY,Path.GetFileName(path));
+            string projectionWkt = ReadGeoTiffProjectionWkt(tiff);
+            string projectionName = Path.GetFileName(path);
+            if (!string.IsNullOrWhiteSpace(projectionWkt))
+            {
+                try
+                {
+                    var info = ProjectionInfo.FromEsriString(projectionWkt);
+                    if (info != null && !string.IsNullOrWhiteSpace(info.Name))
+                    {
+                        projectionName = info.Name;
+                    }
+                }
+                catch
+                {
+                    // If projection parsing fails, keep file name as display name.
+                }
+            }
+
+            return new RasterData(width, height, values, pixelWidth, pixelHeight, originX, originY, projectionName, projectionWkt, false, projectionName);
+        }
+
+        private static string ReadGeoTiffProjectionWkt(Tiff tiff)
+        {
+            var ascii = tiff.GetField((TiffTag)34737);
+            if (ascii != null && ascii.Length > 0)
+            {
+                var value = ascii[0].ToString();
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value.Trim('\0', ' ');
+                }
+            }
+
+            return string.Empty;
         }
 
         private void SeedEstimatorInputs()
@@ -3017,7 +3103,18 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        private sealed record RasterData(int Width, int Height, double[] Values, double PixelWidth, double PixelHeight, double OriginX, double OriginY, string ProjectionName);
+        private sealed record RasterData(
+            int Width,
+            int Height,
+            double[] Values,
+            double PixelWidth,
+            double PixelHeight,
+            double OriginX,
+            double OriginY,
+            string ProjectionName,
+            string ProjectionWkt,
+            bool WasReprojected,
+            string SourceProjectionName);
         private sealed record PolygonShapeData(Rect Bounds, IReadOnlyList<Point> Vertices);
 
         public record EstimatorCdlSummaryRow(int CropCode, string CropName, long PixelCount, double Acres, double PercentOfRaster);
