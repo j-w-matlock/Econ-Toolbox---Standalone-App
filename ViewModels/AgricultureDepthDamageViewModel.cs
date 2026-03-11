@@ -48,6 +48,7 @@ namespace EconToolbox.Desktop.ViewModels
         private readonly RelayCommand _importEstimatorDepthRasterCommand;
         private readonly RelayCommand _importEstimatorPolygonShapefileCommand;
         private readonly FloodImpactAnalysisService _floodImpactAnalysisService = new();
+        private readonly IAppProgressService _appProgressService;
         public ObservableCollection<EstimatorEventRow> EstimatorEvents { get; } = new();
         public ObservableCollection<EstimatorCropRow> EstimatorCropRows { get; } = new();
         public ObservableCollection<EstimatorResultRow> EstimatorResults { get; } = new();
@@ -570,8 +571,9 @@ namespace EconToolbox.Desktop.ViewModels
         public ICommand ImportEstimatorDepthRasterCommand => _importEstimatorDepthRasterCommand;
         public ICommand ImportEstimatorPolygonShapefileCommand => _importEstimatorPolygonShapefileCommand;
 
-        public AgricultureDepthDamageViewModel()
+        public AgricultureDepthDamageViewModel(IAppProgressService appProgressService)
         {
+            _appProgressService = appProgressService;
             Regions = new ObservableCollection<RegionDefinition>(RegionDefinition.CreateDefaults());
             Crops = new ObservableCollection<CropDefinition>(CropDefinition.CreateDefaults());
             StageExposures = new ObservableCollection<StageExposure>(StageExposure.CreateDefaults());
@@ -826,17 +828,20 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 IsImportingCropScape = true;
                 CropScapeImportStatus = $"Processing {Path.GetFileName(filePath)}…";
+                _appProgressService.Start("Importing CropScape raster...", 10);
 
                 var areas = await Task.Run(() => _cropScapeRasterService.ReadClassAreas(filePath));
 
                 var summaries = CropScapeAcreageSummary.FromAreas(areas, out double totalAcres);
 
+                _appProgressService.Report("Calculating crop class acreage summaries...", 65);
                 CropScapeSummaries.Clear();
 
                 if (summaries.Count == 0)
                 {
                     CropScapeTotalAcreage = 0;
                     CropScapeImportStatus = $"No crop classes found in \"{Path.GetFileName(filePath)}\".";
+                    _appProgressService.Complete("CropScape import complete (no classes found).");
                     return;
                 }
 
@@ -848,10 +853,12 @@ namespace EconToolbox.Desktop.ViewModels
                 CropScapeTotalAcreage = totalAcres;
 
                 CropScapeImportStatus = $"Loaded {CropScapeSummaries.Count} crop classes from \"{Path.GetFileName(filePath)}\".";
+                _appProgressService.Complete("CropScape import complete.");
             }
             catch (Exception ex)
             {
                 CropScapeImportStatus = $"Failed to import CropScape raster: {ex.Message}";
+                _appProgressService.Fail("CropScape import failed.");
             }
             finally
             {
@@ -1813,6 +1820,8 @@ namespace EconToolbox.Desktop.ViewModels
 
             try
             {
+                _appProgressService.Start("Running flood impact analysis...", 10);
+
                 var spatialDepthLookup = EstimatorSpatialCropRows
                     .GroupBy(row => row.CropCode)
                     .ToDictionary(group => group.Key, group => group.First().AverageDepthFeet);
@@ -1839,6 +1848,7 @@ namespace EconToolbox.Desktop.ViewModels
                         EstimatorRandomSeed,
                         EstimatorRandomizeMonth));
 
+                _appProgressService.Report("Simulating event damages...", 55);
                 var analysisResult = _floodImpactAnalysisService.Run(request);
                 foreach (var row in analysisResult.Events)
                 {
@@ -1853,10 +1863,12 @@ namespace EconToolbox.Desktop.ViewModels
                 EstimatorSummaryRows.Add(new EstimatorSummaryRow("Mean COV", analysisResult.Summary.MeanCoefficientOfVariation.ToString("0.###", CultureInfo.InvariantCulture), "Average coefficient of variation (std/mean) across processed events."));
 
                 EstimatorSummary = $"Estimator complete. {analysisResult.Summary.EventCount} events processed. Discrete EAD Σ(Damage/RP) = {analysisResult.Summary.TotalDiscreteEad:C0}.";
+                _appProgressService.Complete("Flood impact analysis complete.");
             }
             catch (Exception ex)
             {
                 EstimatorSummary = $"Estimator failed: {ex.Message}";
+                _appProgressService.Fail("Flood impact analysis failed.");
             }
         }
 
@@ -2152,6 +2164,7 @@ namespace EconToolbox.Desktop.ViewModels
                 SelectedCrop = Crops.FirstOrDefault(c => string.Equals(c.Name, data.SelectedCropName, StringComparison.OrdinalIgnoreCase))
                                ?? Crops.FirstOrDefault();
 
+                _appProgressService.Report("Calculating crop class acreage summaries...", 65);
                 CropScapeSummaries.Clear();
                 foreach (var summary in data.CropScapeSummaries)
                 {

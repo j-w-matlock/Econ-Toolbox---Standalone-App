@@ -507,6 +507,16 @@
                     <TextBlock Text="{Binding SelectedModule.Title}"
                                Margin="{StaticResource Margin.RightMedium}"
                                Style="{StaticResource Text.StatusBar}"/>
+                    <TextBlock Text="{Binding AppProgressMessage}"
+                               Margin="{StaticResource Margin.RightSmall}"
+                               Style="{StaticResource Text.StatusBar}"/>
+                    <ProgressBar Width="180"
+                                 Height="12"
+                                 Margin="{StaticResource Margin.RightMedium}"
+                                 Minimum="0"
+                                 Maximum="100"
+                                 Value="{Binding AppProgressPercent}"
+                                 Visibility="{Binding IsAppProgressActive, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}"
                                Margin="{StaticResource Margin.RightSmall}"
                                Style="{StaticResource Text.StatusBar}"/>
