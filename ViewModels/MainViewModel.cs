@@ -200,11 +200,19 @@ namespace EconToolbox.Desktop.ViewModels
         private readonly IExcelExportService _excelExportService;
         private readonly ILayoutSettingsService _layoutSettingsService;
         private readonly IViewModelFactory _viewModelFactory;
+        private readonly IAppProgressService _appProgressService;
         private LayoutSettings _layoutSettings = new();
         private double _explorerPaneWidthBeforeCollapse = DefaultExplorerPaneWidth;
         private double _detailsPaneWidthBeforeCollapse = DefaultDetailsPaneWidth;
         private bool _isApplyingSettings;
         private double _zoomPercent = 100;
+
+
+        public bool IsAppProgressActive => _appProgressService.IsActive;
+
+        public double AppProgressPercent => _appProgressService.ProgressPercent;
+
+        public string AppProgressMessage => _appProgressService.Message;
 
         public double ZoomPercent
         {
@@ -225,11 +233,19 @@ namespace EconToolbox.Desktop.ViewModels
         public MainViewModel(
             IViewModelFactory viewModelFactory,
             IExcelExportService excelExportService,
-            ILayoutSettingsService layoutSettingsService)
+            ILayoutSettingsService layoutSettingsService,
+            IAppProgressService appProgressService)
         {
             _viewModelFactory = viewModelFactory;
             _excelExportService = excelExportService;
             _layoutSettingsService = layoutSettingsService;
+            _appProgressService = appProgressService;
+            _appProgressService.PropertyChanged += (_, _) =>
+            {
+                OnPropertyChanged(nameof(IsAppProgressActive));
+                OnPropertyChanged(nameof(AppProgressPercent));
+                OnPropertyChanged(nameof(AppProgressMessage));
+            };
 
             ProjectManager = new ProjectViewModel();
 

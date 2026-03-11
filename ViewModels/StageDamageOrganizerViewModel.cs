@@ -35,6 +35,8 @@ namespace EconToolbox.Desktop.ViewModels
         private double _mapMinY;
         private double _mapMaxY;
 
+        private readonly IAppProgressService _appProgressService;
+
         private const double DefaultMapCanvasWidth = 980d;
         private const double DefaultMapCanvasHeight = 620d;
         private const double MapPadding = 24d;
@@ -189,8 +191,9 @@ namespace EconToolbox.Desktop.ViewModels
         public IRelayCommand ZoomOutMapCommand { get; }
         public IRelayCommand ResetMapViewCommand { get; }
 
-        public StageDamageOrganizerViewModel()
+        public StageDamageOrganizerViewModel(IAppProgressService appProgressService)
         {
+            _appProgressService = appProgressService;
             ImportCsvCommand = new AsyncRelayCommand(ImportCsvAsync);
             ClearCommand = new RelayCommand(ClearAll, () => Records.Count > 0);
             SaveSummaryCommand = new AsyncRelayCommand(SaveSummaryAsync, () => Records.Count > 0);
@@ -387,6 +390,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             IsBusy = true;
+            _appProgressService.Start("Importing Stage Damage CSV files...", 5);
             try
             {
                 var imported = await Task.Run(() => LoadRecords(dialog.FileNames));
@@ -395,11 +399,15 @@ namespace EconToolbox.Desktop.ViewModels
                 AepHeaders.Clear();
                 Summaries.Clear();
 
+                _appProgressService.Report("Processing imported stage damage summaries...", 45);
+
                 foreach (var summary in imported.Summaries)
                 {
                     AttachSummaryHandlers(summary);
                     Summaries.Add(summary);
                 }
+
+                _appProgressService.Report("Loading stage damage records...", 70);
 
                 foreach (var record in imported.Records)
                 {
@@ -415,11 +423,13 @@ namespace EconToolbox.Desktop.ViewModels
 
                 ComputeSummaries();
                 StatusMessage = $"Loaded {Records.Count} rows from {dialog.FileNames.Length} file(s).";
+                _appProgressService.Complete("Stage damage import complete.");
                 RefreshDiagnostics();
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Failed to load CSV data: {ex.Message}";
+                _appProgressService.Fail("Stage damage import failed.");
                 RefreshDiagnostics();
             }
             finally

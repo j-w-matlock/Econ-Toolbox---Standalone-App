@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
@@ -26,6 +27,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private readonly List<ShapefileRecord> _records = new();
         private readonly Dictionary<string, List<double>> _numericAttributeValues = new(StringComparer.OrdinalIgnoreCase);
+        private readonly IAppProgressService _appProgressService;
 
         private string _statusMessage = "Load a shapefile to analyze uncertainty statistics for structure-related attributes.";
         private string _selectedCategory = "Structure Value";
@@ -218,8 +220,9 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
-        public UncertaintyStatisticsViewModel()
+        public UncertaintyStatisticsViewModel(IAppProgressService appProgressService)
         {
+            _appProgressService = appProgressService;
             RefinementAttributeOptions.Add(NoFilterOption);
             LoadShapefileCommand = new RelayCommand(LoadShapefile);
             ComputeCommand = new RelayCommand(ComputeStatistics, CanComputeStatistics);
@@ -244,12 +247,14 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            _appProgressService.Start("Loading shapefile attributes...", 10);
             try
             {
                 var dbfPath = Path.ChangeExtension(dialog.FileName, ".dbf");
                 if (!File.Exists(dbfPath))
                 {
                     StatusMessage = "The selected shapefile does not have a matching .dbf attribute table.";
+                    _appProgressService.Fail("Shapefile load failed.");
                     return;
                 }
 
@@ -257,6 +262,7 @@ namespace EconToolbox.Desktop.ViewModels
                 _records.Clear();
                 _records.AddRange(loadedRecords);
 
+                _appProgressService.Report("Parsing shapefile attribute table...", 55);
                 RebuildNumericAttributeValues();
                 AvailableAttributes.Clear();
                 foreach (var field in _numericAttributeValues.Keys.OrderBy(name => name, StringComparer.OrdinalIgnoreCase))
@@ -267,6 +273,7 @@ namespace EconToolbox.Desktop.ViewModels
                 ShapefilePath = dialog.FileName;
                 AutoSelectAttributeForCategory();
 
+                _appProgressService.Report("Finalizing uncertainty input setup...", 90);
                 if (AvailableAttributes.Count == 0)
                 {
                     StatusMessage = "No numeric attributes were found in the shapefile table.";
@@ -275,10 +282,13 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     StatusMessage = $"Loaded {_records.Count} row(s) and {AvailableAttributes.Count} numeric attribute(s) from {Path.GetFileName(dialog.FileName)}.";
                 }
+
+                _appProgressService.Complete("Shapefile loaded.");
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Failed to load shapefile attributes: {ex.Message}";
+                _appProgressService.Fail("Shapefile load failed.");
             }
             finally
             {
@@ -392,6 +402,8 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            _appProgressService.Start("Computing uncertainty statistics...", 10);
+
             var candidateRecords = GetRecordsForCurrentSelection(SelectedAttribute).ToList();
             var candidateValues = candidateRecords
                 .Select(r => r.NumericValues.TryGetValue(SelectedAttribute, out var value) ? (double?)value : null)
@@ -401,6 +413,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             if (candidateValues.Count == 0)
             {
+                _appProgressService.Fail("Uncertainty analysis could not run.");
                 Statistics.Clear();
                 SurveyPopulation.Clear();
                 StatusMessage = "No numeric values remain after applying the selected attribute refinement.";
@@ -411,6 +424,7 @@ namespace EconToolbox.Desktop.ViewModels
             var filteredValues = ApplyStatisticalFilters(candidateValues, out var excludedByFilter, out var outlierThresholdDescription);
             if (filteredValues.Count == 0)
             {
+                _appProgressService.Fail("Uncertainty analysis could not run.");
                 Statistics.Clear();
                 SurveyPopulation.Clear();
                 StatusMessage = "All values were removed by the active statistical filters. Adjust options and try again.";
@@ -418,6 +432,7 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            _appProgressService.Report("Calculating distribution statistics...", 55);
             var ordered = filteredValues.OrderBy(v => v).ToArray();
             var count = ordered.Length;
             var mean = ordered.Average();
@@ -458,6 +473,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             AddStatistic("Recommended Statistical Test", RecommendedStatisticalTest, "Module recommendation based on sample size and distribution skewness.");
+            _appProgressService.Report("Compiling test results and survey population...", 85);
             AddStatistic("Applied Statistical Test", chosenTest, "Test actually executed. When Auto is selected, the recommended test is applied.");
             AddStatistic("Null Hypothesis Value", FormatNumber(nullHypothesis), "Reference mean/median value used by the selected test.");
             AddStatistic("Test Statistic", FormatNumber(testStatistic), "Numeric test statistic produced by the selected test.");
@@ -480,6 +496,7 @@ namespace EconToolbox.Desktop.ViewModels
             AddStatistic("Skewness", FormatNumber(skewness), "Asymmetry of the distribution computed from the standardized third central moment. Positive values indicate right-skew; negative values indicate left-skew.");
 
             StatusMessage = $"Computed statistics/test results for '{SelectedAttribute}' using {count} record(s). Suggested survey sample: {representativeSampleSize}.";
+            _appProgressService.Complete("Uncertainty analysis complete.");
             RefreshDiagnostics();
         }
 

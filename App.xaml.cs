@@ -91,6 +91,7 @@ namespace EconToolbox.Desktop
                 {
                     services.AddSingleton<IExcelExportService, ExcelExportService>();
                     services.AddSingleton<ILayoutSettingsService, LayoutSettingsService>();
+                    services.AddSingleton<IAppProgressService, AppProgressService>();
                     services.AddSingleton<IViewModelFactory, ViewModelFactory>();
 
                     services.AddTransient<ReadMeViewModel>();

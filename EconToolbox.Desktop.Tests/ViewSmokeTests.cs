@@ -62,7 +62,7 @@ public class ViewSmokeTests
     {
         var view = new StageDamageOrganizerView
         {
-            DataContext = new StageDamageOrganizerViewModel()
+            DataContext = new StageDamageOrganizerViewModel(new AppProgressService())
         };
 
         view.Measure(new Size(100, 100));
