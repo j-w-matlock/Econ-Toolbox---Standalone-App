@@ -30,7 +30,12 @@ namespace EconToolbox.Desktop.Services
 
             foreach (var floodEvent in request.Events)
             {
-                if (floodEvent.ReturnPeriodYears <= 0)
+                var eventAeps = ParseAnnualExceedanceProbabilities(floodEvent.AnnualExceedanceProbabilitiesCsv);
+                var combinedAep = eventAeps.Count > 0
+                    ? eventAeps.Sum()
+                    : floodEvent.ReturnPeriodYears > 0 ? 1.0 / floodEvent.ReturnPeriodYears : 0;
+
+                if (combinedAep <= 0)
                 {
                     continue;
                 }
@@ -71,7 +76,7 @@ namespace EconToolbox.Desktop.Services
                 var std = Math.Sqrt(damageSamples.Average(v => Math.Pow(v - mean, 2)));
                 var p5 = PercentileFromSorted(damageSamples, 0.05);
                 var p95 = PercentileFromSorted(damageSamples, 0.95);
-                var discrete = mean / floodEvent.ReturnPeriodYears;
+                var discrete = mean * combinedAep;
 
                 totalEad += discrete;
                 totalMean += mean;
@@ -90,6 +95,43 @@ namespace EconToolbox.Desktop.Services
                 validEvents > 0 ? covAccumulator / validEvents : 0);
 
             return new FloodImpactAnalysisResult(eventResults.OrderBy(e => e.EventName).ToList(), summary);
+        }
+
+
+        private static List<double> ParseAnnualExceedanceProbabilities(string aepsCsv)
+        {
+            var parsed = new List<double>();
+            if (string.IsNullOrWhiteSpace(aepsCsv))
+            {
+                return parsed;
+            }
+
+            foreach (var token in aepsCsv.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var trimmed = token.Trim();
+                var isPercent = trimmed.EndsWith("%", StringComparison.Ordinal);
+                if (isPercent)
+                {
+                    trimmed = trimmed[..^1].Trim();
+                }
+
+                if (!double.TryParse(trimmed, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+                {
+                    continue;
+                }
+
+                if (isPercent || value > 1.0)
+                {
+                    value /= 100.0;
+                }
+
+                if (value > 0)
+                {
+                    parsed.Add(Math.Clamp(value, 0, 1));
+                }
+            }
+
+            return parsed;
         }
 
         private static List<(double Depth, double Damage)> ParseDepthDamageCurve(string curveText)
