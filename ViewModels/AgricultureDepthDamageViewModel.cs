@@ -41,6 +41,22 @@ namespace EconToolbox.Desktop.ViewModels
         private string _cropScapeImportStatus = "No CropScape raster imported.";
         private double _cropScapeTotalAcreage;
 
+        private readonly RelayCommand _computeEstimatorCommand;
+        public ObservableCollection<EstimatorEventRow> EstimatorEvents { get; } = new();
+        public ObservableCollection<EstimatorCropRow> EstimatorCropRows { get; } = new();
+        public ObservableCollection<EstimatorResultRow> EstimatorResults { get; } = new();
+
+        private string _estimatorDefaultCurve = "0:0,1:0.5,2:1";
+        private double _estimatorDefaultCropValue = 750;
+        private double _estimatorDamageStdDev = 0.1;
+        private int _estimatorMonteCarloRuns = 250;
+        private int _estimatorAnalysisYears = 30;
+        private int _estimatorRandomSeed = 42;
+        private bool _estimatorRandomizeMonth;
+        private double _estimatorDepthStdDev;
+        private double _estimatorValueStdDev = 0.15;
+        private string _estimatorSummary = "Configure crop rows and event rows, then run the estimator.";
+
         private RegionDefinition? _selectedRegion;
         public RegionDefinition? SelectedRegion
         {
@@ -294,12 +310,129 @@ namespace EconToolbox.Desktop.ViewModels
 
         public bool HasCropScapeDamage => CropScapeDamageRows.Count > 0;
 
+        public string EstimatorDefaultCurve
+        {
+            get => _estimatorDefaultCurve;
+            set
+            {
+                if (_estimatorDefaultCurve == value) return;
+                _estimatorDefaultCurve = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double EstimatorDefaultCropValue
+        {
+            get => _estimatorDefaultCropValue;
+            set
+            {
+                double adjusted = double.IsFinite(value) ? Math.Max(0.0, value) : 0.0;
+                if (Math.Abs(_estimatorDefaultCropValue - adjusted) < 1e-6) return;
+                _estimatorDefaultCropValue = adjusted;
+                OnPropertyChanged();
+            }
+        }
+
+        public double EstimatorDamageStdDev
+        {
+            get => _estimatorDamageStdDev;
+            set
+            {
+                double adjusted = double.IsFinite(value) ? Math.Max(0.0, value) : 0.0;
+                if (Math.Abs(_estimatorDamageStdDev - adjusted) < 1e-6) return;
+                _estimatorDamageStdDev = adjusted;
+                OnPropertyChanged();
+            }
+        }
+
+        public double EstimatorDepthStdDev
+        {
+            get => _estimatorDepthStdDev;
+            set
+            {
+                double adjusted = double.IsFinite(value) ? Math.Max(0.0, value) : 0.0;
+                if (Math.Abs(_estimatorDepthStdDev - adjusted) < 1e-6) return;
+                _estimatorDepthStdDev = adjusted;
+                OnPropertyChanged();
+            }
+        }
+
+        public double EstimatorValueStdDev
+        {
+            get => _estimatorValueStdDev;
+            set
+            {
+                double adjusted = double.IsFinite(value) ? Math.Max(0.0, value) : 0.0;
+                if (Math.Abs(_estimatorValueStdDev - adjusted) < 1e-6) return;
+                _estimatorValueStdDev = adjusted;
+                OnPropertyChanged();
+            }
+        }
+
+        public int EstimatorMonteCarloRuns
+        {
+            get => _estimatorMonteCarloRuns;
+            set
+            {
+                int adjusted = value < 1 ? 1 : value;
+                if (_estimatorMonteCarloRuns == adjusted) return;
+                _estimatorMonteCarloRuns = adjusted;
+                OnPropertyChanged();
+            }
+        }
+
+        public int EstimatorAnalysisYears
+        {
+            get => _estimatorAnalysisYears;
+            set
+            {
+                int adjusted = value < 1 ? 1 : value;
+                if (_estimatorAnalysisYears == adjusted) return;
+                _estimatorAnalysisYears = adjusted;
+                OnPropertyChanged();
+            }
+        }
+
+        public int EstimatorRandomSeed
+        {
+            get => _estimatorRandomSeed;
+            set
+            {
+                if (_estimatorRandomSeed == value) return;
+                _estimatorRandomSeed = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool EstimatorRandomizeMonth
+        {
+            get => _estimatorRandomizeMonth;
+            set
+            {
+                if (_estimatorRandomizeMonth == value) return;
+                _estimatorRandomizeMonth = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string EstimatorSummary
+        {
+            get => _estimatorSummary;
+            private set
+            {
+                if (_estimatorSummary == value) return;
+                _estimatorSummary = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand ComputeCommand => _computeCommand;
         public ICommand ExportCommand => _exportCommand;
         public ICommand AddDepthDurationPointCommand => _addDepthDurationPointCommand;
         public ICommand RemoveDepthDurationPointCommand => _removeDepthDurationPointCommand;
         public IAsyncRelayCommand ImportCropScapeRasterCommand => _importCropScapeRasterCommand;
         public ICommand ClearCropScapeSummaryCommand => _clearCropScapeSummaryCommand;
+        public ICommand ComputeEstimatorCommand => _computeEstimatorCommand;
 
         public AgricultureDepthDamageViewModel()
         {
@@ -320,6 +453,9 @@ namespace EconToolbox.Desktop.ViewModels
             _removeDepthDurationPointCommand = new RelayCommand(RemoveDepthDurationPoint, () => SelectedRegionPoint != null);
             _importCropScapeRasterCommand = new AsyncRelayCommand(ImportCropScapeRasterAsync, () => !IsImportingCropScape);
             _clearCropScapeSummaryCommand = new RelayCommand(ClearCropScapeSummary, () => CropScapeSummaries.Count > 0 && !IsImportingCropScape);
+            _computeEstimatorCommand = new RelayCommand(ComputeFloodDamageEstimator);
+
+            SeedEstimatorInputs();
 
             if (Regions.Count > 0)
             {
@@ -952,6 +1088,218 @@ namespace EconToolbox.Desktop.ViewModels
             return DaysInYear - normalized + 1;
         }
 
+        private void SeedEstimatorInputs()
+        {
+            EstimatorEvents.Clear();
+            EstimatorEvents.Add(new EstimatorEventRow("10-year", 1.2, 5, 10));
+            EstimatorEvents.Add(new EstimatorEventRow("50-year", 2.4, 6, 50));
+            EstimatorEvents.Add(new EstimatorEventRow("100-year", 3.2, 6, 100));
+
+            EstimatorCropRows.Clear();
+            EstimatorCropRows.Add(new EstimatorCropRow(1, "Corn", "10-year", 350, 0, "4,5,6,7,8,9", ""));
+            EstimatorCropRows.Add(new EstimatorCropRow(5, "Soybeans", "50-year", 220, 0, "5,6,7,8,9", "0:0,1:0.45,2:0.85,3:1"));
+            EstimatorCropRows.Add(new EstimatorCropRow(24, "Winter Wheat", "100-year", 120, 0, "10,11,12,1,2,3", ""));
+        }
+
+        private void ComputeFloodDamageEstimator()
+        {
+            EstimatorResults.Clear();
+
+            if (EstimatorEvents.Count == 0 || EstimatorCropRows.Count == 0)
+            {
+                EstimatorSummary = "Add at least one event and one crop row before running the estimator.";
+                return;
+            }
+
+            try
+            {
+                var random = new Random(EstimatorRandomSeed);
+                var defaultCurve = ParseDepthDamageCurve(EstimatorDefaultCurve);
+                var eventResults = new List<EstimatorResultRow>();
+                var eadNumerator = 0.0;
+
+                foreach (var floodEvent in EstimatorEvents)
+                {
+                    if (floodEvent.ReturnPeriodYears <= 0)
+                    {
+                        continue;
+                    }
+
+                    var damageSamples = new List<double>(EstimatorMonteCarloRuns * EstimatorAnalysisYears);
+
+                    for (int year = 0; year < EstimatorAnalysisYears; year++)
+                    {
+                        for (int run = 0; run < EstimatorMonteCarloRuns; run++)
+                        {
+                            int sampledMonth = EstimatorRandomizeMonth ? random.Next(1, 13) : floodEvent.FloodMonth;
+                            double totalDamage = 0.0;
+
+                            foreach (var cropRow in EstimatorCropRows.Where(r => string.Equals(r.EventName, floodEvent.Name, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                var months = ParseMonths(cropRow.GrowingMonthsCsv);
+                                if (months.Count > 0 && !months.Contains(sampledMonth))
+                                {
+                                    continue;
+                                }
+
+                                var curve = !string.IsNullOrWhiteSpace(cropRow.SpecificCurve)
+                                    ? ParseDepthDamageCurve(cropRow.SpecificCurve)
+                                    : defaultCurve;
+
+                                var depthSample = Math.Max(0.0, floodEvent.DepthFeet + NextGaussian(random, 0.0, EstimatorDepthStdDev));
+                                var baseDamage = InterpolateDamage(depthSample, curve);
+                                var noisyDamage = Math.Clamp(baseDamage + NextGaussian(random, 0.0, EstimatorDamageStdDev), 0.0, 1.0);
+
+                                var rawValue = cropRow.ValuePerAcre > 0 ? cropRow.ValuePerAcre : EstimatorDefaultCropValue;
+                                var valueSample = Math.Max(0.0, rawValue * (1.0 + NextGaussian(random, 0.0, EstimatorValueStdDev)));
+                                totalDamage += cropRow.Acres * valueSample * noisyDamage;
+                            }
+
+                            damageSamples.Add(totalDamage);
+                        }
+                    }
+
+                    if (damageSamples.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    damageSamples.Sort();
+                    var mean = damageSamples.Average();
+                    var std = Math.Sqrt(damageSamples.Average(value => Math.Pow(value - mean, 2)));
+                    var p5 = PercentileFromSorted(damageSamples, 0.05);
+                    var p95 = PercentileFromSorted(damageSamples, 0.95);
+                    var discrete = mean / floodEvent.ReturnPeriodYears;
+                    eadNumerator += discrete;
+
+                    eventResults.Add(new EstimatorResultRow(floodEvent.Name, mean, std, p5, p95, discrete));
+                }
+
+                foreach (var row in eventResults.OrderBy(r => r.EventName))
+                {
+                    EstimatorResults.Add(row);
+                }
+
+                EstimatorSummary = $"Estimator complete. {EstimatorResults.Count} events processed. Discrete EAD Σ(Damage/RP) = {eadNumerator:C0}.";
+            }
+            catch (Exception ex)
+            {
+                EstimatorSummary = $"Estimator failed: {ex.Message}";
+            }
+        }
+
+        private static List<(double Depth, double Damage)> ParseDepthDamageCurve(string curveText)
+        {
+            if (string.IsNullOrWhiteSpace(curveText))
+            {
+                throw new InvalidOperationException("Default curve cannot be blank.");
+            }
+
+            var points = new List<(double Depth, double Damage)>();
+            foreach (var token in curveText.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var parts = token.Split(':', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2)
+                {
+                    throw new InvalidOperationException("Curve format must be depth:damage pairs separated by commas.");
+                }
+
+                if (!double.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var depth)
+                    || !double.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var damage))
+                {
+                    throw new InvalidOperationException("Curve values must be numeric.");
+                }
+
+                points.Add((Math.Max(0.0, depth), Math.Clamp(damage, 0.0, 1.0)));
+            }
+
+            if (points.Count < 2)
+            {
+                throw new InvalidOperationException("Curve must have at least two points.");
+            }
+
+            points.Sort((a, b) => a.Depth.CompareTo(b.Depth));
+            return points;
+        }
+
+        private static HashSet<int> ParseMonths(string monthsCsv)
+        {
+            var months = new HashSet<int>();
+            if (string.IsNullOrWhiteSpace(monthsCsv))
+            {
+                return months;
+            }
+
+            foreach (var token in monthsCsv.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (int.TryParse(token.Trim(), out var month) && month >= 1 && month <= 12)
+                {
+                    months.Add(month);
+                }
+            }
+
+            return months;
+        }
+
+        private static double InterpolateDamage(double depth, List<(double Depth, double Damage)> curve)
+        {
+            if (depth <= curve[0].Depth)
+            {
+                return curve[0].Damage;
+            }
+
+            for (int i = 1; i < curve.Count; i++)
+            {
+                if (depth <= curve[i].Depth)
+                {
+                    var p0 = curve[i - 1];
+                    var p1 = curve[i];
+                    if (Math.Abs(p1.Depth - p0.Depth) < 1e-9)
+                    {
+                        return p1.Damage;
+                    }
+
+                    var t = (depth - p0.Depth) / (p1.Depth - p0.Depth);
+                    return p0.Damage + ((p1.Damage - p0.Damage) * t);
+                }
+            }
+
+            return curve[^1].Damage;
+        }
+
+        private static double NextGaussian(Random random, double mean, double stdDev)
+        {
+            if (stdDev <= 0)
+            {
+                return 0;
+            }
+
+            var u1 = 1.0 - random.NextDouble();
+            var u2 = 1.0 - random.NextDouble();
+            var randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
+            return mean + (stdDev * randStdNormal);
+        }
+
+        private static double PercentileFromSorted(List<double> sortedValues, double percentile)
+        {
+            if (sortedValues.Count == 0)
+            {
+                return 0;
+            }
+
+            percentile = Math.Clamp(percentile, 0.0, 1.0);
+            var index = percentile * (sortedValues.Count - 1);
+            var lower = (int)Math.Floor(index);
+            var upper = (int)Math.Ceiling(index);
+            if (lower == upper)
+            {
+                return sortedValues[lower];
+            }
+
+            var fraction = index - lower;
+            return sortedValues[lower] + ((sortedValues[upper] - sortedValues[lower]) * fraction);
+        }
+
         public override object CaptureState()
         {
             return new AgricultureDepthDamageData
@@ -1001,6 +1349,32 @@ namespace EconToolbox.Desktop.ViewModels
                     PixelCount = summary.PixelCount,
                     Acres = summary.Acres,
                     PercentOfTotal = summary.PercentOfTotal
+                }).ToList(),
+                EstimatorDefaultCurve = EstimatorDefaultCurve,
+                EstimatorDefaultCropValue = EstimatorDefaultCropValue,
+                EstimatorDamageStdDev = EstimatorDamageStdDev,
+                EstimatorDepthStdDev = EstimatorDepthStdDev,
+                EstimatorValueStdDev = EstimatorValueStdDev,
+                EstimatorMonteCarloRuns = EstimatorMonteCarloRuns,
+                EstimatorAnalysisYears = EstimatorAnalysisYears,
+                EstimatorRandomSeed = EstimatorRandomSeed,
+                EstimatorRandomizeMonth = EstimatorRandomizeMonth,
+                EstimatorEvents = EstimatorEvents.Select(evt => new EstimatorEventData
+                {
+                    Name = evt.Name,
+                    DepthFeet = evt.DepthFeet,
+                    FloodMonth = evt.FloodMonth,
+                    ReturnPeriodYears = evt.ReturnPeriodYears
+                }).ToList(),
+                EstimatorCropRows = EstimatorCropRows.Select(row => new EstimatorCropData
+                {
+                    CropCode = row.CropCode,
+                    CropName = row.CropName,
+                    EventName = row.EventName,
+                    Acres = row.Acres,
+                    ValuePerAcre = row.ValuePerAcre,
+                    GrowingMonthsCsv = row.GrowingMonthsCsv,
+                    SpecificCurve = row.SpecificCurve
                 }).ToList()
             };
         }
@@ -1108,6 +1482,34 @@ namespace EconToolbox.Desktop.ViewModels
                 CropScapeImportStatus = string.IsNullOrWhiteSpace(data.CropScapeImportStatus)
                     ? "No CropScape raster imported."
                     : data.CropScapeImportStatus;
+
+                EstimatorDefaultCurve = string.IsNullOrWhiteSpace(data.EstimatorDefaultCurve) ? EstimatorDefaultCurve : data.EstimatorDefaultCurve;
+                EstimatorDefaultCropValue = data.EstimatorDefaultCropValue > 0 ? data.EstimatorDefaultCropValue : EstimatorDefaultCropValue;
+                EstimatorDamageStdDev = data.EstimatorDamageStdDev;
+                EstimatorDepthStdDev = data.EstimatorDepthStdDev;
+                EstimatorValueStdDev = data.EstimatorValueStdDev;
+                EstimatorMonteCarloRuns = data.EstimatorMonteCarloRuns > 0 ? data.EstimatorMonteCarloRuns : EstimatorMonteCarloRuns;
+                EstimatorAnalysisYears = data.EstimatorAnalysisYears > 0 ? data.EstimatorAnalysisYears : EstimatorAnalysisYears;
+                EstimatorRandomSeed = data.EstimatorRandomSeed;
+                EstimatorRandomizeMonth = data.EstimatorRandomizeMonth;
+
+                if (data.EstimatorEvents.Count > 0)
+                {
+                    EstimatorEvents.Clear();
+                    foreach (var evt in data.EstimatorEvents)
+                    {
+                        EstimatorEvents.Add(new EstimatorEventRow(evt.Name, evt.DepthFeet, evt.FloodMonth, evt.ReturnPeriodYears));
+                    }
+                }
+
+                if (data.EstimatorCropRows.Count > 0)
+                {
+                    EstimatorCropRows.Clear();
+                    foreach (var row in data.EstimatorCropRows)
+                    {
+                        EstimatorCropRows.Add(new EstimatorCropRow(row.CropCode, row.CropName, row.EventName, row.Acres, row.ValuePerAcre, row.GrowingMonthsCsv, row.SpecificCurve));
+                    }
+                }
             }
             finally
             {
@@ -2107,6 +2509,59 @@ namespace EconToolbox.Desktop.ViewModels
                 return stages.Select(stage => new StageExposure(stage));
             }
         }
+
+        public class EstimatorEventRow : BaseViewModel
+        {
+            private string _name;
+            private double _depthFeet;
+            private int _floodMonth;
+            private double _returnPeriodYears;
+
+            public EstimatorEventRow(string name, double depthFeet, int floodMonth, double returnPeriodYears)
+            {
+                _name = name;
+                _depthFeet = depthFeet;
+                _floodMonth = floodMonth;
+                _returnPeriodYears = returnPeriodYears;
+            }
+
+            public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+            public double DepthFeet { get => _depthFeet; set { _depthFeet = Math.Max(0.0, value); OnPropertyChanged(); } }
+            public int FloodMonth { get => _floodMonth; set { _floodMonth = Math.Clamp(value, 1, 12); OnPropertyChanged(); } }
+            public double ReturnPeriodYears { get => _returnPeriodYears; set { _returnPeriodYears = Math.Max(0.1, value); OnPropertyChanged(); } }
+        }
+
+        public class EstimatorCropRow : BaseViewModel
+        {
+            private int _cropCode;
+            private string _cropName;
+            private string _eventName;
+            private double _acres;
+            private double _valuePerAcre;
+            private string _growingMonthsCsv;
+            private string _specificCurve;
+
+            public EstimatorCropRow(int cropCode, string cropName, string eventName, double acres, double valuePerAcre, string growingMonthsCsv, string specificCurve)
+            {
+                _cropCode = cropCode;
+                _cropName = cropName;
+                _eventName = eventName;
+                _acres = acres;
+                _valuePerAcre = valuePerAcre;
+                _growingMonthsCsv = growingMonthsCsv;
+                _specificCurve = specificCurve;
+            }
+
+            public int CropCode { get => _cropCode; set { _cropCode = value; OnPropertyChanged(); } }
+            public string CropName { get => _cropName; set { _cropName = value; OnPropertyChanged(); } }
+            public string EventName { get => _eventName; set { _eventName = value; OnPropertyChanged(); } }
+            public double Acres { get => _acres; set { _acres = Math.Max(0.0, value); OnPropertyChanged(); } }
+            public double ValuePerAcre { get => _valuePerAcre; set { _valuePerAcre = Math.Max(0.0, value); OnPropertyChanged(); } }
+            public string GrowingMonthsCsv { get => _growingMonthsCsv; set { _growingMonthsCsv = value; OnPropertyChanged(); } }
+            public string SpecificCurve { get => _specificCurve; set { _specificCurve = value; OnPropertyChanged(); } }
+        }
+
+        public record EstimatorResultRow(string EventName, double MeanDamage, double StdDamage, double P5Damage, double P95Damage, double DiscreteEadContribution);
 
         public class DepthDurationPoint : BaseViewModel
         {
