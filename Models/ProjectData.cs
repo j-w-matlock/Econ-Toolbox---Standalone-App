@@ -54,6 +54,17 @@ namespace EconToolbox.Desktop.Models
         public double CropScapeTotalAcreage { get; set; }
         public string? CropScapeImportStatus { get; set; }
         public List<CropScapeSummaryData> CropScapeSummaries { get; set; } = new();
+        public string? EstimatorDefaultCurve { get; set; }
+        public double EstimatorDefaultCropValue { get; set; }
+        public double EstimatorDamageStdDev { get; set; }
+        public double EstimatorDepthStdDev { get; set; }
+        public double EstimatorValueStdDev { get; set; }
+        public int EstimatorMonteCarloRuns { get; set; }
+        public int EstimatorAnalysisYears { get; set; }
+        public int EstimatorRandomSeed { get; set; }
+        public bool EstimatorRandomizeMonth { get; set; }
+        public List<EstimatorEventData> EstimatorEvents { get; set; } = new();
+        public List<EstimatorCropData> EstimatorCropRows { get; set; } = new();
     }
 
     public class AgricultureRegionData

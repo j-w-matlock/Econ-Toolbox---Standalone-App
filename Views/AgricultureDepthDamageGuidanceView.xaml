@@ -1,0 +1,823 @@
+<UserControl x:Class="EconToolbox.Desktop.Views.AgricultureDepthDamageGuidanceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="clr-namespace:EconToolbox.Desktop.Behaviors"
+             Background="{DynamicResource App.SurfaceAlt}"
+             SnapsToDevicePixels="True"
+             UseLayoutRounding="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Auto"
+                  Padding="{StaticResource Padding.Card}">
+        <StackPanel Style="{StaticResource Layout.ContentStack}">
+            <Border Style="{StaticResource Border.Explainer}">
+                <StackPanel>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="Agricultural Depth-Duration Damage Guidance"
+                                   Style="{StaticResource Text.SectionTitleAccent}"
+                                   TextWrapping="Wrap"/>
+                    </Grid>
+                    <TextBlock TextWrapping="Wrap"
+                               Style="{StaticResource Text.Body}"
+                               Margin="{StaticResource Margin.TopLarge}">
+                        <Run Text="Use these prompts to translate crop stage, regional flood timing, and acreage risk into a depth-duration damage estimate tailored for CE/ICA studies."/>
+                        <LineBreak/>
+                        <Run Text="Update the exposure assumptions below, then select Calculate to refresh the modeled curve and summary outputs."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <Grid Margin="{StaticResource Margin.StackLarge}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        Style="{StaticResource Border.Card}"
+                        Margin="{StaticResource Margin.InlineMedium}">
+                    <StackPanel>
+                        <TextBlock Text="Where is the field located?"
+                                   Style="{StaticResource Text.SectionTitle}"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Text="Pick the USACE hydrologic region that best matches watershed timing. The selection shifts planting windows and flood season sampling."
+                                   Style="{StaticResource Text.Body}"
+                                   TextWrapping="Wrap"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <ComboBox ItemsSource="{Binding Regions}"
+                                  SelectedItem="{Binding SelectedRegion}"
+                                  DisplayMemberPath="Name"
+                                  Margin="{StaticResource Margin.Stack}"
+                                  Style="{StaticResource Form.ComboBox}"
+                                  ToolTip="Choose the regional depth-duration template to review or customize. The selection sets baseline timing and depth-duration parameters used in calculations."/>
+                        <TextBlock Text="{Binding SelectedRegionDescription}"
+                                   Style="{StaticResource Text.Body}"
+                                   TextWrapping="Wrap"
+                                   Margin="{StaticResource Margin.Stack}"/>
+
+                        <Border Style="{StaticResource Border.Panel}"
+                                Background="{DynamicResource App.SurfaceAlt}"
+                                Margin="{StaticResource Margin.Stack}">
+                            <StackPanel>
+                                <TextBlock Text="Custom region inputs"
+                                           FontWeight="SemiBold"
+                                           FontSize="14"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBlock Text="Adjust flood season timing, growing season shift, and annual probability to reflect local watershed conditions."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <Grid Margin="{StaticResource Margin.StackSmall}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.Resources>
+                                        <Style x:Key="RegionInputBoxStyle"
+                                               TargetType="TextBox"
+                                               BasedOn="{StaticResource Form.TextBox}">
+                                        </Style>
+                                    </Grid.Resources>
+
+                                    <StackPanel Grid.Row="0"
+                                                Grid.Column="0"
+                                                Margin="{StaticResource Margin.StackSmall}">
+                                        <TextBlock Text="Region name"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
+                                                 ToolTip="Display name for the selected region shown in the drop-down list. Renaming does not change calculations but updates labels in outputs."/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="0"
+                                                Grid.Column="1"
+                                                Margin="{StaticResource Margin.StackSmall}">
+                                        <TextBlock Text="Annual Exceedance Probability"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.AnnualExceedanceProbabilityDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Probability that a damaging flood occurs in an average year (0–1). This baseline probability is multiplied by modeled stress to estimate impact risk."/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="1"
+                                                Grid.Column="0"
+                                                Margin="{StaticResource Margin.StackSmall}">
+                                        <TextBlock Text="Flood season start (day)"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.FloodWindowStartDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="First day of year when flooding typically begins for the selected region. The window affects which growth stages are exposed during the season."/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="1"
+                                                Grid.Column="1"
+                                                Margin="{StaticResource Margin.StackSmall}">
+                                        <TextBlock Text="Flood season peak (day)"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.FloodSeasonPeakDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Day of year when flood likelihood typically peaks for the selected region. The peak timing influences stage-specific exposure weighting."/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="2"
+                                                Grid.Column="0"
+                                                Margin="{StaticResource Margin.StackSmall}">
+                                        <TextBlock Text="Flood season end (day)"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.FloodWindowEndDay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Last day of year when flooding commonly occurs for the selected region. This bounds exposure calculations across the season."/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="2"
+                                                Grid.Column="1"
+                                                Margin="{StaticResource Margin.StackSmall}">
+                                        <TextBlock Text="Season shift (days)"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.SeasonShiftDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource RegionInputBoxStyle}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Shifts the growing season timeline relative to the flood season (negative = earlier). This changes which growth stages overlap the flood window."/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="3"
+                                                Grid.Column="0"
+                                                Grid.ColumnSpan="2"
+                                                Margin="{StaticResource Margin.StackSmall}">
+                                        <TextBlock Text="Description"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedRegion.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 AcceptsReturn="True"
+                                                 TextWrapping="Wrap"
+                                                 MinHeight="60"
+                                                 Style="{StaticResource Form.TextBoxWide}"
+                                                 ToolTip="Narrative description that will appear beneath the region selector. This does not affect calculations but documents assumptions."/>
+                                    </StackPanel>
+                                </Grid>
+                                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding SelectedRegion.DepthDuration}"
+                                          SelectedItem="{Binding SelectedRegionPoint}"
+                                          AutoGenerateColumns="False"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          HeadersVisibility="Column"
+                                          ColumnWidth="SizeToHeader"
+                                          Margin="{StaticResource Margin.StackSmall}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Depth (ft)"
+                                                            Binding="{Binding DepthFeet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet). Depth is used with duration to estimate base damage."/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                            <DataGridTextColumn.EditingElementStyle>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                    <Setter Property="ToolTip" Value="Water depth above ground for the scenario (feet). Depth is used with duration to estimate base damage."/>
+                                                </Style>
+                                            </DataGridTextColumn.EditingElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Duration (days)"
+                                                            Binding="{Binding DurationDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="ToolTip" Value="Length of inundation represented by the row (days). Duration influences stress-adjusted damage calculations."/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                            <DataGridTextColumn.EditingElementStyle>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                    <Setter Property="ToolTip" Value="Length of inundation represented by the row (days). Duration influences stress-adjusted damage calculations."/>
+                                                </Style>
+                                            </DataGridTextColumn.EditingElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Base damage (fraction)"
+                                                            Binding="{Binding BaseDamage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1). This base damage is scaled by crop and stress modifiers."/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                            <DataGridTextColumn.EditingElementStyle>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                    <Setter Property="ToolTip" Value="Fraction of acreage lost at the specified depth-duration point (0–1). This base damage is scaled by crop and stress modifiers."/>
+                                                </Style>
+                                            </DataGridTextColumn.EditingElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Left"
+                                            Margin="{StaticResource Margin.StackSmall}">
+                                    <Button Content="Add point"
+                                            Command="{Binding AddDepthDurationPointCommand}"
+                                            Margin="{StaticResource Margin.Inline}"
+                                            ToolTip="Insert another depth-duration point using the regional template as a starting value. New points expand the curve used in damage calculations."/>
+                                    <Button Content="Remove selected"
+                                            Command="{Binding RemoveDepthDurationPointCommand}"
+                                            Margin="{StaticResource Margin.Inline}"
+                                            ToolTip="Delete the highlighted depth-duration row from the table. Removing points alters the depth-duration damage curve."/>
+                                </StackPanel>
+                                <TextBlock Text="Base damage represents the fraction of acreage lost at the specified depth and duration (0 = no loss, 1 = total loss)."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Separator Margin="{StaticResource Margin.Stack}"/>
+
+                        <TextBlock Text="What crop is planted on the acre?"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <ComboBox ItemsSource="{Binding Crops}"
+                                  SelectedItem="{Binding SelectedCrop}"
+                                  DisplayMemberPath="Name"
+                                  Margin="{StaticResource Margin.Stack}"
+                                  MinWidth="220"
+                                  ToolTip="Select the crop profile sourced from USDA NASS categories. Crop selection applies crop-specific damage and impact modifiers."/>
+                        <TextBlock Text="{Binding SelectedCropDescription}"
+                                   Style="{StaticResource Text.Body}"
+                                   TextWrapping="Wrap"
+                                   Margin="{StaticResource Margin.Stack}"/>
+
+                        <Border BorderBrush="{DynamicResource App.Border}"
+                                BorderThickness="1"
+                                Background="{DynamicResource App.SurfaceAlt}"
+                                CornerRadius="4"
+                                Padding="{StaticResource Padding.Content}"
+                                Margin="{StaticResource Margin.Stack}">
+                            <StackPanel>
+                                <TextBlock Text="Crop parameters"
+                                           FontWeight="SemiBold"
+                                           FontSize="14"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBlock Text="Describe the crop and adjust the damage and impact multipliers to capture localized resilience."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBox Text="{Binding SelectedCrop.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Margin="{StaticResource Margin.StackSmall}"
+                                         ToolTip="Enter the display label for the selected crop. Renaming does not change calculations but updates labels in outputs."/>
+                                <TextBox Text="{Binding SelectedCrop.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Margin="{StaticResource Margin.StackSmall}"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         MinHeight="60"
+                                         ToolTip="Provide a description that explains the crop assumptions for this selection. This documents inputs without changing calculations."/>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="{StaticResource Margin.StackSmall}">
+                                    <StackPanel Width="140"
+                                                Margin="{StaticResource Margin.Inline}">
+                                        <TextBlock Text="Damage factor"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedCrop.DamageFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Scaling factor that adjusts depth-duration damages for the crop. Higher values increase modeled damage percent."/>
+                                    </StackPanel>
+                                    <StackPanel Width="140"
+                                                Margin="{StaticResource Margin.Inline}">
+                                        <TextBlock Text="Impact modifier"
+                                                   Style="{StaticResource Text.Caption}"/>
+                                        <TextBox Text="{Binding SelectedCrop.ImpactModifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.###}}"
+                                                 HorizontalContentAlignment="Right"
+                                                 ToolTip="Multiplier that affects the modeled probability of experiencing a damaging flood. Higher values increase modeled impact probability."/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="Damage factor scales depth-duration damages, while the impact modifier influences the modeled probability of a damaging event."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border BorderBrush="{DynamicResource App.Border}"
+                                BorderThickness="1"
+                                Background="{DynamicResource App.SurfaceAlt}"
+                                CornerRadius="4"
+                                Padding="{StaticResource Padding.Content}"
+                                Margin="{StaticResource Margin.Stack}">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="{StaticResource Margin.StackSmall}">
+                                    <TextBlock Text="CropScape acreage summary"
+                                               FontWeight="SemiBold"
+                                               FontSize="14"
+                                               VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Left"
+                                                Margin="{StaticResource Margin.InlineLarge}">
+                                        <Button Content="Import CropScape CDL"
+                                                Command="{Binding ImportCropScapeRasterCommand}"
+                                                Margin="{StaticResource Margin.Inline}"
+                                                ToolTip="Load a USDA CropScape raster to populate acreage shares for each crop class. Acreage shares are used in CropScape damage projections."/>
+                                        <Button Content="Clear summary"
+                                                Command="{Binding ClearCropScapeSummaryCommand}"
+                                                Margin="{StaticResource Margin.Inline}"
+                                                ToolTip="Remove the imported CropScape acreage totals so you can start a fresh summary. Clearing resets acreage inputs used in damage projections."/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <TextBlock Text="{Binding CropScapeImportStatus}"
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <TextBlock Text="{Binding CropScapeTotalAcreageDisplay, Mode=OneWay}"
+                                           FontWeight="SemiBold"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding CropScapeSummaries}"
+                                          AutoGenerateColumns="False"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          HeadersVisibility="Column"
+                                          IsReadOnly="True"
+                                          ColumnWidth="SizeToHeader"
+                                          Margin="{StaticResource Margin.StackSmall}"
+                                          RowHeaderWidth="0"
+                                          MinHeight="160"
+                                          MaxHeight="260">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Code"
+                                                            Binding="{Binding Code}"
+                                                            Width="SizeToHeader"/>
+                                        <DataGridTextColumn Header="Crop type"
+                                                            Binding="{Binding Name}"
+                                                            Width="SizeToHeader"/>
+                                        <DataGridTextColumn Header="Acres"
+                                                            Binding="{Binding Acres, StringFormat={}{0:N1}}"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="% of total"
+                                                            Binding="{Binding PercentOfTotal, StringFormat={}{0:P1}}"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <TextBlock Text="Import a USDA CropScape Cropland Data Layer raster to automatically tally acreage by crop class."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Separator Margin="{StaticResource Margin.Stack}"/>
+
+                        <TextBlock Text="How resilient is the field during the season?"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"
+                                   Margin="{StaticResource Margin.Stack}"/>
+
+                        <ItemsControl ItemsSource="{Binding StageExposures}"
+                                      Margin="{StaticResource Margin.StackSmall}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{DynamicResource App.Border}"
+                                            BorderThickness="1"
+                                            CornerRadius="4"
+                                            Padding="{StaticResource Padding.Content}"
+                                            Margin="{StaticResource Margin.StackSmall}"
+                                            Background="{DynamicResource App.SurfaceAlt}">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                                <StackPanel Width="220">
+                                                    <TextBlock Text="{Binding StageName}"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="14"/>
+                                                    <TextBlock Text="{Binding StageWindow}"
+                                                               Style="{StaticResource Text.Caption}"/>
+                                                    <TextBlock Text="{Binding TimingWindowDisplay}"
+                                                               Style="{StaticResource Text.Caption}"
+                                                               TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="{StaticResource Margin.InlineLarge}"
+                                                            VerticalAlignment="Center">
+                                                    <StackPanel Margin="{StaticResource Margin.Inline}">
+                                                        <TextBlock Text="Exposure (days)"
+                                                                   Style="{StaticResource Text.Caption}"/>
+                                                        <TextBox Text="{Binding ExposureDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
+                                                                 HorizontalContentAlignment="Right"
+                                                                 MinWidth="80"
+                                                                 ToolTip="Estimated number of days this growth stage experiences inundation in a typical event. Longer exposure raises stress for this stage."/>
+                                                    </StackPanel>
+                                                    <StackPanel Margin="{StaticResource Margin.Inline}">
+                                                        <TextBlock Text="Flood tolerance (days)"
+                                                                   Style="{StaticResource Text.Caption}"/>
+                                                        <TextBox Text="{Binding FloodToleranceDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
+                                                                 HorizontalContentAlignment="Right"
+                                                                 MinWidth="80"
+                                                                 ToolTip="Number of days this stage can withstand inundation before significant damage occurs. Lower tolerance increases stress and modeled damage."/>
+                                                    </StackPanel>
+                                                    <StackPanel Margin="{StaticResource Margin.Inline}">
+                                                        <Button Content="Reset"
+                                                                Command="{Binding ResetCommand}"
+                                                                ToolTip="Restore the default exposure and flood tolerance for this stage. Resetting updates stress inputs used in probability and damage calculations."/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding StageGuidance}"
+                                                       Style="{StaticResource Text.Body}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="{StaticResource Margin.StackSmall}"/>
+                                            <TextBlock Text="{Binding TimingModifierDisplay}"
+                                                       Style="{StaticResource Text.Caption}"
+                                                       Margin="{StaticResource Margin.StackSmall}"/>
+                                            <TextBlock Text="{Binding DefaultToleranceDisplay}"
+                                                       Style="{StaticResource Text.Caption}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Separator Margin="{StaticResource Margin.Stack}"/>
+
+                        <Grid Margin="{StaticResource Margin.Stack}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0"
+                                        Margin="{StaticResource Margin.Inline}">
+                                <TextBlock Text="Average response"
+                                           Style="{StaticResource Text.Caption}"/>
+                                <TextBox Text="{Binding AverageResponse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"
+                                         HorizontalContentAlignment="Right"
+                                         MinWidth="120"
+                                         ToolTip="Adjusts how strongly seasonal stress amplifies modeled damages (1 = default response). Higher values increase modeled damage and impact probability."/>
+                                <TextBlock Text="Scales the seasonal exposure severity."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1"
+                                        Margin="{StaticResource Margin.Inline}">
+                                <TextBlock Text="Simulation years"
+                                           Style="{StaticResource Text.Caption}"/>
+                                <TextBox Text="{Binding SimulationYears, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         HorizontalContentAlignment="Right"
+                                         MinWidth="120"
+                                         ToolTip="Number of simulated seasons summarized in the narrative output. This does not change calculations, but it frames summary messaging."/>
+                                <TextBlock Text="Used in the narrative to describe modeled seasons."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="{StaticResource Margin.StackSmall}"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1"
+                        Background="{DynamicResource App.Surface}"
+                        BorderBrush="{DynamicResource App.Border}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="{StaticResource Padding.Content}"
+                        Margin="{StaticResource Margin.TopLarge}">
+                    <StackPanel>
+                        <TextBlock Text="Modeled impact probability"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Text="{Binding ModeledImpactProbabilityDisplay}"
+                                   FontSize="32"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource App.Accent}"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Text="{Binding ImpactSummary}"
+                                   Style="{StaticResource Text.Body}"
+                                   TextWrapping="Wrap"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <Separator Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Text="Mean crop insight"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Text="{Binding CropInsight}"
+                                   Style="{StaticResource Text.Body}"
+                                   TextWrapping="Wrap"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <Separator Margin="{StaticResource Margin.Stack}"/>
+                        <Grid Margin="{StaticResource Margin.Stack}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Average damage across scenarios:"
+                                       Style="{StaticResource Text.Body}"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding MeanDamageDisplay}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource App.Accent}"
+                                       Margin="{StaticResource Margin.Inline}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="2"
+                        Background="{DynamicResource App.Surface}"
+                        BorderBrush="{DynamicResource App.Border}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="{StaticResource Padding.Content}"
+                        Margin="{StaticResource Margin.TopLarge}">
+                    <StackPanel>
+                        <TextBlock Text="Depth-duration-damage table"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding DepthDurationRows}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  HeadersVisibility="Column"
+                                  Margin="0"
+                                  IsReadOnly="True"
+                                  ColumnWidth="SizeToHeader">
+                            <DataGrid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Margin" Value="2"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding DepthFeet, StringFormat={}{0:0.##}}"
+                                                    Width="SizeToHeader"
+                                                    Header="Depth (ft)"/>
+                                <DataGridTextColumn Binding="{Binding DurationDays, StringFormat={}{0:0.##}}"
+                                                    Width="SizeToHeader"
+                                                    Header="Duration (days)"/>
+                                <DataGridTextColumn Binding="{Binding DamagePercent, StringFormat={}{0:0.##}}" Width="SizeToHeader">
+                                    <DataGridTextColumn.Header>
+                                        <TextBlock Text="Damage (%)"/>
+                                    </DataGridTextColumn.Header>
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="3"
+                        Background="{DynamicResource App.Surface}"
+                        BorderBrush="{DynamicResource App.Border}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="{StaticResource Padding.Content}"
+                        Margin="{StaticResource Margin.TopLarge}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasCropScapeDamage}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="CropScape acreage damage projection"
+                                   FontWeight="SemiBold"
+                                   FontSize="15"
+                                   Margin="{StaticResource Margin.Stack}"/>
+                        <TextBlock Style="{StaticResource Text.Body}"
+                                   TextWrapping="Wrap"
+                                   Margin="{StaticResource Margin.Stack}">
+                            <Run Text="Applying the modeled depth-damage curve to "/>
+                            <Run Text="{Binding CropScapeTotalAcreageDisplay, Mode=OneWay}" FontWeight="SemiBold"/>
+                            <Run Text=" highlights the acreage exposed at each inundation depth."/>
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Ellipse Width="12"
+                                     Height="12"
+                                     Fill="{DynamicResource App.Accent}"
+                                     Stroke="{DynamicResource App.Border}"
+                                     StrokeThickness="0.5"
+                                     Margin="0,0,6,0"/>
+                            <TextBlock Text="CropScape damage curve"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Grid Margin="{StaticResource Margin.Stack}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" MinWidth="280"/>
+                                <ColumnDefinition Width="*" MinWidth="260"/>
+                            </Grid.ColumnDefinitions>
+                            <Viewbox Grid.Column="0"
+                                     Stretch="Uniform"
+                                     HorizontalAlignment="Stretch"
+                                     MinHeight="220"
+                                     Margin="0,0,24,0"
+                                     behaviors:ChartCopyBehavior.Enable="True">
+                                <Grid Width="400" Height="240">
+                                    <Border Style="{StaticResource Border.Chart}"
+                                            Background="{DynamicResource App.ChartFill}"
+                                            BorderBrush="{DynamicResource App.Border}"
+                                            BorderThickness="1"
+                                            CornerRadius="8"/>
+                                    <Canvas Width="360"
+                                            Height="200"
+                                            Margin="20,20,20,20"
+                                            ClipToBounds="True">
+                                        <Line X1="0" Y1="200" X2="360" Y2="200" Stroke="{DynamicResource App.Border}" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
+                                        <Line X1="0" Y1="0" X2="0" Y2="200" Stroke="{DynamicResource App.Border}" StrokeThickness="1.2" StrokeEndLineCap="Round"/>
+                                        <Line X1="0" Y1="140" X2="360" Y2="140" Stroke="{DynamicResource App.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                        <Line X1="0" Y1="70" X2="360" Y2="70" Stroke="{DynamicResource App.ChartGrid}" StrokeThickness="1" StrokeDashArray="4 6"/>
+                                        <Polyline Points="{Binding CropScapeDamagePoints}"
+                                                  Stroke="{DynamicResource App.Accent}"
+                                                  StrokeThickness="3"
+                                                  StrokeEndLineCap="Round"
+                                                  StrokeStartLineCap="Round"/>
+                                    </Canvas>
+                                    <TextBlock Text="Depth (ft)"
+                                               Foreground="{DynamicResource App.TextSecondary}"
+                                               FontSize="12"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Bottom"
+                                               Margin="0,0,0,6"/>
+                                    <TextBlock Text="Damaged acres"
+                                               Foreground="{DynamicResource App.TextSecondary}"
+                                               FontSize="12"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               Margin="4,0,0,0">
+                                        <TextBlock.RenderTransform>
+                                            <RotateTransform Angle="-90"/>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                </Grid>
+                            </Viewbox>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Damage table"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding CropScapeDamageRows}"
+                                          AutoGenerateColumns="False"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          HeadersVisibility="Column"
+                                          IsReadOnly="True"
+                                          ColumnWidth="SizeToHeader"
+                                          Margin="0"
+                                          RowHeaderWidth="0"
+                                          MinHeight="160"
+                                          MaxHeight="220">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Depth (ft)"
+                                                            Binding="{Binding DepthFeet, StringFormat={}{0:0.##}}"
+                                                            Width="SizeToHeader"/>
+                                        <DataGridTextColumn Header="Duration (days)"
+                                                            Binding="{Binding DurationDays, StringFormat={}{0:0.##}}"
+                                                            Width="SizeToHeader"/>
+                                        <DataGridTextColumn Header="Damage (%)"
+                                                            Binding="{Binding DamagePercent, StringFormat={}{0:0.##}}"
+                                                            Width="SizeToHeader"/>
+                                        <DataGridTextColumn Header="Damaged acres"
+                                                            Binding="{Binding DamagedAcres, StringFormat={}{0:N1}}"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Residual acres"
+                                                            Binding="{Binding ResidualAcres, StringFormat={}{0:N1}}"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Total acres"
+                                                            Binding="{Binding TotalAcres, StringFormat={}{0:N1}}"
+                                                            Width="SizeToHeader">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <TextBlock Text="Damaged acres = CropScape acreage × damage percent for each representative depth-duration event."
+                                           Style="{StaticResource Text.Caption}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Margin="{StaticResource Margin.StackLarge}">
+                    <Button Content="Calculate"
+                            Command="{Binding ComputeCommand}"
+                            Margin="{StaticResource Margin.Inline}"
+                            ToolTip="Run the simulation and refresh the agriculture depth-damage results. This recalculates impact probability and depth-duration damages."/>
+                    <Button Content="CSV Export"
+                            Command="{Binding ExportCommand}"
+                            Margin="{StaticResource Margin.Inline}"
+                            ToolTip="Save the current depth-duration table to a CSV file for external analysis. Export does not change calculations but captures current results."/>
+                </StackPanel>
+            </Grid>
+            <Border Style="{StaticResource Border.ResultInfo}"
+                    Margin="{StaticResource Margin.StackLarge}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Result guidance"
+                                   Style="{StaticResource Text.SectionHeaderAccent}"/>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Text.Body}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.TopSmall}">
+                        The modeled impact probability highlights how seasonal stress raises or lowers annual risk given your exposure settings. The depth-duration table and CropScape export translate that stress into percent damage and acreage so you can see which stages or locations drive losses.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Border.ResultInfo}"
+                    Margin="0,12,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Workflow tips"
+                                   Style="{StaticResource Text.SectionHeaderAccent}"/>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Text.Body}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.TopSmall}">
+                        <Run Text="• Confirm exceedance probabilities, depths, and damages align with your study area before running the simulation."/>
+                        <LineBreak/>
+                        <Run Text="• Use CSV export to share depth-duration tables with teammates for quick QA."/>
+                        <LineBreak/>
+                        <Run Text="• Adjust CropScape acres or damage factors first if modeled acres or damage percent look off."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource Border.ResultInfo}"
+                    Margin="0,12,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text=""
+                                   Style="{StaticResource Text.Icon.Section}"/>
+                        <TextBlock Text="Formula Reference"
+                                   Style="{StaticResource Text.SectionHeaderAccent}"/>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Text.Body}"
+                               TextWrapping="Wrap"
+                               Margin="{StaticResource Margin.TopSmall}">
+                        <Run Text="• Stage stress normalizes each growth stage by its tolerance: Stressᵢ = (Exposure Days ÷ Flood Tolerance) × Timing Modifier, limited between 0 and 2."/>
+                        <LineBreak/>
+                        <Run Text="• Weighted stress combines stages as Σ Weightᵢ × Stressᵢ ÷ Σ Weightᵢ. AverageResponse then scales the effect, along with region and crop modifiers."/>
+                        <LineBreak/>
+                        <Run Text="• Modeled Impact Probability = clamp(Baseline AEP × Weighted Stress × Region Impact Modifier × Crop Impact Modifier × AverageResponse, 0, 1)."/>
+                        <LineBreak/>
+                        <Run Text="• Depth-duration damage percent = clamp(Base Damage × (0.6 + 0.4 × Weighted Stress) × Crop Damage Factor × (1 + Duration/Max Duration × 0.25) × max(1, AverageResponse × 0.5), 0, 1) × 100."/>
+                        <LineBreak/>
+                        <Run Text="• CropScape damaged acres = Acreage × Damage% ÷ 100; residual acres = Acreage − Damaged Acres."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
