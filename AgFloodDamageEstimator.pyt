@@ -234,23 +234,32 @@ def parse_months(month_str):
         m = m.strip()
         if not m:
             continue
-        val = int(m)
+        try:
+            val = int(m)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"Invalid month value '{m}'. Months must be integers between 1 and 12") from exc
         if not 1 <= val <= 12:
             raise ValueError("Months must be between 1 and 12")
         months.add(val)
     return months
 
 def parse_curve(curve_str):
+    if curve_str in (None, ""):
+        raise ValueError("Damage curve must be formatted like '0:0,1:0.5,2:1'")
     try:
         points = [tuple(map(float, pt.split(':'))) for pt in curve_str.split(',')]
-    except:
-        raise ValueError("Damage curve must be formatted like '0:0,1:0.5,2:1'")
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Damage curve must be formatted like '0:0,1:0.5,2:1'") from exc
     if len(points) < 2:
         raise ValueError("Damage curve must contain at least two points")
+    sorted_points = sorted(points)
+    for i in range(1, len(sorted_points)):
+        if sorted_points[i][0] == sorted_points[i - 1][0]:
+            raise ValueError("Damage curve depths must be unique")
     for d, f in points:
         if not (0 <= f <= 1):
             raise ValueError("Damage curve fractions must be between 0 and 1")
-    return sorted(points)
+    return sorted_points
 
 def interp_damage(depth, curve):
     for i in range(1, len(curve)):

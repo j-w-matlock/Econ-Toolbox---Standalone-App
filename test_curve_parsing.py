@@ -98,7 +98,7 @@ def _load_estimator_module():
 
         arcpy_stub.SpatialReference = _SpatialReference
 
-    module_path = Path(__file__).resolve().parents[1] / "AgFloodDamageEstimator.pyt"
+    module_path = Path(__file__).resolve().parent / "AgFloodDamageEstimator.pyt"
     loader = importlib.machinery.SourceFileLoader(module_name, str(module_path))
     spec = importlib.util.spec_from_loader(module_name, loader)
     module = importlib.util.module_from_spec(spec)
@@ -133,3 +133,13 @@ def test_parse_curve_fraction_bounds():
 
     with pytest.raises(ValueError, match="between 0 and 1"):
         parse_curve("0:0.2,1:1.5")
+
+
+def test_parse_curve_rejects_duplicate_depths():
+    with pytest.raises(ValueError, match="depths must be unique"):
+        parse_curve("0:0,1:0.5,1:0.8")
+
+
+def test_parse_months_rejects_non_integer_months():
+    with pytest.raises(ValueError, match="Invalid month value"):
+        ESTIMATOR.parse_months("1,abc,3")
