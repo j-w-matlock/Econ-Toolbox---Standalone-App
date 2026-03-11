@@ -9,13 +9,13 @@
             <Border Style="{StaticResource Border.Card}">
                 <StackPanel>
                     <TextBlock Text="Ag Flood Damage Estimator" Style="{StaticResource Text.SectionTitleAccent}"/>
-                    <TextBlock Text="HEC-FIA-style workflow: load CDL + flood depth source, sync projection context, and run event-frequency damage estimation."
+                    <TextBlock Text="Flood impact analysis workflow: load and summarize CDL crop rasters, align depth raster or polygon flooding, and run Monte Carlo uncertainty simulations for event-frequency damages."
                                Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.TopLarge}"/>
 
                     <UniformGrid Columns="3" Margin="{StaticResource Margin.Stack}">
-                        <Button Content="Upload CDL raster (.tif)" Command="{Binding ImportEstimatorCdlRasterCommand}" Margin="{StaticResource Margin.Inline}"/>
-                        <Button Content="Upload depth raster (.tif)" Command="{Binding ImportEstimatorDepthRasterCommand}" Margin="{StaticResource Margin.Inline}"/>
-                        <Button Content="Upload flood polygon (.shp)" Command="{Binding ImportEstimatorPolygonShapefileCommand}" Margin="{StaticResource Margin.Inline}"/>
+                        <Button Content="Upload CDL raster (.tif)" Command="{Binding ImportEstimatorCdlRasterCommand}" Margin="{StaticResource Margin.Inline}" ToolTip="Load a USDA CDL-style crop raster. The tool summarizes acres by crop class and uses this as the analysis baseline."/>
+                        <Button Content="Upload depth raster (.tif)" Command="{Binding ImportEstimatorDepthRasterCommand}" Margin="{StaticResource Margin.Inline}" ToolTip="Load a flood depth GeoTIFF. Depth is sampled against CDL cells using geospatial alignment logic."/>
+                        <Button Content="Upload flood polygon (.shp)" Command="{Binding ImportEstimatorPolygonShapefileCommand}" Margin="{StaticResource Margin.Inline}" ToolTip="Load a flood extent polygon. In polygon mode, impacted CDL cells use a uniform user-entered depth."/>
                     </UniformGrid>
 
                     <UniformGrid Columns="2" Margin="{StaticResource Margin.StackSmall}">
@@ -31,10 +31,10 @@
                     <TextBlock Text="{Binding EstimatorPolygonShapefilePath}" Style="{StaticResource Text.Caption}" Margin="{StaticResource Margin.TopSmall}"/>
 
                     <UniformGrid Columns="4" Margin="{StaticResource Margin.StackSmall}">
-                        <CheckBox Content="Use polygon uniform depth" IsChecked="{Binding EstimatorUsePolygonUniformDepth}" VerticalAlignment="Center"/>
+                        <CheckBox Content="Use polygon uniform depth" IsChecked="{Binding EstimatorUsePolygonUniformDepth}" VerticalAlignment="Center" ToolTip="Enable when a flood polygon is the impact driver. Depth raster sampling is bypassed in this mode."/>
                         <StackPanel Margin="{StaticResource Margin.Inline}">
                             <TextBlock Text="Uniform polygon depth (ft)" Style="{StaticResource Text.Caption}"/>
-                            <TextBox Text="{Binding EstimatorUniformPolygonDepth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBox Text="{Binding EstimatorUniformPolygonDepth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Uniform flood depth in feet applied to all CDL cells intersecting the polygon."/>
                         </StackPanel>
                         <StackPanel Margin="{StaticResource Margin.Inline}">
                             <TextBlock Text="Spatial acres" Style="{StaticResource Text.Caption}"/>
@@ -60,7 +60,7 @@
                     <UniformGrid Columns="4" Margin="{StaticResource Margin.Stack}">
                         <StackPanel Margin="{StaticResource Margin.Inline}">
                             <TextBlock Text="Default value (USD/ac)" Style="{StaticResource Text.Caption}"/>
-                            <TextBox Text="{Binding EstimatorDefaultCropValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}"/>
+                            <TextBox Text="{Binding EstimatorDefaultCropValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.##}}" ToolTip="Fallback value per acre when a crop row leaves Value Per Acre blank."/>
                         </StackPanel>
                         <StackPanel Margin="{StaticResource Margin.Inline}">
                             <TextBlock Text="Damage std dev" Style="{StaticResource Text.Caption}"/>
@@ -79,11 +79,11 @@
                         <StackPanel Margin="{StaticResource Margin.Inline}"><TextBlock Text="Monte Carlo runs" Style="{StaticResource Text.Caption}"/><TextBox Text="{Binding EstimatorMonteCarloRuns, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
                         <StackPanel Margin="{StaticResource Margin.Inline}"><TextBlock Text="Analysis years" Style="{StaticResource Text.Caption}"/><TextBox Text="{Binding EstimatorAnalysisYears, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
                         <StackPanel Margin="{StaticResource Margin.Inline}"><TextBlock Text="Random seed" Style="{StaticResource Text.Caption}"/><TextBox Text="{Binding EstimatorRandomSeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
-                        <StackPanel Margin="{StaticResource Margin.Inline}" VerticalAlignment="Bottom"><Button Content="Calculate estimator" Command="{Binding ComputeEstimatorCommand}"/></StackPanel>
+                        <StackPanel Margin="{StaticResource Margin.Inline}" VerticalAlignment="Bottom"><Button Content="Calculate estimator" Command="{Binding ComputeEstimatorCommand}" ToolTip="Run Monte Carlo flood impact analysis using current events, crops, uncertainty knobs, and spatial summaries."/></StackPanel>
                     </UniformGrid>
                     <CheckBox Content="Randomize flood month" IsChecked="{Binding EstimatorRandomizeMonth}" Margin="{StaticResource Margin.StackSmall}"/>
                     <TextBlock Text="Default depth-damage curve (depth:damage)" Style="{StaticResource Text.Caption}" Margin="{StaticResource Margin.TopSmall}"/>
-                    <TextBox Text="{Binding EstimatorDefaultCurve, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource Margin.TopSmall}"/>
+                    <TextBox Text="{Binding EstimatorDefaultCurve, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="{StaticResource Margin.TopSmall}" ToolTip="Depth-damage curve format: depth:damage pairs (e.g., 0:0,1:0.5,3:1). Damage values are clamped to [0,1]."/>
                     <TextBlock Text="{Binding EstimatorSummary}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.StackSmall}"/>
                 </StackPanel>
             </Border>
@@ -116,6 +116,19 @@
                 </StackPanel>
             </Border>
 
+
+            <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
+                <StackPanel>
+                    <TextBlock Text="Analysis summary metrics" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
+                    <DataGrid ItemsSource="{Binding EstimatorSummaryRows}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" MinHeight="120">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Metric" Binding="{Binding Metric}" Width="220"/>
+                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="180"/>
+                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
             <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
                     <TextBlock Text="Comprehensive event report" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>

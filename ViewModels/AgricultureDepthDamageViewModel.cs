@@ -46,10 +46,12 @@ namespace EconToolbox.Desktop.ViewModels
         private readonly RelayCommand _importEstimatorCdlRasterCommand;
         private readonly RelayCommand _importEstimatorDepthRasterCommand;
         private readonly RelayCommand _importEstimatorPolygonShapefileCommand;
+        private readonly FloodImpactAnalysisService _floodImpactAnalysisService = new();
         public ObservableCollection<EstimatorEventRow> EstimatorEvents { get; } = new();
         public ObservableCollection<EstimatorCropRow> EstimatorCropRows { get; } = new();
         public ObservableCollection<EstimatorResultRow> EstimatorResults { get; } = new();
         public ObservableCollection<EstimatorSpatialCropRow> EstimatorSpatialCropRows { get; } = new();
+        public ObservableCollection<EstimatorSummaryRow> EstimatorSummaryRows { get; } = new();
 
         private string _estimatorDefaultCurve = "0:0,1:0.5,2:1";
         private double _estimatorDefaultCropValue = 750;
@@ -1460,6 +1462,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void ComputeFloodDamageEstimator()
         {
             EstimatorResults.Clear();
+            EstimatorSummaryRows.Clear();
 
             if (EstimatorEvents.Count == 0 || EstimatorCropRows.Count == 0)
             {
@@ -1469,76 +1472,46 @@ namespace EconToolbox.Desktop.ViewModels
 
             try
             {
-                var random = new Random(EstimatorRandomSeed);
-                var defaultCurve = ParseDepthDamageCurve(EstimatorDefaultCurve);
-                var eventResults = new List<EstimatorResultRow>();
-                var eadNumerator = 0.0;
+                var spatialDepthLookup = EstimatorSpatialCropRows
+                    .GroupBy(row => row.CropCode)
+                    .ToDictionary(group => group.Key, group => group.First().AverageDepthFeet);
 
-                foreach (var floodEvent in EstimatorEvents)
+                var request = new FloodImpactAnalysisRequest(
+                    EstimatorEvents.Select(evt => new FloodEventInput(evt.Name, evt.DepthFeet, evt.FloodMonth, evt.ReturnPeriodYears)).ToList(),
+                    EstimatorCropRows.Select(crop => new CropImpactInput(
+                        crop.CropCode,
+                        crop.CropName,
+                        crop.EventName,
+                        crop.Acres,
+                        crop.ValuePerAcre,
+                        crop.GrowingMonthsCsv,
+                        crop.SpecificCurve,
+                        spatialDepthLookup.TryGetValue(crop.CropCode, out var avgDepth) ? avgDepth : 0.0)).ToList(),
+                    new FloodImpactUncertaintySettings(
+                        EstimatorDefaultCurve,
+                        EstimatorDefaultCropValue,
+                        EstimatorDamageStdDev,
+                        EstimatorDepthStdDev,
+                        EstimatorValueStdDev,
+                        EstimatorMonteCarloRuns,
+                        EstimatorAnalysisYears,
+                        EstimatorRandomSeed,
+                        EstimatorRandomizeMonth));
+
+                var analysisResult = _floodImpactAnalysisService.Run(request);
+                foreach (var row in analysisResult.Events)
                 {
-                    if (floodEvent.ReturnPeriodYears <= 0)
-                    {
-                        continue;
-                    }
-
-                    var damageSamples = new List<double>(EstimatorMonteCarloRuns * EstimatorAnalysisYears);
-
-                    for (int year = 0; year < EstimatorAnalysisYears; year++)
-                    {
-                        for (int run = 0; run < EstimatorMonteCarloRuns; run++)
-                        {
-                            int sampledMonth = EstimatorRandomizeMonth ? random.Next(1, 13) : floodEvent.FloodMonth;
-                            double totalDamage = 0.0;
-
-                            foreach (var cropRow in EstimatorCropRows.Where(r => string.Equals(r.EventName, floodEvent.Name, StringComparison.OrdinalIgnoreCase)))
-                            {
-                                var months = ParseMonths(cropRow.GrowingMonthsCsv);
-                                if (months.Count > 0 && !months.Contains(sampledMonth))
-                                {
-                                    continue;
-                                }
-
-                                var curve = !string.IsNullOrWhiteSpace(cropRow.SpecificCurve)
-                                    ? ParseDepthDamageCurve(cropRow.SpecificCurve)
-                                    : defaultCurve;
-
-                                var spatial = EstimatorSpatialCropRows.FirstOrDefault(r => r.CropCode == cropRow.CropCode);
-                                double baselineDepth = spatial != null && spatial.AverageDepthFeet > 0 ? spatial.AverageDepthFeet : floodEvent.DepthFeet;
-                                var depthSample = Math.Max(0.0, baselineDepth + NextGaussian(random, 0.0, EstimatorDepthStdDev));
-                                var baseDamage = InterpolateDamage(depthSample, curve);
-                                var noisyDamage = Math.Clamp(baseDamage + NextGaussian(random, 0.0, EstimatorDamageStdDev), 0.0, 1.0);
-
-                                var rawValue = cropRow.ValuePerAcre > 0 ? cropRow.ValuePerAcre : EstimatorDefaultCropValue;
-                                var valueSample = Math.Max(0.0, rawValue * (1.0 + NextGaussian(random, 0.0, EstimatorValueStdDev)));
-                                totalDamage += cropRow.Acres * valueSample * noisyDamage;
-                            }
-
-                            damageSamples.Add(totalDamage);
-                        }
-                    }
-
-                    if (damageSamples.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    damageSamples.Sort();
-                    var mean = damageSamples.Average();
-                    var std = Math.Sqrt(damageSamples.Average(value => Math.Pow(value - mean, 2)));
-                    var p5 = PercentileFromSorted(damageSamples, 0.05);
-                    var p95 = PercentileFromSorted(damageSamples, 0.95);
-                    var discrete = mean / floodEvent.ReturnPeriodYears;
-                    eadNumerator += discrete;
-
-                    eventResults.Add(new EstimatorResultRow(floodEvent.Name, mean, std, p5, p95, discrete));
+                    EstimatorResults.Add(new EstimatorResultRow(row.EventName, row.MeanDamage, row.StdDamage, row.P5Damage, row.P95Damage, row.DiscreteEadContribution));
                 }
 
-                foreach (var row in eventResults.OrderBy(r => r.EventName))
-                {
-                    EstimatorResults.Add(row);
-                }
+                EstimatorSummaryRows.Add(new EstimatorSummaryRow("Events Processed", analysisResult.Summary.EventCount.ToString(CultureInfo.InvariantCulture), "Events with valid return periods included in analysis."));
+                EstimatorSummaryRows.Add(new EstimatorSummaryRow("Crop Rows", analysisResult.Summary.CropCount.ToString(CultureInfo.InvariantCulture), "Crop rows evaluated across all event simulations."));
+                EstimatorSummaryRows.Add(new EstimatorSummaryRow("Samples", analysisResult.Summary.Samples.ToString("N0", CultureInfo.InvariantCulture), "Total Monte Carlo draws = events × years × runs."));
+                EstimatorSummaryRows.Add(new EstimatorSummaryRow("Mean Damage", analysisResult.Summary.TotalMeanDamage.ToString("C0", CultureInfo.CurrentCulture), "Sum of mean damages over all events."));
+                EstimatorSummaryRows.Add(new EstimatorSummaryRow("Discrete EAD", analysisResult.Summary.TotalDiscreteEad.ToString("C0", CultureInfo.CurrentCulture), "Σ(event mean damage ÷ return period)."));
+                EstimatorSummaryRows.Add(new EstimatorSummaryRow("Mean COV", analysisResult.Summary.MeanCoefficientOfVariation.ToString("0.###", CultureInfo.InvariantCulture), "Average coefficient of variation (std/mean) across processed events."));
 
-                EstimatorSummary = $"Estimator complete. {EstimatorResults.Count} events processed. Discrete EAD Σ(Damage/RP) = {eadNumerator:C0}.";
+                EstimatorSummary = $"Estimator complete. {analysisResult.Summary.EventCount} events processed. Discrete EAD Σ(Damage/RP) = {analysisResult.Summary.TotalDiscreteEad:C0}.";
             }
             catch (Exception ex)
             {
@@ -2965,6 +2938,8 @@ namespace EconToolbox.Desktop.ViewModels
             public string GrowingMonthsCsv { get => _growingMonthsCsv; set { _growingMonthsCsv = value; OnPropertyChanged(); } }
             public string SpecificCurve { get => _specificCurve; set { _specificCurve = value; OnPropertyChanged(); } }
         }
+
+        public record EstimatorSummaryRow(string Metric, string Value, string Description);
 
         public record EstimatorResultRow(string EventName, double MeanDamage, double StdDamage, double P5Damage, double P95Damage, double DiscreteEadContribution);
 
