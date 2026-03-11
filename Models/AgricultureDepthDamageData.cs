@@ -25,5 +25,11 @@ namespace EconToolbox.Desktop.Models
         public bool EstimatorRandomizeMonth { get; set; }
         public List<EstimatorEventData> EstimatorEvents { get; set; } = new();
         public List<EstimatorCropData> EstimatorCropRows { get; set; } = new();
+        public string? EstimatorCdlRasterPath { get; set; }
+        public string? EstimatorDepthRasterPath { get; set; }
+        public string? EstimatorPolygonShapefilePath { get; set; }
+        public double EstimatorUniformPolygonDepth { get; set; }
+        public bool EstimatorUsePolygonUniformDepth { get; set; }
+        public List<EstimatorSpatialCropData> EstimatorSpatialCropRows { get; set; } = new();
     }
 }

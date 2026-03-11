@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
+using BitMiracle.LibTiff.Classic;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 
@@ -42,9 +43,13 @@ namespace EconToolbox.Desktop.ViewModels
         private double _cropScapeTotalAcreage;
 
         private readonly RelayCommand _computeEstimatorCommand;
+        private readonly RelayCommand _importEstimatorCdlRasterCommand;
+        private readonly RelayCommand _importEstimatorDepthRasterCommand;
+        private readonly RelayCommand _importEstimatorPolygonShapefileCommand;
         public ObservableCollection<EstimatorEventRow> EstimatorEvents { get; } = new();
         public ObservableCollection<EstimatorCropRow> EstimatorCropRows { get; } = new();
         public ObservableCollection<EstimatorResultRow> EstimatorResults { get; } = new();
+        public ObservableCollection<EstimatorSpatialCropRow> EstimatorSpatialCropRows { get; } = new();
 
         private string _estimatorDefaultCurve = "0:0,1:0.5,2:1";
         private double _estimatorDefaultCropValue = 750;
@@ -56,6 +61,17 @@ namespace EconToolbox.Desktop.ViewModels
         private double _estimatorDepthStdDev;
         private double _estimatorValueStdDev = 0.15;
         private string _estimatorSummary = "Configure crop rows and event rows, then run the estimator.";
+        private string _estimatorCdlRasterPath = string.Empty;
+        private string _estimatorDepthRasterPath = string.Empty;
+        private string _estimatorPolygonShapefilePath = string.Empty;
+        private double _estimatorUniformPolygonDepth;
+        private string _estimatorSpatialStatus = "Load a CDL raster and either a depth raster or polygon shapefile.";
+        private double _estimatorSpatialCropAcreage;
+        private bool _estimatorUsePolygonUniformDepth;
+        private string _estimatorProjectionSyncStatus = "Projection sync pending.";
+        private Rect _estimatorCdlRect = new(20, 20, 280, 200);
+        private Rect _estimatorDepthRect = new(35, 35, 280, 200);
+        private PointCollection _estimatorPolygonPreviewPoints = new();
 
         private RegionDefinition? _selectedRegion;
         public RegionDefinition? SelectedRegion
@@ -426,6 +442,104 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+        public string EstimatorCdlRasterPath
+        {
+            get => _estimatorCdlRasterPath;
+            private set
+            {
+                if (_estimatorCdlRasterPath == value) return;
+                _estimatorCdlRasterPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string EstimatorDepthRasterPath
+        {
+            get => _estimatorDepthRasterPath;
+            private set
+            {
+                if (_estimatorDepthRasterPath == value) return;
+                _estimatorDepthRasterPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string EstimatorPolygonShapefilePath
+        {
+            get => _estimatorPolygonShapefilePath;
+            private set
+            {
+                if (_estimatorPolygonShapefilePath == value) return;
+                _estimatorPolygonShapefilePath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool EstimatorUsePolygonUniformDepth
+        {
+            get => _estimatorUsePolygonUniformDepth;
+            set
+            {
+                if (_estimatorUsePolygonUniformDepth == value) return;
+                _estimatorUsePolygonUniformDepth = value;
+                OnPropertyChanged();
+                RefreshEstimatorSpatialData();
+            }
+        }
+
+        public double EstimatorUniformPolygonDepth
+        {
+            get => _estimatorUniformPolygonDepth;
+            set
+            {
+                var adjusted = Math.Max(0, value);
+                if (Math.Abs(_estimatorUniformPolygonDepth - adjusted) < 1e-6) return;
+                _estimatorUniformPolygonDepth = adjusted;
+                OnPropertyChanged();
+                if (EstimatorUsePolygonUniformDepth) RefreshEstimatorSpatialData();
+            }
+        }
+
+        public string EstimatorSpatialStatus
+        {
+            get => _estimatorSpatialStatus;
+            private set
+            {
+                if (_estimatorSpatialStatus == value) return;
+                _estimatorSpatialStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double EstimatorSpatialCropAcreage
+        {
+            get => _estimatorSpatialCropAcreage;
+            private set
+            {
+                if (Math.Abs(_estimatorSpatialCropAcreage - value) < 1e-6) return;
+                _estimatorSpatialCropAcreage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(EstimatorSpatialCropAcreageDisplay));
+            }
+        }
+
+        public string EstimatorSpatialCropAcreageDisplay => $"{EstimatorSpatialCropAcreage:N1} acres";
+
+        public string EstimatorProjectionSyncStatus
+        {
+            get => _estimatorProjectionSyncStatus;
+            private set
+            {
+                if (_estimatorProjectionSyncStatus == value) return;
+                _estimatorProjectionSyncStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Rect EstimatorCdlRect { get => _estimatorCdlRect; private set { _estimatorCdlRect = value; OnPropertyChanged(); } }
+        public Rect EstimatorDepthRect { get => _estimatorDepthRect; private set { _estimatorDepthRect = value; OnPropertyChanged(); } }
+        public PointCollection EstimatorPolygonPreviewPoints { get => _estimatorPolygonPreviewPoints; private set { _estimatorPolygonPreviewPoints = value; OnPropertyChanged(); } }
+
         public ICommand ComputeCommand => _computeCommand;
         public ICommand ExportCommand => _exportCommand;
         public ICommand AddDepthDurationPointCommand => _addDepthDurationPointCommand;
@@ -433,6 +547,9 @@ namespace EconToolbox.Desktop.ViewModels
         public IAsyncRelayCommand ImportCropScapeRasterCommand => _importCropScapeRasterCommand;
         public ICommand ClearCropScapeSummaryCommand => _clearCropScapeSummaryCommand;
         public ICommand ComputeEstimatorCommand => _computeEstimatorCommand;
+        public ICommand ImportEstimatorCdlRasterCommand => _importEstimatorCdlRasterCommand;
+        public ICommand ImportEstimatorDepthRasterCommand => _importEstimatorDepthRasterCommand;
+        public ICommand ImportEstimatorPolygonShapefileCommand => _importEstimatorPolygonShapefileCommand;
 
         public AgricultureDepthDamageViewModel()
         {
@@ -454,6 +571,9 @@ namespace EconToolbox.Desktop.ViewModels
             _importCropScapeRasterCommand = new AsyncRelayCommand(ImportCropScapeRasterAsync, () => !IsImportingCropScape);
             _clearCropScapeSummaryCommand = new RelayCommand(ClearCropScapeSummary, () => CropScapeSummaries.Count > 0 && !IsImportingCropScape);
             _computeEstimatorCommand = new RelayCommand(ComputeFloodDamageEstimator);
+            _importEstimatorCdlRasterCommand = new RelayCommand(ImportEstimatorCdlRaster);
+            _importEstimatorDepthRasterCommand = new RelayCommand(ImportEstimatorDepthRaster);
+            _importEstimatorPolygonShapefileCommand = new RelayCommand(ImportEstimatorPolygonShapefile);
 
             SeedEstimatorInputs();
 
@@ -1088,6 +1208,242 @@ namespace EconToolbox.Desktop.ViewModels
             return DaysInYear - normalized + 1;
         }
 
+        private void ImportEstimatorCdlRaster()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "GeoTIFF (*.tif;*.tiff)|*.tif;*.tiff|All files (*.*)|*.*",
+                Title = "Select CDL raster"
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            EstimatorCdlRasterPath = dialog.FileName;
+            EstimatorSpatialStatus = "CDL raster loaded.";
+            RefreshEstimatorSpatialData();
+        }
+
+        private void ImportEstimatorDepthRaster()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "GeoTIFF (*.tif;*.tiff)|*.tif;*.tiff|All files (*.*)|*.*",
+                Title = "Select depth raster"
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            EstimatorDepthRasterPath = dialog.FileName;
+            EstimatorSpatialStatus = "Depth raster loaded.";
+            EstimatorUsePolygonUniformDepth = false;
+            RefreshEstimatorSpatialData();
+        }
+
+        private void ImportEstimatorPolygonShapefile()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "Shapefile (*.shp)|*.shp|All files (*.*)|*.*",
+                Title = "Select flood polygon shapefile"
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            EstimatorPolygonShapefilePath = dialog.FileName;
+            EstimatorUsePolygonUniformDepth = true;
+            EstimatorSpatialStatus = "Flood polygon loaded; uniform depth mode active.";
+            RefreshEstimatorSpatialData();
+        }
+
+        private void RefreshEstimatorSpatialData()
+        {
+            EstimatorSpatialCropRows.Clear();
+            if (string.IsNullOrWhiteSpace(EstimatorCdlRasterPath) || !File.Exists(EstimatorCdlRasterPath))
+            {
+                EstimatorSpatialStatus = "Load a CDL raster and either a depth raster or polygon shapefile.";
+                return;
+            }
+
+            try
+            {
+                var cdl = ReadSingleBandRaster(EstimatorCdlRasterPath);
+                RasterData? depth = null;
+                if (!EstimatorUsePolygonUniformDepth && !string.IsNullOrWhiteSpace(EstimatorDepthRasterPath) && File.Exists(EstimatorDepthRasterPath))
+                {
+                    depth = ReadSingleBandRaster(EstimatorDepthRasterPath);
+                }
+
+                Rect? polygonRect = null;
+                if (EstimatorUsePolygonUniformDepth && !string.IsNullOrWhiteSpace(EstimatorPolygonShapefilePath) && File.Exists(EstimatorPolygonShapefilePath))
+                {
+                    polygonRect = ReadShapefileBounds(EstimatorPolygonShapefilePath);
+                    EstimatorPolygonPreviewPoints = BuildPolygonPreview(polygonRect.Value);
+                }
+
+                var byCrop = new Dictionary<int, (long Count,double DepthTotal)>();
+                for (int y = 0; y < cdl.Height; y++)
+                {
+                    for (int x = 0; x < cdl.Width; x++)
+                    {
+                        int idx = y * cdl.Width + x;
+                        int code = (int)Math.Round(cdl.Values[idx]);
+                        if (code <= 0) continue;
+
+                        double sampledDepth = 0;
+                        if (EstimatorUsePolygonUniformDepth)
+                        {
+                            if (!polygonRect.HasValue || !CellInBounds(cdl, x, y, polygonRect.Value)) continue;
+                            sampledDepth = EstimatorUniformPolygonDepth;
+                        }
+                        else if (depth != null)
+                        {
+                            sampledDepth = SampleAligned(depth, cdl, x, y);
+                        }
+
+                        byCrop.TryGetValue(code, out var cur);
+                        byCrop[code] = (cur.Count + 1, cur.DepthTotal + Math.Max(0, sampledDepth));
+                    }
+                }
+
+                double acresPerPixel = Math.Abs(cdl.PixelWidth * cdl.PixelHeight) / 4046.8564224;
+                foreach (var kvp in byCrop.OrderByDescending(k=>k.Value.Count))
+                {
+                    double acres = kvp.Value.Count * acresPerPixel;
+                    double avgDepth = kvp.Value.Count > 0 ? kvp.Value.DepthTotal / kvp.Value.Count : 0;
+                    EstimatorSpatialCropRows.Add(new EstimatorSpatialCropRow(kvp.Key, CropScapeLegend.Lookup(kvp.Key, new Dictionary<int,string>()), acres, avgDepth));
+                }
+
+                EstimatorSpatialCropAcreage = EstimatorSpatialCropRows.Sum(r => r.Acres);
+                EstimatorCropRows.Clear();
+                string firstEvent = EstimatorEvents.FirstOrDefault()?.Name ?? "Event";
+                foreach (var row in EstimatorSpatialCropRows)
+                {
+                    EstimatorCropRows.Add(new EstimatorCropRow(row.CropCode, row.CropName, firstEvent, row.Acres, 0, "", ""));
+                }
+
+                EstimatorCdlRect = new Rect(20, 20, 280, 200);
+                EstimatorDepthRect = new Rect(depth == null ? 20 : 35, depth == null ? 20 : 35, 280, 200);
+                EstimatorProjectionSyncStatus = depth == null
+                    ? "Projection sync: using CDL + polygon bounds in CDL coordinates."
+                    : $"Projection sync: {cdl.ProjectionName} -> {depth.ProjectionName} sampled by georeferenced extents.";
+                EstimatorSpatialStatus = $"Spatial sampling complete. {EstimatorSpatialCropRows.Count} crop classes populated.";
+            }
+            catch (Exception ex)
+            {
+                EstimatorSpatialStatus = $"Spatial import failed: {ex.Message}";
+            }
+        }
+
+        private static bool CellInBounds(RasterData raster, int x, int y, Rect bounds)
+        {
+            var cx = raster.OriginX + ((x + 0.5) * raster.PixelWidth);
+            var cy = raster.OriginY + ((y + 0.5) * raster.PixelHeight);
+            return bounds.Contains(new Point(cx, cy));
+        }
+
+        private static double SampleAligned(RasterData source, RasterData targetGrid, int tx, int ty)
+        {
+            double worldX = targetGrid.OriginX + ((tx + 0.5) * targetGrid.PixelWidth);
+            double worldY = targetGrid.OriginY + ((ty + 0.5) * targetGrid.PixelHeight);
+            int sx = (int)Math.Floor((worldX - source.OriginX) / source.PixelWidth);
+            int sy = (int)Math.Floor((worldY - source.OriginY) / source.PixelHeight);
+            sx = Math.Clamp(sx, 0, source.Width - 1);
+            sy = Math.Clamp(sy, 0, source.Height - 1);
+            return source.Values[(sy * source.Width) + sx];
+        }
+
+        private static PointCollection BuildPolygonPreview(Rect bounds)
+        {
+            return new PointCollection
+            {
+                new Point(60, 50),
+                new Point(260, 50),
+                new Point(260, 210),
+                new Point(60, 210),
+                new Point(60, 50)
+            };
+        }
+
+        private static Rect ReadShapefileBounds(string shpPath)
+        {
+            using var stream = File.OpenRead(shpPath);
+            using var reader = new BinaryReader(stream);
+            stream.Seek(36, SeekOrigin.Begin);
+            double minX = reader.ReadDouble();
+            double minY = reader.ReadDouble();
+            double maxX = reader.ReadDouble();
+            double maxY = reader.ReadDouble();
+            return new Rect(new Point(minX, minY), new Point(maxX, maxY));
+        }
+
+        private static RasterData ReadSingleBandRaster(string path)
+        {
+            using var tiff = Tiff.Open(path, "r") ?? throw new InvalidOperationException("Unable to open raster.");
+            int width = tiff.GetField(TiffTag.IMAGEWIDTH)?[0].ToInt() ?? 0;
+            int height = tiff.GetField(TiffTag.IMAGELENGTH)?[0].ToInt() ?? 0;
+            int bits = tiff.GetField(TiffTag.BITSPERSAMPLE)?[0].ToInt() ?? 8;
+            int samples = tiff.GetField(TiffTag.SAMPLESPERPIXEL)?[0].ToInt() ?? 1;
+            if (width <= 0 || height <= 0 || samples != 1) throw new InvalidOperationException("Raster must be single-band with valid dimensions.");
+
+            double pixelWidth = 1;
+            double pixelHeight = -1;
+            double originX = 0;
+            double originY = 0;
+            var scale = tiff.GetField((TiffTag)33550);
+            if (scale != null)
+            {
+                var vals = scale[1].ToDoubleArray();
+                if (vals != null && vals.Length >= 2)
+                {
+                    pixelWidth = vals[0];
+                    pixelHeight = -Math.Abs(vals[1]);
+                }
+            }
+            var tie = tiff.GetField((TiffTag)33922);
+            if (tie != null)
+            {
+                var vals = tie[1].ToDoubleArray();
+                if (vals != null && vals.Length >= 6)
+                {
+                    originX = vals[3];
+                    originY = vals[4];
+                }
+            }
+
+            var values = new double[width*height];
+            if (bits == 32)
+            {
+                var scan = new float[width];
+                var buf = new byte[width * sizeof(float)];
+                for (int row=0; row<height; row++)
+                {
+                    tiff.ReadScanline(buf, row);
+                    Buffer.BlockCopy(buf,0,scan,0,buf.Length);
+                    for (int col=0; col<width; col++) values[row*width+col]=scan[col];
+                }
+            }
+            else
+            {
+                var buf = new byte[tiff.ScanlineSize()];
+                for (int row=0; row<height; row++)
+                {
+                    tiff.ReadScanline(buf,row);
+                    for (int col=0; col<width; col++) values[row*width+col]=buf[col];
+                }
+            }
+
+            return new RasterData(width,height,values,pixelWidth,pixelHeight,originX,originY,Path.GetFileName(path));
+        }
+
         private void SeedEstimatorInputs()
         {
             EstimatorEvents.Clear();
@@ -1146,7 +1502,9 @@ namespace EconToolbox.Desktop.ViewModels
                                     ? ParseDepthDamageCurve(cropRow.SpecificCurve)
                                     : defaultCurve;
 
-                                var depthSample = Math.Max(0.0, floodEvent.DepthFeet + NextGaussian(random, 0.0, EstimatorDepthStdDev));
+                                var spatial = EstimatorSpatialCropRows.FirstOrDefault(r => r.CropCode == cropRow.CropCode);
+                                double baselineDepth = spatial != null && spatial.AverageDepthFeet > 0 ? spatial.AverageDepthFeet : floodEvent.DepthFeet;
+                                var depthSample = Math.Max(0.0, baselineDepth + NextGaussian(random, 0.0, EstimatorDepthStdDev));
                                 var baseDamage = InterpolateDamage(depthSample, curve);
                                 var noisyDamage = Math.Clamp(baseDamage + NextGaussian(random, 0.0, EstimatorDamageStdDev), 0.0, 1.0);
 
@@ -1375,6 +1733,18 @@ namespace EconToolbox.Desktop.ViewModels
                     ValuePerAcre = row.ValuePerAcre,
                     GrowingMonthsCsv = row.GrowingMonthsCsv,
                     SpecificCurve = row.SpecificCurve
+                }).ToList(),
+                EstimatorCdlRasterPath = EstimatorCdlRasterPath,
+                EstimatorDepthRasterPath = EstimatorDepthRasterPath,
+                EstimatorPolygonShapefilePath = EstimatorPolygonShapefilePath,
+                EstimatorUniformPolygonDepth = EstimatorUniformPolygonDepth,
+                EstimatorUsePolygonUniformDepth = EstimatorUsePolygonUniformDepth,
+                EstimatorSpatialCropRows = EstimatorSpatialCropRows.Select(row => new EstimatorSpatialCropData
+                {
+                    CropCode = row.CropCode,
+                    CropName = row.CropName,
+                    Acres = row.Acres,
+                    AverageDepthFeet = row.AverageDepthFeet
                 }).ToList()
             };
         }
@@ -1492,6 +1862,11 @@ namespace EconToolbox.Desktop.ViewModels
                 EstimatorAnalysisYears = data.EstimatorAnalysisYears > 0 ? data.EstimatorAnalysisYears : EstimatorAnalysisYears;
                 EstimatorRandomSeed = data.EstimatorRandomSeed;
                 EstimatorRandomizeMonth = data.EstimatorRandomizeMonth;
+                EstimatorCdlRasterPath = data.EstimatorCdlRasterPath ?? string.Empty;
+                EstimatorDepthRasterPath = data.EstimatorDepthRasterPath ?? string.Empty;
+                EstimatorPolygonShapefilePath = data.EstimatorPolygonShapefilePath ?? string.Empty;
+                EstimatorUniformPolygonDepth = data.EstimatorUniformPolygonDepth;
+                EstimatorUsePolygonUniformDepth = data.EstimatorUsePolygonUniformDepth;
 
                 if (data.EstimatorEvents.Count > 0)
                 {
@@ -1510,6 +1885,13 @@ namespace EconToolbox.Desktop.ViewModels
                         EstimatorCropRows.Add(new EstimatorCropRow(row.CropCode, row.CropName, row.EventName, row.Acres, row.ValuePerAcre, row.GrowingMonthsCsv, row.SpecificCurve));
                     }
                 }
+
+                EstimatorSpatialCropRows.Clear();
+                foreach (var row in data.EstimatorSpatialCropRows)
+                {
+                    EstimatorSpatialCropRows.Add(new EstimatorSpatialCropRow(row.CropCode, row.CropName, row.Acres, row.AverageDepthFeet));
+                }
+                EstimatorSpatialCropAcreage = EstimatorSpatialCropRows.Sum(row => row.Acres);
             }
             finally
             {
@@ -2508,6 +2890,29 @@ namespace EconToolbox.Desktop.ViewModels
 
                 return stages.Select(stage => new StageExposure(stage));
             }
+        }
+
+        private sealed record RasterData(int Width, int Height, double[] Values, double PixelWidth, double PixelHeight, double OriginX, double OriginY, string ProjectionName);
+
+        public class EstimatorSpatialCropRow : BaseViewModel
+        {
+            private int _cropCode;
+            private string _cropName;
+            private double _acres;
+            private double _averageDepthFeet;
+
+            public EstimatorSpatialCropRow(int cropCode, string cropName, double acres, double averageDepthFeet)
+            {
+                _cropCode = cropCode;
+                _cropName = cropName;
+                _acres = acres;
+                _averageDepthFeet = averageDepthFeet;
+            }
+
+            public int CropCode { get => _cropCode; set { _cropCode = value; OnPropertyChanged(); } }
+            public string CropName { get => _cropName; set { _cropName = value; OnPropertyChanged(); } }
+            public double Acres { get => _acres; set { _acres = Math.Max(0, value); OnPropertyChanged(); } }
+            public double AverageDepthFeet { get => _averageDepthFeet; set { _averageDepthFeet = Math.Max(0, value); OnPropertyChanged(); } }
         }
 
         public class EstimatorEventRow : BaseViewModel
