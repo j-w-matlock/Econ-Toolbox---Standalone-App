@@ -148,7 +148,7 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
         }
 
         yield return new DiagnosticItem(
-            DiagnosticLevel.Success,
+            DiagnosticLevel.Info,
             "Traffic delay impacts updated",
             $"Total traffic impacts are currently {TotalTrafficImpacts:C0} for the selected scenario.");
     }
