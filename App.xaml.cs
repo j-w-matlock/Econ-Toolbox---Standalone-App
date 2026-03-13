@@ -106,6 +106,7 @@ namespace EconToolbox.Desktop
                     services.AddTransient<ConceptualModelViewModel>();
                     services.AddTransient<StageDamageOrganizerViewModel>();
                     services.AddTransient<UncertaintyStatisticsViewModel>();
+                    services.AddTransient<TrafficDelayAnalysisViewModel>();
 
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<MainWindow>();
