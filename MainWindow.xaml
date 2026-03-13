@@ -484,9 +484,11 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
+                    <!-- Project Manager is intentionally disabled for now. Keep control wiring for easy re-enable. -->
                     <Expander Header="Project Manager"
                               IsExpanded="False"
-                              Margin="{StaticResource Margin.BottomMedium}">
+                              Margin="{StaticResource Margin.BottomMedium}"
+                              Visibility="{Binding IsProjectManagerEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
                         <local:ProjectView DataContext="{Binding ProjectManager}"/>
                     </Expander>
                     <ContentControl Grid.Row="1"
