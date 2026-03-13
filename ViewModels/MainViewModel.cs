@@ -16,12 +16,18 @@ namespace EconToolbox.Desktop.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
+        // Temporary module switches.
+        // NOTE: Keep these modules' code intact while disabled so they can be re-enabled quickly.
+        private const bool EnableAgricultureDepthDamageModule = false;
+        private const bool EnableProjectManagerModule = false;
+
         private const double DefaultExplorerPaneWidth = 280;
         private const double DefaultDetailsPaneWidth = 340;
         public ModuleDefinition ReadMeModule { get; }
         public IReadOnlyList<ModuleDefinition> Modules { get; }
         public ObservableCollection<DiagnosticItem> Diagnostics { get; } = new();
         public ProjectViewModel ProjectManager { get; }
+        public bool IsProjectManagerEnabled => EnableProjectManagerModule;
 
         private ModuleDefinition? _selectedModule;
         private ModuleDefinition? _explorerSelectedModule;
@@ -276,7 +282,7 @@ namespace EconToolbox.Desktop.ViewModels
                 "Example: Quickly scan the packaging checklist before exporting deliverables for a stakeholder workshop.",
                 typeof(ReadMeViewModel));
 
-            Modules = new List<ModuleDefinition>
+            var modules = new List<ModuleDefinition>
             {
                 new ModuleDefinition(
                     "Expected Annual Damage (EAD)",
@@ -296,24 +302,6 @@ namespace EconToolbox.Desktop.ViewModels
                     },
                     "Example: The Cedar River levee district pairs 0.5, 0.1, and 0.01 annual exceedance probabilities with $250K, $1.2M, and $6.8M structure damage estimates captured in its 2019 flood study.",
                     typeof(EadViewModel)),
-                new ModuleDefinition(
-                    "Agriculture Depth-Damage",
-                    "Calibrate crop and structure damages for agricultural assets using custom depth-damage relationships.",
-                    "Simulates agricultural depth-damage relationships with Monte Carlo-driven results.",
-                    new[]
-                    {
-                        "Enter annual exceedance probabilities as decimal values between 0 and 1 for each point on the curve.",
-                        "Pair each probability with the representative flood depth and percent damage for your custom region.",
-                        "Use Add/Remove Row to adjust the table before running the Monte Carlo simulation."
-                    },
-                    new[]
-                    {
-                        "Runs a Monte Carlo simulation that interpolates across your exceedance probabilities.",
-                        "Summarizes mean, median, and 90th percentile damages alongside inundation depths.",
-                        "Plots the resulting depth-damage function so you can visually confirm curve behavior."
-                    },
-                    "Example: A delta farm pairs 0.5, 0.1, and 0.02 annual exceedance probabilities with 0 ft, 1.5 ft, and 3.5 ft flood depths causing 0%, 25%, and 75% damages respectively.",
-                    typeof(AgricultureDepthDamageViewModel)),
                 new ModuleDefinition(
                     "Updated Cost of Storage",
                     "Update historical costs and allocate joint expenses based on storage recommendations.",
@@ -496,6 +484,13 @@ namespace EconToolbox.Desktop.ViewModels
                     typeof(TrafficDelayAnalysisViewModel))
             };
 
+            if (EnableAgricultureDepthDamageModule)
+            {
+                modules.Insert(1, CreateAgricultureDepthDamageModule());
+            }
+
+            Modules = modules;
+
             ApplyLayoutSettings();
             ExplorerSelectedModule = Modules.Count > 0 ? Modules[0] : null;
             SelectedModule ??= ExplorerSelectedModule;
@@ -652,7 +647,7 @@ namespace EconToolbox.Desktop.ViewModels
                 try
                 {
                     var ead = GetModuleViewModel<EadViewModel>();
-                    var agricultureDepthDamage = GetModuleViewModel<AgricultureDepthDamageViewModel>();
+                    // Temporarily skip the Agriculture Depth-Damage module while it is deactivated.
                     var updatedCost = GetModuleViewModel<UpdatedCostViewModel>();
                     var annualizer = GetModuleViewModel<AnnualizerViewModel>();
                     var waterDemand = GetModuleViewModel<WaterDemandViewModel>();
@@ -665,7 +660,6 @@ namespace EconToolbox.Desktop.ViewModels
                         ead.ForceCompute();
                     }
                     RefreshExportData(
-                        agricultureDepthDamage,
                         updatedCost,
                         annualizer,
                         waterDemand,
@@ -674,7 +668,9 @@ namespace EconToolbox.Desktop.ViewModels
                         gantt);
                     await Task.Run(() => _excelExportService.ExportAll(
                         ead,
-                        agricultureDepthDamage,
+                        EnableAgricultureDepthDamageModule
+                            ? GetModuleViewModel<AgricultureDepthDamageViewModel>()
+                            : new AgricultureDepthDamageViewModel(_appProgressService),
                         updatedCost,
                         annualizer,
                         waterDemand,
@@ -709,7 +705,10 @@ namespace EconToolbox.Desktop.ViewModels
                 var project = new EconToolboxProject
                 {
                     Ead = CaptureState<EadData>(GetModuleViewModel<EadViewModel>()),
-                    AgricultureDepthDamage = CaptureState<AgricultureDepthDamageData>(GetModuleViewModel<AgricultureDepthDamageViewModel>()),
+                    // Preserve project schema, but intentionally skip Agriculture Depth-Damage state while disabled.
+                    AgricultureDepthDamage = EnableAgricultureDepthDamageModule
+                        ? CaptureState<AgricultureDepthDamageData>(GetModuleViewModel<AgricultureDepthDamageViewModel>())
+                        : null,
                     UpdatedCost = CaptureState<UpdatedCostData>(GetModuleViewModel<UpdatedCostViewModel>()),
                     Annualizer = CaptureState<AnnualizerData>(GetModuleViewModel<AnnualizerViewModel>()),
                     WaterDemand = CaptureState<WaterDemandData>(GetModuleViewModel<WaterDemandViewModel>()),
@@ -753,7 +752,10 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 RestoreState(GetModuleViewModel<EadViewModel>(), project.Ead);
-                RestoreState(GetModuleViewModel<AgricultureDepthDamageViewModel>(), project.AgricultureDepthDamage);
+                if (EnableAgricultureDepthDamageModule)
+                {
+                    RestoreState(GetModuleViewModel<AgricultureDepthDamageViewModel>(), project.AgricultureDepthDamage);
+                }
                 RestoreState(GetModuleViewModel<UpdatedCostViewModel>(), project.UpdatedCost);
                 RestoreState(GetModuleViewModel<AnnualizerViewModel>(), project.Annualizer);
                 RestoreState(GetModuleViewModel<WaterDemandViewModel>(), project.WaterDemand);
@@ -803,7 +805,6 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         private void RefreshExportData(
-            AgricultureDepthDamageViewModel agricultureDepthDamage,
             UpdatedCostViewModel updatedCost,
             AnnualizerViewModel annualizer,
             WaterDemandViewModel waterDemand,
@@ -811,11 +812,6 @@ namespace EconToolbox.Desktop.ViewModels
             RecreationCapacityViewModel recreationCapacity,
             GanttViewModel gantt)
         {
-            if (agricultureDepthDamage.IsDirty)
-            {
-                ExecuteComputeCommand(agricultureDepthDamage.ComputeCommand);
-            }
-
             if (updatedCost.IsDirty)
             {
                 ExecuteComputeCommand(updatedCost.ComputeCommand);
@@ -915,6 +911,28 @@ namespace EconToolbox.Desktop.ViewModels
             var created = (T)_viewModelFactory.Create(typeof(T));
             _viewModelCache[typeof(T)] = created;
             return created;
+        }
+
+        private static ModuleDefinition CreateAgricultureDepthDamageModule()
+        {
+            return new ModuleDefinition(
+                "Agriculture Depth-Damage",
+                "Calibrate crop and structure damages for agricultural assets using custom depth-damage relationships.",
+                "Simulates agricultural depth-damage relationships with Monte Carlo-driven results.",
+                new[]
+                {
+                    "Enter annual exceedance probabilities as decimal values between 0 and 1 for each point on the curve.",
+                    "Pair each probability with the representative flood depth and percent damage for your custom region.",
+                    "Use Add/Remove Row to adjust the table before running the Monte Carlo simulation."
+                },
+                new[]
+                {
+                    "Runs a Monte Carlo simulation that interpolates across your exceedance probabilities.",
+                    "Summarizes mean, median, and 90th percentile damages alongside inundation depths.",
+                    "Plots the resulting depth-damage function so you can visually confirm curve behavior."
+                },
+                "Example: A delta farm pairs 0.5, 0.1, and 0.02 annual exceedance probabilities with 0 ft, 1.5 ft, and 3.5 ft flood depths causing 0%, 25%, and 75% damages respectively.",
+                typeof(AgricultureDepthDamageViewModel));
         }
     }
 }
