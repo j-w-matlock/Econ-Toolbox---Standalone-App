@@ -38,6 +38,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Duration of flooding (days)" Grid.Row="0" Margin="0,0,10,8"/>
                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DurationOfFloodingDays, UpdateSourceTrigger=PropertyChanged}"/>
@@ -51,8 +54,14 @@
                     <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding TotalPassengers, UpdateSourceTrigger=PropertyChanged}"/>
                     <TextBlock Text="Operating cost per mile" Grid.Row="5" Margin="0,0,10,8"/>
                     <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding OperatingCostPerMile, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Median household income" Grid.Row="6" Margin="0,0,10,0"/>
+                    <TextBlock Text="Median household income" Grid.Row="6" Margin="0,0,10,8"/>
                     <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding MedianHouseholdIncome, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="AEP that causes delay (optional)" Grid.Row="7" Margin="0,0,10,8"/>
+                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding AepThatCausesDelay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="Discount rate % (optional)" Grid.Row="8" Margin="0,0,10,8"/>
+                    <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding DiscountRatePercent, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="Period of analysis (years, optional)" Grid.Row="9" Margin="0,0,10,0"/>
+                    <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding AnalysisPeriodYears, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Border>
 
@@ -93,6 +102,10 @@
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalDelayImpacts, StringFormat={}{0:C2}}"/>
                     <TextBlock Margin="0,8,0,0" Text="Total traffic impacts"/>
                     <TextBlock Style="{StaticResource Text.SectionTitleAccent}" Text="{Binding TotalTrafficImpacts, StringFormat={}{0:C2}}"/>
+                    <TextBlock Margin="0,10,0,0" Text="Annualized traffic impacts (AEP-adjusted)"/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AnnualizedTrafficImpacts, StringFormat={}{0:C2}}"/>
+                    <TextBlock Margin="0,8,0,0" Text="Discounted total over analysis period"/>
+                    <TextBlock Style="{StaticResource Text.SectionTitleAccent}" Text="{Binding DiscountedTrafficImpactsOverAnalysisPeriod, StringFormat={}{0:C2}}"/>
                 </StackPanel>
             </Border>
         </StackPanel>

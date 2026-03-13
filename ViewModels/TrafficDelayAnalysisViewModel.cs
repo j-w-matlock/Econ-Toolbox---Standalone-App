@@ -15,6 +15,9 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
     private double _totalPassengers = 1.5;
     private double _operatingCostPerMile = 0.33;
     private double _medianHouseholdIncome = 66250;
+    private double _aepThatCausesDelay;
+    private double _discountRatePercent;
+    private double _analysisPeriodYears;
 
     public ICommand ComputeCommand { get; }
 
@@ -108,6 +111,42 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
         }
     }
 
+    public double AepThatCausesDelay
+    {
+        get => _aepThatCausesDelay;
+        set
+        {
+            if (SetNumericField(ref _aepThatCausesDelay, value))
+            {
+                Recalculate();
+            }
+        }
+    }
+
+    public double DiscountRatePercent
+    {
+        get => _discountRatePercent;
+        set
+        {
+            if (SetNumericField(ref _discountRatePercent, value))
+            {
+                Recalculate();
+            }
+        }
+    }
+
+    public double AnalysisPeriodYears
+    {
+        get => _analysisPeriodYears;
+        set
+        {
+            if (SetNumericField(ref _analysisPeriodYears, value))
+            {
+                Recalculate();
+            }
+        }
+    }
+
     public double HourlyIncome { get; private set; }
     public double AdditionalMilesPerVehicle { get; private set; }
     public double TotalAdditionalMileage { get; private set; }
@@ -129,6 +168,8 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
     public double DelayImpactsPerDay { get; private set; }
     public double TotalDelayImpacts { get; private set; }
     public double TotalTrafficImpacts { get; private set; }
+    public double AnnualizedTrafficImpacts { get; private set; }
+    public double DiscountedTrafficImpactsOverAnalysisPeriod { get; private set; }
 
     protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
     {
@@ -145,6 +186,21 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
         if (AlternativeRouteMiles < OriginalRouteMiles)
         {
             yield return new DiagnosticItem(DiagnosticLevel.Info, "Alternative route is shorter", "The alternative route is shorter than the original route, resulting in negative detour mileage.");
+        }
+
+        if (AepThatCausesDelay < 0)
+        {
+            yield return new DiagnosticItem(DiagnosticLevel.Warning, "AEP is negative", "AEP that causes delay should be zero or greater.");
+        }
+
+        if (DiscountRatePercent < 0)
+        {
+            yield return new DiagnosticItem(DiagnosticLevel.Warning, "Discount rate is negative", "Discount rate should be zero or greater when annualizing impacts.");
+        }
+
+        if (AnalysisPeriodYears < 0)
+        {
+            yield return new DiagnosticItem(DiagnosticLevel.Warning, "Analysis period is negative", "Analysis period should be zero or greater years.");
         }
 
         yield return new DiagnosticItem(
@@ -178,6 +234,12 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
         TotalDelayImpacts = DelayImpactsPerDay * DurationOfFloodingDays;
         TotalTrafficImpacts = TotalDelayImpacts + TotalAdditionalDetourCosts;
 
+        AnnualizedTrafficImpacts = TotalTrafficImpacts * Math.Max(0, AepThatCausesDelay);
+        DiscountedTrafficImpactsOverAnalysisPeriod = CalculateDiscountedAnnualSeries(
+            AnnualizedTrafficImpacts,
+            Math.Max(0, DiscountRatePercent) / 100d,
+            Math.Max(0, AnalysisPeriodYears));
+
         NotifyCalculatedProperties();
         RefreshDiagnostics();
     }
@@ -201,6 +263,23 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
         OnPropertyChanged(nameof(DelayImpactsPerDay));
         OnPropertyChanged(nameof(TotalDelayImpacts));
         OnPropertyChanged(nameof(TotalTrafficImpacts));
+        OnPropertyChanged(nameof(AnnualizedTrafficImpacts));
+        OnPropertyChanged(nameof(DiscountedTrafficImpactsOverAnalysisPeriod));
+    }
+
+    private static double CalculateDiscountedAnnualSeries(double annualValue, double discountRate, double years)
+    {
+        if (annualValue <= 0 || years <= 0)
+        {
+            return 0;
+        }
+
+        if (Math.Abs(discountRate) < 0.000001)
+        {
+            return annualValue * years;
+        }
+
+        return annualValue * ((1 - Math.Pow(1 + discountRate, -years)) / discountRate);
     }
 
     private bool SetNumericField(ref double field, double value)
