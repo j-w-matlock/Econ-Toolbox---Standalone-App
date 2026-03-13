@@ -171,6 +171,81 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
     public double AnnualizedTrafficImpacts { get; private set; }
     public double DiscountedTrafficImpactsOverAnalysisPeriod { get; private set; }
 
+    public string AdditionalMilesPerVehicleFormula =>
+        $"{AlternativeRouteMiles:N2} - {OriginalRouteMiles:N2} = {AdditionalMilesPerVehicle:N2} mi/vehicle";
+
+    public string TotalAdditionalMileageFormula =>
+        $"{TrafficCountForFloodingPeriod:N2} × {AdditionalMilesPerVehicle:N2} = {TotalAdditionalMileage:N2} mi";
+
+    public string AdditionalOperatingCostsPerDayFormula =>
+        $"{TotalAdditionalMileage:N2} × {OperatingCostPerMile:C2}/mi = {AdditionalOperatingCostsPerDay:C2}/day";
+
+    public string TotalAdditionalDetourCostsFormula =>
+        $"{AdditionalOperatingCostsPerDay:C2} × {DurationOfFloodingDays:N2} days = {TotalAdditionalDetourCosts:C2}";
+
+    public string HourlyIncomeFormula =>
+        $"{MedianHouseholdIncome:C2} ÷ {HoursPerWorkYear:N0} hrs = {HourlyIncome:C2}/hr";
+
+    public string LowTimeSavingsWorkTripsValueFormula =>
+        $"{HourlyIncome:C2} × 0.064 = {LowTimeSavingsWorkTripsValue:C2}";
+
+    public string LowTimeSavingsSocialRecreationValueFormula =>
+        $"{HourlyIncome:C2} × 0.013 = {LowTimeSavingsSocialRecreationValue:C2}";
+
+    public string LowTimeSavingsOtherValueFormula =>
+        $"{LowTimeSavingsSocialRecreationValue:C2} × 0.001 = {LowTimeSavingsOtherValue:C4}";
+
+    public string MediumTimeSavingsWorkTripsValueFormula =>
+        $"{HourlyIncome:C2} × 0.322 = {MediumTimeSavingsWorkTripsValue:C2}";
+
+    public string MediumTimeSavingsSocialRecreationValueFormula =>
+        $"{HourlyIncome:C2} × 0.231 = {MediumTimeSavingsSocialRecreationValue:C2}";
+
+    public string MediumTimeSavingsOtherValueFormula =>
+        $"{HourlyIncome:C2} × 0.145 = {MediumTimeSavingsOtherValue:C2}";
+
+    public string HighTimeSavingsWorkTripsValueFormula =>
+        $"{HourlyIncome:C2} × 0.538 = {HighTimeSavingsWorkTripsValue:C2}";
+
+    public string HighTimeSavingsSocialRecreationValueFormula =>
+        $"{HourlyIncome:C2} × 0.600 = {HighTimeSavingsSocialRecreationValue:C2}";
+
+    public string HighTimeSavingsOtherValueFormula =>
+        $"{HourlyIncome:C2} × 0.645 = {HighTimeSavingsOtherValue:C2}";
+
+    public string DelayImpactsPerDayFormula =>
+        $"{HighTimeSavingsWorkTripsValue:C2} × {TrafficCountForFloodingPeriod:N2} × {TotalPassengers:N2} = {DelayImpactsPerDay:C2}/day";
+
+    public string TotalDelayImpactsFormula =>
+        $"{DelayImpactsPerDay:C2} × {DurationOfFloodingDays:N2} days = {TotalDelayImpacts:C2}";
+
+    public string TotalTrafficImpactsFormula =>
+        $"{TotalDelayImpacts:C2} + {TotalAdditionalDetourCosts:C2} = {TotalTrafficImpacts:C2}";
+
+    public string AnnualizedTrafficImpactsFormula =>
+        $"{TotalTrafficImpacts:C2} × max(0, {AepThatCausesDelay:N4}) = {AnnualizedTrafficImpacts:C2}";
+
+    public string DiscountedTrafficImpactsOverAnalysisPeriodFormula
+    {
+        get
+        {
+            var rate = Math.Max(0, DiscountRatePercent) / 100d;
+            var years = Math.Max(0, AnalysisPeriodYears);
+
+            if (AnnualizedTrafficImpacts <= 0 || years <= 0)
+            {
+                return $"No discounted series applied because annualized impacts ({AnnualizedTrafficImpacts:C2}) or years ({years:N2}) are zero.";
+            }
+
+            if (Math.Abs(rate) < 0.000001)
+            {
+                return $"{AnnualizedTrafficImpacts:C2} × {years:N2} years = {DiscountedTrafficImpactsOverAnalysisPeriod:C2}";
+            }
+
+            return $"{AnnualizedTrafficImpacts:C2} × ((1 - (1 + {rate:P4})^-{years:N2}) ÷ {rate:P4}) = {DiscountedTrafficImpactsOverAnalysisPeriod:C2}";
+        }
+    }
+
     protected override IEnumerable<DiagnosticItem> BuildDiagnostics()
     {
         if (DurationOfFloodingDays < 0)
@@ -265,6 +340,25 @@ public class TrafficDelayAnalysisViewModel : DiagnosticViewModelBase, IComputeMo
         OnPropertyChanged(nameof(TotalTrafficImpacts));
         OnPropertyChanged(nameof(AnnualizedTrafficImpacts));
         OnPropertyChanged(nameof(DiscountedTrafficImpactsOverAnalysisPeriod));
+        OnPropertyChanged(nameof(AdditionalMilesPerVehicleFormula));
+        OnPropertyChanged(nameof(TotalAdditionalMileageFormula));
+        OnPropertyChanged(nameof(AdditionalOperatingCostsPerDayFormula));
+        OnPropertyChanged(nameof(TotalAdditionalDetourCostsFormula));
+        OnPropertyChanged(nameof(HourlyIncomeFormula));
+        OnPropertyChanged(nameof(LowTimeSavingsWorkTripsValueFormula));
+        OnPropertyChanged(nameof(LowTimeSavingsSocialRecreationValueFormula));
+        OnPropertyChanged(nameof(LowTimeSavingsOtherValueFormula));
+        OnPropertyChanged(nameof(MediumTimeSavingsWorkTripsValueFormula));
+        OnPropertyChanged(nameof(MediumTimeSavingsSocialRecreationValueFormula));
+        OnPropertyChanged(nameof(MediumTimeSavingsOtherValueFormula));
+        OnPropertyChanged(nameof(HighTimeSavingsWorkTripsValueFormula));
+        OnPropertyChanged(nameof(HighTimeSavingsSocialRecreationValueFormula));
+        OnPropertyChanged(nameof(HighTimeSavingsOtherValueFormula));
+        OnPropertyChanged(nameof(DelayImpactsPerDayFormula));
+        OnPropertyChanged(nameof(TotalDelayImpactsFormula));
+        OnPropertyChanged(nameof(TotalTrafficImpactsFormula));
+        OnPropertyChanged(nameof(AnnualizedTrafficImpactsFormula));
+        OnPropertyChanged(nameof(DiscountedTrafficImpactsOverAnalysisPeriodFormula));
     }
 
     private static double CalculateDiscountedAnnualSeries(double annualValue, double discountRate, double years)

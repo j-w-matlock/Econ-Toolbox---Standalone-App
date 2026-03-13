@@ -9,6 +9,11 @@
              d:DataContext="{d:DesignInstance Type=vm:TrafficDelayAnalysisViewModel}">
     <UserControl.Resources>
         <Style TargetType="TextBox" BasedOn="{StaticResource Form.TextBox}"/>
+        <Style x:Key="FormulaTextStyle" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Foreground" Value="{DynamicResource App.TextSecondary}"/>
+        </Style>
     </UserControl.Resources>
 
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
@@ -42,25 +47,25 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="Duration of flooding (days)" Grid.Row="0" Margin="0,0,10,8"/>
+                    <TextBlock Text="Duration of flooding (days)" Grid.Row="0" Margin="0,0,10,8" ToolTip="Total days the route remains disrupted by flooding."/>
                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DurationOfFloodingDays, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Traffic count for flooding period" Grid.Row="1" Margin="0,0,10,8"/>
+                    <TextBlock Text="Traffic count for flooding period" Grid.Row="1" Margin="0,0,10,8" ToolTip="Number of vehicles affected during the flooding period."/>
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TrafficCountForFloodingPeriod, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Miles in original route" Grid.Row="2" Margin="0,0,10,8"/>
+                    <TextBlock Text="Miles in original route" Grid.Row="2" Margin="0,0,10,8" ToolTip="Baseline route length when there is no flooding."/>
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding OriginalRouteMiles, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Alternative route mileage" Grid.Row="3" Margin="0,0,10,8"/>
+                    <TextBlock Text="Alternative route mileage" Grid.Row="3" Margin="0,0,10,8" ToolTip="Detour route length used during flooding."/>
                     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding AlternativeRouteMiles, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Total passengers" Grid.Row="4" Margin="0,0,10,8"/>
+                    <TextBlock Text="Total passengers" Grid.Row="4" Margin="0,0,10,8" ToolTip="Average passengers per vehicle used in delay valuation."/>
                     <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding TotalPassengers, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Operating cost per mile" Grid.Row="5" Margin="0,0,10,8"/>
+                    <TextBlock Text="Operating cost per mile" Grid.Row="5" Margin="0,0,10,8" ToolTip="Vehicle operating cost used to monetize added detour mileage."/>
                     <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding OperatingCostPerMile, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Median household income" Grid.Row="6" Margin="0,0,10,8"/>
+                    <TextBlock Text="Median household income" Grid.Row="6" Margin="0,0,10,8" ToolTip="Converted to hourly income for value-of-time factors."/>
                     <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding MedianHouseholdIncome, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="AEP that causes delay (optional)" Grid.Row="7" Margin="0,0,10,8"/>
+                    <TextBlock Text="AEP that causes delay (optional)" Grid.Row="7" Margin="0,0,10,8" ToolTip="Annual exceedance probability used to annualize one-event impacts."/>
                     <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding AepThatCausesDelay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Discount rate % (optional)" Grid.Row="8" Margin="0,0,10,8"/>
+                    <TextBlock Text="Discount rate % (optional)" Grid.Row="8" Margin="0,0,10,8" ToolTip="Discount rate used in present value calculation over analysis years."/>
                     <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding DiscountRatePercent, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Period of analysis (years, optional)" Grid.Row="9" Margin="0,0,10,0"/>
+                    <TextBlock Text="Period of analysis (years, optional)" Grid.Row="9" Margin="0,0,10,0" ToolTip="Number of years included in discounted series."/>
                     <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding AnalysisPeriodYears, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Border>
@@ -68,44 +73,76 @@
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <TextBlock Text="Detour cost calculations" Style="{StaticResource Text.SectionTitle}"/>
-                    <TextBlock Margin="0,8,0,0" Text="Additional miles per vehicle"/>
-                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AdditionalMilesPerVehicle, StringFormat={}{0:N2}}"/>
-                    <TextBlock Margin="0,8,0,0" Text="Total additional mileage"/>
-                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalAdditionalMileage, StringFormat={}{0:N2}}"/>
-                    <TextBlock Margin="0,8,0,0" Text="Additional operating costs per day"/>
-                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AdditionalOperatingCostsPerDay, StringFormat={}{0:C2}}"/>
-                    <TextBlock Margin="0,8,0,0" Text="Total additional detour costs"/>
-                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalAdditionalDetourCosts, StringFormat={}{0:C2}}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Additional miles per vehicle" ToolTip="Detour miles per affected vehicle: Alternative route minus original route."/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AdditionalMilesPerVehicle, StringFormat={}{0:N2}}" ToolTip="Calculated detour miles per vehicle."/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding AdditionalMilesPerVehicleFormula}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Total additional mileage" ToolTip="Total extra miles traveled by all vehicles during flooding."/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalAdditionalMileage, StringFormat={}{0:N2}}" ToolTip="Traffic count multiplied by additional miles per vehicle."/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding TotalAdditionalMileageFormula}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Additional operating costs per day" ToolTip="Daily operating cost burden from added detour mileage."/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AdditionalOperatingCostsPerDay, StringFormat={}{0:C2}}" ToolTip="Total additional mileage multiplied by operating cost per mile."/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding AdditionalOperatingCostsPerDayFormula}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Total additional detour costs" ToolTip="Total operating cost burden over the full flooding duration."/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalAdditionalDetourCosts, StringFormat={}{0:C2}}" ToolTip="Daily additional operating costs multiplied by duration of flooding."/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding TotalAdditionalDetourCostsFormula}"/>
                 </StackPanel>
             </Border>
 
             <Border Style="{StaticResource Border.ResultInfo}">
                 <StackPanel>
                     <TextBlock Text="Value of time and delay impacts" Style="{StaticResource Text.SectionTitle}"/>
-                    <TextBlock Margin="0,8,0,0" Text="Hourly income"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Hourly income" ToolTip="Median household income converted to hourly wages (2080 work-hours/year)."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding HourlyIncome, StringFormat={}{0:C2}}"/>
-                    <TextBlock Margin="0,10,0,0" Text="Low time savings (0-5 min): Work / Social / Other"/>
-                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding LowTimeSavingsWorkTripsValue, StringFormat={}{0:C2}}"/>
-                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding LowTimeSavingsSocialRecreationValue, StringFormat={}{0:C2}}"/>
-                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding LowTimeSavingsOtherValue, StringFormat={}{0:C4}}"/>
-                    <TextBlock Margin="0,10,0,0" Text="Medium time savings (6-15 min): Work / Social / Other"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding HourlyIncomeFormula}"/>
+
+                    <TextBlock Margin="0,10,0,0" Text="Low time savings (0-5 min): Work / Social / Other" ToolTip="Low-delay valuation factors applied to hourly income."/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding LowTimeSavingsWorkTripsValue, StringFormat={}{0:C2}}" ToolTip="Work trip low-delay value."/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding LowTimeSavingsWorkTripsValueFormula}"/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding LowTimeSavingsSocialRecreationValue, StringFormat={}{0:C2}}" ToolTip="Social/recreation low-delay value."/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding LowTimeSavingsSocialRecreationValueFormula}"/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding LowTimeSavingsOtherValue, StringFormat={}{0:C4}}" ToolTip="Other-purpose low-delay value."/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding LowTimeSavingsOtherValueFormula}"/>
+
+                    <TextBlock Margin="0,10,0,0" Text="Medium time savings (6-15 min): Work / Social / Other" ToolTip="Medium-delay valuation factors applied to hourly income."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding MediumTimeSavingsWorkTripsValue, StringFormat={}{0:C2}}"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding MediumTimeSavingsWorkTripsValueFormula}"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding MediumTimeSavingsSocialRecreationValue, StringFormat={}{0:C2}}"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding MediumTimeSavingsSocialRecreationValueFormula}"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding MediumTimeSavingsOtherValue, StringFormat={}{0:C2}}"/>
-                    <TextBlock Margin="0,10,0,0" Text="High time savings (&gt;15 min): Work / Social / Other"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding MediumTimeSavingsOtherValueFormula}"/>
+
+                    <TextBlock Margin="0,10,0,0" Text="High time savings (&gt;15 min): Work / Social / Other" ToolTip="High-delay valuation factors applied to hourly income."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding HighTimeSavingsWorkTripsValue, StringFormat={}{0:C2}}"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding HighTimeSavingsWorkTripsValueFormula}"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding HighTimeSavingsSocialRecreationValue, StringFormat={}{0:C2}}"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding HighTimeSavingsSocialRecreationValueFormula}"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding HighTimeSavingsOtherValue, StringFormat={}{0:C2}}"/>
-                    <TextBlock Margin="0,10,0,0" Text="Delay impacts per day"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding HighTimeSavingsOtherValueFormula}"/>
+
+                    <TextBlock Margin="0,10,0,0" Text="Delay impacts per day" ToolTip="Uses the high-delay work-trip value, traffic volume, and passengers."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding DelayImpactsPerDay, StringFormat={}{0:C2}}"/>
-                    <TextBlock Margin="0,8,0,0" Text="Total delay impacts"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding DelayImpactsPerDayFormula}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Total delay impacts" ToolTip="Daily delay impacts multiplied by flooding duration."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalDelayImpacts, StringFormat={}{0:C2}}"/>
-                    <TextBlock Margin="0,8,0,0" Text="Total traffic impacts"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding TotalDelayImpactsFormula}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Total traffic impacts" ToolTip="Combined total of delay impacts and detour operating costs."/>
                     <TextBlock Style="{StaticResource Text.SectionTitleAccent}" Text="{Binding TotalTrafficImpacts, StringFormat={}{0:C2}}"/>
-                    <TextBlock Margin="0,10,0,0" Text="Annualized traffic impacts (AEP-adjusted)"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding TotalTrafficImpactsFormula}"/>
+
+                    <TextBlock Margin="0,10,0,0" Text="Annualized traffic impacts (AEP-adjusted)" ToolTip="Total one-event impacts multiplied by annual exceedance probability (AEP)."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AnnualizedTrafficImpacts, StringFormat={}{0:C2}}"/>
-                    <TextBlock Margin="0,8,0,0" Text="Discounted total over analysis period"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding AnnualizedTrafficImpactsFormula}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Discounted total over analysis period" ToolTip="Present value of annualized impacts across the analysis period using the discount rate."/>
                     <TextBlock Style="{StaticResource Text.SectionTitleAccent}" Text="{Binding DiscountedTrafficImpactsOverAnalysisPeriod, StringFormat={}{0:C2}}"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding DiscountedTrafficImpactsOverAnalysisPeriodFormula}"/>
                 </StackPanel>
             </Border>
         </StackPanel>
