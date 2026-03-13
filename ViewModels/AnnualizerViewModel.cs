@@ -42,6 +42,7 @@ namespace EconToolbox.Desktop.ViewModels
         private int _scenarioCounter = 1;
         private AnnualizerScenario? _selectedScenario;
         private bool _suppressScenarioSync;
+        private bool _suspendRecalculation;
 
         private readonly record struct AnnualizerComputationInputs(
             List<(double cost, double yearOffset, double timingOffset)> FutureCosts,
@@ -281,9 +282,45 @@ namespace EconToolbox.Desktop.ViewModels
             AttachFutureCostHandlers(_futureCosts);
             AttachFutureCostHandlers(_idcEntries);
 
-            TryInitializeExampleAnnualizerData();
-            TryAddScenarioComparison();
+            using (SuspendRecalculation())
+            {
+                TryInitializeExampleAnnualizerData();
+                TryAddScenarioComparison();
+            }
+
+            RecalculateAll();
+        }
+
+        private IDisposable SuspendRecalculation()
+        {
+            _suspendRecalculation = true;
+            return new RecalculationScope(this);
+        }
+
+        private void RecalculateAll()
+        {
+            UpdatePvFactors();
+            Compute();
             RefreshDiagnostics();
+        }
+
+        private sealed class RecalculationScope : IDisposable
+        {
+            private AnnualizerViewModel? _owner;
+
+            public RecalculationScope(AnnualizerViewModel owner)
+            {
+                _owner = owner;
+            }
+
+            public void Dispose()
+            {
+                if (_owner == null)
+                    return;
+
+                _owner._suspendRecalculation = false;
+                _owner = null;
+            }
         }
 
         private void TryInitializeExampleAnnualizerData()
@@ -428,9 +465,10 @@ namespace EconToolbox.Desktop.ViewModels
                         entry.PropertyChanged += EntryOnPropertyChanged;
                 }
             }
-            UpdatePvFactors();
-            Compute();
-            RefreshDiagnostics();
+            if (_suspendRecalculation)
+                return;
+
+            RecalculateAll();
         }
 
         private void EntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -441,9 +479,13 @@ namespace EconToolbox.Desktop.ViewModels
                 e.PropertyName == nameof(FutureCostEntry.Timing) ||
                 e.PropertyName == nameof(FutureCostEntry.Cost))
             {
+                if (_suspendRecalculation)
+                    return;
+
                 UpdatePvFactors();
                 Compute();
             }
+
             RefreshDiagnostics();
         }
 
@@ -478,7 +520,7 @@ namespace EconToolbox.Desktop.ViewModels
                 if (entry == null)
                     continue;
                 double offsetMonths = GetTimingOffset(entry.Timing);
-                int monthIndex = entry.Month <= 0 ? 0 : entry.Month - 1;
+                int monthIndex = Math.Clamp(entry.Month, 1, 12) - 1;
                 double eventMonth = monthIndex + offsetMonths;
                 entry.PvFactor = Math.Pow(1.0 + r, -(eventMonth / 12.0));
             }
@@ -541,8 +583,8 @@ namespace EconToolbox.Desktop.ViewModels
                     {
                         costArr[i] = schedule[i].Cost;
                         timingArr[i] = schedule[i].Timing;
-                        int monthValue = schedule[i].Month;
-                        monthArr[i] = monthValue <= 0 ? 0 : monthValue - 1;
+                        int monthValue = Math.Clamp(schedule[i].Month, 1, 12);
+                        monthArr[i] = monthValue - 1;
                     }
                 }
             }
@@ -704,63 +746,64 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
-            FirstCost = data.FirstCost;
-            Rate = data.Rate;
-            AnalysisPeriod = data.AnalysisPeriod;
-            BaseYear = data.BaseYear;
-            ConstructionMonths = data.ConstructionMonths;
-            AnnualOm = data.AnnualOm;
-            AnnualBenefits = data.AnnualBenefits;
-            IdcTimingBasis = string.IsNullOrWhiteSpace(data.IdcTimingBasis) ? IdcTimingBasis : data.IdcTimingBasis;
-            CalculateInterestAtPeriod = data.CalculateInterestAtPeriod;
-            IdcFirstPaymentTiming = string.IsNullOrWhiteSpace(data.IdcFirstPaymentTiming) ? IdcFirstPaymentTiming : data.IdcFirstPaymentTiming;
-            IdcLastPaymentTiming = string.IsNullOrWhiteSpace(data.IdcLastPaymentTiming) ? IdcLastPaymentTiming : data.IdcLastPaymentTiming;
-
-            FutureCosts = new ObservableCollection<FutureCostEntry>(data.FutureCosts.Select(entry => new FutureCostEntry
+            using (SuspendRecalculation())
             {
-                Cost = entry.Cost,
-                Year = entry.Year,
-                Month = entry.Month,
-                Timing = string.IsNullOrWhiteSpace(entry.Timing) ? "end" : entry.Timing
-            }));
+                FirstCost = data.FirstCost;
+                Rate = data.Rate;
+                AnalysisPeriod = data.AnalysisPeriod;
+                BaseYear = data.BaseYear;
+                ConstructionMonths = data.ConstructionMonths;
+                AnnualOm = data.AnnualOm;
+                AnnualBenefits = data.AnnualBenefits;
+                IdcTimingBasis = string.IsNullOrWhiteSpace(data.IdcTimingBasis) ? IdcTimingBasis : data.IdcTimingBasis;
+                CalculateInterestAtPeriod = data.CalculateInterestAtPeriod;
+                IdcFirstPaymentTiming = string.IsNullOrWhiteSpace(data.IdcFirstPaymentTiming) ? IdcFirstPaymentTiming : data.IdcFirstPaymentTiming;
+                IdcLastPaymentTiming = string.IsNullOrWhiteSpace(data.IdcLastPaymentTiming) ? IdcLastPaymentTiming : data.IdcLastPaymentTiming;
 
-            IdcEntries = new ObservableCollection<FutureCostEntry>(data.IdcEntries.Select(entry => new FutureCostEntry
-            {
-                Cost = entry.Cost,
-                Year = entry.Year,
-                Month = entry.Month,
-                Timing = string.IsNullOrWhiteSpace(entry.Timing) ? "end" : entry.Timing
-            }));
-
-            _suppressScenarioSync = true;
-            try
-            {
-                ScenarioComparisons.Clear();
-                foreach (var scenario in data.Scenarios)
+                FutureCosts = new ObservableCollection<FutureCostEntry>(data.FutureCosts.Select(entry => new FutureCostEntry
                 {
-                    ScenarioComparisons.Add(new AnnualizerScenario
+                    Cost = entry.Cost,
+                    Year = entry.Year,
+                    Month = entry.Month,
+                    Timing = string.IsNullOrWhiteSpace(entry.Timing) ? "end" : entry.Timing
+                }));
+
+                IdcEntries = new ObservableCollection<FutureCostEntry>(data.IdcEntries.Select(entry => new FutureCostEntry
+                {
+                    Cost = entry.Cost,
+                    Year = entry.Year,
+                    Month = entry.Month,
+                    Timing = string.IsNullOrWhiteSpace(entry.Timing) ? "end" : entry.Timing
+                }));
+
+                _suppressScenarioSync = true;
+                try
+                {
+                    ScenarioComparisons.Clear();
+                    foreach (var scenario in data.Scenarios)
                     {
-                        Name = scenario.Name,
-                        FirstCost = scenario.FirstCost,
-                        AnnualOm = scenario.AnnualOm,
-                        AnnualBenefits = scenario.AnnualBenefits,
-                        Rate = scenario.Rate
-                    });
+                        ScenarioComparisons.Add(new AnnualizerScenario
+                        {
+                            Name = scenario.Name,
+                            FirstCost = scenario.FirstCost,
+                            AnnualOm = scenario.AnnualOm,
+                            AnnualBenefits = scenario.AnnualBenefits,
+                            Rate = scenario.Rate
+                        });
+                    }
+
+                    _scenarioCounter = ScenarioComparisons.Count + 1;
+                    SelectedScenario = ScenarioComparisons.FirstOrDefault(s =>
+                        string.Equals(s.Name, data.SelectedScenarioName, StringComparison.OrdinalIgnoreCase))
+                        ?? ScenarioComparisons.FirstOrDefault();
                 }
-
-                _scenarioCounter = ScenarioComparisons.Count + 1;
-                SelectedScenario = ScenarioComparisons.FirstOrDefault(s =>
-                    string.Equals(s.Name, data.SelectedScenarioName, StringComparison.OrdinalIgnoreCase))
-                    ?? ScenarioComparisons.FirstOrDefault();
-            }
-            finally
-            {
-                _suppressScenarioSync = false;
+                finally
+                {
+                    _suppressScenarioSync = false;
+                }
             }
 
-            UpdatePvFactors();
-            Compute();
-            RefreshDiagnostics();
+            RecalculateAll();
         }
 
         private async Task ExportAsync()
