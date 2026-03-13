@@ -520,7 +520,7 @@
                                  Margin="{StaticResource Margin.RightMedium}"
                                  Minimum="0"
                                  Maximum="100"
-                                 Value="{Binding AppProgressPercent}"
+                                 Value="{Binding AppProgressPercent, Mode=OneWay}"
                                  Visibility="{Binding IsAppProgressActive, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     <TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}"
                                Margin="{StaticResource Margin.RightSmall}"
