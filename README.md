@@ -8,7 +8,7 @@ The Economic Toolbox is a **standalone Windows Presentation Foundation (WPF) des
 
 ### Key capabilities
 
-- **Ten focused modules** for expected annual damage, agricultural depth-damage, updated storage costs, cost annualization, water demand forecasting, unit day values, recreation capacity, Gantt scheduling, stage-damage CSV summaries, and the in-app README.
+- **Eleven focused modules** for expected annual damage, agricultural depth-damage, updated storage costs, cost annualization, water demand forecasting, unit day values, recreation capacity, traffic delay analysis, Gantt scheduling, stage-damage CSV summaries, and the in-app README.
 - **Offline-friendly onboarding** with embedded documentation, consistent tooltips, and contextual hero banner guidance for each tab.
 - **Export-ready Excel workbooks** with a dashboard landing page, formatted tables, Segoe UI typography, and embedded visualizations for each calculator.
 - **Responsive MVVM infrastructure** using observable view models, async commands, and a shared dependency injection container.

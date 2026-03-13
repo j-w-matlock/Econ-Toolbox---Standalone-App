@@ -475,7 +475,25 @@ namespace EconToolbox.Desktop.ViewModels
                         "Supports uncertainty documentation workflows aligned with EM 1110-2-1619 Chapter 5 discussions."
                     },
                     "Example: Evaluate variation in first-floor elevation values to characterize economic uncertainty assumptions for a flood risk reduction study.",
-                    typeof(UncertaintyStatisticsViewModel))
+                    typeof(UncertaintyStatisticsViewModel)),
+                new ModuleDefinition(
+                    "Traffic Delay Analysis",
+                    "Estimate flood detour and delay costs using USACE-style value-of-time and vehicle operating assumptions.",
+                    "Replicates the provided traffic delay workbook logic for detour mileage, operating cost, and trip-purpose delay impacts.",
+                    new[]
+                    {
+                        "Enter flooding duration, traffic count, and route miles for the impacted and detour paths.",
+                        "Provide passenger assumptions, operating cost per mile, and median household income.",
+                        "Review low, medium, and high time-savings values before using total impacts in reporting."
+                    },
+                    new[]
+                    {
+                        "Calculates additional mileage and detour operating costs across the flooding period.",
+                        "Converts household income to hourly income and applies trip-purpose delay percentages.",
+                        "Summarizes daily delay impacts, total delay impacts, and total traffic impacts."
+                    },
+                    "Example: Evaluate 21 days of flood detours with 1,180 trips to compare incremental operating and delay costs for a temporary closure.",
+                    typeof(TrafficDelayAnalysisViewModel))
             };
 
             ApplyLayoutSettings();
