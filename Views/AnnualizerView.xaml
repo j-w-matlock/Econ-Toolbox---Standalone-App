@@ -178,11 +178,11 @@
                                 <DockPanel LastChildFill="False" Margin="0,0,0,6">
                                     <Button Content="Add Benefit Row"
                                             Command="{Binding AddAnnualBenefitRowCommand}"
-                                            Style="{StaticResource Button.Secondary}"
+                                            Style="{StaticResource Button.ActionSecondaryCompact}"
                                             DockPanel.Dock="Left"/>
                                     <Button Content="Remove Excluded Custom Rows"
                                             Command="{Binding RemoveAnnualBenefitRowCommand}"
-                                            Style="{StaticResource Button.Secondary}"
+                                            Style="{StaticResource Button.ActionSecondaryCompact}"
                                             Margin="8,0,0,0"
                                             DockPanel.Dock="Left"/>
                                 </DockPanel>
