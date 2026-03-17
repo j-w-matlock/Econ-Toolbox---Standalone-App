@@ -70,8 +70,12 @@
                                         <TextBlock Text="Historical Demand"
                                                    Style="{StaticResource Text.SectionTitle}"
                                                    Margin="0,0,0,12"/>
+                                        <TextBlock Text="Tip: Enter one row per year and keep units consistent (e.g., gallons/person/day) so trend fitting remains interpretable."
+                                                   Style="{StaticResource Text.BodySmall}"
+                                                   Margin="0,0,0,8"/>
                                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding DataContext.HistoricalData, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                   AutoGenerateColumns="False"
+                                                  FrozenColumnCount="1"
                                                   HorizontalAlignment="Stretch"
                                                   VerticalAlignment="Stretch"
                                                   ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -171,7 +175,7 @@
                                         <TextBlock Text="%" VerticalAlignment="Center" Margin="6,0,0,0"/>
                                     </StackPanel>
 
-                                    <DataGrid CanUserResizeColumns="True" Grid.Row="6" Grid.ColumnSpan="2" ItemsSource="{Binding Sectors}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" Margin="0,5,0,5" ColumnWidth="Auto">
+                                    <DataGrid CanUserResizeColumns="True" Grid.Row="6" Grid.ColumnSpan="2" ItemsSource="{Binding Sectors}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" Margin="0,5,0,5" ColumnWidth="Auto" FrozenColumnCount="1">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Sector" Binding="{Binding Name}" IsReadOnly="True"/>
                                             <DataGridTextColumn Header="Current %"

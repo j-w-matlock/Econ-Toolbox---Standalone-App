@@ -118,10 +118,14 @@
                         <TextBlock Text="Stage / Frequency / Damage Inputs"
                                    Style="{StaticResource Text.SectionTitle}"
                                    Margin="{StaticResource Margin.StackLarge}"/>
+                        <TextBlock Text="Tip: Keep probability values in descending order (e.g., 0.5, 0.2, 0.1) and use consistent currency units across damage columns."
+                                   Style="{StaticResource Text.BodySmall}"
+                                   Margin="0,0,0,8"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Rows}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="True"
                                   CanUserDeleteRows="True"
+                                  FrozenColumnCount="1"
                                   SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                                   HeadersVisibility="Column"
                                   ColumnWidth="Auto"
