@@ -20,6 +20,12 @@
         ToolTipService.VerticalOffset="12"
         Background="{DynamicResource App.Surface}">
     <Window.InputBindings>
+        <KeyBinding Key="S"
+                    Modifiers="Control"
+                    Command="{Binding SaveProjectCommand}"/>
+        <KeyBinding Key="O"
+                    Modifiers="Control"
+                    Command="{Binding LoadProjectCommand}"/>
         <KeyBinding Key="E"
                     Modifiers="Control+Alt"
                     Command="{Binding ToggleLeftPaneCommand}"/>
@@ -175,13 +181,17 @@
                       Background="Transparent">
                     <MenuItem Header="_File">
                         <MenuItem Header="_Save Project As..."
+                                  InputGestureText="Ctrl+S"
                                   Command="{Binding SaveProjectCommand}"/>
                         <MenuItem Header="_Open Project..."
+                                  InputGestureText="Ctrl+O"
                                   Command="{Binding LoadProjectCommand}"/>
                         <Separator/>
                         <MenuItem Header="Toggle _Explorer Pane"
+                                  InputGestureText="Ctrl+Alt+E"
                                   Command="{Binding ToggleLeftPaneCommand}"/>
                         <MenuItem Header="Toggle _Details Pane"
+                                  InputGestureText="Ctrl+Alt+D"
                                   Command="{Binding ToggleRightPaneCommand}"/>
                     </MenuItem>
                 </Menu>
@@ -207,7 +217,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE8EF;"
                                        Style="{StaticResource Text.Icon.Toolbar}"/>
-                            <TextBlock Text="{Binding PrimaryActionLabel}"/>
+                            <TextBlock Text="{Binding PrimaryActionLabel, Converter={StaticResource NullOrEmptyToValueConverter}, ConverterParameter=Calculate}"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ExportCommand}"
@@ -329,19 +339,49 @@
                     Visibility="{Binding IsExplorerPaneVisible, Converter={StaticResource BoolToVisibilityConverter}}"
                     Style="{StaticResource Border.ExplorerPane}">
                 <DockPanel>
-                    <StackPanel DockPanel.Dock="Top">
+                    <DockPanel DockPanel.Dock="Top"
+                               LastChildFill="False"
+                               Margin="{StaticResource Margin.BottomSmall}">
                         <TextBlock Text="EXPLORER"
                                    Style="{StaticResource Text.PaneCaption}"
-                                   Margin="{StaticResource Margin.BottomSmall}"/>
-                    </StackPanel>
+                                   DockPanel.Dock="Left"/>
+                        <Button Command="{Binding ToggleLeftPaneCommand}"
+                                DockPanel.Dock="Right"
+                                Style="{StaticResource Button.PaneToggle}"
+                                ToolTip="Hide Explorer (Ctrl+Alt+E)">
+                            <TextBlock Text="Hide"
+                                       Style="{StaticResource Text.StatusBar}"
+                                       Foreground="{DynamicResource App.OnAccent}"/>
+                        </Button>
+                    </DockPanel>
                     <TextBlock DockPanel.Dock="Top"
                                Text="Modules"
                                Style="{StaticResource Text.PaneTitle}"
                                Margin="{StaticResource Margin.BottomSmall}"/>
-                    <TextBox DockPanel.Dock="Top"
-                             Text="{Binding ModuleSearchText, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="0,0,0,8"
-                             ToolTip="Filter modules by title or description."/>
+                    <Grid DockPanel.Dock="Top"
+                          Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding ModuleSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0"
+                                 ToolTip="Filter modules by title, summary, or description."/>
+                        <Button Grid.Column="1"
+                                Command="{Binding ClearModuleSearchCommand}"
+                                Style="{StaticResource Button.TitleBar}"
+                                Margin="6,0,0,0"
+                                ToolTip="Clear search"
+                                Visibility="{Binding HasModuleSearchText, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="Clear"/>
+                        </Button>
+                    </Grid>
+                    <TextBlock DockPanel.Dock="Top"
+                               Margin="0,0,0,8"
+                               Style="{StaticResource Text.BodySmall}"
+                               Foreground="{DynamicResource App.TextSecondary}"
+                               Text="{Binding FilteredModuleCount, StringFormat={}{0} module(s) shown}"/>
                     <ListBox ItemsSource="{Binding FilteredModulesView}"
                              SelectedItem="{Binding ExplorerSelectedModule}"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -385,6 +425,14 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    <Border DockPanel.Dock="Bottom"
+                            Style="{StaticResource Border.Panel}"
+                            Margin="0,8,0,0"
+                            Visibility="{Binding HasFilteredModules, Converter={StaticResource BoolInverseConverter}, FallbackValue=Collapsed}">
+                        <TextBlock Text="No modules match your search. Try a shorter keyword."
+                                   Style="{StaticResource Text.BodySmall}"
+                                   TextWrapping="Wrap"/>
+                    </Border>
                 </DockPanel>
             </Border>
 
