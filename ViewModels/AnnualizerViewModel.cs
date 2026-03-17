@@ -110,7 +110,8 @@ namespace EconToolbox.Desktop.ViewModels
                 }
 
                 var linkedBenefits = AnnualBenefitEntries
-                    .Where(entry => !string.Equals(entry.Key, "frm", StringComparison.OrdinalIgnoreCase))
+                    .Where(entry => !string.Equals(entry.Key, "frm", StringComparison.OrdinalIgnoreCase)
+                        && entry.IncludeInTotal)
                     .Sum(entry => entry.Amount);
 
                 var frmAmount = value - linkedBenefits;
