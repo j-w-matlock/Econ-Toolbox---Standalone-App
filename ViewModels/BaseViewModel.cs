@@ -32,6 +32,11 @@ namespace EconToolbox.Desktop.ViewModels
             IsDirty = false;
         }
 
+        public void AcceptChanges()
+        {
+            MarkClean();
+        }
+
         private void OnBasePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(IsDirty))

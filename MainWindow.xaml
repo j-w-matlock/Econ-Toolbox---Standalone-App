@@ -2,7 +2,6 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:EconToolbox.Desktop.Views"
-        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
         xmlns:views="clr-namespace:EconToolbox.Desktop.Views"
         Title="Economic Toolbox"
@@ -89,17 +88,6 @@
                     </Grid>
                 </Border>
             </DataTemplate>
-
-            <CollectionViewSource x:Key="ExplorerModulesView"
-                                  Source="{Binding Modules}">
-                <CollectionViewSource.SortDescriptions>
-                    <scm:SortDescription PropertyName="ExplorerCategoryOrder" Direction="Ascending"/>
-                    <scm:SortDescription PropertyName="Title" Direction="Ascending"/>
-                </CollectionViewSource.SortDescriptions>
-                <CollectionViewSource.GroupDescriptions>
-                    <PropertyGroupDescription PropertyName="ExplorerCategory"/>
-                </CollectionViewSource.GroupDescriptions>
-            </CollectionViewSource>
 
             <DataTemplate x:Key="ActionsWideTemplate">
                 <Grid HorizontalAlignment="Stretch">
@@ -201,6 +189,10 @@
                             DockPanel.Dock="Left">
                     <TextBlock Text="ECON TOOLBOX"
                                Style="{StaticResource Text.TitleBarBrand}"/>
+                    <TextBlock Text=" ●"
+                               Foreground="{DynamicResource App.Warning}"
+                               Visibility="{Binding HasUnsavedChanges, Converter={StaticResource BoolToVisibilityConverter}}"
+                               ToolTip="Unsaved changes"/>
                     <TextBlock Text="{Binding SelectedModule.Title}"
                                Margin="{StaticResource Margin.LeftSmall}"
                                Style="{StaticResource Text.TitleBarModule}"/>
@@ -346,7 +338,11 @@
                                Text="Modules"
                                Style="{StaticResource Text.PaneTitle}"
                                Margin="{StaticResource Margin.BottomSmall}"/>
-                    <ListBox ItemsSource="{Binding Source={StaticResource ExplorerModulesView}}"
+                    <TextBox DockPanel.Dock="Top"
+                             Text="{Binding ModuleSearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0,0,0,8"
+                             ToolTip="Filter modules by title or description."/>
+                    <ListBox ItemsSource="{Binding FilteredModulesView}"
                              SelectedItem="{Binding ExplorerSelectedModule}"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -529,7 +525,7 @@
         <StatusBar Grid.Row="2"
                    Style="{StaticResource StatusBar.App}">
             <StatusBarItem>
-                <TextBlock Text="Ready"
+                <TextBlock Text="{Binding ShellStatusMessage}"
                            Style="{StaticResource Text.StatusBar}"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">

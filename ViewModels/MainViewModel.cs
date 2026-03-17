@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
@@ -26,6 +27,7 @@ namespace EconToolbox.Desktop.ViewModels
         private const double DefaultDetailsPaneWidth = 340;
         public ModuleDefinition ReadMeModule { get; }
         public IReadOnlyList<ModuleDefinition> Modules { get; }
+        public ICollectionView FilteredModulesView { get; }
         public ObservableCollection<DiagnosticItem> Diagnostics { get; } = new();
         public ProjectViewModel ProjectManager { get; }
         public bool IsProjectManagerEnabled => EnableProjectManagerModule;
@@ -193,6 +195,7 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     cached = _viewModelFactory.Create(SelectedModule.ViewModelType);
                     _viewModelCache[SelectedModule.ViewModelType] = cached;
+                    cached.PropertyChanged += OnTrackedViewModelPropertyChanged;
                 }
 
                 return cached;
@@ -217,6 +220,28 @@ namespace EconToolbox.Desktop.ViewModels
         private double _detailsPaneWidthBeforeCollapse = DefaultDetailsPaneWidth;
         private bool _isApplyingSettings;
         private double _zoomPercent = 100;
+        private string _moduleSearchText = string.Empty;
+        private string _shellStatusMessage = "Ready";
+
+        public string ModuleSearchText
+        {
+            get => _moduleSearchText;
+            set
+            {
+                if (SetProperty(ref _moduleSearchText, value))
+                {
+                    FilteredModulesView.Refresh();
+                }
+            }
+        }
+
+        public bool HasUnsavedChanges => _viewModelCache.Values.Any(vm => vm.IsDirty);
+
+        public string ShellStatusMessage
+        {
+            get => _shellStatusMessage;
+            private set => SetProperty(ref _shellStatusMessage, value);
+        }
 
 
         public bool IsAppProgressActive => _appProgressService.IsActive;
@@ -513,6 +538,11 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             Modules = modules;
+            FilteredModulesView = CollectionViewSource.GetDefaultView(Modules);
+            FilteredModulesView.SortDescriptions.Add(new SortDescription(nameof(ModuleDefinition.ExplorerCategoryOrder), ListSortDirection.Ascending));
+            FilteredModulesView.SortDescriptions.Add(new SortDescription(nameof(ModuleDefinition.Title), ListSortDirection.Ascending));
+            FilteredModulesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ModuleDefinition.ExplorerCategory)));
+            FilteredModulesView.Filter = FilterModule;
             WireAnnualBenefitsSynchronization();
 
             ApplyLayoutSettings();
@@ -522,6 +552,26 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 UpdateDiagnostics();
             }
+
+            UpdateShellStatus("Ready");
+        }
+
+        private bool FilterModule(object obj)
+        {
+            if (obj is not ModuleDefinition module)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(ModuleSearchText))
+            {
+                return true;
+            }
+
+            var term = ModuleSearchText.Trim();
+            return module.Title.Contains(term, StringComparison.OrdinalIgnoreCase)
+                || module.Description.Contains(term, StringComparison.OrdinalIgnoreCase)
+                || module.FunctionSummary.Contains(term, StringComparison.OrdinalIgnoreCase);
         }
 
         private void WireAnnualBenefitsSynchronization()
@@ -687,11 +737,17 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void Calculate()
         {
+            UpdateShellStatus($"Calculating {SelectedModule?.Title ?? "module"}...");
             var command = _currentComputeCommand;
             if (command?.CanExecute(null) == true)
             {
                 command.Execute(null);
+                UpdateShellStatus($"Calculation complete for {SelectedModule?.Title ?? "module"}.");
+                OnPropertyChanged(nameof(HasUnsavedChanges));
+                return;
             }
+
+            UpdateShellStatus("Calculation unavailable. Check required inputs.");
         }
 
         private async Task ExportAsync()
@@ -706,6 +762,7 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 try
                 {
+                    UpdateShellStatus("Exporting workbook...");
                     var ead = GetModuleViewModel<EadViewModel>();
                     // Temporarily skip the Agriculture Depth-Damage module while it is deactivated.
                     var updatedCost = GetModuleViewModel<UpdatedCostViewModel>();
@@ -738,10 +795,13 @@ namespace EconToolbox.Desktop.ViewModels
                         recreationCapacity,
                         gantt,
                         dlg.FileName));
+
+                    UpdateShellStatus($"Export complete: {Path.GetFileName(dlg.FileName)}");
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine(ex);
+                    UpdateShellStatus("Export failed. Review error details.");
                     MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -762,6 +822,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             try
             {
+                UpdateShellStatus("Saving project...");
                 var project = new EconToolboxProject
                 {
                     Ead = CaptureState<EadData>(GetModuleViewModel<EadViewModel>()),
@@ -781,10 +842,13 @@ namespace EconToolbox.Desktop.ViewModels
 
                 string json = JsonSerializer.Serialize(project, CreateProjectJsonOptions());
                 await File.WriteAllTextAsync(dlg.FileName, json);
+                ClearDirtyFlags();
+                UpdateShellStatus($"Project saved: {Path.GetFileName(dlg.FileName)}");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                UpdateShellStatus("Save failed. Review error details.");
                 MessageBox.Show($"Save failed: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -802,8 +866,24 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
             }
 
+            if (HasUnsavedChanges)
+            {
+                var confirm = MessageBox.Show(
+                    "You have unsaved changes. Loading a project will overwrite the current in-memory state. Continue?",
+                    "Unsaved Changes",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (confirm != MessageBoxResult.Yes)
+                {
+                    UpdateShellStatus("Load cancelled to preserve unsaved changes.");
+                    return;
+                }
+            }
+
             try
             {
+                UpdateShellStatus("Loading project...");
                 string json = await File.ReadAllTextAsync(dlg.FileName);
                 var project = JsonSerializer.Deserialize<EconToolboxProject>(json, CreateProjectJsonOptions());
                 if (project == null)
@@ -825,11 +905,14 @@ namespace EconToolbox.Desktop.ViewModels
                 RestoreState(GetModuleViewModel<GanttViewModel>(), project.Gantt);
                 RestoreState(GetModuleViewModel<StageDamageOrganizerViewModel>(), project.StageDamageOrganizer);
                 RestoreState(GetModuleViewModel<AdvancedBridgeReplacementViewModel>(), project.AdvancedBridgeReplacement);
+                ClearDirtyFlags();
+                UpdateShellStatus($"Project loaded: {Path.GetFileName(dlg.FileName)}");
                 UpdateDiagnostics();
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                UpdateShellStatus("Load failed. Review error details.");
                 MessageBox.Show($"Load failed: {ex.Message}", "Load Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -972,7 +1055,31 @@ namespace EconToolbox.Desktop.ViewModels
 
             var created = (T)_viewModelFactory.Create(typeof(T));
             _viewModelCache[typeof(T)] = created;
+            created.PropertyChanged += OnTrackedViewModelPropertyChanged;
             return created;
+        }
+
+        private void OnTrackedViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(BaseViewModel.IsDirty))
+            {
+                OnPropertyChanged(nameof(HasUnsavedChanges));
+            }
+        }
+
+        private void ClearDirtyFlags()
+        {
+            foreach (var viewModel in _viewModelCache.Values)
+            {
+                viewModel.AcceptChanges();
+            }
+
+            OnPropertyChanged(nameof(HasUnsavedChanges));
+        }
+
+        private void UpdateShellStatus(string message)
+        {
+            ShellStatusMessage = message;
         }
 
         private static ModuleDefinition CreateAgricultureDepthDamageModule()
