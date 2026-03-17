@@ -43,5 +43,23 @@ namespace EconToolbox.Desktop.ViewModels
         public string Example { get; }
 
         public Type ViewModelType { get; }
+
+        public string ExplorerCategory => Title switch
+        {
+            "Cost Annualization" or "Expected Annual Damage (EAD)" => "Annualization and Cost",
+            "Unit Day Value" or "Traffic Delay Analysis" or "Advanced Bridge Replacement" => "Benefits",
+            "Updated Cost of Storage" or "Water Demand Forecasting" => "Water Management",
+            "Stage Damage Organizer" or "Shapefile Uncertainty Statistics" => "Data Analysis",
+            _ => "Other Mods"
+        };
+
+        public int ExplorerCategoryOrder => ExplorerCategory switch
+        {
+            "Annualization and Cost" => 0,
+            "Benefits" => 1,
+            "Water Management" => 2,
+            "Data Analysis" => 3,
+            _ => 4
+        };
     }
 }
