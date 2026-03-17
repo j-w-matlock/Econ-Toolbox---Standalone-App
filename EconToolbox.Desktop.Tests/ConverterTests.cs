@@ -58,6 +58,20 @@ public class ConverterTests
         Assert.AreEqual(7d, unchanged);
     }
 
+
+    [TestMethod]
+    public void SafeNumberConverter_AllowsIntermediateDecimalInput()
+    {
+        var converter = new SafeNumberConverter();
+        var culture = CultureInfo.GetCultureInfo("en-US");
+
+        var trailingDecimal = converter.ConvertBack("0.", typeof(double), null, culture);
+        var signOnly = converter.ConvertBack("-", typeof(double), null, culture);
+
+        Assert.AreEqual(Binding.DoNothing, trailingDecimal);
+        Assert.AreEqual(Binding.DoNothing, signOnly);
+    }
+
     [TestMethod]
     public void SafeNumberConverter_RespectsCultureSeparators()
     {
