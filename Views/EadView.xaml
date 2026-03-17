@@ -124,7 +124,7 @@
                                   CanUserDeleteRows="True"
                                   SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                                   HeadersVisibility="Column"
-                                  ColumnWidth="SizeToHeader"
+                                  ColumnWidth="Auto"
                                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                                   Margin="0"
                                   behaviors:DataGridColumnsBehavior.ColumnsSource="{Binding ColumnDefinitions}"/>
@@ -197,7 +197,7 @@
                                   CanUserDeleteRows="False"
                                   HeadersVisibility="Column"
                                   IsReadOnly="True"
-                                  ColumnWidth="SizeToHeader">
+                                  ColumnWidth="Auto">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Damage Column"
                                                     Binding="{Binding Label}"

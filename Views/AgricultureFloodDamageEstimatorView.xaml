@@ -98,7 +98,7 @@
                         <TextBlock Text="CDL raster summary" Style="{StaticResource Text.SectionTitle}"/>
                         <TextBlock Grid.Column="1" Text="{Binding EstimatorCdlTotalAcreageDisplay}" Style="{StaticResource Text.Body}" FontWeight="SemiBold"/>
                     </Grid>
-                    <DataGrid ItemsSource="{Binding EstimatorCdlSummaryRows}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" MinHeight="120" ColumnWidth="SizeToHeader" HeadersVisibility="Column" RowHeaderWidth="0">
+                    <DataGrid ItemsSource="{Binding EstimatorCdlSummaryRows}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" MinHeight="120" ColumnWidth="Auto" HeadersVisibility="Column" RowHeaderWidth="0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Crop code" Binding="{Binding CropCode}" Width="90"/>
                             <DataGridTextColumn Header="Crop" Binding="{Binding CropName}" Width="*"/>
@@ -113,7 +113,7 @@
             <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
                     <TextBlock Text="Spatial crop depth summary" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
-                    <DataGrid ItemsSource="{Binding EstimatorSpatialCropRows}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" MinHeight="120" ColumnWidth="SizeToHeader" HeadersVisibility="Column" RowHeaderWidth="0">
+                    <DataGrid ItemsSource="{Binding EstimatorSpatialCropRows}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" MinHeight="120" ColumnWidth="Auto" HeadersVisibility="Column" RowHeaderWidth="0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Crop code" Binding="{Binding CropCode}" Width="90"/>
                             <DataGridTextColumn Header="Crop" Binding="{Binding CropName}" Width="*"/>
@@ -127,7 +127,7 @@
             <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
                     <TextBlock Text="Flood events (editable frequencies)" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
-                    <DataGrid ItemsSource="{Binding EstimatorEvents}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" MinHeight="120" ColumnWidth="SizeToHeader" HeadersVisibility="Column" RowHeaderWidth="0">
+                    <DataGrid ItemsSource="{Binding EstimatorEvents}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" MinHeight="120" ColumnWidth="Auto" HeadersVisibility="Column" RowHeaderWidth="0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
                             <DataGridTextColumn Header="Depth (ft)" Binding="{Binding DepthFeet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
@@ -143,7 +143,7 @@
             <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
                     <TextBlock Text="Analysis summary metrics" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
-                    <DataGrid ItemsSource="{Binding EstimatorSummaryRows}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" MinHeight="120" ColumnWidth="SizeToHeader" HeadersVisibility="Column" RowHeaderWidth="0">
+                    <DataGrid ItemsSource="{Binding EstimatorSummaryRows}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" MinHeight="120" ColumnWidth="Auto" HeadersVisibility="Column" RowHeaderWidth="0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Metric" Binding="{Binding Metric}" Width="220"/>
                             <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="180"/>
@@ -155,7 +155,7 @@
             <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.StackLarge}">
                 <StackPanel>
                     <TextBlock Text="Comprehensive event report" Style="{StaticResource Text.SectionTitle}" Margin="{StaticResource Margin.Stack}"/>
-                    <DataGrid ItemsSource="{Binding EstimatorResults}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" MinHeight="120" ColumnWidth="SizeToHeader" HeadersVisibility="Column" RowHeaderWidth="0">
+                    <DataGrid ItemsSource="{Binding EstimatorResults}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" MinHeight="120" ColumnWidth="Auto" HeadersVisibility="Column" RowHeaderWidth="0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Event" Binding="{Binding EventName}" Width="*"/>
                             <DataGridTextColumn Header="Mean damage" Binding="{Binding MeanDamage, StringFormat={}{0:C0}}" Width="120"/>

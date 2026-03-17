@@ -183,7 +183,7 @@
                                           SelectedItem="{Binding SelectedScenario, Mode=TwoWay}"
                                           AutoGenerateColumns="False"
                                           HeadersVisibility="Column"
-                                          ColumnWidth="SizeToHeader"
+                                          ColumnWidth="Auto"
                                           Margin="0,8,0,0">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Scenario Name"
@@ -330,7 +330,7 @@
                                 <TextBlock Text="IDC Schedule" Style="{StaticResource Text.SectionHeader}"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
-                                <DataGrid CanUserResizeColumns="True" x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="Column" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
+                                <DataGrid CanUserResizeColumns="True" x:Name="IdcDataGrid" ItemsSource="{Binding IdcEntries}" AutoGenerateColumns="False" Margin="0" HeadersVisibility="Column" Validation.Error="DataGrid_OnError" ColumnWidth="Auto">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Cost">
                                             <DataGridTextColumn.Binding>
@@ -390,7 +390,7 @@
                                 <TextBlock Text="Future Costs" Style="{StaticResource Text.SectionHeader}"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
-                                <DataGrid CanUserResizeColumns="True" x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError" ColumnWidth="SizeToHeader">
+                                <DataGrid CanUserResizeColumns="True" x:Name="FutureCostsDataGrid" ItemsSource="{Binding FutureCosts}" AutoGenerateColumns="False" Margin="0" Validation.Error="DataGrid_OnError" ColumnWidth="Auto">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Cost">
                                             <DataGridTextColumn.Binding>
