@@ -27,6 +27,31 @@ public class AnnualizerViewModelTests
         Assert.AreEqual(770_000, frm!.Amount, 0.001);
     }
 
+
+    [TestMethod]
+    public void TotalAnnualBenefits_OnlySumsIncludedRows_AndSupportsCustomRows()
+    {
+        var viewModel = new AnnualizerViewModel(new StubExcelExportService());
+
+        var frm = Find(viewModel.AnnualBenefitEntries, "frm");
+        Assert.IsNotNull(frm);
+
+        frm!.Amount = 100_000;
+        frm.IncludeInTotal = true;
+
+        viewModel.AddAnnualBenefitRowCommand.Execute(null);
+
+        var custom = viewModel.AnnualBenefitEntries[^1];
+        custom.Amount = 250_000;
+        custom.IncludeInTotal = false;
+
+        Assert.AreEqual(100_000, viewModel.TotalAnnualBenefits, 0.001);
+
+        custom.IncludeInTotal = true;
+
+        Assert.AreEqual(350_000, viewModel.TotalAnnualBenefits, 0.001);
+    }
+
     private static AnnualBenefitEntry? Find(IEnumerable<AnnualBenefitEntry> entries, string key)
     {
         foreach (var entry in entries)

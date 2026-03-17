@@ -173,8 +173,19 @@
                                            Style="{StaticResource Text.SectionHeader}"
                                            Margin="0,16,0,4"/>
                                 <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,8" TextWrapping="Wrap">
-                                    Review annual benefits pulled from connected modules and edit FRM directly.
+                                    Review annual benefits, add custom rows, and use Include checkboxes to control the total.
                                 </TextBlock>
+                                <DockPanel LastChildFill="False" Margin="0,0,0,6">
+                                    <Button Content="Add Benefit Row"
+                                            Command="{Binding AddAnnualBenefitRowCommand}"
+                                            Style="{StaticResource Button.Secondary}"
+                                            DockPanel.Dock="Left"/>
+                                    <Button Content="Remove Excluded Custom Rows"
+                                            Command="{Binding RemoveAnnualBenefitRowCommand}"
+                                            Style="{StaticResource Button.Secondary}"
+                                            Margin="8,0,0,0"
+                                            DockPanel.Dock="Left"/>
+                                </DockPanel>
                                 <DataGrid ItemsSource="{Binding AnnualBenefitEntries}"
                                           AutoGenerateColumns="False"
                                           CanUserAddRows="False"
@@ -183,9 +194,11 @@
                                           Margin="0,0,0,6"
                                           ColumnWidth="*">
                                     <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn Header="Include"
+                                                                Binding="{Binding IncludeInTotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                Width="Auto"/>
                                         <DataGridTextColumn Header="Benefit"
-                                                            Binding="{Binding Name}"
-                                                            IsReadOnly="True"
+                                                            Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                             Width="2*"/>
                                         <DataGridTextColumn Header="Annual Value"
                                                             Binding="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
@@ -206,14 +219,8 @@
                                         <Style TargetType="DataGridRow">
                                             <Setter Property="IsEnabled" Value="True"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Key}" Value="recreation">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Key}" Value="traffic-delay">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Key}" Value="abr">
-                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                <DataTrigger Binding="{Binding IsModuleLinked}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource App.TextSubtle}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

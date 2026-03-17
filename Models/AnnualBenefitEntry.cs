@@ -12,5 +12,11 @@ namespace EconToolbox.Desktop.Models
 
         [ObservableProperty]
         private double _amount;
+
+        [ObservableProperty]
+        private bool _includeInTotal = true;
+
+        [ObservableProperty]
+        private bool _isModuleLinked;
     }
 }
