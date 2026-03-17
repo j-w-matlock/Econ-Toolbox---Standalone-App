@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using EconToolbox.Desktop.Models;
+using EconToolbox.Desktop.Helpers;
 using EconToolbox.Desktop.Services;
 using System.Windows;
 
@@ -122,7 +123,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<AnnualBenefitEntry> AnnualBenefitEntries => _annualBenefitEntries;
 
-        public double TotalAnnualBenefits => AnnualBenefitEntries.Sum(entry => entry.Amount);
+        public double TotalAnnualBenefits => AnnualBenefitEntries.Where(entry => entry.IncludeInTotal).Sum(entry => entry.Amount);
 
         public ObservableCollection<FutureCostEntry> FutureCosts
         {
@@ -288,6 +289,8 @@ namespace EconToolbox.Desktop.ViewModels
         public IRelayCommand ResetFutureCostsCommand { get; }
         public IRelayCommand AddScenarioComparisonCommand { get; }
         public IRelayCommand ResetScenarioComparisonsCommand { get; }
+        public IRelayCommand AddAnnualBenefitRowCommand { get; }
+        public IRelayCommand RemoveAnnualBenefitRowCommand { get; }
 
         private readonly IExcelExportService _excelExportService;
 
@@ -301,6 +304,8 @@ namespace EconToolbox.Desktop.ViewModels
             ResetFutureCostsCommand = new RelayCommand(ResetFutureCostEntries);
             AddScenarioComparisonCommand = new RelayCommand(AddScenarioComparison);
             ResetScenarioComparisonsCommand = new RelayCommand(ResetScenarioComparisons);
+            AddAnnualBenefitRowCommand = new RelayCommand(AddAnnualBenefitRow);
+            RemoveAnnualBenefitRowCommand = new RelayCommand(RemoveAnnualBenefitRows);
 
             AttachFutureCostHandlers(_futureCosts);
             AttachFutureCostHandlers(_idcEntries);
@@ -354,19 +359,21 @@ namespace EconToolbox.Desktop.ViewModels
                 return;
 
             AddAnnualBenefitEntry("frm", "FRM", AnnualBenefits);
-            AddAnnualBenefitEntry("recreation", "Recreation", 0d);
-            AddAnnualBenefitEntry("traffic-delay", "Traffic Delay", 0d);
-            AddAnnualBenefitEntry("abr", "ABR", 0d);
+            AddAnnualBenefitEntry("recreation", "Recreation", 0d, isModuleLinked: true);
+            AddAnnualBenefitEntry("traffic-delay", "Traffic Delay", 0d, isModuleLinked: true);
+            AddAnnualBenefitEntry("abr", "ABR", 0d, isModuleLinked: true);
             RecalculateAnnualBenefitsTotal();
         }
 
-        private void AddAnnualBenefitEntry(string key, string name, double amount)
+        private void AddAnnualBenefitEntry(string key, string name, double amount, bool includeInTotal = true, bool isModuleLinked = false)
         {
             var entry = new AnnualBenefitEntry
             {
                 Key = key,
                 Name = name,
-                Amount = amount
+                Amount = amount,
+                IncludeInTotal = includeInTotal,
+                IsModuleLinked = isModuleLinked
             };
 
             entry.PropertyChanged += AnnualBenefitEntryOnPropertyChanged;
@@ -375,10 +382,11 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void AnnualBenefitEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != nameof(AnnualBenefitEntry.Amount))
-                return;
-
-            RecalculateAnnualBenefitsTotal();
+            if (e.PropertyName == nameof(AnnualBenefitEntry.Amount)
+                || e.PropertyName == nameof(AnnualBenefitEntry.IncludeInTotal))
+            {
+                RecalculateAnnualBenefitsTotal();
+            }
         }
 
         private bool SetAnnualBenefitAmount(string key, double amount)
@@ -424,6 +432,39 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 RecalculateAnnualBenefitsTotal();
             }
+        }
+
+        private void AddAnnualBenefitRow()
+        {
+            var suffix = 1;
+            var existingNames = new HashSet<string>(AnnualBenefitEntries.Select(entry => entry.Name), StringComparer.OrdinalIgnoreCase);
+            var candidateName = $"Benefit {suffix}";
+            while (existingNames.Contains(candidateName))
+            {
+                suffix++;
+                candidateName = $"Benefit {suffix}";
+            }
+
+            AddAnnualBenefitEntry($"custom-{Guid.NewGuid():N}", candidateName, 0d);
+            RecalculateAnnualBenefitsTotal();
+        }
+
+        private void RemoveAnnualBenefitRows()
+        {
+            var removableRows = AnnualBenefitEntries
+                .Where(entry => !entry.IsModuleLinked && !string.Equals(entry.Key, "frm", StringComparison.OrdinalIgnoreCase) && !entry.IncludeInTotal)
+                .ToList();
+
+            if (removableRows.Count == 0)
+                return;
+
+            foreach (var row in removableRows)
+            {
+                row.PropertyChanged -= AnnualBenefitEntryOnPropertyChanged;
+                AnnualBenefitEntries.Remove(row);
+            }
+
+            RecalculateAnnualBenefitsTotal();
         }
 
         private void TryInitializeExampleAnnualizerData()
@@ -816,7 +857,9 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     Key = entry.Key,
                     Name = entry.Name,
-                    Amount = entry.Amount
+                    Amount = entry.Amount,
+                    IncludeInTotal = entry.IncludeInTotal,
+                    IsModuleLinked = entry.IsModuleLinked
                 }).ToList(),
                 FutureCosts = FutureCosts.Select(entry => new AnnualizerFutureCostData
                 {
@@ -865,16 +908,24 @@ namespace EconToolbox.Desktop.ViewModels
                 AnnualOm = data.AnnualOm;
                 if (data.AnnualBenefitEntries != null && data.AnnualBenefitEntries.Count > 0)
                 {
-                    foreach (var entry in AnnualBenefitEntries)
+                    foreach (var existing in AnnualBenefitEntries)
                     {
-                        var restored = data.AnnualBenefitEntries.FirstOrDefault(candidate =>
-                            string.Equals(candidate.Key, entry.Key, StringComparison.OrdinalIgnoreCase));
-                        if (restored != null)
-                        {
-                            entry.Name = string.IsNullOrWhiteSpace(restored.Name) ? entry.Name : restored.Name;
-                            entry.Amount = restored.Amount;
-                        }
+                        existing.PropertyChanged -= AnnualBenefitEntryOnPropertyChanged;
                     }
+
+                    AnnualBenefitEntries.Clear();
+
+                    foreach (var restored in data.AnnualBenefitEntries)
+                    {
+                        AddAnnualBenefitEntry(
+                            restored.Key,
+                            string.IsNullOrWhiteSpace(restored.Name) ? "Benefit" : restored.Name,
+                            restored.Amount,
+                            restored.IncludeInTotal,
+                            restored.IsModuleLinked);
+                    }
+
+                    RecalculateAnnualBenefitsTotal();
                 }
                 else
                 {
