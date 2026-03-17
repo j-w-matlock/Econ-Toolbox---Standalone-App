@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -35,6 +36,10 @@ namespace EconToolbox.Desktop.ViewModels
         private ICommand? _currentComputeCommand;
         private IDiagnosticsProvider? _diagnosticsProvider;
         private readonly Dictionary<Type, BaseViewModel> _viewModelCache = new();
+        private AnnualizerViewModel? _annualizerForBenefitsSync;
+        private UdvViewModel? _udvForBenefitsSync;
+        private TrafficDelayAnalysisViewModel? _trafficForBenefitsSync;
+        private AdvancedBridgeReplacementViewModel? _abrForBenefitsSync;
         public ModuleDefinition? SelectedModule
         {
             get => _selectedModule;
@@ -508,6 +513,7 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             Modules = modules;
+            WireAnnualBenefitsSynchronization();
 
             ApplyLayoutSettings();
             ExplorerSelectedModule = Modules.Count > 0 ? Modules[0] : null;
@@ -516,6 +522,42 @@ namespace EconToolbox.Desktop.ViewModels
             {
                 UpdateDiagnostics();
             }
+        }
+
+        private void WireAnnualBenefitsSynchronization()
+        {
+            _annualizerForBenefitsSync = GetModuleViewModel<AnnualizerViewModel>();
+            _udvForBenefitsSync = GetModuleViewModel<UdvViewModel>();
+            _trafficForBenefitsSync = GetModuleViewModel<TrafficDelayAnalysisViewModel>();
+            _abrForBenefitsSync = GetModuleViewModel<AdvancedBridgeReplacementViewModel>();
+
+            _udvForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
+            _trafficForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
+            _abrForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
+
+            SyncAnnualBenefitsFromModules();
+        }
+
+        private void OnBenefitSourcePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(UdvViewModel.AnnualRecreationBenefit) ||
+                e.PropertyName == nameof(TrafficDelayAnalysisViewModel.AnnualizedTrafficImpacts) ||
+                e.PropertyName == nameof(AdvancedBridgeReplacementViewModel.AverageAnnualAdvancedBridgeReplacementBenefit))
+            {
+                SyncAnnualBenefitsFromModules();
+            }
+        }
+
+        private void SyncAnnualBenefitsFromModules()
+        {
+            if (_annualizerForBenefitsSync == null)
+            {
+                return;
+            }
+
+            _annualizerForBenefitsSync.UpdateLinkedAnnualBenefit("recreation", _udvForBenefitsSync?.AnnualRecreationBenefit ?? 0d);
+            _annualizerForBenefitsSync.UpdateLinkedAnnualBenefit("traffic-delay", _trafficForBenefitsSync?.AnnualizedTrafficImpacts ?? 0d);
+            _annualizerForBenefitsSync.UpdateLinkedAnnualBenefit("abr", _abrForBenefitsSync?.AverageAnnualAdvancedBridgeReplacementBenefit ?? 0d);
         }
 
         private void ApplyLayoutSettings()

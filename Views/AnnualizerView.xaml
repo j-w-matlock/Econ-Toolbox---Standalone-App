@@ -168,6 +168,66 @@
                                         </ComboBox.Style>
                                     </ComboBox>
                                 </Grid>
+
+                                <TextBlock Text="Annual Benefits"
+                                           Style="{StaticResource Text.SectionHeader}"
+                                           Margin="0,16,0,4"/>
+                                <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,8" TextWrapping="Wrap">
+                                    Review annual benefits pulled from connected modules and edit FRM directly.
+                                </TextBlock>
+                                <DataGrid ItemsSource="{Binding AnnualBenefitEntries}"
+                                          AutoGenerateColumns="False"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          HeadersVisibility="Column"
+                                          Margin="0,0,0,6"
+                                          ColumnWidth="*">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Benefit"
+                                                            Binding="{Binding Name}"
+                                                            IsReadOnly="True"
+                                                            Width="2*"/>
+                                        <DataGridTextColumn Header="Annual Value"
+                                                            Binding="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
+                                                            Width="*">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                            <DataGridTextColumn.EditingElementStyle>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.EditingElementStyle>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow">
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Key}" Value="recreation">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Key}" Value="traffic-delay">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Key}" Value="abr">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+                                </DataGrid>
+                                <DockPanel LastChildFill="False">
+                                    <TextBlock Text="Total Annual Benefits"
+                                               Style="{StaticResource Text.BodyStrong}"
+                                               DockPanel.Dock="Left"/>
+                                    <TextBlock Text="{Binding TotalAnnualBenefits, StringFormat=C0}"
+                                               Style="{StaticResource Text.BodyStrong}"
+                                               DockPanel.Dock="Right"
+                                               HorizontalAlignment="Right"/>
+                                </DockPanel>
                             </StackPanel>
                         </Border>
 
