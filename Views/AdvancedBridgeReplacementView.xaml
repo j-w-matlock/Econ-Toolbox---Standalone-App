@@ -1,0 +1,92 @@
+<UserControl x:Class="EconToolbox.Desktop.Views.AdvancedBridgeReplacementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
+             mc:Ignorable="d"
+             Background="{DynamicResource App.SurfaceAlt}"
+             d:DataContext="{d:DesignInstance Type=vm:AdvancedBridgeReplacementViewModel}">
+    <UserControl.Resources>
+        <Style TargetType="TextBox" BasedOn="{StaticResource Form.TextBox}"/>
+        <Style x:Key="FormulaTextStyle" TargetType="TextBlock" BasedOn="{StaticResource Text.Caption}">
+            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Foreground" Value="{DynamicResource App.TextSecondary}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="{StaticResource Padding.Card}">
+        <StackPanel Style="{StaticResource Layout.ContentStack}">
+            <Border Style="{StaticResource Border.Explainer}">
+                <StackPanel>
+                    <TextBlock Text="Advanced Bridge Replacement Benefits (USACE Policy)" Style="{StaticResource Text.SectionTitleAccent}"/>
+                    <TextBlock Margin="{StaticResource Margin.TopSmall}" Style="{StaticResource Text.Body}" TextWrapping="Wrap"
+                               Text="Computes equivalent annual benefits for advanced bridge replacement using the provided formula map: PW_repl + PW_om converted by CRF."/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Border.ResultInfo}">
+                <Grid Grid.IsSharedSizeScope="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Label"/>
+                        <ColumnDefinition Width="170"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Cost of new bridge ($)" Margin="0,0,10,8"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CostOfNewBridge, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="1" Text="Life of new bridge (n, years)" Margin="0,0,10,8"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LifeOfNewBridgeYears, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="2" Text="Remaining life existing bridge (R, years)" Margin="0,0,10,8"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding RemainingLifeOfExistingBridgeYears, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="3" Text="Discount rate (i, decimal)" Margin="0,0,10,8"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding DiscountRate, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="4" Text="Annual O&amp;M + rehab existing bridge ($/yr)" Margin="0,0,10,8"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding AnnualOmAndRehabExistingBridge, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="5" Text="Annual O&amp;M new bridge ($/yr)" Margin="0,0,10,0"/>
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding AnnualOmNewBridge, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource Border.ResultInfo}">
+                <StackPanel>
+                    <TextBlock Text="Calculated outputs" Style="{StaticResource Text.SectionTitle}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Capital recovery factor (CRF)"/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding CapitalRecoveryFactor, StringFormat={}{0:N8}}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Annual cost of new bridge (A_b)"/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AnnualCostOfNewBridge, StringFormat={}{0:C2}}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Present worth of avoided future replacement (PW_repl)"/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding PwOfAvoidedFutureReplacementCost, StringFormat={}{0:C2}}"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding AvoidedReplacementFormula}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Present worth of O&amp;M savings (PW_om)"/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding PwOfOmRehabSavings, StringFormat={}{0:C2}}"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding OmSavingsFormula}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Total present worth credit"/>
+                    <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalPresentWorthCredit, StringFormat={}{0:C2}}"/>
+
+                    <TextBlock Margin="0,8,0,0" Text="Average annual advanced bridge replacement benefit"/>
+                    <TextBlock Style="{StaticResource Text.SectionTitleAccent}" Text="{Binding AverageAnnualAdvancedBridgeReplacementBenefit, StringFormat={}{0:C2}/yr}"/>
+                    <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding FinalBenefitFormula}"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

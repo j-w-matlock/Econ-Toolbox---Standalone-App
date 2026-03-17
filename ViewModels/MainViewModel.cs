@@ -481,7 +481,25 @@ namespace EconToolbox.Desktop.ViewModels
                         "Summarizes daily delay impacts, total delay impacts, and total traffic impacts."
                     },
                     "Example: Evaluate 21 days of flood detours with 1,180 trips to compare incremental operating and delay costs for a temporary closure.",
-                    typeof(TrafficDelayAnalysisViewModel))
+                    typeof(TrafficDelayAnalysisViewModel)),
+                new ModuleDefinition(
+                    "Advanced Bridge Replacement",
+                    "Calculate equivalent annual benefits of advanced bridge replacement using USACE present-worth policy relationships.",
+                    "Implements the provided workbook equations for CRF, avoided replacement present worth, O&M savings, and final annualized benefit.",
+                    new[]
+                    {
+                        "Enter bridge first cost, new bridge life (n), and remaining life of the existing bridge (R).",
+                        "Provide discount rate as a decimal (for example 0.0275) and annual O&M/rehab values.",
+                        "Confirm extension period and O&M savings assumptions before using the annual benefit in planning comparisons."
+                    },
+                    new[]
+                    {
+                        "Computes CRF and annualized new-bridge cost (A_b) from first cost and bridge life.",
+                        "Calculates PW_repl and PW_om using P/A and P/F factors based on extension and remaining-life periods.",
+                        "Reports total present worth credit and equivalent annual advanced bridge replacement benefit."
+                    },
+                    "Example: Compare replacing a bridge today versus waiting 18 years when a $29.4M replacement and reduced O&M are expected.",
+                    typeof(AdvancedBridgeReplacementViewModel))
             };
 
             if (EnableAgricultureDepthDamageModule)
@@ -715,7 +733,8 @@ namespace EconToolbox.Desktop.ViewModels
                     Udv = CaptureState<UdvData>(GetModuleViewModel<UdvViewModel>()),
                     RecreationCapacity = CaptureState<RecreationCapacityData>(GetModuleViewModel<RecreationCapacityViewModel>()),
                     Gantt = CaptureState<GanttData>(GetModuleViewModel<GanttViewModel>()),
-                    StageDamageOrganizer = CaptureState<StageDamageOrganizerData>(GetModuleViewModel<StageDamageOrganizerViewModel>())
+                    StageDamageOrganizer = CaptureState<StageDamageOrganizerData>(GetModuleViewModel<StageDamageOrganizerViewModel>()),
+                    AdvancedBridgeReplacement = CaptureState<AdvancedBridgeReplacementData>(GetModuleViewModel<AdvancedBridgeReplacementViewModel>())
                 };
 
                 string json = JsonSerializer.Serialize(project, CreateProjectJsonOptions());
@@ -763,6 +782,7 @@ namespace EconToolbox.Desktop.ViewModels
                 RestoreState(GetModuleViewModel<RecreationCapacityViewModel>(), project.RecreationCapacity);
                 RestoreState(GetModuleViewModel<GanttViewModel>(), project.Gantt);
                 RestoreState(GetModuleViewModel<StageDamageOrganizerViewModel>(), project.StageDamageOrganizer);
+                RestoreState(GetModuleViewModel<AdvancedBridgeReplacementViewModel>(), project.AdvancedBridgeReplacement);
                 UpdateDiagnostics();
             }
             catch (Exception ex)

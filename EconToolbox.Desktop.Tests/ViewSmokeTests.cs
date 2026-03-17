@@ -57,6 +57,19 @@ public class ViewSmokeTests
         Assert.IsNotNull(view.Content);
     }
 
+
+    [STATestMethod]
+    public void AdvancedBridgeReplacementView_Renders()
+    {
+        var view = new AdvancedBridgeReplacementView
+        {
+            DataContext = new AdvancedBridgeReplacementViewModel()
+        };
+
+        view.Measure(new Size(100, 100));
+        Assert.IsNotNull(view.Content);
+    }
+
     [STATestMethod]
     public void StageDamageOrganizerView_Renders()
     {

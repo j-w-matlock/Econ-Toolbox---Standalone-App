@@ -11,5 +11,6 @@ namespace EconToolbox.Desktop.Models
         public RecreationCapacityData? RecreationCapacity { get; set; }
         public GanttData? Gantt { get; set; }
         public StageDamageOrganizerData? StageDamageOrganizer { get; set; }
+        public AdvancedBridgeReplacementData? AdvancedBridgeReplacement { get; set; }
     }
 }
