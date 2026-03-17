@@ -121,6 +121,7 @@ namespace EconToolbox.Desktop.ViewModels
         public IRelayCommand ToggleLeftPaneCommand { get; }
         public IRelayCommand ToggleRightPaneCommand { get; }
         public IRelayCommand ShowReadMeCommand { get; }
+        public IRelayCommand ClearModuleSearchCommand { get; }
 
         private bool _isDetailsPaneVisible = true;
         public bool IsDetailsPaneVisible
@@ -221,6 +222,7 @@ namespace EconToolbox.Desktop.ViewModels
         private bool _isApplyingSettings;
         private double _zoomPercent = 100;
         private string _moduleSearchText = string.Empty;
+        private int _filteredModuleCount;
         private string _shellStatusMessage = "Ready";
 
         public string ModuleSearchText
@@ -231,9 +233,28 @@ namespace EconToolbox.Desktop.ViewModels
                 if (SetProperty(ref _moduleSearchText, value))
                 {
                     FilteredModulesView.Refresh();
+                    UpdateFilteredModuleMetrics();
+                    OnPropertyChanged(nameof(HasModuleSearchText));
+                    ClearModuleSearchCommand.NotifyCanExecuteChanged();
                 }
             }
         }
+
+        public bool HasModuleSearchText => !string.IsNullOrWhiteSpace(ModuleSearchText);
+
+        public int FilteredModuleCount
+        {
+            get => _filteredModuleCount;
+            private set
+            {
+                if (SetProperty(ref _filteredModuleCount, value))
+                {
+                    OnPropertyChanged(nameof(HasFilteredModules));
+                }
+            }
+        }
+
+        public bool HasFilteredModules => FilteredModuleCount > 0;
 
         public bool HasUnsavedChanges => _viewModelCache.Values.Any(vm => vm.IsDirty);
 
@@ -292,6 +313,7 @@ namespace EconToolbox.Desktop.ViewModels
             ToggleLeftPaneCommand = new RelayCommand(ToggleExplorerPane);
             ToggleRightPaneCommand = new RelayCommand(ToggleDetailsPane);
             ShowReadMeCommand = new RelayCommand(ShowReadMe);
+            ClearModuleSearchCommand = new RelayCommand(ClearModuleSearch, () => HasModuleSearchText);
 
             ReadMeModule = new ModuleDefinition(
                 "Project README",
@@ -543,6 +565,7 @@ namespace EconToolbox.Desktop.ViewModels
             FilteredModulesView.SortDescriptions.Add(new SortDescription(nameof(ModuleDefinition.Title), ListSortDirection.Ascending));
             FilteredModulesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(ModuleDefinition.ExplorerCategory)));
             FilteredModulesView.Filter = FilterModule;
+            UpdateFilteredModuleMetrics();
             WireAnnualBenefitsSynchronization();
 
             ApplyLayoutSettings();
@@ -554,6 +577,16 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             UpdateShellStatus("Ready");
+        }
+
+        private void UpdateFilteredModuleMetrics()
+        {
+            FilteredModuleCount = FilteredModulesView.Cast<object>().Count();
+        }
+
+        private void ClearModuleSearch()
+        {
+            ModuleSearchText = string.Empty;
         }
 
         private bool FilterModule(object obj)
