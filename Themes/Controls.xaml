@@ -108,6 +108,8 @@
         <Setter Property="Padding" Value="{StaticResource Padding.Small}"/>
         <Setter Property="Margin" Value="{StaticResource Margin.RightSmall}"/>
         <Setter Property="FontSize" Value="12"/>
+        <Setter Property="MinHeight" Value="30"/>
+        <Setter Property="MinWidth" Value="64"/>
     </Style>
 
     <Style x:Key="Button.PaneToggle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">

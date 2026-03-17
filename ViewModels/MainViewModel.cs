@@ -122,6 +122,7 @@ namespace EconToolbox.Desktop.ViewModels
         public IRelayCommand ToggleRightPaneCommand { get; }
         public IRelayCommand ShowReadMeCommand { get; }
         public IRelayCommand ClearModuleSearchCommand { get; }
+        public IRelayCommand ResetZoomCommand { get; }
 
         private bool _isDetailsPaneVisible = true;
         public bool IsDetailsPaneVisible
@@ -256,6 +257,10 @@ namespace EconToolbox.Desktop.ViewModels
 
         public bool HasFilteredModules => FilteredModuleCount > 0;
 
+        public string ModuleFilterSummary => HasModuleSearchText
+            ? $"Showing {FilteredModuleCount} of {Modules.Count} modules"
+            : $"Showing all {Modules.Count} modules";
+
         public bool HasUnsavedChanges => _viewModelCache.Values.Any(vm => vm.IsDirty);
 
         public string ShellStatusMessage
@@ -284,6 +289,7 @@ namespace EconToolbox.Desktop.ViewModels
 
                 _zoomPercent = clamped;
                 OnPropertyChanged();
+                ResetZoomCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -314,6 +320,7 @@ namespace EconToolbox.Desktop.ViewModels
             ToggleRightPaneCommand = new RelayCommand(ToggleDetailsPane);
             ShowReadMeCommand = new RelayCommand(ShowReadMe);
             ClearModuleSearchCommand = new RelayCommand(ClearModuleSearch, () => HasModuleSearchText);
+            ResetZoomCommand = new RelayCommand(ResetZoom, () => Math.Abs(ZoomPercent - 100) > 0.1);
 
             ReadMeModule = new ModuleDefinition(
                 "Project README",
@@ -582,11 +589,17 @@ namespace EconToolbox.Desktop.ViewModels
         private void UpdateFilteredModuleMetrics()
         {
             FilteredModuleCount = FilteredModulesView.Cast<object>().Count();
+            OnPropertyChanged(nameof(ModuleFilterSummary));
         }
 
         private void ClearModuleSearch()
         {
             ModuleSearchText = string.Empty;
+        }
+
+        private void ResetZoom()
+        {
+            ZoomPercent = 100;
         }
 
         private bool FilterModule(object obj)
