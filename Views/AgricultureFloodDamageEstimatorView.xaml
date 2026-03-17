@@ -48,12 +48,12 @@
 
                     <TextBlock Text="{Binding EstimatorSpatialStatus}" Style="{StaticResource Text.Body}" TextWrapping="Wrap" Margin="{StaticResource Margin.StackSmall}"/>
 
-                    <Border BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="6" Height="260" Margin="{StaticResource Margin.StackSmall}">
-                        <Canvas Background="#F7FAFC">
-                            <Rectangle Width="{Binding EstimatorCdlRect.Width}" Height="{Binding EstimatorCdlRect.Height}" Canvas.Left="{Binding EstimatorCdlRect.X}" Canvas.Top="{Binding EstimatorCdlRect.Y}" Fill="#7BB661" Opacity="0.45" Stroke="#407A2A" StrokeThickness="2"/>
-                            <Rectangle Width="{Binding EstimatorDepthRect.Width}" Height="{Binding EstimatorDepthRect.Height}" Canvas.Left="{Binding EstimatorDepthRect.X}" Canvas.Top="{Binding EstimatorDepthRect.Y}" Fill="#4A90E2" Opacity="0.35" Stroke="#2C5F95" StrokeThickness="2"/>
-                            <Polyline Points="{Binding EstimatorPolygonPreviewPoints}" Stroke="#B55400" StrokeThickness="3"/>
-                            <TextBlock Canvas.Left="24" Canvas.Top="226" Text="Green=CDL, Blue=Depth Raster, Orange=Polygon"/>
+                    <Border Style="{StaticResource Border.Panel}" Height="260" Margin="{StaticResource Margin.StackSmall}">
+                        <Canvas Background="{DynamicResource App.Visualization.PreviewBackground}">
+                            <Rectangle Width="{Binding EstimatorCdlRect.Width}" Height="{Binding EstimatorCdlRect.Height}" Canvas.Left="{Binding EstimatorCdlRect.X}" Canvas.Top="{Binding EstimatorCdlRect.Y}" Fill="{DynamicResource App.Visualization.CdlFill}" Opacity="0.45" Stroke="{DynamicResource App.Visualization.CdlStroke}" StrokeThickness="2"/>
+                            <Rectangle Width="{Binding EstimatorDepthRect.Width}" Height="{Binding EstimatorDepthRect.Height}" Canvas.Left="{Binding EstimatorDepthRect.X}" Canvas.Top="{Binding EstimatorDepthRect.Y}" Fill="{DynamicResource App.Visualization.DepthFill}" Opacity="0.35" Stroke="{DynamicResource App.Visualization.DepthStroke}" StrokeThickness="2"/>
+                            <Polyline Points="{Binding EstimatorPolygonPreviewPoints}" Stroke="{DynamicResource App.Visualization.PolygonStroke}" StrokeThickness="3"/>
+                            <TextBlock Canvas.Left="24" Canvas.Top="226" Text="Green = CDL, Blue = depth raster, Orange = polygon" Style="{StaticResource Text.BodySmall}"/>
                         </Canvas>
                     </Border>
 

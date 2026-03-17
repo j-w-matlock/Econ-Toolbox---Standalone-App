@@ -58,6 +58,17 @@
     <SolidColorBrush x:Key="App.SelectionHoverBackground" Color="{DynamicResource App.SelectionHoverBackground.Color}"/>
     <SolidColorBrush x:Key="App.RowHoverBackground" Color="{DynamicResource App.RowHoverBackground.Color}"/>
 
+    <SolidColorBrush x:Key="App.Visualization.MapOverlayFill" Color="{DynamicResource App.Visualization.MapOverlayFill.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.MapOverlayBorder" Color="{DynamicResource App.Visualization.MapOverlayBorder.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.MapAxis" Color="{DynamicResource App.Visualization.MapAxis.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.PreviewBackground" Color="{DynamicResource App.Visualization.PreviewBackground.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.CdlFill" Color="{DynamicResource App.Visualization.CdlFill.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.CdlStroke" Color="{DynamicResource App.Visualization.CdlStroke.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.DepthFill" Color="{DynamicResource App.Visualization.DepthFill.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.DepthStroke" Color="{DynamicResource App.Visualization.DepthStroke.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.PolygonStroke" Color="{DynamicResource App.Visualization.PolygonStroke.Color}"/>
+    <SolidColorBrush x:Key="App.Visualization.ImageOverlay" Color="{DynamicResource App.Visualization.ImageOverlay.Color}"/>
+
     <SolidColorBrush x:Key="App.ScrollBarThumb" Color="{DynamicResource App.ScrollBarThumb.Color}"/>
     <SolidColorBrush x:Key="App.ScrollBarThumbHover" Color="{DynamicResource App.ScrollBarThumbHover.Color}"/>
     <SolidColorBrush x:Key="App.ScrollBarTrack" Color="{DynamicResource App.ScrollBarTrack.Color}"/>

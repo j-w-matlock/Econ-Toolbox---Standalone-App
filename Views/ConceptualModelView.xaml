@@ -501,7 +501,7 @@
                                                             </MultiBinding>
                                                         </Image.Clip>
                                                     </Image>
-                                                    <Border Background="#66000000"
+                                                    <Border Background="{DynamicResource App.Visualization.ImageOverlay}"
                                                             Visibility="{Binding HasImage, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                                     <TextBlock Text="{Binding Name}"
                                                                TextWrapping="Wrap"
