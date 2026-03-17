@@ -113,9 +113,11 @@
     </Style>
 
     <Style x:Key="Button.PaneToggle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
-        <Setter Property="Padding" Value="{StaticResource Padding.Small}"/>
+        <Setter Property="Padding" Value="12,8"/>
         <Setter Property="Margin" Value="{StaticResource Margin.LeftBottomSmall}"/>
         <Setter Property="FontSize" Value="12"/>
+        <Setter Property="MinHeight" Value="30"/>
+        <Setter Property="MinWidth" Value="58"/>
     </Style>
 
     <Style x:Key="Slider.Standard" TargetType="Slider">
@@ -148,14 +150,14 @@
         <Setter Property="Background" Value="{DynamicResource App.NavigationBackground}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
         <Setter Property="BorderThickness" Value="0,0,1,0"/>
-        <Setter Property="Padding" Value="{StaticResource Padding.Content}"/>
+        <Setter Property="Padding" Value="12,10,10,10"/>
     </Style>
 
     <Style x:Key="Border.DetailsPane" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource App.Surface2}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Surface2Border}"/>
         <Setter Property="BorderThickness" Value="0,0,1,0"/>
-        <Setter Property="Padding" Value="{StaticResource Padding.Content}"/>
+        <Setter Property="Padding" Value="12,10,10,10"/>
     </Style>
 
     <Style x:Key="Border.PaneFooter" TargetType="Border">
@@ -578,7 +580,7 @@
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
         <Setter Property="RowHeaderWidth" Value="0"/>
         <Setter Property="ColumnHeaderHeight" Value="{x:Static sys:Double.NaN}"/>
-        <Setter Property="RowHeight" Value="32"/>
+        <Setter Property="RowHeight" Value="36"/>
         <Setter Property="ColumnWidth" Value="Auto"/>
         <Setter Property="CanUserSortColumns" Value="True"/>
         <Setter Property="CanUserReorderColumns" Value="True"/>
@@ -623,7 +625,7 @@
     <Style TargetType="DataGridColumnHeader">
         <Setter Property="Background" Value="{DynamicResource App.SurfaceAlt}"/>
         <Setter Property="Foreground" Value="{DynamicResource App.TextSecondary}"/>
-        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="Padding" Value="12,8"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Divider}"/>
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Header}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
@@ -683,7 +685,7 @@
     </Style>
 
     <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
-        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="Padding" Value="10,6"/>
         <Setter Property="BorderBrush" Value="{DynamicResource App.Divider}"/>
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.CellDivider}"/>
         <Setter Property="Background" Value="Transparent"/>
@@ -801,13 +803,14 @@
     <Style x:Key="ListBox.Navigation" TargetType="ListBox">
         <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.None}"/>
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="0,2,0,2"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
         <Setter Property="behaviors:MouseWheelRoutingBehavior.Enable" Value="True"/>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ListBoxItem">
-                    <Setter Property="Margin" Value="0,2"/>
+                    <Setter Property="Margin" Value="0,3"/>
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Standard}"/>
                     <Setter Property="BorderBrush" Value="Transparent"/>
@@ -819,9 +822,9 @@
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="{StaticResource Radius.XS}"
+                                        CornerRadius="{StaticResource Radius.SM}"
                                         SnapsToDevicePixels="True">
-                                    <ContentPresenter Margin="10"
+                                    <ContentPresenter Margin="12,10"
                                                       VerticalAlignment="Center"
                                                       RecognizesAccessKey="True"/>
                                 </Border>
@@ -1025,7 +1028,7 @@
     </Style>
 
     <Style x:Key="GridSplitter.Pane" TargetType="GridSplitter">
-        <Setter Property="Width" Value="6"/>
+        <Setter Property="Width" Value="8"/>
         <Setter Property="Background" Value="{DynamicResource App.Divider}"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>
