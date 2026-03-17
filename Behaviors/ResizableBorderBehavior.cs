@@ -166,6 +166,11 @@ public static class ResizableBorderBehavior
                 element.Width = element.ActualWidth;
             }
 
+            if (element.HorizontalAlignment == HorizontalAlignment.Stretch)
+            {
+                element.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+
             var maxWidth = GetMaxDimension(element.MaxWidth);
             var nextWidth = Math.Max(minWidth, element.Width + horizontalChange);
             element.Width = Math.Min(maxWidth, nextWidth);
