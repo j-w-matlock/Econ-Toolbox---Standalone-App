@@ -466,7 +466,7 @@
                           RowHeight="28"
                           ColumnHeaderHeight="34"
                           Margin="0,0,0,12"
-                          ColumnWidth="SizeToHeader">
+                          ColumnWidth="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Category" Binding="{Binding Category}" CellStyle="{StaticResource CategoryCellStyle}">
                             <DataGridTextColumn.HeaderStyle>
@@ -580,7 +580,7 @@
                           RowHeight="28"
                           ColumnHeaderHeight="34"
                           Margin="0,0,0,5"
-                          ColumnWidth="SizeToHeader">
+                          ColumnWidth="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Category" Binding="{Binding Category}" CellStyle="{StaticResource CategoryCellStyle}">
                             <DataGridTextColumn.HeaderStyle>
@@ -774,7 +774,7 @@
                               Grid.ColumnSpan="2"
                               Height="150"
                               Margin="0,0,0,5"
-                              ColumnWidth="SizeToHeader"
+                              ColumnWidth="Auto"
                               VerticalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Item" Binding="{Binding Item}">

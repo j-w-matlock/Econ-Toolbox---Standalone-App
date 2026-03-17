@@ -568,7 +568,7 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="EnableRowVirtualization" Value="True"/>
         <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Visible"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="MaxWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}"/>
@@ -577,7 +577,11 @@
         <Setter Property="RowHeaderWidth" Value="0"/>
         <Setter Property="ColumnHeaderHeight" Value="{x:Static sys:Double.NaN}"/>
         <Setter Property="RowHeight" Value="32"/>
-        <Setter Property="ColumnWidth" Value="SizeToHeader"/>
+        <Setter Property="ColumnWidth" Value="Auto"/>
+        <Setter Property="CanUserSortColumns" Value="True"/>
+        <Setter Property="CanUserReorderColumns" Value="True"/>
+        <Setter Property="SelectionMode" Value="Extended"/>
+        <Setter Property="ClipboardCopyMode" Value="IncludeHeader"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="CellStyle" Value="{DynamicResource DataGridCellStyle}"/>
         <Setter Property="RowStyle" Value="{DynamicResource DataGridRowStyle}"/>

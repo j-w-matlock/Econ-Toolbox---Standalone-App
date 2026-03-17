@@ -178,7 +178,7 @@
                                           CanUserAddRows="False"
                                           CanUserDeleteRows="False"
                                           HeadersVisibility="Column"
-                                          ColumnWidth="SizeToHeader"
+                                          ColumnWidth="Auto"
                                           Margin="{StaticResource Margin.StackSmall}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Depth (ft)"
@@ -354,7 +354,7 @@
                                           CanUserDeleteRows="False"
                                           HeadersVisibility="Column"
                                           IsReadOnly="True"
-                                          ColumnWidth="SizeToHeader"
+                                          ColumnWidth="Auto"
                                           Margin="{StaticResource Margin.StackSmall}"
                                           RowHeaderWidth="0"
                                           MinHeight="160"
@@ -568,7 +568,7 @@
                                   HeadersVisibility="Column"
                                   Margin="0"
                                   IsReadOnly="True"
-                                  ColumnWidth="SizeToHeader">
+                                  ColumnWidth="Auto">
                             <DataGrid.Resources>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Margin" Value="2"/>
@@ -690,7 +690,7 @@
                                           CanUserDeleteRows="False"
                                           HeadersVisibility="Column"
                                           IsReadOnly="True"
-                                          ColumnWidth="SizeToHeader"
+                                          ColumnWidth="Auto"
                                           Margin="0"
                                           RowHeaderWidth="0"
                                           MinHeight="160"
