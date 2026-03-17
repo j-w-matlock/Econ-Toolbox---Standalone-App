@@ -32,6 +32,8 @@
         <KeyBinding Key="D"
                     Modifiers="Control+Alt"
                     Command="{Binding ToggleRightPaneCommand}"/>
+        <KeyBinding Key="Escape"
+                    Command="{Binding ClearModuleSearchCommand}"/>
     </Window.InputBindings>
     <Window.Resources>
         <ResourceDictionary>
@@ -367,7 +369,9 @@
                         <TextBox Grid.Column="0"
                                  Text="{Binding ModuleSearchText, UpdateSourceTrigger=PropertyChanged}"
                                  Margin="0"
-                                 ToolTip="Filter modules by title, summary, or description."/>
+                                 VerticalContentAlignment="Center"
+                                 MinHeight="34"
+                                 ToolTip="Filter modules by title, summary, or description. Press Esc to clear."/>
                         <Button Grid.Column="1"
                                 Command="{Binding ClearModuleSearchCommand}"
                                 Style="{StaticResource Button.TitleBar}"
@@ -381,7 +385,7 @@
                                Margin="0,0,0,8"
                                Style="{StaticResource Text.BodySmall}"
                                Foreground="{DynamicResource App.TextSecondary}"
-                               Text="{Binding FilteredModuleCount, StringFormat={}{0} module(s) shown}"/>
+                               Text="{Binding ModuleFilterSummary}"/>
                     <ListBox ItemsSource="{Binding FilteredModulesView}"
                              SelectedItem="{Binding ExplorerSelectedModule}"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -463,7 +467,8 @@
                                        DockPanel.Dock="Left"/>
                             <Button Command="{Binding ToggleRightPaneCommand}"
                                     DockPanel.Dock="Right"
-                                    Style="{StaticResource Button.PaneToggle}">
+                                    Style="{StaticResource Button.PaneToggle}"
+                                    ToolTip="Hide Details (Ctrl+Alt+D)">
                                 <TextBlock Text="Hide"
                                            Style="{StaticResource Text.StatusBar}"
                                            Foreground="{DynamicResource App.OnAccent}"/>
@@ -513,6 +518,17 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+
+                            <TextBlock Text="Example"
+                                       Style="{StaticResource Text.SectionHeader}"
+                                       Margin="{StaticResource Margin.TopBottomSmall}"/>
+                            <Border Style="{StaticResource Border.Explainer}"
+                                    Margin="0,0,0,8"
+                                    Padding="12">
+                                <TextBlock Text="{Binding SelectedModule.Example}"
+                                           Style="{StaticResource Text.BodySmall}"
+                                           TextWrapping="Wrap"/>
+                            </Border>
 
                             <TextBlock Text="Diagnostics"
                                        Style="{StaticResource Text.SectionHeader}"
@@ -579,7 +595,7 @@
             <StatusBarItem HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Center">
-                    <TextBlock Text="{Binding SelectedModule.Title}"
+                    <TextBlock Text="{Binding SelectedModule.Title, FallbackValue=No module selected, TargetNullValue=No module selected}"
                                Margin="{StaticResource Margin.RightMedium}"
                                Style="{StaticResource Text.StatusBar}"/>
                     <TextBlock Text="{Binding AppProgressMessage}"
@@ -595,6 +611,12 @@
                     <TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}"
                                Margin="{StaticResource Margin.RightSmall}"
                                Style="{StaticResource Text.StatusBar}"/>
+                    <Button Command="{Binding ResetZoomCommand}"
+                            Style="{StaticResource Button.TitleBar}"
+                            Margin="0,0,8,0"
+                            ToolTip="Reset zoom to 100%">
+                        <TextBlock Text="Reset"/>
+                    </Button>
                     <Slider Width="140"
                             Minimum="50"
                             Maximum="200"
