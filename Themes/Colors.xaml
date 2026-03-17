@@ -87,6 +87,18 @@
     <Color x:Key="App.SelectionHoverBackground.Color">#E3F7F2</Color>
     <Color x:Key="App.RowHoverBackground.Color">#E3F7F2</Color>
 
+    <!-- Visualization surfaces -->
+    <Color x:Key="App.Visualization.MapOverlayFill.Color">#14307A7A</Color>
+    <Color x:Key="App.Visualization.MapOverlayBorder.Color">#66307A7A</Color>
+    <Color x:Key="App.Visualization.MapAxis.Color">#884A5568</Color>
+    <Color x:Key="App.Visualization.PreviewBackground.Color">#F7FAFC</Color>
+    <Color x:Key="App.Visualization.CdlFill.Color">#7BB661</Color>
+    <Color x:Key="App.Visualization.CdlStroke.Color">#407A2A</Color>
+    <Color x:Key="App.Visualization.DepthFill.Color">#4A90E2</Color>
+    <Color x:Key="App.Visualization.DepthStroke.Color">#2C5F95</Color>
+    <Color x:Key="App.Visualization.PolygonStroke.Color">#B55400</Color>
+    <Color x:Key="App.Visualization.ImageOverlay.Color">#66000000</Color>
+
     <!-- Scrollbars -->
     <Color x:Key="App.ScrollBarThumb.Color">#C8C8C8</Color>
     <Color x:Key="App.ScrollBarThumbHover.Color">#AFAFAF</Color>

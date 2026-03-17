@@ -414,7 +414,7 @@
                                         </Grid>
                                         <Border Style="{StaticResource Border.Panel}"
                                                 Grid.Row="2"
-                                                Padding="8"
+                                                Padding="{StaticResource Padding.Card}"
                                                 Background="{DynamicResource App.SurfaceAlt}"
                                                 MinHeight="660">
                                             <ScrollViewer x:Name="MapScrollViewer"
@@ -434,13 +434,13 @@
                                                     <Grid.LayoutTransform>
                                                         <ScaleTransform ScaleX="{Binding MapZoom}" ScaleY="{Binding MapZoom}"/>
                                                     </Grid.LayoutTransform>
-                                                    <Rectangle Fill="#14307A7A"/>
-                                                    <Rectangle Stroke="#66307A7A" StrokeThickness="1" Margin="24"/>
+                                                    <Rectangle Fill="{DynamicResource App.Visualization.MapOverlayFill}"/>
+                                                    <Rectangle Stroke="{DynamicResource App.Visualization.MapOverlayBorder}" StrokeThickness="1" Margin="24"/>
                                                     <Canvas>
-                                                        <Line X1="24" Y1="24" X2="24" Y2="596" Stroke="#884A5568" StrokeThickness="1"/>
-                                                        <Line X1="24" Y1="596" X2="956" Y2="596" Stroke="#884A5568" StrokeThickness="1"/>
-                                                        <Line X1="490" Y1="24" X2="490" Y2="596" Stroke="#66307A7A" StrokeThickness="0.7" StrokeDashArray="4,6"/>
-                                                        <Line X1="24" Y1="310" X2="956" Y2="310" Stroke="#66307A7A" StrokeThickness="0.7" StrokeDashArray="4,6"/>
+                                                        <Line X1="24" Y1="24" X2="24" Y2="596" Stroke="{DynamicResource App.Visualization.MapAxis}" StrokeThickness="1"/>
+                                                        <Line X1="24" Y1="596" X2="956" Y2="596" Stroke="{DynamicResource App.Visualization.MapAxis}" StrokeThickness="1"/>
+                                                        <Line X1="490" Y1="24" X2="490" Y2="596" Stroke="{DynamicResource App.Visualization.MapOverlayBorder}" StrokeThickness="0.7" StrokeDashArray="4,6"/>
+                                                        <Line X1="24" Y1="310" X2="956" Y2="310" Stroke="{DynamicResource App.Visualization.MapOverlayBorder}" StrokeThickness="0.7" StrokeDashArray="4,6"/>
                                                         <ListBox ItemsSource="{Binding TopStructureMapPoints}"
                                                                  SelectedItem="{Binding SelectedMapPoint, Mode=TwoWay}"
                                                                  Width="{Binding MapCanvasWidth}"
@@ -518,7 +518,7 @@
                         Style="{StaticResource Border.Card}"
                         Padding="12">
                     <StackPanel>
-                        <TextBlock Text="Total structure damage by DamageCategory"
+                        <TextBlock Text="Total structure damage by damage category"
                                    Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,8"/>
                         <ItemsControl ItemsSource="{Binding LegendItems}"
@@ -547,8 +547,8 @@
                                 Background="{DynamicResource App.ChartFill}"
                                 BorderBrush="{DynamicResource App.Border}"
                                 BorderThickness="1"
-                                CornerRadius="8"
-                                Padding="8"
+                                CornerRadius="{StaticResource Radius.MD}"
+                                Padding="{StaticResource Padding.Card}"
                                 HorizontalAlignment="Stretch">
                             <controls:BarChartControl Height="420"
                                                       MinHeight="320"
