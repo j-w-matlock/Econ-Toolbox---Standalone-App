@@ -44,7 +44,7 @@
                         </Border>
 
                         <Border Style="{StaticResource Border.Card}"
-                                Margin="0,16,0,0">
+                                Margin="16,16,16,0">
                             <StackPanel>
                                 <TextBlock Text="Shared Timing &amp; Discounting"
                                            Style="{StaticResource Text.SectionTitle}"/>
