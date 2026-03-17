@@ -5,10 +5,10 @@
         xmlns:vm="clr-namespace:EconToolbox.Desktop.ViewModels"
         xmlns:views="clr-namespace:EconToolbox.Desktop.Views"
         Title="Economic Toolbox"
-        Height="720"
-        Width="1200"
-        MinWidth="900"
-        MinHeight="600"
+        Height="800"
+        Width="1320"
+        MinWidth="1080"
+        MinHeight="680"
         ResizeMode="CanResize"
         SnapsToDevicePixels="True"
         UseLayoutRounding="True"
@@ -344,7 +344,7 @@
                     <DockPanel DockPanel.Dock="Top"
                                LastChildFill="False"
                                Margin="{StaticResource Margin.BottomSmall}">
-                        <TextBlock Text="EXPLORER"
+                        <TextBlock Text="MODULE EXPLORER"
                                    Style="{StaticResource Text.PaneCaption}"
                                    DockPanel.Dock="Left"/>
                         <Button Command="{Binding ToggleLeftPaneCommand}"
@@ -357,22 +357,29 @@
                         </Button>
                     </DockPanel>
                     <TextBlock DockPanel.Dock="Top"
-                               Text="Modules"
+                               Text="Browse modules"
                                Style="{StaticResource Text.PaneTitle}"
                                Margin="{StaticResource Margin.BottomSmall}"/>
                     <Grid DockPanel.Dock="Top"
                           Margin="0,0,0,8">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0"
+                        <TextBlock Grid.Column="0"
+                                   Text="&#xE721;"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0"
+                                   Style="{StaticResource Text.Icon.Toolbar}"
+                                   Foreground="{DynamicResource App.TextSecondary}"/>
+                        <TextBox Grid.Column="1"
                                  Text="{Binding ModuleSearchText, UpdateSourceTrigger=PropertyChanged}"
                                  Margin="0"
                                  VerticalContentAlignment="Center"
                                  MinHeight="34"
                                  ToolTip="Filter modules by title, summary, or description. Press Esc to clear."/>
-                        <Button Grid.Column="1"
+                        <Button Grid.Column="2"
                                 Command="{Binding ClearModuleSearchCommand}"
                                 Style="{StaticResource Button.TitleBar}"
                                 Margin="6,0,0,0"
@@ -422,9 +429,13 @@
                                         </ToolTip>
                                     </StackPanel.ToolTip>
                                     <TextBlock Text="{Binding Title}"
-                                               Foreground="{DynamicResource App.TextPrimary}"
-                                               FontWeight="SemiBold"
+                                               Style="{StaticResource Text.BodyStrong}"
+                                               Margin="0,0,0,2"
                                                TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding FunctionSummary}"
+                                               Style="{StaticResource Text.BodySmall}"
+                                               MaxHeight="34"
+                                               TextTrimming="CharacterEllipsis"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -493,6 +504,8 @@
                                        Style="{StaticResource Text.BodySmall}"
                                        Margin="{StaticResource Margin.BottomMedium}"/>
 
+                            <Separator Margin="0,4,0,10"/>
+
                             <TextBlock Text="Inputs"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="{StaticResource Margin.BottomSmall}"/>
@@ -505,6 +518,8 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+
+                            <Separator Margin="0,4,0,10"/>
 
                             <TextBlock Text="Outputs"
                                        Style="{StaticResource Text.SectionHeader}"
@@ -519,6 +534,8 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
+                            <Separator Margin="0,4,0,10"/>
+
                             <TextBlock Text="Example"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="{StaticResource Margin.TopBottomSmall}"/>
@@ -529,6 +546,8 @@
                                            Style="{StaticResource Text.BodySmall}"
                                            TextWrapping="Wrap"/>
                             </Border>
+
+                            <Separator Margin="0,4,0,10"/>
 
                             <TextBlock Text="Diagnostics"
                                        Style="{StaticResource Text.SectionHeader}"
