@@ -176,22 +176,23 @@ public sealed class AdvancedBridgeReplacementViewModel : DiagnosticViewModelBase
     {
         if (LifeOfNewBridgeYears <= 0)
         {
-            yield return new DiagnosticItem("Life of new bridge must be greater than zero", "Increase n to compute CRF.");
+            yield return new DiagnosticItem(DiagnosticLevel.Warning, "Life of new bridge must be greater than zero", "Increase n to compute CRF.");
         }
 
         if (RemainingLifeOfExistingBridgeYears > LifeOfNewBridgeYears)
         {
-            yield return new DiagnosticItem("Remaining life exceeds new bridge life", "Extension period is clamped to zero because n - R is negative.");
+            yield return new DiagnosticItem(DiagnosticLevel.Warning, "Remaining life exceeds new bridge life", "Extension period is clamped to zero because n - R is negative.");
         }
 
         if (AnnualOmRehabSavings < 0)
         {
-            yield return new DiagnosticItem("New bridge O&M exceeds existing O&M + rehab", "PW_om is negative because ΔA_om is below zero.");
+            yield return new DiagnosticItem(DiagnosticLevel.Warning, "New bridge O&M exceeds existing O&M + rehab", "PW_om is negative because ΔA_om is below zero.");
         }
 
         if (LifeOfNewBridgeYears > 0 && RemainingLifeOfExistingBridgeYears <= LifeOfNewBridgeYears && AnnualOmRehabSavings >= 0)
         {
             yield return new DiagnosticItem(
+                DiagnosticLevel.Info,
                 "Advanced bridge replacement inputs are valid",
                 $"Equivalent annual benefit is {AverageAnnualAdvancedBridgeReplacementBenefit:C0}/year using USACE-based present worth conversions.");
         }
