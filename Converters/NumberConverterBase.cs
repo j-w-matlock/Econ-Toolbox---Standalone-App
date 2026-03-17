@@ -59,6 +59,11 @@ public abstract class NumberConverterBase : IValueConverter
                 return TreatEmptyStringAsZero ? ConvertParsed(0d, targetType) : Binding.DoNothing;
             }
 
+            if (IsIntermediateNumericInput(stringValue, culture))
+            {
+                return Binding.DoNothing;
+            }
+
             if (TryParse(stringValue, culture, out var parsedFromString))
             {
                 return ConvertParsed(parsedFromString, targetType);
@@ -86,6 +91,29 @@ public abstract class NumberConverterBase : IValueConverter
         }
 
         return Binding.DoNothing;
+    }
+
+    private static bool IsIntermediateNumericInput(string value, CultureInfo culture)
+    {
+        var trimmed = value.Trim();
+        if (trimmed.Length == 0)
+        {
+            return false;
+        }
+
+        var numberFormat = culture.NumberFormat;
+        if (trimmed == numberFormat.PositiveSign || trimmed == numberFormat.NegativeSign)
+        {
+            return true;
+        }
+
+        if (trimmed.EndsWith(numberFormat.NumberDecimalSeparator, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return !Equals(culture, CultureInfo.InvariantCulture)
+            && trimmed.EndsWith(CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator, StringComparison.Ordinal);
     }
 
     protected virtual object Format(double value, CultureInfo culture) => value.ToString(FormatString, culture);
