@@ -11,6 +11,7 @@ namespace EconToolbox.Desktop.Models
         public int ConstructionMonths { get; set; }
         public double AnnualOm { get; set; }
         public double AnnualBenefits { get; set; }
+        public List<AnnualBenefitEntryData> AnnualBenefitEntries { get; set; } = new();
         public List<AnnualizerFutureCostData> FutureCosts { get; set; } = new();
         public List<AnnualizerFutureCostData> IdcEntries { get; set; } = new();
         public string? IdcTimingBasis { get; set; }
@@ -19,5 +20,12 @@ namespace EconToolbox.Desktop.Models
         public string? IdcLastPaymentTiming { get; set; }
         public List<AnnualizerScenarioData> Scenarios { get; set; } = new();
         public string? SelectedScenarioName { get; set; }
+    }
+
+    public class AnnualBenefitEntryData
+    {
+        public string Key { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public double Amount { get; set; }
     }
 }

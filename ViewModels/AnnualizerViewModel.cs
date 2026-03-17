@@ -23,6 +23,7 @@ namespace EconToolbox.Desktop.ViewModels
         private int _constructionMonths = 12;
         private double _annualOm;
         private double _annualBenefits;
+        private readonly ObservableCollection<AnnualBenefitEntry> _annualBenefitEntries = new();
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
         private ObservableCollection<FutureCostEntry> _idcEntries = new();
         private ObservableCollection<string> _results = new();
@@ -98,8 +99,30 @@ namespace EconToolbox.Desktop.ViewModels
         public double AnnualBenefits
         {
             get => _annualBenefits;
-            set { _annualBenefits = value; OnPropertyChanged(); }
+            set
+            {
+                if (AnnualBenefitEntries.Count == 0)
+                {
+                    _annualBenefits = value;
+                    OnPropertyChanged();
+                    return;
+                }
+
+                var linkedBenefits = AnnualBenefitEntries
+                    .Where(entry => !string.Equals(entry.Key, "frm", StringComparison.OrdinalIgnoreCase))
+                    .Sum(entry => entry.Amount);
+
+                var frmAmount = value - linkedBenefits;
+                if (SetAnnualBenefitAmount("frm", frmAmount))
+                {
+                    RecalculateAnnualBenefitsTotal();
+                }
+            }
         }
+
+        public ObservableCollection<AnnualBenefitEntry> AnnualBenefitEntries => _annualBenefitEntries;
+
+        public double TotalAnnualBenefits => AnnualBenefitEntries.Sum(entry => entry.Amount);
 
         public ObservableCollection<FutureCostEntry> FutureCosts
         {
@@ -281,6 +304,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             AttachFutureCostHandlers(_futureCosts);
             AttachFutureCostHandlers(_idcEntries);
+            InitializeAnnualBenefitEntries();
 
             using (SuspendRecalculation())
             {
@@ -320,6 +344,85 @@ namespace EconToolbox.Desktop.ViewModels
 
                 _owner._suspendRecalculation = false;
                 _owner = null;
+            }
+        }
+
+
+        private void InitializeAnnualBenefitEntries()
+        {
+            if (AnnualBenefitEntries.Count > 0)
+                return;
+
+            AddAnnualBenefitEntry("frm", "FRM", AnnualBenefits);
+            AddAnnualBenefitEntry("recreation", "Recreation", 0d);
+            AddAnnualBenefitEntry("traffic-delay", "Traffic Delay", 0d);
+            AddAnnualBenefitEntry("abr", "ABR", 0d);
+            RecalculateAnnualBenefitsTotal();
+        }
+
+        private void AddAnnualBenefitEntry(string key, string name, double amount)
+        {
+            var entry = new AnnualBenefitEntry
+            {
+                Key = key,
+                Name = name,
+                Amount = amount
+            };
+
+            entry.PropertyChanged += AnnualBenefitEntryOnPropertyChanged;
+            AnnualBenefitEntries.Add(entry);
+        }
+
+        private void AnnualBenefitEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(AnnualBenefitEntry.Amount))
+                return;
+
+            RecalculateAnnualBenefitsTotal();
+        }
+
+        private bool SetAnnualBenefitAmount(string key, double amount)
+        {
+            var entry = AnnualBenefitEntries.FirstOrDefault(candidate =>
+                string.Equals(candidate.Key, key, StringComparison.OrdinalIgnoreCase));
+
+            if (entry == null)
+            {
+                return false;
+            }
+
+            if (Math.Abs(entry.Amount - amount) < 0.0001)
+            {
+                return false;
+            }
+
+            entry.Amount = amount;
+            return true;
+        }
+
+        private void RecalculateAnnualBenefitsTotal()
+        {
+            var totalBenefits = TotalAnnualBenefits;
+            if (Math.Abs(_annualBenefits - totalBenefits) < 0.0001)
+            {
+                OnPropertyChanged(nameof(TotalAnnualBenefits));
+                return;
+            }
+
+            _annualBenefits = totalBenefits;
+            OnPropertyChanged(nameof(AnnualBenefits));
+            OnPropertyChanged(nameof(TotalAnnualBenefits));
+            if (!_suspendRecalculation)
+            {
+                Compute();
+            }
+        }
+
+        public void UpdateLinkedAnnualBenefit(string key, double amount)
+        {
+            if (SetAnnualBenefitAmount(key, amount))
+            {
+                RecalculateAnnualBenefitsTotal();
             }
         }
 
@@ -709,6 +812,12 @@ namespace EconToolbox.Desktop.ViewModels
                 ConstructionMonths = ConstructionMonths,
                 AnnualOm = AnnualOm,
                 AnnualBenefits = AnnualBenefits,
+                AnnualBenefitEntries = AnnualBenefitEntries.Select(entry => new AnnualBenefitEntryData
+                {
+                    Key = entry.Key,
+                    Name = entry.Name,
+                    Amount = entry.Amount
+                }).ToList(),
                 FutureCosts = FutureCosts.Select(entry => new AnnualizerFutureCostData
                 {
                     Cost = entry.Cost,
@@ -754,7 +863,23 @@ namespace EconToolbox.Desktop.ViewModels
                 BaseYear = data.BaseYear;
                 ConstructionMonths = data.ConstructionMonths;
                 AnnualOm = data.AnnualOm;
-                AnnualBenefits = data.AnnualBenefits;
+                if (data.AnnualBenefitEntries != null && data.AnnualBenefitEntries.Count > 0)
+                {
+                    foreach (var entry in AnnualBenefitEntries)
+                    {
+                        var restored = data.AnnualBenefitEntries.FirstOrDefault(candidate =>
+                            string.Equals(candidate.Key, entry.Key, StringComparison.OrdinalIgnoreCase));
+                        if (restored != null)
+                        {
+                            entry.Name = string.IsNullOrWhiteSpace(restored.Name) ? entry.Name : restored.Name;
+                            entry.Amount = restored.Amount;
+                        }
+                    }
+                }
+                else
+                {
+                    AnnualBenefits = data.AnnualBenefits;
+                }
                 IdcTimingBasis = string.IsNullOrWhiteSpace(data.IdcTimingBasis) ? IdcTimingBasis : data.IdcTimingBasis;
                 CalculateInterestAtPeriod = data.CalculateInterestAtPeriod;
                 IdcFirstPaymentTiming = string.IsNullOrWhiteSpace(data.IdcFirstPaymentTiming) ? IdcFirstPaymentTiming : data.IdcFirstPaymentTiming;
