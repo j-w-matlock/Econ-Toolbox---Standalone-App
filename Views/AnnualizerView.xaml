@@ -173,7 +173,7 @@
                                            Style="{StaticResource Text.SectionHeader}"
                                            Margin="0,16,0,4"/>
                                 <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,8" TextWrapping="Wrap">
-                                    Review annual benefits, add custom rows, and use Include checkboxes to control the total.
+                                    Review annual benefits, apply an index factor to each row as needed, and use Include checkboxes to control the total.
                                 </TextBlock>
                                 <DockPanel LastChildFill="False" Margin="0,0,0,6">
                                     <Button Content="Add Benefit Row"
@@ -192,17 +192,33 @@
                                           CanUserDeleteRows="False"
                                           HeadersVisibility="Column"
                                           Margin="0,0,0,6"
-                                          ColumnWidth="*">
+                                          ColumnWidth="SizeToHeader"
+                                          MaxWidth="820"
+                                          HorizontalAlignment="Left">
                                     <DataGrid.Columns>
                                         <DataGridCheckBoxColumn Header="Include"
                                                                 Binding="{Binding IncludeInTotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                                 Width="Auto"/>
                                         <DataGridTextColumn Header="Benefit"
                                                             Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                            Width="2*"/>
+                                                            Width="220"/>
                                         <DataGridTextColumn Header="Annual Value"
                                                             Binding="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
-                                                            Width="*">
+                                                            Width="150">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                            <DataGridTextColumn.EditingElementStyle>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                </Style>
+                                            </DataGridTextColumn.EditingElementStyle>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Header="Index Factor"
+                                                            Binding="{Binding IndexFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F3}"
+                                                            Width="120">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="HorizontalAlignment" Value="Right"/>

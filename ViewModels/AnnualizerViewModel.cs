@@ -112,7 +112,7 @@ namespace EconToolbox.Desktop.ViewModels
                 var linkedBenefits = AnnualBenefitEntries
                     .Where(entry => !string.Equals(entry.Key, "frm", StringComparison.OrdinalIgnoreCase)
                         && entry.IncludeInTotal)
-                    .Sum(entry => entry.Amount);
+                    .Sum(entry => entry.IndexedAmount);
 
                 var frmAmount = value - linkedBenefits;
                 if (SetAnnualBenefitAmount("frm", frmAmount))
@@ -124,7 +124,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         public ObservableCollection<AnnualBenefitEntry> AnnualBenefitEntries => _annualBenefitEntries;
 
-        public double TotalAnnualBenefits => AnnualBenefitEntries.Where(entry => entry.IncludeInTotal).Sum(entry => entry.Amount);
+        public double TotalAnnualBenefits => AnnualBenefitEntries.Where(entry => entry.IncludeInTotal).Sum(entry => entry.IndexedAmount);
 
         public ObservableCollection<FutureCostEntry> FutureCosts
         {
@@ -366,13 +366,15 @@ namespace EconToolbox.Desktop.ViewModels
             RecalculateAnnualBenefitsTotal();
         }
 
-        private void AddAnnualBenefitEntry(string key, string name, double amount, bool includeInTotal = true, bool isModuleLinked = false)
+        private void AddAnnualBenefitEntry(string key, string name, double amount, bool includeInTotal = true, bool isModuleLinked = false,
+            double indexFactor = 1d)
         {
             var entry = new AnnualBenefitEntry
             {
                 Key = key,
                 Name = name,
                 Amount = amount,
+                IndexFactor = indexFactor,
                 IncludeInTotal = includeInTotal,
                 IsModuleLinked = isModuleLinked
             };
@@ -384,6 +386,7 @@ namespace EconToolbox.Desktop.ViewModels
         private void AnnualBenefitEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(AnnualBenefitEntry.Amount)
+                || e.PropertyName == nameof(AnnualBenefitEntry.IndexFactor)
                 || e.PropertyName == nameof(AnnualBenefitEntry.IncludeInTotal))
             {
                 RecalculateAnnualBenefitsTotal();
@@ -859,6 +862,7 @@ namespace EconToolbox.Desktop.ViewModels
                     Key = entry.Key,
                     Name = entry.Name,
                     Amount = entry.Amount,
+                    IndexFactor = entry.IndexFactor,
                     IncludeInTotal = entry.IncludeInTotal,
                     IsModuleLinked = entry.IsModuleLinked
                 }).ToList(),
@@ -923,7 +927,8 @@ namespace EconToolbox.Desktop.ViewModels
                             string.IsNullOrWhiteSpace(restored.Name) ? "Benefit" : restored.Name,
                             restored.Amount,
                             restored.IncludeInTotal,
-                            restored.IsModuleLinked);
+                            restored.IsModuleLinked,
+                            double.IsNaN(restored.IndexFactor) || double.IsInfinity(restored.IndexFactor) ? 1d : restored.IndexFactor);
                     }
 
                     RecalculateAnnualBenefitsTotal();
