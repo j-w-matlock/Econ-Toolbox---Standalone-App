@@ -169,88 +169,205 @@
                                     </ComboBox>
                                 </Grid>
 
-                                <TextBlock Text="Annual Benefits"
-                                           Style="{StaticResource Text.SectionHeader}"
-                                           Margin="0,16,0,4"/>
-                                <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,8" TextWrapping="Wrap">
-                                    Review annual benefits, apply an index factor to each row as needed, and use Include checkboxes to control the total.
-                                </TextBlock>
-                                <DockPanel LastChildFill="False" Margin="0,0,0,6">
-                                    <Button Content="Add Benefit Row"
-                                            Command="{Binding AddAnnualBenefitRowCommand}"
-                                            Style="{StaticResource Button.ActionSecondaryCompact}"
-                                            DockPanel.Dock="Left"/>
-                                    <Button Content="Remove Excluded Custom Rows"
-                                            Command="{Binding RemoveAnnualBenefitRowCommand}"
-                                            Style="{StaticResource Button.ActionSecondaryCompact}"
-                                            Margin="8,0,0,0"
-                                            DockPanel.Dock="Left"/>
-                                </DockPanel>
-                                <DataGrid ItemsSource="{Binding AnnualBenefitEntries}"
-                                          AutoGenerateColumns="False"
-                                          CanUserAddRows="False"
-                                          CanUserDeleteRows="False"
-                                          HeadersVisibility="Column"
-                                          Margin="0,0,0,6"
-                                          ColumnWidth="SizeToHeader"
-                                          MaxWidth="820"
-                                          HorizontalAlignment="Left">
-                                    <DataGrid.Columns>
-                                        <DataGridCheckBoxColumn Header="Include"
-                                                                Binding="{Binding IncludeInTotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                Width="Auto"/>
-                                        <DataGridTextColumn Header="Benefit"
-                                                            Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                            Width="220"/>
-                                        <DataGridTextColumn Header="Annual Value"
-                                                            Binding="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
-                                                            Width="150">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                <Grid Margin="0,16,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Annual Benefits"
+                                                   Style="{StaticResource Text.SectionHeader}"
+                                                   Margin="0,0,0,4"/>
+                                        <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,8" TextWrapping="Wrap">
+                                            Review annual benefits, apply an index factor to each row as needed, and use Include checkboxes to control the total.
+                                        </TextBlock>
+                                        <DockPanel LastChildFill="False" Margin="0,0,0,6">
+                                            <Button Content="Add Benefit Row"
+                                                    Command="{Binding AddAnnualBenefitRowCommand}"
+                                                    Style="{StaticResource Button.ActionSecondaryCompact}"
+                                                    DockPanel.Dock="Left"/>
+                                            <Button Content="Remove Excluded Custom Rows"
+                                                    Command="{Binding RemoveAnnualBenefitRowCommand}"
+                                                    Style="{StaticResource Button.ActionSecondaryCompact}"
+                                                    Margin="8,0,0,0"
+                                                    DockPanel.Dock="Left"/>
+                                        </DockPanel>
+                                        <DataGrid ItemsSource="{Binding AnnualBenefitEntries}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  HeadersVisibility="Column"
+                                                  Margin="0,0,0,6"
+                                                  ColumnWidth="*"
+                                                  HorizontalAlignment="Stretch"
+                                                  MinHeight="180">
+                                            <DataGrid.Columns>
+                                                <DataGridCheckBoxColumn Header="Include"
+                                                                        Binding="{Binding IncludeInTotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                        Width="SizeToHeader"/>
+                                                <DataGridTextColumn Header="Benefit"
+                                                                    Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Width="*"/>
+                                                <DataGridTextColumn Header="Annual Value"
+                                                                    Binding="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
+                                                                    Width="120">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                    <DataGridTextColumn.EditingElementStyle>
+                                                        <Style TargetType="TextBox">
+                                                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.EditingElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Index Factor"
+                                                                    Binding="{Binding IndexFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F3}"
+                                                                    Width="90">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                    <DataGridTextColumn.EditingElementStyle>
+                                                        <Style TargetType="TextBox">
+                                                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.EditingElementStyle>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                            <DataGrid.RowStyle>
+                                                <Style TargetType="DataGridRow">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsModuleLinked}" Value="True">
+                                                            <Setter Property="Foreground" Value="{DynamicResource App.TextSubtle}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
                                                 </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                            <DataGridTextColumn.EditingElementStyle>
-                                                <Style TargetType="TextBox">
-                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                                                </Style>
-                                            </DataGridTextColumn.EditingElementStyle>
-                                        </DataGridTextColumn>
-                                        <DataGridTextColumn Header="Index Factor"
-                                                            Binding="{Binding IndexFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F3}"
-                                                            Width="120">
-                                            <DataGridTextColumn.ElementStyle>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                                                </Style>
-                                            </DataGridTextColumn.ElementStyle>
-                                            <DataGridTextColumn.EditingElementStyle>
-                                                <Style TargetType="TextBox">
-                                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                                                </Style>
-                                            </DataGridTextColumn.EditingElementStyle>
-                                        </DataGridTextColumn>
-                                    </DataGrid.Columns>
-                                    <DataGrid.RowStyle>
-                                        <Style TargetType="DataGridRow">
-                                            <Setter Property="IsEnabled" Value="True"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsModuleLinked}" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource App.TextSubtle}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </DataGrid.RowStyle>
-                                </DataGrid>
-                                <DockPanel LastChildFill="False">
-                                    <TextBlock Text="Total Annual Benefits"
-                                               Style="{StaticResource Text.BodyStrong}"
-                                               DockPanel.Dock="Left"/>
-                                    <TextBlock Text="{Binding TotalAnnualBenefits, StringFormat=C0}"
-                                               Style="{StaticResource Text.BodyStrong}"
-                                               DockPanel.Dock="Right"
-                                               HorizontalAlignment="Right"/>
-                                </DockPanel>
+                                            </DataGrid.RowStyle>
+                                        </DataGrid>
+                                        <DockPanel LastChildFill="False">
+                                            <TextBlock Text="Total Annual Benefits"
+                                                       Style="{StaticResource Text.BodyStrong}"
+                                                       DockPanel.Dock="Left"/>
+                                            <TextBlock Text="{Binding TotalAnnualBenefits, StringFormat=C0}"
+                                                       Style="{StaticResource Text.BodyStrong}"
+                                                       DockPanel.Dock="Right"
+                                                       HorizontalAlignment="Right"/>
+                                        </DockPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Cost Updates"
+                                                   Style="{StaticResource Text.SectionHeader}"
+                                                   Margin="0,0,0,4"/>
+                                        <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,8" TextWrapping="Wrap">
+                                            Update past-year costs to current or future dollars by entering the original cost, fiscal years, and an index or interest factor.
+                                        </TextBlock>
+                                        <DockPanel LastChildFill="False" Margin="0,0,0,6">
+                                            <Button Content="Add Cost Row"
+                                                    Command="{Binding AddCostUpdateRowCommand}"
+                                                    Style="{StaticResource Button.ActionSecondaryCompact}"
+                                                    DockPanel.Dock="Left"/>
+                                            <Button Content="Remove Empty Rows"
+                                                    Command="{Binding RemoveCostUpdateRowCommand}"
+                                                    Style="{StaticResource Button.ActionSecondaryCompact}"
+                                                    Margin="8,0,0,0"
+                                                    DockPanel.Dock="Left"/>
+                                        </DockPanel>
+                                        <DataGrid ItemsSource="{Binding AnnualCostUpdateEntries}"
+                                                  AutoGenerateColumns="False"
+                                                  CanUserAddRows="False"
+                                                  CanUserDeleteRows="False"
+                                                  HeadersVisibility="Column"
+                                                  Margin="0,0,0,6"
+                                                  ColumnWidth="*"
+                                                  HorizontalAlignment="Stretch"
+                                                  MinHeight="180">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Cost"
+                                                                    Binding="{Binding Cost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
+                                                                    Width="120">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                    <DataGridTextColumn.EditingElementStyle>
+                                                        <Style TargetType="TextBox">
+                                                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.EditingElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Cost FY (Original)"
+                                                                    Binding="{Binding OriginalFiscalYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Width="90">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                    <DataGridTextColumn.EditingElementStyle>
+                                                        <Style TargetType="TextBox">
+                                                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.EditingElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Cost FY (Updated)"
+                                                                    Binding="{Binding UpdatedFiscalYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Width="90">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                    <DataGridTextColumn.EditingElementStyle>
+                                                        <Style TargetType="TextBox">
+                                                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.EditingElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Index Factor"
+                                                                    Binding="{Binding IndexFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F3}"
+                                                                    Width="80">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                    <DataGridTextColumn.EditingElementStyle>
+                                                        <Style TargetType="TextBox">
+                                                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.EditingElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Updated Cost"
+                                                                    Binding="{Binding UpdatedCost, StringFormat=C2}"
+                                                                    IsReadOnly="True"
+                                                                    Width="100">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <DockPanel LastChildFill="False">
+                                            <TextBlock Text="Total Costs"
+                                                       Style="{StaticResource Text.BodyStrong}"
+                                                       DockPanel.Dock="Left"/>
+                                            <TextBlock Text="{Binding TotalUpdatedCosts, StringFormat=C0}"
+                                                       Style="{StaticResource Text.BodyStrong}"
+                                                       DockPanel.Dock="Right"
+                                                       HorizontalAlignment="Right"/>
+                                        </DockPanel>
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                         </Border>
 

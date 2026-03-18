@@ -12,6 +12,7 @@ namespace EconToolbox.Desktop.Models
         public double AnnualOm { get; set; }
         public double AnnualBenefits { get; set; }
         public List<AnnualBenefitEntryData> AnnualBenefitEntries { get; set; } = new();
+        public List<AnnualCostUpdateEntryData> AnnualCostUpdateEntries { get; set; } = new();
         public List<AnnualizerFutureCostData> FutureCosts { get; set; } = new();
         public List<AnnualizerFutureCostData> IdcEntries { get; set; } = new();
         public string? IdcTimingBasis { get; set; }
@@ -30,5 +31,18 @@ namespace EconToolbox.Desktop.Models
         public double IndexFactor { get; set; } = 1d;
         public bool IncludeInTotal { get; set; } = true;
         public bool IsModuleLinked { get; set; }
+    }
+}
+
+
+namespace EconToolbox.Desktop.Models
+{
+    public class AnnualCostUpdateEntryData
+    {
+        public string Name { get; set; } = string.Empty;
+        public double Cost { get; set; }
+        public int OriginalFiscalYear { get; set; }
+        public int UpdatedFiscalYear { get; set; }
+        public double IndexFactor { get; set; } = 1d;
     }
 }

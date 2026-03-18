@@ -25,6 +25,7 @@ namespace EconToolbox.Desktop.ViewModels
         private double _annualOm;
         private double _annualBenefits;
         private readonly ObservableCollection<AnnualBenefitEntry> _annualBenefitEntries = new();
+        private readonly ObservableCollection<AnnualCostUpdateEntry> _annualCostUpdateEntries = new();
         private ObservableCollection<FutureCostEntry> _futureCosts = new();
         private ObservableCollection<FutureCostEntry> _idcEntries = new();
         private ObservableCollection<string> _results = new();
@@ -123,8 +124,10 @@ namespace EconToolbox.Desktop.ViewModels
         }
 
         public ObservableCollection<AnnualBenefitEntry> AnnualBenefitEntries => _annualBenefitEntries;
+        public ObservableCollection<AnnualCostUpdateEntry> AnnualCostUpdateEntries => _annualCostUpdateEntries;
 
         public double TotalAnnualBenefits => AnnualBenefitEntries.Where(entry => entry.IncludeInTotal).Sum(entry => entry.IndexedAmount);
+        public double TotalUpdatedCosts => AnnualCostUpdateEntries.Sum(entry => entry.UpdatedCost);
 
         public ObservableCollection<FutureCostEntry> FutureCosts
         {
@@ -292,6 +295,8 @@ namespace EconToolbox.Desktop.ViewModels
         public IRelayCommand ResetScenarioComparisonsCommand { get; }
         public IRelayCommand AddAnnualBenefitRowCommand { get; }
         public IRelayCommand RemoveAnnualBenefitRowCommand { get; }
+        public IRelayCommand AddCostUpdateRowCommand { get; }
+        public IRelayCommand RemoveCostUpdateRowCommand { get; }
 
         private readonly IExcelExportService _excelExportService;
 
@@ -307,10 +312,13 @@ namespace EconToolbox.Desktop.ViewModels
             ResetScenarioComparisonsCommand = new RelayCommand(ResetScenarioComparisons);
             AddAnnualBenefitRowCommand = new RelayCommand(AddAnnualBenefitRow);
             RemoveAnnualBenefitRowCommand = new RelayCommand(RemoveAnnualBenefitRows);
+            AddCostUpdateRowCommand = new RelayCommand(AddCostUpdateRow);
+            RemoveCostUpdateRowCommand = new RelayCommand(RemoveCostUpdateRows);
 
             AttachFutureCostHandlers(_futureCosts);
             AttachFutureCostHandlers(_idcEntries);
             InitializeAnnualBenefitEntries();
+            InitializeAnnualCostUpdateEntries();
 
             using (SuspendRecalculation())
             {
@@ -353,6 +361,80 @@ namespace EconToolbox.Desktop.ViewModels
             }
         }
 
+
+        private void InitializeAnnualCostUpdateEntries()
+        {
+            if (AnnualCostUpdateEntries.Count > 0)
+                return;
+
+            AddAnnualCostUpdateEntry("Cost 1", 0d, BaseYear, BaseYear, 1d);
+            RecalculateTotalUpdatedCosts();
+        }
+
+        private void AddAnnualCostUpdateEntry(string name, double cost, int originalFiscalYear, int updatedFiscalYear, double indexFactor = 1d)
+        {
+            var entry = new AnnualCostUpdateEntry
+            {
+                Name = name,
+                Cost = cost,
+                OriginalFiscalYear = originalFiscalYear,
+                UpdatedFiscalYear = updatedFiscalYear,
+                IndexFactor = indexFactor
+            };
+
+            entry.PropertyChanged += AnnualCostUpdateEntryOnPropertyChanged;
+            AnnualCostUpdateEntries.Add(entry);
+        }
+
+        private void AnnualCostUpdateEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(AnnualCostUpdateEntry.Cost)
+                || e.PropertyName == nameof(AnnualCostUpdateEntry.IndexFactor)
+                || e.PropertyName == nameof(AnnualCostUpdateEntry.OriginalFiscalYear)
+                || e.PropertyName == nameof(AnnualCostUpdateEntry.UpdatedFiscalYear))
+            {
+                RecalculateTotalUpdatedCosts();
+            }
+        }
+
+        private void RecalculateTotalUpdatedCosts()
+        {
+            OnPropertyChanged(nameof(TotalUpdatedCosts));
+        }
+
+        private void AddCostUpdateRow()
+        {
+            var suffix = 1;
+            var existingNames = new HashSet<string>(AnnualCostUpdateEntries.Select(entry => entry.Name), StringComparer.OrdinalIgnoreCase);
+            var candidateName = $"Cost {suffix}";
+            while (existingNames.Contains(candidateName))
+            {
+                suffix++;
+                candidateName = $"Cost {suffix}";
+            }
+
+            AddAnnualCostUpdateEntry(candidateName, 0d, BaseYear, BaseYear, 1d);
+            RecalculateTotalUpdatedCosts();
+        }
+
+        private void RemoveCostUpdateRows()
+        {
+            var removableRows = AnnualCostUpdateEntries
+                .Where(entry => Math.Abs(entry.Cost) < 0.0001 && Math.Abs(entry.IndexFactor - 1d) < 0.0001)
+                .Skip(1)
+                .ToList();
+
+            if (removableRows.Count == 0)
+                return;
+
+            foreach (var row in removableRows)
+            {
+                row.PropertyChanged -= AnnualCostUpdateEntryOnPropertyChanged;
+                AnnualCostUpdateEntries.Remove(row);
+            }
+
+            RecalculateTotalUpdatedCosts();
+        }
 
         private void InitializeAnnualBenefitEntries()
         {
@@ -866,6 +948,14 @@ namespace EconToolbox.Desktop.ViewModels
                     IncludeInTotal = entry.IncludeInTotal,
                     IsModuleLinked = entry.IsModuleLinked
                 }).ToList(),
+                AnnualCostUpdateEntries = AnnualCostUpdateEntries.Select(entry => new AnnualCostUpdateEntryData
+                {
+                    Name = entry.Name,
+                    Cost = entry.Cost,
+                    OriginalFiscalYear = entry.OriginalFiscalYear,
+                    UpdatedFiscalYear = entry.UpdatedFiscalYear,
+                    IndexFactor = entry.IndexFactor
+                }).ToList(),
                 FutureCosts = FutureCosts.Select(entry => new AnnualizerFutureCostData
                 {
                     Cost = entry.Cost,
@@ -937,6 +1027,32 @@ namespace EconToolbox.Desktop.ViewModels
                 {
                     AnnualBenefits = data.AnnualBenefits;
                 }
+                foreach (var existing in AnnualCostUpdateEntries)
+                {
+                    existing.PropertyChanged -= AnnualCostUpdateEntryOnPropertyChanged;
+                }
+
+                AnnualCostUpdateEntries.Clear();
+
+                if (data.AnnualCostUpdateEntries != null && data.AnnualCostUpdateEntries.Count > 0)
+                {
+                    foreach (var restored in data.AnnualCostUpdateEntries)
+                    {
+                        AddAnnualCostUpdateEntry(
+                            string.IsNullOrWhiteSpace(restored.Name) ? "Cost" : restored.Name,
+                            restored.Cost,
+                            restored.OriginalFiscalYear == 0 ? BaseYear : restored.OriginalFiscalYear,
+                            restored.UpdatedFiscalYear == 0 ? BaseYear : restored.UpdatedFiscalYear,
+                            double.IsNaN(restored.IndexFactor) || double.IsInfinity(restored.IndexFactor) ? 1d : restored.IndexFactor);
+                    }
+                }
+                else
+                {
+                    InitializeAnnualCostUpdateEntries();
+                }
+
+                RecalculateTotalUpdatedCosts();
+
                 IdcTimingBasis = string.IsNullOrWhiteSpace(data.IdcTimingBasis) ? IdcTimingBasis : data.IdcTimingBasis;
                 CalculateInterestAtPeriod = data.CalculateInterestAtPeriod;
                 IdcFirstPaymentTiming = string.IsNullOrWhiteSpace(data.IdcFirstPaymentTiming) ? IdcFirstPaymentTiming : data.IdcFirstPaymentTiming;
