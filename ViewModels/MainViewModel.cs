@@ -577,7 +577,7 @@ namespace EconToolbox.Desktop.ViewModels
 
             ApplyLayoutSettings();
             ExplorerSelectedModule = Modules.Count > 0 ? Modules[0] : null;
-            SelectedModule ??= ExplorerSelectedModule;
+            SelectedModule = ReadMeModule;
             if (SelectedModule == null)
             {
                 UpdateDiagnostics();
