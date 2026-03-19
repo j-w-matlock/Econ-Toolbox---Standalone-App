@@ -33,12 +33,12 @@
                 </Border>
 
                 <Border Style="{StaticResource Border.Card}"
-                        Margin="0,0,0,12">
+                        Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <Button Command="{Binding AddDamageColumnCommand}"
                                     Style="{StaticResource Button.Action}"
-                                    Margin="0,0,12,0"
+                                    Margin="{StaticResource Margin.InlineLarge}"
                                     ToolTip="Append a new damage column for an additional category or scenario. Additional columns create new damage curves included in calculations.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -47,7 +47,7 @@
                             </Button>
                             <Button Command="{Binding RemoveDamageColumnCommand}"
                                     Style="{StaticResource Button.Action}"
-                                    Margin="0,0,12,0"
+                                    Margin="{StaticResource Margin.InlineLarge}"
                                     ToolTip="Remove the most recently added damage column. Removing a column excludes its damage curve from calculations.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -56,7 +56,7 @@
                             </Button>
                             <Button Command="{Binding DeleteSelectedRowCommand}"
                                     Style="{StaticResource Button.Action}"
-                                    Margin="0,0,12,0"
+                                    Margin="{StaticResource Margin.InlineLarge}"
                                     ToolTip="Remove the currently selected input row from the table.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -65,7 +65,7 @@
                             </Button>
                             <Button Command="{Binding ResetTableCommand}"
                                     Style="{StaticResource Button.Action}"
-                                    Margin="0,0,12,0"
+                                    Margin="{StaticResource Margin.InlineLarge}"
                                     ToolTip="Reset the EAD input table back to the default probability and damage entries.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -75,14 +75,14 @@
                             <CheckBox IsChecked="{Binding UseStage}"
                                       VerticalAlignment="Center"
                                       Content="Include Stage"
-                                      Margin="0,0,12,0"
+                                      Margin="{StaticResource Margin.InlineLarge}"
                                       ToolTip="Toggle to add a stage column so you can enter paired stage values. Stage values change how damages align with stage-frequency logic."/>
                             <CheckBox IsChecked="{Binding CalculateEqad}"
                                       VerticalAlignment="Center"
                                       Content="Calculate EqAD"
                                       ToolTip="Enable equivalent expected annual damage (EqAD) using the analysis period, discount rate, and future damages column per USACE guidance."/>
                         </StackPanel>
-                        <Grid Margin="0,12,0,0"
+                        <Grid Margin="{StaticResource Margin.TopSection}"
                               Visibility="{Binding CalculateEqad, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -93,7 +93,7 @@
                             <TextBlock Grid.Column="0"
                                        Text="Analysis Period (Years)"
                                        VerticalAlignment="Center"
-                                       Margin="0,0,12,0"/>
+                                       Margin="{StaticResource Margin.InlineLarge}"/>
                             <TextBox Grid.Column="1"
                                      Text="{Binding AnalysisPeriod, Converter={StaticResource SafeNumberConverter}}"
                                      HorizontalContentAlignment="Right"
@@ -113,14 +113,14 @@
                 </Border>
 
                 <Border Style="{StaticResource Border.Card}"
-                        Margin="0,0,0,12">
+                        Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <TextBlock Text="Stage / Frequency / Damage Inputs"
                                    Style="{StaticResource Text.SectionTitle}"
                                    Margin="{StaticResource Margin.StackLarge}"/>
                         <TextBlock Text="Tip: Keep probability values in descending order (e.g., 0.5, 0.2, 0.1) and use consistent currency units across damage columns."
                                    Style="{StaticResource Text.BodySmall}"
-                                   Margin="0,0,0,8"/>
+                                   Margin="{StaticResource Margin.StackLarge}"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Rows}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="True"
@@ -136,23 +136,20 @@
                 </Border>
 
                 <Border Style="{StaticResource Border.Card}"
-                        Margin="0,0,0,12">
+                        Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <TextBox Text="{Binding ChartTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 FontSize="16"
-                                 FontWeight="SemiBold"
+                                 Style="{StaticResource Text.ChartTitle}"
                                  HorizontalAlignment="Left"
-                                 Margin="0,0,0,12"
-                                 BorderThickness="0"
-                                 Background="Transparent"
+                                 Margin="{StaticResource Margin.CardGap}"
                                  ToolTip="Title shown above the frequency-damage chart and included in exports."
                                  TextAlignment="Left"
                                  HorizontalContentAlignment="Left"/>
                         <TextBlock Text="Graph shows frequency-damage or stage-damage curves for each column so you can visually confirm the inputs."
                                    Style="{StaticResource Text.BodySmall}"
-                                   Margin="0,0,0,12"/>
+                                   Margin="{StaticResource Margin.CardGap}"/>
                         <ItemsControl ItemsSource="{Binding LegendItems}"
-                                      Margin="0,0,0,12">
+                                      Margin="{StaticResource Margin.CardGap}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel/>
@@ -194,7 +191,7 @@
                     <StackPanel>
                         <TextBlock Text="Expected Annual Damage Results"
                                    Style="{StaticResource Text.SectionTitle}"
-                                   Margin="0,0,0,8"/>
+                                   Margin="{StaticResource Margin.StackLarge}"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Results}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="False"

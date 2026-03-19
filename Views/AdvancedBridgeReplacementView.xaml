@@ -65,24 +65,24 @@
                 <StackPanel>
                     <TextBlock Text="Calculated outputs" Style="{StaticResource Text.SectionTitle}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Capital recovery factor (CRF)"/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Capital recovery factor (CRF)"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding CapitalRecoveryFactor, StringFormat={}{0:N8}}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Annual cost of new bridge (A_b)"/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Annual cost of new bridge (A_b)"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AnnualCostOfNewBridge, StringFormat={}{0:C2}}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Present worth of avoided future replacement (PW_repl)"/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Present worth of avoided future replacement (PW_repl)"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding PwOfAvoidedFutureReplacementCost, StringFormat={}{0:C2}}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding AvoidedReplacementFormula}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Present worth of O&amp;M savings (PW_om)"/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Present worth of O&amp;M savings (PW_om)"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding PwOfOmRehabSavings, StringFormat={}{0:C2}}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding OmSavingsFormula}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Total present worth credit"/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Total present worth credit"/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalPresentWorthCredit, StringFormat={}{0:C2}}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Average annual advanced bridge replacement benefit"/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Average annual advanced bridge replacement benefit"/>
                     <TextBlock Style="{StaticResource Text.SectionTitleAccent}" Text="{Binding AverageAnnualAdvancedBridgeReplacementBenefit, StringFormat={}{0:C2}/yr}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding FinalBenefitFormula}"/>
                 </StackPanel>

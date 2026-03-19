@@ -35,7 +35,7 @@
                     <TextBlock Text="Uncertainty Category" Style="{StaticResource Text.Label}"/>
                     <ComboBox ItemsSource="{Binding CategoryOptions}"
                               SelectedItem="{Binding SelectedCategory}"
-                              Margin="0,4,0,0"
+                              Margin="{StaticResource Margin.TopSmall}"
                               MinWidth="220"
                               ToolTip="Select the uncertainty category used to auto-prioritize relevant value fields (for example structure value or first-floor elevation)."/>
                 </StackPanel>
@@ -44,7 +44,7 @@
                     <TextBlock Text="Attribute Field" Style="{StaticResource Text.Label}"/>
                     <ComboBox ItemsSource="{Binding AvailableAttributes}"
                               SelectedItem="{Binding SelectedAttribute}"
-                              Margin="0,4,0,0"
+                              Margin="{StaticResource Margin.TopSmall}"
                               MinWidth="260"
                               ToolTip="Primary numeric attribute used for summary statistics, test calculations, and representative survey sampling."/>
                 </StackPanel>
@@ -61,7 +61,7 @@
                     <TextBlock Text="Refinement Attribute" Style="{StaticResource Text.Label}"/>
                     <ComboBox ItemsSource="{Binding RefinementAttributeOptions}"
                               SelectedItem="{Binding SelectedRefinementAttribute}"
-                              Margin="0,4,0,0"
+                              Margin="{StaticResource Margin.TopSmall}"
                               MinWidth="220"
                               ToolTip="Optional secondary attribute used to refine the dataset before statistics are computed."/>
                 </StackPanel>
@@ -70,7 +70,7 @@
                     <TextBlock Text="Refinement Value" Style="{StaticResource Text.Label}"/>
                     <ComboBox ItemsSource="{Binding RefinementValueOptions}"
                               SelectedItem="{Binding SelectedRefinementValue}"
-                              Margin="0,4,0,0"
+                              Margin="{StaticResource Margin.TopSmall}"
                               MinWidth="260"
                               ToolTip="Specific value inside the refinement attribute. Only matching records are included in the analysis population."/>
                 </StackPanel>
@@ -79,7 +79,7 @@
                     <TextBlock Text="Statistical Test" Style="{StaticResource Text.Label}"/>
                     <ComboBox ItemsSource="{Binding StatisticalTestOptions}"
                               SelectedItem="{Binding SelectedStatisticalTest}"
-                              Margin="0,4,0,0"
+                              Margin="{StaticResource Margin.TopSmall}"
                               MinWidth="220"
                               ToolTip="Choose Auto to apply the module recommendation, or manually select a hypothesis test:
 
@@ -92,7 +92,7 @@
                 <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,12,16,0">
                     <TextBlock Text="Null Hypothesis Value" Style="{StaticResource Text.Label}"/>
                     <TextBox Text="{Binding NullHypothesisValue, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="0,4,0,0"
+                             Margin="{StaticResource Margin.TopSmall}"
                              MinWidth="160"
                              ToolTip="Reference value for the selected hypothesis test. This field is automatically populated with the current dataset median after filtering/refinement so a robust default is always available."/>
                 </StackPanel>
@@ -106,17 +106,17 @@ General logic:
 • Highly skewed data → Sign Test (median-focused, most robust)
 • Lower skew with smaller sample sizes → T-Test (mean-focused)
 • Lower skew with larger sample sizes → Z-Test (mean-focused)"/>
-                    <TextBlock Text="{Binding RecommendedStatisticalTest}" Margin="0,4,0,0" TextWrapping="Wrap" Width="180"/>
+                    <TextBlock Text="{Binding RecommendedStatisticalTest}" Margin="{StaticResource Margin.TopSmall}" TextWrapping="Wrap" Width="180"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <Border Grid.Row="1" Style="{StaticResource Border.Panel}" Margin="0,12,0,0">
+        <Border Grid.Row="1" Style="{StaticResource Border.Panel}" Margin="{StaticResource Margin.TopSection}">
             <StackPanel>
                 <TextBlock Text="Statistical Options"
                            Style="{StaticResource Text.Label}"
                            ToolTip="Controls that filter the input values before statistics are calculated. Enabling any option can change observation count, central tendency, spread, and distribution-shape metrics."/>
-                <WrapPanel Margin="0,4,0,0">
+                <WrapPanel Margin="{StaticResource Margin.TopSmall}">
                     <CheckBox Content="Ignore zero values"
                               IsChecked="{Binding IgnoreZeroValues}"
                               Margin="0,0,20,0"
@@ -135,13 +135,13 @@ Impact: Useful when negatives are invalid for the selected attribute; this can s
 
 Impact: Typically reduces the influence of extreme values on mean, range, variance, standard deviation, coefficient of variation, and skewness."/>
                 </WrapPanel>
-                <TextBlock Text="Status" Style="{StaticResource Text.Label}" Margin="0,10,0,0"/>
-                <TextBlock Text="{Binding StatusMessage}" Margin="0,4,0,0" TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding ShapefilePath}" Margin="0,4,0,0" TextWrapping="Wrap" Opacity="0.75"/>
+                <TextBlock Text="Status" Style="{StaticResource Text.Label}" Margin="{StaticResource Margin.TopSection}"/>
+                <TextBlock Text="{Binding StatusMessage}" Margin="{StaticResource Margin.TopSmall}" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding ShapefilePath}" Margin="{StaticResource Margin.TopSmall}" TextWrapping="Wrap" Opacity="0.75"/>
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="2" Margin="0,12,0,0">
+        <Grid Grid.Row="2" Margin="{StaticResource Margin.TopSection}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="12"/>
@@ -157,7 +157,7 @@ Impact: Typically reduces the influence of extreme values on mean, range, varian
                     <TextBlock Text="Detailed Statistics"
                                Style="{StaticResource Text.SectionTitle}"/>
                     <DataGrid Grid.Row="1"
-                              Margin="0,10,0,0"
+                              Margin="{StaticResource Margin.TopSection}"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               IsReadOnly="True"
@@ -191,7 +191,7 @@ Impact: Typically reduces the influence of extreme values on mean, range, varian
                                Style="{StaticResource Text.SectionTitle}"
                                ToolTip="Randomly sampled members from the refined population. Use this list as a representative subset for survey outreach."/>
                     <DataGrid Grid.Row="1"
-                              Margin="0,10,0,0"
+                              Margin="{StaticResource Margin.TopSection}"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               IsReadOnly="True"

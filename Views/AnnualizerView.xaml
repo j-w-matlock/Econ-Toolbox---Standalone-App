@@ -51,7 +51,7 @@
                                 <TextBlock Style="{StaticResource Text.Body}" Margin="0,4,0,12" TextWrapping="Wrap">
                                     Apply consistent timing, period, and IDC assumptions before refining each scenario below.
                                 </TextBlock>
-                                <Grid Margin="0,4,0,0">
+                                <Grid Margin="{StaticResource Margin.TopSmall}">
                                     <Grid.Resources>
                                         <Style TargetType="TextBlock" x:Key="AnnualizerLabelStyle">
                                             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -85,7 +85,7 @@
                                              Text="{Binding BaseYear, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
                                              ToolTip="Reference year that anchors discounting for future costs and benefits. This sets the base for present value factors across all annualization calculations."
-                                             Margin="0,0,0,8"/>
+                                             Margin="{StaticResource Margin.StackLarge}"/>
 
                                     <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
                                         <TextBlock Text="Analysis Period" Style="{StaticResource AnnualizerLabelStyle}"/>
@@ -95,7 +95,7 @@
                                              Text="{Binding AnalysisPeriod, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
                                              ToolTip="Number of periods for capital recovery. This length drives the capital recovery factor and annualized cost results."
-                                             Margin="0,0,0,8"/>
+                                             Margin="{StaticResource Margin.StackLarge}"/>
 
                                     <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
                                         <TextBlock Text="Construction Months" Style="{StaticResource AnnualizerLabelStyle}"/>
@@ -105,7 +105,7 @@
                                              Text="{Binding ConstructionMonths, Converter={StaticResource SafeNumberConverter}}"
                                              HorizontalContentAlignment="Right"
                                              ToolTip="Total construction duration in months used to accumulate IDC. Longer durations increase the time interest accrues on construction outlays."
-                                             Margin="0,0,0,8"/>
+                                             Margin="{StaticResource Margin.StackLarge}"/>
 
                                     <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
                                         <TextBlock Text="IDC Timing Assumption" Style="{StaticResource AnnualizerLabelStyle}"/>
@@ -115,7 +115,7 @@
                                               ItemsSource="{Binding IdcTimingOptions}"
                                               SelectedItem="{Binding IdcTimingBasis}"
                                               ToolTip="Select whether IDC accrues from the beginning, middle, or end of each construction month when no detailed schedule is provided. The timing assumption shifts how much interest is applied within each month."
-                                              Margin="0,0,0,8"/>
+                                              Margin="{StaticResource Margin.StackLarge}"/>
 
                                     <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
                                         <TextBlock Text="Calculate Interest at Period" Style="{StaticResource AnnualizerLabelStyle}"/>
@@ -125,7 +125,7 @@
                                               IsChecked="{Binding CalculateInterestAtPeriod}"
                                               HorizontalAlignment="Left"
                                               ToolTip="Toggle to calculate IDC using period-based first and last payment assumptions. Enabling this changes the IDC timing logic and alters the resulting IDC total."
-                                              Margin="0,0,0,8"/>
+                                              Margin="{StaticResource Margin.StackLarge}"/>
 
                                     <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,8">
                                         <TextBlock Text="First Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
@@ -134,7 +134,7 @@
                                               ItemsSource="{Binding IdcFirstPaymentOptions}"
                                               SelectedItem="{Binding IdcFirstPaymentTiming}"
                                               ToolTip="Choose when the first payment occurs within the construction period for period-based IDC. The selected timing changes how many periods of interest are applied to the first outlay."
-                                              Margin="0,0,0,8">
+                                              Margin="{StaticResource Margin.StackLarge}">
                                         <ComboBox.Style>
                                             <Style TargetType="ComboBox"
                                                    BasedOn="{StaticResource AnnualizerInputComboStyle}">
@@ -148,7 +148,7 @@
                                         </ComboBox.Style>
                                     </ComboBox>
 
-                                    <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,0">
+                                    <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="{StaticResource Margin.InlineLarge}">
                                         <TextBlock Text="Last Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="6" Grid.Column="1"
@@ -169,7 +169,7 @@
                                     </ComboBox>
                                 </Grid>
 
-                                <Grid Margin="0,16,0,0">
+                                <Grid Margin="{StaticResource Margin.TopMedium}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
@@ -178,10 +178,10 @@
 
                                     <TextBlock Text="Annual Benefits and Cost Updates"
                                                Style="{StaticResource Text.SectionTitle}"
-                                               Margin="0,0,0,4"/>
+                                               Margin="{StaticResource Margin.Stack}"/>
                                     <TextBlock Grid.Row="1"
                                                Style="{StaticResource Text.Body}"
-                                               Margin="0,0,0,12"
+                                               Margin="{StaticResource Margin.CardGap}"
                                                TextWrapping="Wrap"
                                                Text="Provide annual benefits and update historical costs in one place so the scenario table below starts from synchronized annual values."/>
 
@@ -198,8 +198,8 @@
                                             <StackPanel>
                                                 <TextBlock Text="Annual Benefits"
                                                            Style="{StaticResource Text.SectionHeader}"
-                                                           Margin="0,0,0,4"/>
-                                                <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,8" TextWrapping="Wrap">
+                                                           Margin="{StaticResource Margin.Stack}"/>
+                                                <TextBlock Style="{StaticResource Text.Body}" Margin="{StaticResource Margin.StackLarge}" TextWrapping="Wrap">
                                                     Review annual benefits, apply an index factor to each row as needed, and use Include checkboxes to control the total.
                                                 </TextBlock>
                                                 <WrapPanel Margin="0,0,0,6">
@@ -210,7 +210,7 @@
                                                     <Button Content="Remove Selected Row"
                                                             Command="{Binding RemoveAnnualBenefitRowCommand}"
                                                             Style="{StaticResource Button.ActionSecondaryCompact}"
-                                                            Margin="0,0,0,8"/>
+                                                            Margin="{StaticResource Margin.StackLarge}"/>
                                                 </WrapPanel>
                                                 <DataGrid x:Name="AnnualBenefitsDataGrid"
                                                           ItemsSource="{Binding AnnualBenefitEntries}"
@@ -219,7 +219,7 @@
                                                           CanUserAddRows="False"
                                                           CanUserDeleteRows="False"
                                                           HeadersVisibility="Column"
-                                                          Margin="0,0,0,8"
+                                                          Margin="{StaticResource Margin.StackLarge}"
                                                           ColumnWidth="*"
                                                           HorizontalAlignment="Stretch"
                                                           MinHeight="180"
@@ -291,8 +291,8 @@
                                             <StackPanel>
                                                 <TextBlock Text="Cost Updates"
                                                            Style="{StaticResource Text.SectionHeader}"
-                                                           Margin="0,0,0,4"/>
-                                                <TextBlock Style="{StaticResource Text.Body}" Margin="0,0,0,8" TextWrapping="Wrap">
+                                                           Margin="{StaticResource Margin.Stack}"/>
+                                                <TextBlock Style="{StaticResource Text.Body}" Margin="{StaticResource Margin.StackLarge}" TextWrapping="Wrap">
                                                     Update past-year costs to current or future dollars by entering the original cost, fiscal years, and an index or interest factor.
                                                 </TextBlock>
                                                 <WrapPanel Margin="0,0,0,6">
@@ -303,7 +303,7 @@
                                                     <Button Content="Remove Selected Row"
                                                             Command="{Binding RemoveCostUpdateRowCommand}"
                                                             Style="{StaticResource Button.ActionSecondaryCompact}"
-                                                            Margin="0,0,0,8"/>
+                                                            Margin="{StaticResource Margin.StackLarge}"/>
                                                 </WrapPanel>
                                                 <DataGrid x:Name="CostUpdatesDataGrid"
                                                           ItemsSource="{Binding AnnualCostUpdateEntries}"
@@ -312,7 +312,7 @@
                                                           CanUserAddRows="False"
                                                           CanUserDeleteRows="False"
                                                           HeadersVisibility="Column"
-                                                          Margin="0,0,0,8"
+                                                          Margin="{StaticResource Margin.StackLarge}"
                                                           ColumnWidth="*"
                                                           HorizontalAlignment="Stretch"
                                                           MinHeight="180"
@@ -405,7 +405,7 @@
                         </Border>
 
                         <Border Style="{StaticResource Border.Card}"
-                                Margin="0,16,0,0">
+                                Margin="{StaticResource Margin.TopMedium}">
                             <StackPanel>
                                 <TextBlock Text="Scenario Inputs"
                                            Style="{StaticResource Text.SectionTitle}"/>
@@ -417,7 +417,7 @@
                                           AutoGenerateColumns="False"
                                           HeadersVisibility="Column"
                                           ColumnWidth="Auto"
-                                          Margin="0,8,0,0">
+                                          Margin="{StaticResource Margin.TopLarge}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Scenario Name"
                                                             Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -535,14 +535,14 @@
                                         </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
-                                <UniformGrid Columns="3" HorizontalAlignment="Left" Margin="0,10,0,0" Rows="1">
-                                    <Button Command="{Binding AddScenarioComparisonCommand}" Width="150" Margin="0,0,8,0" Style="{StaticResource Button.Action}">
+                                <UniformGrid Columns="3" HorizontalAlignment="Left" Margin="{StaticResource Margin.TopSection}" Rows="1">
+                                    <Button Command="{Binding AddScenarioComparisonCommand}" Width="150" Margin="{StaticResource Margin.InlineMedium}" Style="{StaticResource Button.Action}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                             <TextBlock Text="Add Scenario"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Command="{Binding ComputeCommand}" Width="150" Margin="0,0,8,0" Style="{StaticResource Button.Action}">
+                                    <Button Command="{Binding ComputeCommand}" Width="150" Margin="{StaticResource Margin.InlineMedium}" Style="{StaticResource Button.Action}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                             <TextBlock Text="Calculate"/>
@@ -559,7 +559,7 @@
                         </Border>
 
                         <StackPanel Margin="0,24,0,0">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.StackLarge}">
                                 <TextBlock Text="IDC Schedule" Style="{StaticResource Text.SectionHeader}"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
@@ -608,7 +608,7 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="{StaticResource Margin.TopLarge}">
                                 <Button Command="{Binding ResetIdcCommand}" MinWidth="160" Style="{StaticResource Button.Action}" ToolTip="Clear all IDC schedule entries. Clearing resets IDC calculations that depend on the schedule.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -619,7 +619,7 @@
                         </StackPanel>
 
                         <StackPanel Margin="0,24,0,0">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.StackLarge}">
                                 <TextBlock Text="Future Costs" Style="{StaticResource Text.SectionHeader}"/>
                             </StackPanel>
                             <Border Background="{DynamicResource App.Surface}" BorderBrush="{DynamicResource App.Border}" BorderThickness="1" CornerRadius="8" Padding="6">
@@ -668,7 +668,7 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,8,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="{StaticResource Margin.TopLarge}">
                                 <Button Command="{Binding ResetFutureCostsCommand}" MinWidth="160" Style="{StaticResource Button.Action}" ToolTip="Clear all future cost entries. Clearing removes their discounted impacts from totals.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -692,7 +692,7 @@
                                     </TextBlock>
                                 </StackPanel>
                             </Border>
-                            <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+                            <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <TextBlock Text=""

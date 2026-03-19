@@ -40,7 +40,7 @@
                 </StackPanel>
             </Border>
             <Grid Grid.Row="1"
-                  Margin="0,12,0,0">
+                  Margin="{StaticResource Margin.TopSection}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -56,7 +56,7 @@
                                   CanUserAddRows="True"
                                   HeadersVisibility="Column"
                                   ColumnWidth="Auto"
-                                  Margin="0,0,0,8">
+                                  Margin="{StaticResource Margin.StackLarge}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Task" Binding="{Binding Name, Mode=TwoWay}" Width="SizeToHeader">
                                         <DataGridTextColumn.HeaderStyle>
@@ -165,13 +165,13 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                            <Button Command="{Binding AddTaskCommand}" Style="{StaticResource Button.Action}" Margin="0,0,8,0" ToolTip="Insert a new task row at the bottom of the table. New tasks add duration and cost to the schedule.">
+                            <Button Command="{Binding AddTaskCommand}" Style="{StaticResource Button.Action}" Margin="{StaticResource Margin.InlineMedium}" ToolTip="Insert a new task row at the bottom of the table. New tasks add duration and cost to the schedule.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                     <TextBlock Text="Add Task"/>
                                 </StackPanel>
                             </Button>
-                            <Button Command="{Binding RemoveTaskCommand}" Style="{StaticResource Button.Action}" Margin="0,0,8,0" ToolTip="Delete the currently selected task from the list. Removing tasks reduces total schedule cost and duration.">
+                            <Button Command="{Binding RemoveTaskCommand}" Style="{StaticResource Button.Action}" Margin="{StaticResource Margin.InlineMedium}" ToolTip="Delete the currently selected task from the list. Removing tasks reduces total schedule cost and duration.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                     <TextBlock Text="Remove Selected"/>
@@ -193,13 +193,13 @@
                 </Border>
                 <Border Grid.Row="1"
                         Style="{StaticResource Border.Card}"
-                        Margin="0,16,0,0">
+                        Margin="{StaticResource Margin.TopMedium}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,12" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="{StaticResource Margin.CardGap}" VerticalAlignment="Center">
                             <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
                             <StackPanel>
                                 <TextBlock Text="Schedule Timeline" Style="{StaticResource Text.SectionHeader}"/>
@@ -254,8 +254,7 @@
                                                                 <TextBlock Text="{Binding Caption}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                                                                 <TextBlock Text="Dependency links visualize schedule logic; task dates and durations determine link placement."
                                                                            Margin="0,6,0,0"
-                                                                           FontSize="11"
-                                                                           TextWrapping="Wrap"/>
+                                                                           Style="{StaticResource Text.Tooltip}"/>
                                                             </StackPanel>
                                                         </ToolTip>
                                                     </Path.ToolTip>
@@ -292,13 +291,12 @@
                                                                 <TextBlock Text="{Binding Task.Name}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                                                                 <TextBlock Text="{Binding Task.StartDate, StringFormat=Start: {0:d}}"
                                                                            Margin="0,6,0,0"
-                                                                           FontSize="11"/>
+                                                                           Style="{StaticResource Text.Tooltip}"/>
                                                                 <TextBlock Text="{Binding Task.EndDate, StringFormat=Finish: {0:d}}"
-                                                                           FontSize="11"/>
+                                                                           Style="{StaticResource Text.Tooltip}"/>
                                                                 <TextBlock Text="Start and finish dates come from the task start date plus duration, which set bar placement."
                                                                            Margin="0,6,0,0"
-                                                                           FontSize="11"
-                                                                           TextWrapping="Wrap"/>
+                                                                           Style="{StaticResource Text.Tooltip}"/>
                                                             </StackPanel>
                                                         </ToolTip>
                                                     </Grid.ToolTip>
@@ -346,7 +344,7 @@
                     </Grid>
                 </Border>
             </Grid>
-            <StackPanel Grid.Row="2" Margin="0,16,0,0">
+            <StackPanel Grid.Row="2" Margin="{StaticResource Margin.TopMedium}">
                 <Border Style="{StaticResource Border.ResultInfo}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

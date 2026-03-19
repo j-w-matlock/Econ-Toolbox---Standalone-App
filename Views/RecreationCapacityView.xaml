@@ -131,33 +131,33 @@
 
                         <TextBlock Grid.Row="4"
                                    Grid.Column="0"
-                                   Margin="0,8,0,0"
+                                   Margin="{StaticResource Margin.TopLarge}"
                                    Text="PAOT"/>
                         <TextBlock Grid.Row="4"
                                    Grid.Column="1"
-                                   Margin="0,8,0,0"
+                                   Margin="{StaticResource Margin.TopLarge}"
                                    FontWeight="SemiBold"
                                    ToolTip="People at one time (PAOT) for camping. Calculated from campsites, occupancy, and daily turnover."
                                    Text="{Binding CampingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="5"
                                    Grid.Column="0"
-                                   Margin="0,4,0,0"
+                                   Margin="{StaticResource Margin.TopSmall}"
                                    Text="Design day user capacity"/>
                         <TextBlock Grid.Row="5"
                                    Grid.Column="1"
-                                   Margin="0,4,0,0"
+                                   Margin="{StaticResource Margin.TopSmall}"
                                    FontWeight="SemiBold"
                                    ToolTip="Design day user capacity for camping. PAOT multiplied by daily turnover."
                                    Text="{Binding CampingDailyCapacity, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="6"
                                    Grid.Column="0"
-                                   Margin="0,4,0,0"
+                                   Margin="{StaticResource Margin.TopSmall}"
                                    Text="Seasonal user capacity"/>
                         <TextBlock Grid.Row="6"
                                    Grid.Column="1"
-                                   Margin="0,4,0,0"
+                                   Margin="{StaticResource Margin.TopSmall}"
                                    FontWeight="SemiBold"
                                    ToolTip="Seasonal user capacity for camping. Daily capacity scaled by season length."
                                    Text="{Binding CampingSeasonCapacity, StringFormat={}{0:N0}}"/>
@@ -236,14 +236,14 @@
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Text="PAOT"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for fishing, based on shoreline length, spacing, and group size." Text="{Binding FishingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="{StaticResource Margin.TopLarge}" Text="PAOT"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="{StaticResource Margin.TopLarge}" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for fishing, based on shoreline length, spacing, and group size." Text="{Binding FishingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,4,0,0" Text="Design day user capacity"/>
-                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Design day user capacity for fishing. Converts PAOT using daily turnover." Text="{Binding FishingDailyCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Margin="{StaticResource Margin.TopSmall}" Text="Design day user capacity"/>
+                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="{StaticResource Margin.TopSmall}" FontWeight="SemiBold" ToolTip="Design day user capacity for fishing. Converts PAOT using daily turnover." Text="{Binding FishingDailyCapacity, StringFormat={}{0:N0}}"/>
 
-                        <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,4,0,0" Text="Seasonal user capacity"/>
-                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Seasonal user capacity for fishing. Daily capacity scaled by season length." Text="{Binding FishingSeasonCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Margin="{StaticResource Margin.TopSmall}" Text="Seasonal user capacity"/>
+                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="{StaticResource Margin.TopSmall}" FontWeight="SemiBold" ToolTip="Seasonal user capacity for fishing. Daily capacity scaled by season length." Text="{Binding FishingSeasonCapacity, StringFormat={}{0:N0}}"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -319,14 +319,14 @@
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Text="PAOT"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for boating. Calculated from usable water surface, vessel spacing, and persons per vessel." Text="{Binding BoatingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="{StaticResource Margin.TopLarge}" Text="PAOT"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="{StaticResource Margin.TopLarge}" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for boating. Calculated from usable water surface, vessel spacing, and persons per vessel." Text="{Binding BoatingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,4,0,0" Text="Design day user capacity"/>
-                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Design day user capacity for boating. PAOT multiplied by daily turnover." Text="{Binding BoatingDailyCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Margin="{StaticResource Margin.TopSmall}" Text="Design day user capacity"/>
+                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="{StaticResource Margin.TopSmall}" FontWeight="SemiBold" ToolTip="Design day user capacity for boating. PAOT multiplied by daily turnover." Text="{Binding BoatingDailyCapacity, StringFormat={}{0:N0}}"/>
 
-                        <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,4,0,0" Text="Seasonal user capacity"/>
-                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Seasonal user capacity for boating. Daily capacity scaled by season length." Text="{Binding BoatingSeasonCapacity, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Margin="{StaticResource Margin.TopSmall}" Text="Seasonal user capacity"/>
+                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="{StaticResource Margin.TopSmall}" FontWeight="SemiBold" ToolTip="Seasonal user capacity for boating. Daily capacity scaled by season length." Text="{Binding BoatingSeasonCapacity, StringFormat={}{0:N0}}"/>
                     </Grid>
                 </StackPanel>
             </Border>
@@ -344,7 +344,7 @@
                 </TextBlock>
             </StackPanel>
         </Border>
-        <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+        <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
@@ -361,7 +361,7 @@
                 </TextBlock>
             </StackPanel>
         </Border>
-        <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+        <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>

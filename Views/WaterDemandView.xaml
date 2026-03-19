@@ -19,7 +19,7 @@
             </Grid.RowDefinitions>
             <Border Grid.Row="0"
                     Style="{StaticResource Border.Explainer}"
-                    Margin="0,0,0,12">
+                    Margin="{StaticResource Margin.CardGap}">
                 <StackPanel>
                     <Grid VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
@@ -65,14 +65,14 @@
                                 </Grid.RowDefinitions>
                                 <Border Grid.Row="0"
                                         Style="{StaticResource Border.Card}"
-                                        Margin="0,0,0,8">
+                                        Margin="{StaticResource Margin.StackLarge}">
                                     <StackPanel>
                                         <TextBlock Text="Historical Demand"
                                                    Style="{StaticResource Text.SectionTitle}"
-                                                   Margin="0,0,0,12"/>
+                                                   Margin="{StaticResource Margin.CardGap}"/>
                                         <TextBlock Text="Tip: Enter one row per year and keep units consistent (e.g., gallons/person/day) so trend fitting remains interpretable."
                                                    Style="{StaticResource Text.BodySmall}"
-                                                   Margin="0,0,0,8"/>
+                                                   Margin="{StaticResource Margin.StackLarge}"/>
                                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding DataContext.HistoricalData, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                   AutoGenerateColumns="False"
                                                   FrozenColumnCount="1"
@@ -198,7 +198,7 @@
                                     </DataGrid>
 
                                     <Expander Grid.Row="7" Grid.ColumnSpan="2" Header="Advanced Adjustments" Margin="0,5,0,5">
-                                        <Grid Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
+                                        <Grid Margin="{StaticResource Margin.TopSmall}" Grid.IsSharedSizeScope="True">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" SharedSizeGroup="Label"/>
                                                 <ColumnDefinition Width="*"/>
@@ -239,7 +239,7 @@
                                             BorderThickness="1"
                                             CornerRadius="8"
                                             Padding="12"
-                                            Margin="0,8,0,0">
+                                            Margin="{StaticResource Margin.TopLarge}">
                                         <Border.Style>
                                             <Style TargetType="Border" BasedOn="{StaticResource Border.Chart}">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -280,18 +280,18 @@
                                             <TextBox Grid.Row="2" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" TextAlignment="Center" Text="{Binding DataContext.Alternative2PopulationAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline population growth rate for Alternative Forecast 2. This scales the growth rate used to project population."/>
 
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="Per capita demand change"/>
-                                            <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 1. This scales the per-capita change rate used in forecasts."/>
-                                            <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 2. This scales the per-capita change rate used in forecasts."/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="{StaticResource Margin.TopSmall}" TextAlignment="Center" Text="{Binding DataContext.Alternative1PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 1. This scales the per-capita change rate used in forecasts."/>
+                                            <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="{StaticResource Margin.TopSmall}" TextAlignment="Center" Text="{Binding DataContext.Alternative2PerCapitaAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline per capita demand change rate for Alternative Forecast 2. This scales the per-capita change rate used in forecasts."/>
 
                                             <TextBlock Grid.Row="4" Grid.Column="0" Text="System improvements"/>
-                                            <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 1. This adjusts the conservation reduction applied to demand."/>
-                                            <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 2. This adjusts the conservation reduction applied to demand."/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="{StaticResource Margin.TopSmall}" TextAlignment="Center" Text="{Binding DataContext.Alternative1ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 1. This adjusts the conservation reduction applied to demand."/>
+                                            <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="{StaticResource Margin.TopSmall}" TextAlignment="Center" Text="{Binding DataContext.Alternative2ImprovementsAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system improvements for Alternative Forecast 2. This adjusts the conservation reduction applied to demand."/>
 
                                             <TextBlock Grid.Row="5" Grid.Column="0" Text="System losses"/>
-                                            <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1. This modifies the loss factor used in adjusted demand."/>
-                                            <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2. This modifies the loss factor used in adjusted demand."/>
+                                            <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="{StaticResource Margin.TopSmall}" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1. This modifies the loss factor used in adjusted demand."/>
+                                            <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="{StaticResource Margin.TopSmall}" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2. This modifies the loss factor used in adjusted demand."/>
 
-                                            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="{DynamicResource App.TextSecondary}" TextWrapping="Wrap">
+                                            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="{StaticResource Margin.TopSection}" Style="{StaticResource Text.BodySmall}" TextWrapping="Wrap">
                                                 Adjust the percentage change applied to each baseline rate to craft two alternative forecasts. Positive values increase the rate, while negative values decrease it. Baseline inputs remain unchanged.
                                             </TextBlock>
                                         </Grid>
@@ -364,23 +364,19 @@
                             </Grid>
                             <Border Grid.Row="1"
                                     Style="{StaticResource Border.Card}"
-                                    Margin="0,10,0,0">
+                                    Margin="{StaticResource Margin.TopSection}">
                                 <StackPanel>
                                     <TextBox Text="{Binding DataContext.ChartTitle, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             FontSize="16"
-                                             FontWeight="SemiBold"
+                                             Style="{StaticResource Text.ChartTitle}"
                                              HorizontalAlignment="Center"
-                                             Margin="0,0,0,8"
-                                             BorderThickness="0"
-                                             Background="Transparent"
+                                             Margin="{StaticResource Margin.StackLarge}"
                                              TextAlignment="Center"
                                              HorizontalContentAlignment="Center"/>
                                     <TextBlock Text="Line chart plotting adjusted demand by scenario. Years sit on the X-axis and adjusted gallons per day on the Y-axis for each forecast line."
-                                               TextWrapping="Wrap"
-                                               Foreground="{DynamicResource App.TextSecondary}"
-                                               Margin="0,0,0,12"/>
+                                               Style="{StaticResource Text.BodySmall}"
+                                               Margin="{StaticResource Margin.CardGap}"/>
                                     <ItemsControl ItemsSource="{Binding DataContext.LegendItems, ElementName=Root}"
-                                                  Margin="0,0,0,12">
+                                                  Margin="{StaticResource Margin.CardGap}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <WrapPanel/>
@@ -421,7 +417,7 @@
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
-            <Border Grid.Row="2" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+            <Border Grid.Row="2" Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
@@ -433,7 +429,7 @@
                                Margin="{StaticResource Margin.TopLarge}"/>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="3" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+            <Border Grid.Row="3" Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
@@ -445,7 +441,7 @@
                                Margin="{StaticResource Margin.TopLarge}"/>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="4" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+            <Border Grid.Row="4" Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
@@ -464,7 +460,7 @@
                     </TextBlock>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="5" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+            <Border Grid.Row="5" Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
@@ -481,7 +477,7 @@
                     </TextBlock>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="6" Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+            <Border Grid.Row="6" Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>

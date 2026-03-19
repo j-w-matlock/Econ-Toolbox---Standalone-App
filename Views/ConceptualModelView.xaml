@@ -35,7 +35,7 @@
                 </StackPanel>
             </Border>
             <Grid Grid.Row="1"
-                  Margin="0,12,0,0">
+                  Margin="{StaticResource Margin.TopSection}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.1*"/>
                     <ColumnDefinition Width="1.6*"/>
@@ -52,7 +52,7 @@
                                       CanUserAddRows="True"
                                       HeadersVisibility="Column"
                                       ColumnWidth="Auto"
-                                      Margin="0,0,0,8">
+                                      Margin="{StaticResource Margin.StackLarge}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Label"
                                                         Binding="{Binding Name, Mode=TwoWay}"
@@ -74,7 +74,7 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,6">
                                 <Button Command="{Binding AddNodeCommand}"
                                         Style="{StaticResource Button.Action}"
-                                        Margin="0,0,8,0"
+                                        Margin="{StaticResource Margin.InlineMedium}"
                                         ToolTip="Add a node to the canvas.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -94,14 +94,14 @@
                             <TextBlock Text="Node styling"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
-                            <UniformGrid Columns="2" Rows="3" Margin="0,0,0,8">
+                            <UniformGrid Columns="2" Rows="3" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Shape" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding NodeShapes}"
                                               SelectedItem="{Binding SelectedNode.Shape, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Fill" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding NodeFillOptions}"
                                               DisplayMemberPath="Name"
@@ -117,12 +117,12 @@
                                               SelectedValue="{Binding SelectedNode.Stroke, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Stroke width" Style="{StaticResource Text.BodySmall}"/>
                                     <TextBox Text="{Binding SelectedNode.StrokeThickness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,8,0">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}">
                                     <TextBlock Text="Image" Style="{StaticResource Text.BodySmall}"/>
                                     <TextBox Text="{Binding SelectedNode.ImagePath, Mode=TwoWay}"
                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
@@ -130,7 +130,7 @@
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,18,0,0">
                                     <Button Command="{Binding AttachImageCommand}"
                                             Style="{StaticResource Button.Action}"
-                                            Margin="0,0,8,0"
+                                            Margin="{StaticResource Margin.InlineMedium}"
                                             ToolTip="Attach an image to the selected node.">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -150,14 +150,14 @@
                             <TextBlock Text="Label styling"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
-                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                            <UniformGrid Columns="2" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Label size" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelSizeOptions}"
                                               SelectedItem="{Binding SelectedNode.LabelFontSize, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Label color" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelColorOptions}"
                                               DisplayMemberPath="Name"
@@ -165,7 +165,7 @@
                                               SelectedValue="{Binding SelectedNode.LabelBrush, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,8,0">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}">
                                     <TextBlock Text="Label bold" Style="{StaticResource Text.BodySmall}"/>
                                     <CheckBox IsChecked="{Binding SelectedNode.LabelIsBold, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
@@ -173,19 +173,19 @@
                             </UniformGrid>
                         </StackPanel>
                     </Border>
-                    <Border Style="{StaticResource Border.Card}" Margin="0,16,0,0">
+                    <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.TopMedium}">
                         <StackPanel>
                             <TextBlock Text="Connections"
                                        Style="{StaticResource Text.SectionTitle}"
                                        Margin="{StaticResource Margin.StackLarge}"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                                <StackPanel Margin="0,0,8,0" Width="140">
+                            <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.StackLarge}">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}" Width="140">
                                     <TextBlock Text="From" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding Nodes}"
                                               SelectedItem="{Binding LinkStartSelection, Mode=TwoWay}"
                                               DisplayMemberPath="Name"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,8,0" Width="140">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}" Width="140">
                                     <TextBlock Text="To" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding Nodes}"
                                               SelectedItem="{Binding LinkEndSelection, Mode=TwoWay}"
@@ -207,7 +207,7 @@
                                       CanUserAddRows="False"
                                       HeadersVisibility="Column"
                                       ColumnWidth="Auto"
-                                      Margin="0,0,0,8">
+                                      Margin="{StaticResource Margin.StackLarge}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="From"
                                                         Binding="{Binding StartNode.Name}"
@@ -239,7 +239,7 @@
                             <TextBlock Text="Link styling"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
-                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                            <UniformGrid Columns="2" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Stroke" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LineStrokeOptions}"
@@ -248,7 +248,7 @@
                                               SelectedValue="{Binding SelectedLink.Stroke, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Pattern" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LineStyleOptions}"
                                               DisplayMemberPath="Name"
@@ -260,14 +260,14 @@
                             <TextBlock Text="Label styling"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
-                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                            <UniformGrid Columns="2" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Label size" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelSizeOptions}"
                                               SelectedItem="{Binding SelectedLink.LabelFontSize, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Label color" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelColorOptions}"
                                               DisplayMemberPath="Name"
@@ -275,7 +275,7 @@
                                               SelectedValue="{Binding SelectedLink.LabelBrush, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,8,0">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}">
                                     <TextBlock Text="Label bold" Style="{StaticResource Text.BodySmall}"/>
                                     <CheckBox IsChecked="{Binding SelectedLink.LabelIsBold, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
@@ -290,7 +290,7 @@
                                       CanUserAddRows="True"
                                       HeadersVisibility="Column"
                                       ColumnWidth="Auto"
-                                      Margin="0,0,0,8"
+                                      Margin="{StaticResource Margin.StackLarge}"
                                       IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="X"
@@ -304,7 +304,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <Button Command="{Binding AddVertexCommand}"
                                         Style="{StaticResource Button.Action}"
-                                        Margin="0,0,8,0"
+                                        Margin="{StaticResource Margin.InlineMedium}"
                                         ToolTip="Insert a vertex to bend the selected link.">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
