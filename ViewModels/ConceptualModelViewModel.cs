@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using EconToolbox.Desktop.Helpers;
 using EconToolbox.Desktop.Models;
 using Microsoft.Win32;
 

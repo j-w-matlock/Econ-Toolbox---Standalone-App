@@ -846,6 +846,23 @@ namespace EconToolbox.Desktop.ViewModels
             return diagnostics;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _computeDebounceTimer.Stop();
+                Rows.CollectionChanged -= Rows_CollectionChanged;
+                DamageColumns.CollectionChanged -= DamageColumns_CollectionChanged;
+
+                foreach (var row in Rows)
+                {
+                    row.PropertyChanged -= Row_PropertyChanged;
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
         public class EadRow : BaseViewModel
         {
             private double _probability;

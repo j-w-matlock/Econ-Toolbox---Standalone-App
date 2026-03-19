@@ -38,6 +38,10 @@ namespace EconToolbox.Desktop.Behaviors
                 element.PreviewMouseRightButtonDown -= OnPreviewMouseRightButtonDown;
                 element.PreviewMouseRightButtonDown += OnPreviewMouseRightButtonDown;
             }
+            else
+            {
+                element.PreviewMouseRightButtonDown -= OnPreviewMouseRightButtonDown;
+            }
         }
 
         private static void AttachContextMenu(FrameworkElement element)

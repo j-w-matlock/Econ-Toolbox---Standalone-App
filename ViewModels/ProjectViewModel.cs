@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using EconToolbox.Desktop.Helpers;
 using EconToolbox.Desktop.Models;
 
 namespace EconToolbox.Desktop.ViewModels

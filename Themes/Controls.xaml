@@ -378,6 +378,10 @@
         <Setter Property="Validation.ErrorTemplate" Value="{StaticResource Validation.ErrorTemplate}"/>
         <Setter Property="behaviors:MouseWheelRoutingBehavior.Enable" Value="True"/>
         <Style.Triggers>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource App.Focus}"/>
+                <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Focus}"/>
+            </Trigger>
             <Trigger Property="Validation.HasError" Value="True">
                 <Setter Property="BorderBrush" Value="{DynamicResource App.Validation}"/>
                 <Setter Property="BorderThickness" Value="{StaticResource BorderThickness.Focus}"/>

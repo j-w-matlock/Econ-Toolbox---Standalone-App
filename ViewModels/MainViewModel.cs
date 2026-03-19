@@ -16,6 +16,7 @@ using EconToolbox.Desktop.Services;
 
 namespace EconToolbox.Desktop.ViewModels
 {
+#pragma warning disable CS0162 // Unreachable code detected — module feature flags are intentionally const-false while disabled
     public class MainViewModel : BaseViewModel
     {
         // Temporary module switches.
@@ -42,6 +43,7 @@ namespace EconToolbox.Desktop.ViewModels
         private UdvViewModel? _udvForBenefitsSync;
         private TrafficDelayAnalysisViewModel? _trafficForBenefitsSync;
         private AdvancedBridgeReplacementViewModel? _abrForBenefitsSync;
+        private PropertyChangedEventHandler? _appProgressHandler;
         public ModuleDefinition? SelectedModule
         {
             get => _selectedModule;
@@ -303,12 +305,13 @@ namespace EconToolbox.Desktop.ViewModels
             _excelExportService = excelExportService;
             _layoutSettingsService = layoutSettingsService;
             _appProgressService = appProgressService;
-            _appProgressService.PropertyChanged += (_, _) =>
+            _appProgressHandler = (_, _) =>
             {
                 OnPropertyChanged(nameof(IsAppProgressActive));
                 OnPropertyChanged(nameof(AppProgressPercent));
                 OnPropertyChanged(nameof(AppProgressMessage));
             };
+            _appProgressService.PropertyChanged += _appProgressHandler;
 
             ProjectManager = new ProjectViewModel();
 
@@ -627,11 +630,40 @@ namespace EconToolbox.Desktop.ViewModels
             _trafficForBenefitsSync = GetModuleViewModel<TrafficDelayAnalysisViewModel>();
             _abrForBenefitsSync = GetModuleViewModel<AdvancedBridgeReplacementViewModel>();
 
-            _udvForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
-            _trafficForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
-            _abrForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
+            if (_udvForBenefitsSync != null)
+            {
+                _udvForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
+            }
+
+            if (_trafficForBenefitsSync != null)
+            {
+                _trafficForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
+            }
+
+            if (_abrForBenefitsSync != null)
+            {
+                _abrForBenefitsSync.PropertyChanged += OnBenefitSourcePropertyChanged;
+            }
 
             SyncAnnualBenefitsFromModules();
+        }
+
+        private void UnwireAnnualBenefitsSynchronization()
+        {
+            if (_udvForBenefitsSync != null)
+            {
+                _udvForBenefitsSync.PropertyChanged -= OnBenefitSourcePropertyChanged;
+            }
+
+            if (_trafficForBenefitsSync != null)
+            {
+                _trafficForBenefitsSync.PropertyChanged -= OnBenefitSourcePropertyChanged;
+            }
+
+            if (_abrForBenefitsSync != null)
+            {
+                _abrForBenefitsSync.PropertyChanged -= OnBenefitSourcePropertyChanged;
+            }
         }
 
         private void OnBenefitSourcePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -1128,6 +1160,33 @@ namespace EconToolbox.Desktop.ViewModels
             ShellStatusMessage = message;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                UnwireAnnualBenefitsSynchronization();
+
+                if (_appProgressHandler != null)
+                {
+                    _appProgressService.PropertyChanged -= _appProgressHandler;
+                }
+
+                if (CurrentViewModel is DiagnosticViewModelBase currentDiag)
+                {
+                    currentDiag.PropertyChanged -= OnCurrentViewModelPropertyChanged;
+                }
+
+                foreach (var vm in _viewModelCache.Values)
+                {
+                    vm.Dispose();
+                }
+
+                _viewModelCache.Clear();
+            }
+
+            base.Dispose(disposing);
+        }
+
         private static ModuleDefinition CreateAgricultureDepthDamageModule()
         {
             return new ModuleDefinition(
@@ -1150,4 +1209,5 @@ namespace EconToolbox.Desktop.ViewModels
                 typeof(AgricultureDepthDamageViewModel));
         }
     }
+#pragma warning restore CS0162
 }

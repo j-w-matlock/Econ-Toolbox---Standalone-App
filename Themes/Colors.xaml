@@ -19,7 +19,7 @@
     <SolidColorBrush x:Key="Color.OnPrimaryBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Color.TextPrimaryBrush" Color="#1B1A19"/>
     <SolidColorBrush x:Key="Color.TextSecondaryBrush" Color="#605E5C"/>
-    <SolidColorBrush x:Key="Color.TextDisabledBrush" Color="#A19F9D"/>
+    <SolidColorBrush x:Key="Color.TextDisabledBrush" Color="#767676"/>
     <SolidColorBrush x:Key="Color.BackgroundBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Color.SurfaceBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Color.CardBackgroundBrush" Color="#FFFFFF"/>
@@ -31,11 +31,11 @@
     <Color x:Key="App.SurfaceAlt.Color">#FFFFFF</Color>
     <Color x:Key="App.Surface2.Color">#FFFFFF</Color>
     <Color x:Key="App.Surface2Border.Color">#DADADA</Color>
-    <Color x:Key="App.Border.Color">#D1D1D1</Color>
+    <Color x:Key="App.Border.Color">#A3A3A3</Color>
     <Color x:Key="App.Divider.Color">#D1D1D1</Color>
     <Color x:Key="App.TextPrimary.Color">#1B1A19</Color>
     <Color x:Key="App.TextSecondary.Color">#605E5C</Color>
-    <Color x:Key="App.TextDisabled.Color">#A19F9D</Color>
+    <Color x:Key="App.TextDisabled.Color">#767676</Color>
     <Color x:Key="App.Accent.Color">#0F6CBD</Color>
     <Color x:Key="App.AccentHover.Color">#115EA3</Color>
     <Color x:Key="App.AccentPressed.Color">#0C3B5E</Color>
