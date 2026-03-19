@@ -316,7 +316,7 @@
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Cost"
                                                                             Binding="{Binding Cost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
-                                                                            Width="120">
+                                                                            Width="SizeToHeader">
                                                             <DataGridTextColumn.ElementStyle>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -330,7 +330,7 @@
                                                         </DataGridTextColumn>
                                                         <DataGridTextColumn Header="Cost FY (Original)"
                                                                             Binding="{Binding OriginalFiscalYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                            Width="130">
+                                                                            Width="SizeToHeader">
                                                             <DataGridTextColumn.ElementStyle>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -344,7 +344,7 @@
                                                         </DataGridTextColumn>
                                                         <DataGridTextColumn Header="Cost FY (Updated)"
                                                                             Binding="{Binding UpdatedFiscalYear, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                            Width="130">
+                                                                            Width="SizeToHeader">
                                                             <DataGridTextColumn.ElementStyle>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -358,7 +358,7 @@
                                                         </DataGridTextColumn>
                                                         <DataGridTextColumn Header="Index Factor"
                                                                             Binding="{Binding IndexFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=F3}"
-                                                                            Width="100">
+                                                                            Width="SizeToHeader">
                                                             <DataGridTextColumn.ElementStyle>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -373,7 +373,7 @@
                                                         <DataGridTextColumn Header="Updated Cost"
                                                                             Binding="{Binding UpdatedCost, Mode=OneWay, Converter={StaticResource CurrencyConverter}}"
                                                                             IsReadOnly="True"
-                                                                            Width="120">
+                                                                            Width="SizeToHeader">
                                                             <DataGridTextColumn.ElementStyle>
                                                                 <Style TargetType="TextBlock">
                                                                     <Setter Property="HorizontalAlignment" Value="Right"/>
