@@ -19,6 +19,9 @@ namespace EconToolbox.Desktop.Models
         [ObservableProperty]
         private double _indexFactor = 1d;
 
+        [ObservableProperty]
+        private bool _isSelected;
+
         public double UpdatedCost => Cost * IndexFactor;
 
         partial void OnCostChanged(double value) => OnPropertyChanged(nameof(UpdatedCost));

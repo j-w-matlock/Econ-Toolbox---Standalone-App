@@ -22,6 +22,9 @@ namespace EconToolbox.Desktop.Models
         [ObservableProperty]
         private bool _isModuleLinked;
 
+        [ObservableProperty]
+        private bool _isSelected;
+
         public double IndexedAmount => Amount * IndexFactor;
 
         partial void OnAmountChanged(double value) => OnPropertyChanged(nameof(IndexedAmount));
