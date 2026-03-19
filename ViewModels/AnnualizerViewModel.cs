@@ -1382,6 +1382,7 @@ namespace EconToolbox.Desktop.ViewModels
                     entry.PropertyChanged -= AnnualCostUpdateEntryOnPropertyChanged;
                 }
 
+                // Detach future-cost and IDC collection/entry handlers
                 RewireFutureCostEntries(_futureCosts, null);
                 RewireFutureCostEntries(_idcEntries, null);
             }
