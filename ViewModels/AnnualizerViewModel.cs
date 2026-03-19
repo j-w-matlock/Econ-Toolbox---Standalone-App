@@ -44,6 +44,8 @@ namespace EconToolbox.Desktop.ViewModels
         private readonly ObservableCollection<AnnualizerScenario> _scenarioComparisons = new();
         private int _scenarioCounter = 1;
         private AnnualizerScenario? _selectedScenario;
+        private AnnualBenefitEntry? _selectedAnnualBenefitEntry;
+        private AnnualCostUpdateEntry? _selectedAnnualCostUpdateEntry;
         private bool _suppressScenarioSync;
         private bool _suspendRecalculation;
 
@@ -103,23 +105,52 @@ namespace EconToolbox.Desktop.ViewModels
             get => _annualBenefits;
             set
             {
-                if (AnnualBenefitEntries.Count == 0)
-                {
-                    _annualBenefits = value;
-                    OnPropertyChanged();
+                if (Math.Abs(_annualBenefits - value) < 0.0001)
                     return;
-                }
 
-                var linkedBenefits = AnnualBenefitEntries
-                    .Where(entry => !string.Equals(entry.Key, "frm", StringComparison.OrdinalIgnoreCase)
-                        && entry.IncludeInTotal)
-                    .Sum(entry => entry.IndexedAmount);
+                _annualBenefits = value;
+                OnPropertyChanged();
+            }
+        }
 
-                var frmAmount = value - linkedBenefits;
-                if (SetAnnualBenefitAmount("frm", frmAmount))
-                {
-                    RecalculateAnnualBenefitsTotal();
-                }
+
+        public AnnualBenefitEntry? SelectedAnnualBenefitEntry
+        {
+            get => _selectedAnnualBenefitEntry;
+            set
+            {
+                if (ReferenceEquals(_selectedAnnualBenefitEntry, value))
+                    return;
+
+                if (_selectedAnnualBenefitEntry != null)
+                    _selectedAnnualBenefitEntry.IsSelected = false;
+
+                _selectedAnnualBenefitEntry = value;
+
+                if (_selectedAnnualBenefitEntry != null)
+                    _selectedAnnualBenefitEntry.IsSelected = true;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public AnnualCostUpdateEntry? SelectedAnnualCostUpdateEntry
+        {
+            get => _selectedAnnualCostUpdateEntry;
+            set
+            {
+                if (ReferenceEquals(_selectedAnnualCostUpdateEntry, value))
+                    return;
+
+                if (_selectedAnnualCostUpdateEntry != null)
+                    _selectedAnnualCostUpdateEntry.IsSelected = false;
+
+                _selectedAnnualCostUpdateEntry = value;
+
+                if (_selectedAnnualCostUpdateEntry != null)
+                    _selectedAnnualCostUpdateEntry.IsSelected = true;
+
+                OnPropertyChanged();
             }
         }
 
@@ -419,19 +450,12 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void RemoveCostUpdateRows()
         {
-            var removableRows = AnnualCostUpdateEntries
-                .Where(entry => Math.Abs(entry.Cost) < 0.0001 && Math.Abs(entry.IndexFactor - 1d) < 0.0001)
-                .Skip(1)
-                .ToList();
-
-            if (removableRows.Count == 0)
+            if (SelectedAnnualCostUpdateEntry == null)
                 return;
 
-            foreach (var row in removableRows)
-            {
-                row.PropertyChanged -= AnnualCostUpdateEntryOnPropertyChanged;
-                AnnualCostUpdateEntries.Remove(row);
-            }
+            SelectedAnnualCostUpdateEntry.PropertyChanged -= AnnualCostUpdateEntryOnPropertyChanged;
+            AnnualCostUpdateEntries.Remove(SelectedAnnualCostUpdateEntry);
+            SelectedAnnualCostUpdateEntry = null;
 
             RecalculateTotalUpdatedCosts();
         }
@@ -537,18 +561,12 @@ namespace EconToolbox.Desktop.ViewModels
 
         private void RemoveAnnualBenefitRows()
         {
-            var removableRows = AnnualBenefitEntries
-                .Where(entry => !entry.IsModuleLinked && !string.Equals(entry.Key, "frm", StringComparison.OrdinalIgnoreCase) && !entry.IncludeInTotal)
-                .ToList();
-
-            if (removableRows.Count == 0)
+            if (SelectedAnnualBenefitEntry == null)
                 return;
 
-            foreach (var row in removableRows)
-            {
-                row.PropertyChanged -= AnnualBenefitEntryOnPropertyChanged;
-                AnnualBenefitEntries.Remove(row);
-            }
+            SelectedAnnualBenefitEntry.PropertyChanged -= AnnualBenefitEntryOnPropertyChanged;
+            AnnualBenefitEntries.Remove(SelectedAnnualBenefitEntry);
+            SelectedAnnualBenefitEntry = null;
 
             RecalculateAnnualBenefitsTotal();
         }
@@ -635,7 +653,6 @@ namespace EconToolbox.Desktop.ViewModels
 
             FirstCost = scenario.FirstCost;
             AnnualOm = scenario.AnnualOm;
-            AnnualBenefits = scenario.AnnualBenefits;
             Rate = scenario.Rate;
             UnityFirstCostMessage = null;
             Compute();
@@ -824,7 +841,7 @@ namespace EconToolbox.Desktop.ViewModels
 
         private AnnualizerModel.Result RunAnnualizer(double firstCost, AnnualizerComputationInputs inputs)
         {
-            return RunAnnualizer(firstCost, Rate, AnnualOm, AnnualBenefits, inputs);
+            return RunAnnualizer(firstCost, Rate, AnnualOm, TotalAnnualBenefits, inputs);
         }
 
         private AnnualizerModel.Result RunAnnualizer(double firstCost, double rate, double annualOm, double annualBenefits,
@@ -1025,7 +1042,8 @@ namespace EconToolbox.Desktop.ViewModels
                 }
                 else
                 {
-                    AnnualBenefits = data.AnnualBenefits;
+                    SetAnnualBenefitAmount("frm", data.AnnualBenefits);
+                    RecalculateAnnualBenefitsTotal();
                 }
                 foreach (var existing in AnnualCostUpdateEntries)
                 {

@@ -203,16 +203,17 @@
                                                     Review annual benefits, apply an index factor to each row as needed, and use Include checkboxes to control the total.
                                                 </TextBlock>
                                                 <WrapPanel Margin="0,0,0,6">
-                                                    <Button Content="Add Benefit Row"
+                                                    <Button Content="Add Row"
                                                             Command="{Binding AddAnnualBenefitRowCommand}"
                                                             Style="{StaticResource Button.ActionSecondaryCompact}"
                                                             Margin="0,0,8,8"/>
-                                                    <Button Content="Remove Excluded Custom Rows"
+                                                    <Button Content="Remove Selected Row"
                                                             Command="{Binding RemoveAnnualBenefitRowCommand}"
                                                             Style="{StaticResource Button.ActionSecondaryCompact}"
                                                             Margin="0,0,0,8"/>
                                                 </WrapPanel>
                                                 <DataGrid ItemsSource="{Binding AnnualBenefitEntries}"
+                                                          SelectedItem="{Binding SelectedAnnualBenefitEntry, Mode=TwoWay}"
                                                           AutoGenerateColumns="False"
                                                           CanUserAddRows="False"
                                                           CanUserDeleteRows="False"
@@ -292,16 +293,17 @@
                                                     Update past-year costs to current or future dollars by entering the original cost, fiscal years, and an index or interest factor.
                                                 </TextBlock>
                                                 <WrapPanel Margin="0,0,0,6">
-                                                    <Button Content="Add Cost Row"
+                                                    <Button Content="Add Row"
                                                             Command="{Binding AddCostUpdateRowCommand}"
                                                             Style="{StaticResource Button.ActionSecondaryCompact}"
                                                             Margin="0,0,8,8"/>
-                                                    <Button Content="Remove Empty Rows"
+                                                    <Button Content="Remove Selected Row"
                                                             Command="{Binding RemoveCostUpdateRowCommand}"
                                                             Style="{StaticResource Button.ActionSecondaryCompact}"
                                                             Margin="0,0,0,8"/>
                                                 </WrapPanel>
                                                 <DataGrid ItemsSource="{Binding AnnualCostUpdateEntries}"
+                                                          SelectedItem="{Binding SelectedAnnualCostUpdateEntry, Mode=TwoWay}"
                                                           AutoGenerateColumns="False"
                                                           CanUserAddRows="False"
                                                           CanUserDeleteRows="False"
