@@ -193,7 +193,7 @@
                 </Border>
                 <Border Grid.Row="1"
                         Style="{StaticResource Border.Card}"
-                        Margin="0,16,0,0">
+                        Margin="{StaticResource Margin.TopMedium}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -344,7 +344,7 @@
                     </Grid>
                 </Border>
             </Grid>
-            <StackPanel Grid.Row="2" Margin="0,16,0,0">
+            <StackPanel Grid.Row="2" Margin="{StaticResource Margin.TopMedium}">
                 <Border Style="{StaticResource Border.ResultInfo}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

@@ -169,7 +169,7 @@
                                     </ComboBox>
                                 </Grid>
 
-                                <Grid Margin="0,16,0,0">
+                                <Grid Margin="{StaticResource Margin.TopMedium}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
@@ -405,7 +405,7 @@
                         </Border>
 
                         <Border Style="{StaticResource Border.Card}"
-                                Margin="0,16,0,0">
+                                Margin="{StaticResource Margin.TopMedium}">
                             <StackPanel>
                                 <TextBlock Text="Scenario Inputs"
                                            Style="{StaticResource Text.SectionTitle}"/>

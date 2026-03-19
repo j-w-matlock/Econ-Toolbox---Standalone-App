@@ -173,7 +173,7 @@
                             </UniformGrid>
                         </StackPanel>
                     </Border>
-                    <Border Style="{StaticResource Border.Card}" Margin="0,16,0,0">
+                    <Border Style="{StaticResource Border.Card}" Margin="{StaticResource Margin.TopMedium}">
                         <StackPanel>
                             <TextBlock Text="Connections"
                                        Style="{StaticResource Text.SectionTitle}"

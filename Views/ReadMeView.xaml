@@ -24,7 +24,7 @@
                                          FontFamily="Segoe UI"
                                          FontSize="14"/>
             </Border>
-            <StackPanel Grid.Row="1" Margin="0,16,0,0">
+            <StackPanel Grid.Row="1" Margin="{StaticResource Margin.TopMedium}">
                 <Border Style="{StaticResource Border.Explainer}">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
