@@ -98,7 +98,7 @@
             <TabControl Margin="0" HorizontalContentAlignment="Stretch">
                 <TabItem Header="Storage Cost">
                     <StackPanel Margin="0">
-                        <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
+                        <Border Style="{StaticResource Border.Explainer}" Margin="{StaticResource Margin.CardGap}">
                             <StackPanel>
                                 <Grid VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
@@ -173,7 +173,7 @@
         </TabItem>
         <TabItem Header="Joint Costs O&amp;M">
             <StackPanel Margin="{StaticResource Margin.Container}">
-                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
+                <Border Style="{StaticResource Border.Explainer}" Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
                             <Grid.ColumnDefinitions>
@@ -345,7 +345,7 @@
                         <Setter Property="Foreground" Value="{DynamicResource App.Link.CwccisCurrent}"/>
                     </Style>
                 </StackPanel.Resources>
-                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
+                <Border Style="{StaticResource Border.Explainer}" Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
                             <Grid.ColumnDefinitions>
@@ -465,7 +465,7 @@
                           Height="202"
                           RowHeight="28"
                           ColumnHeaderHeight="34"
-                          Margin="0,0,0,12"
+                          Margin="{StaticResource Margin.CardGap}"
                           ColumnWidth="Auto">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Category" Binding="{Binding Category}" CellStyle="{StaticResource CategoryCellStyle}">
@@ -711,7 +711,7 @@
         </TabItem>
         <TabItem Header="RR&amp;R and Mitigation">
             <StackPanel Margin="{StaticResource Margin.Container}">
-                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
+                <Border Style="{StaticResource Border.Explainer}" Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
                             <Grid.ColumnDefinitions>
@@ -874,7 +874,7 @@
         </TabItem>
         <TabItem Header="Total Annual Cost">
             <StackPanel Margin="{StaticResource Margin.Container}">
-                <Border Style="{StaticResource Border.Explainer}" Margin="0,0,0,12">
+                <Border Style="{StaticResource Border.Explainer}" Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <Grid VerticalAlignment="Center">
                             <Grid.ColumnDefinitions>

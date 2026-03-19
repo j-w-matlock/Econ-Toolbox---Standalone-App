@@ -19,7 +19,7 @@
             </Grid.RowDefinitions>
             <Border Grid.Row="0"
                     Style="{StaticResource Border.Explainer}"
-                    Margin="0,0,0,12">
+                    Margin="{StaticResource Margin.CardGap}">
                 <StackPanel>
                     <Grid VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
@@ -69,7 +69,7 @@
                                     <StackPanel>
                                         <TextBlock Text="Historical Demand"
                                                    Style="{StaticResource Text.SectionTitle}"
-                                                   Margin="0,0,0,12"/>
+                                                   Margin="{StaticResource Margin.CardGap}"/>
                                         <TextBlock Text="Tip: Enter one row per year and keep units consistent (e.g., gallons/person/day) so trend fitting remains interpretable."
                                                    Style="{StaticResource Text.BodySmall}"
                                                    Margin="0,0,0,8"/>
@@ -375,9 +375,9 @@
                                     <TextBlock Text="Line chart plotting adjusted demand by scenario. Years sit on the X-axis and adjusted gallons per day on the Y-axis for each forecast line."
                                                TextWrapping="Wrap"
                                                Foreground="{DynamicResource App.TextSecondary}"
-                                               Margin="0,0,0,12"/>
+                                               Margin="{StaticResource Margin.CardGap}"/>
                                     <ItemsControl ItemsSource="{Binding DataContext.LegendItems, ElementName=Root}"
-                                                  Margin="0,0,0,12">
+                                                  Margin="{StaticResource Margin.CardGap}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <WrapPanel/>

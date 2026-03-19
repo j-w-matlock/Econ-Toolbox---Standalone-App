@@ -609,7 +609,7 @@
                             <Run Text="{Binding CropScapeTotalAcreageDisplay, Mode=OneWay}" FontWeight="SemiBold"/>
                             <Run Text=" highlights the acreage exposed at each inundation depth."/>
                         </TextBlock>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.CardGap}">
                             <Ellipse Width="12"
                                      Height="12"
                                      Fill="{DynamicResource App.Accent}"

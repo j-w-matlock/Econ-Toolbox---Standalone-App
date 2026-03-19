@@ -181,7 +181,7 @@
                                                Margin="0,0,0,4"/>
                                     <TextBlock Grid.Row="1"
                                                Style="{StaticResource Text.Body}"
-                                               Margin="0,0,0,12"
+                                               Margin="{StaticResource Margin.CardGap}"
                                                TextWrapping="Wrap"
                                                Text="Provide annual benefits and update historical costs in one place so the scenario table below starts from synchronized annual values."/>
 

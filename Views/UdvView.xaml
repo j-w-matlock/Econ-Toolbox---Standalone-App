@@ -261,9 +261,9 @@
                          HorizontalContentAlignment="Left"/>
                 <TextBlock Text="Line chart showing how unit day values rise with higher point scores. The selected point overlays the active recreation and activity choice."
                            Style="{StaticResource Text.BodySmall}"
-                           Margin="0,0,0,12"/>
+                           Margin="{StaticResource Margin.CardGap}"/>
                 <ItemsControl ItemsSource="{Binding LegendItems}"
-                              Margin="0,0,0,12">
+                              Margin="{StaticResource Margin.CardGap}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>

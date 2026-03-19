@@ -33,7 +33,7 @@
                 </Border>
 
                 <Border Style="{StaticResource Border.Card}"
-                        Margin="0,0,0,12">
+                        Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <Button Command="{Binding AddDamageColumnCommand}"
@@ -113,7 +113,7 @@
                 </Border>
 
                 <Border Style="{StaticResource Border.Card}"
-                        Margin="0,0,0,12">
+                        Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <TextBlock Text="Stage / Frequency / Damage Inputs"
                                    Style="{StaticResource Text.SectionTitle}"
@@ -136,7 +136,7 @@
                 </Border>
 
                 <Border Style="{StaticResource Border.Card}"
-                        Margin="0,0,0,12">
+                        Margin="{StaticResource Margin.CardGap}">
                     <StackPanel>
                         <TextBox Text="{Binding ChartTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource Text.ChartTitle}"
@@ -147,9 +147,9 @@
                                  HorizontalContentAlignment="Left"/>
                         <TextBlock Text="Graph shows frequency-damage or stage-damage curves for each column so you can visually confirm the inputs."
                                    Style="{StaticResource Text.BodySmall}"
-                                   Margin="0,0,0,12"/>
+                                   Margin="{StaticResource Margin.CardGap}"/>
                         <ItemsControl ItemsSource="{Binding LegendItems}"
-                                      Margin="0,0,0,12">
+                                      Margin="{StaticResource Margin.CardGap}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel/>

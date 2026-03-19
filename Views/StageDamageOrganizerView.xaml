@@ -155,9 +155,9 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0"
-                                        Margin="0,0,0,12">
+                                        Margin="{StaticResource Margin.CardGap}">
                                 <Border Style="{StaticResource Border.Card}"
-                                        Margin="0,0,0,12">
+                                        Margin="{StaticResource Margin.CardGap}">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -182,7 +182,7 @@
                                     </Grid>
                                 </Border>
                                 <Border Style="{StaticResource Border.Card}"
-                                        Margin="0,0,0,12">
+                                        Margin="{StaticResource Margin.CardGap}">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -207,7 +207,7 @@
                                     </Grid>
                                 </Border>
                                 <Border Style="{StaticResource Border.Card}"
-                                        Margin="0,0,0,12">
+                                        Margin="{StaticResource Margin.CardGap}">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -232,7 +232,7 @@
                                     </Grid>
                                 </Border>
                                 <Border Style="{StaticResource Border.Card}"
-                                        Margin="0,0,0,12">
+                                        Margin="{StaticResource Margin.CardGap}">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
@@ -522,7 +522,7 @@
                                    Style="{StaticResource Text.SectionTitle}"
                                    Margin="0,0,0,8"/>
                         <ItemsControl ItemsSource="{Binding LegendItems}"
-                                      Margin="0,0,0,12">
+                                      Margin="{StaticResource Margin.CardGap}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel/>
