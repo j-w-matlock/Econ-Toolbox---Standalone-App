@@ -669,7 +669,7 @@
                             <StackPanel Grid.Column="1">
                                 <TextBlock Text="Damage table"
                                            FontWeight="SemiBold"
-                                           Margin="0,0,0,8"/>
+                                           Margin="{StaticResource Margin.StackLarge}"/>
                                 <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding CropScapeDamageRows}"
                                           AutoGenerateColumns="False"
                                           CanUserAddRows="False"

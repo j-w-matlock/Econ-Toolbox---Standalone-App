@@ -65,14 +65,14 @@
                                 </Grid.RowDefinitions>
                                 <Border Grid.Row="0"
                                         Style="{StaticResource Border.Card}"
-                                        Margin="0,0,0,8">
+                                        Margin="{StaticResource Margin.StackLarge}">
                                     <StackPanel>
                                         <TextBlock Text="Historical Demand"
                                                    Style="{StaticResource Text.SectionTitle}"
                                                    Margin="{StaticResource Margin.CardGap}"/>
                                         <TextBlock Text="Tip: Enter one row per year and keep units consistent (e.g., gallons/person/day) so trend fitting remains interpretable."
                                                    Style="{StaticResource Text.BodySmall}"
-                                                   Margin="0,0,0,8"/>
+                                                   Margin="{StaticResource Margin.StackLarge}"/>
                                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding DataContext.HistoricalData, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                   AutoGenerateColumns="False"
                                                   FrozenColumnCount="1"

@@ -120,7 +120,7 @@
                                    Margin="{StaticResource Margin.StackLarge}"/>
                         <TextBlock Text="Tip: Keep probability values in descending order (e.g., 0.5, 0.2, 0.1) and use consistent currency units across damage columns."
                                    Style="{StaticResource Text.BodySmall}"
-                                   Margin="0,0,0,8"/>
+                                   Margin="{StaticResource Margin.StackLarge}"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Rows}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="True"
@@ -191,7 +191,7 @@
                     <StackPanel>
                         <TextBlock Text="Expected Annual Damage Results"
                                    Style="{StaticResource Text.SectionTitle}"
-                                   Margin="0,0,0,8"/>
+                                   Margin="{StaticResource Margin.StackLarge}"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding Results}"
                                   AutoGenerateColumns="False"
                                   CanUserAddRows="False"

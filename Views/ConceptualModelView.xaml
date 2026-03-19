@@ -52,7 +52,7 @@
                                       CanUserAddRows="True"
                                       HeadersVisibility="Column"
                                       ColumnWidth="Auto"
-                                      Margin="0,0,0,8">
+                                      Margin="{StaticResource Margin.StackLarge}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Label"
                                                         Binding="{Binding Name, Mode=TwoWay}"
@@ -94,14 +94,14 @@
                             <TextBlock Text="Node styling"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
-                            <UniformGrid Columns="2" Rows="3" Margin="0,0,0,8">
+                            <UniformGrid Columns="2" Rows="3" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Shape" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding NodeShapes}"
                                               SelectedItem="{Binding SelectedNode.Shape, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Fill" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding NodeFillOptions}"
                                               DisplayMemberPath="Name"
@@ -117,7 +117,7 @@
                                               SelectedValue="{Binding SelectedNode.Stroke, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Stroke width" Style="{StaticResource Text.BodySmall}"/>
                                     <TextBox Text="{Binding SelectedNode.StrokeThickness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
@@ -150,7 +150,7 @@
                             <TextBlock Text="Label styling"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
-                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                            <UniformGrid Columns="2" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Label size" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelSizeOptions}"

@@ -165,7 +165,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Structure count by AEP"
                                                    Style="{StaticResource Text.SectionTitle}"
-                                                   Margin="0,0,0,8"/>
+                                                   Margin="{StaticResource Margin.StackLarge}"/>
                                         <DataGrid CanUserResizeColumns="True" x:Name="StructureCountByAepSummaryGrid"
                                                   Grid.Row="1"
                                                   ItemsSource="{Binding StructureCountByAepSummaries}"
@@ -190,7 +190,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Structure DamageCategory summary"
                                                    Style="{StaticResource Text.SectionTitle}"
-                                                   Margin="0,0,0,8"/>
+                                                   Margin="{StaticResource Margin.StackLarge}"/>
                                         <DataGrid CanUserResizeColumns="True" x:Name="CategorySummaryGrid"
                                                   Grid.Row="1"
                                                   ItemsSource="{Binding CategorySummaries}"
@@ -215,7 +215,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Content DamageCategory summary"
                                                    Style="{StaticResource Text.SectionTitle}"
-                                                   Margin="0,0,0,8"/>
+                                                   Margin="{StaticResource Margin.StackLarge}"/>
                                         <DataGrid CanUserResizeColumns="True" x:Name="ContentCategorySummaryGrid"
                                                   Grid.Row="1"
                                                   ItemsSource="{Binding ContentCategorySummaries}"
@@ -240,7 +240,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Other DamageCategory summary"
                                                    Style="{StaticResource Text.SectionTitle}"
-                                                   Margin="0,0,0,8"/>
+                                                   Margin="{StaticResource Margin.StackLarge}"/>
                                         <DataGrid CanUserResizeColumns="True" x:Name="OtherCategorySummaryGrid"
                                                   Grid.Row="1"
                                                   ItemsSource="{Binding OtherCategorySummaries}"
@@ -264,7 +264,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock Text="Vehicle DamageCategory summary"
                                                    Style="{StaticResource Text.SectionTitle}"
-                                                   Margin="0,0,0,8"/>
+                                                   Margin="{StaticResource Margin.StackLarge}"/>
                                         <DataGrid CanUserResizeColumns="True" x:Name="VehicleCategorySummaryGrid"
                                                   Grid.Row="1"
                                                   ItemsSource="{Binding VehicleCategorySummaries}"
@@ -292,7 +292,7 @@
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="Top structure damages (highest AEP)"
                                                Style="{StaticResource Text.SectionTitle}"
-                                               Margin="0,0,0,8"/>
+                                               Margin="{StaticResource Margin.StackLarge}"/>
                                     <DataGrid CanUserResizeColumns="True" Grid.Row="1"
                                               ItemsSource="{Binding Highlights}"
                                               AutoGenerateColumns="False"
@@ -351,14 +351,14 @@
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="Top structure map explorer (X/Y coordinates)"
                                                Style="{StaticResource Text.SectionTitle}"
-                                               Margin="0,0,0,8"/>
+                                               Margin="{StaticResource Margin.StackLarge}"/>
                                     <Grid Grid.Row="1">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
-                                        <DockPanel Grid.Row="0" Margin="0,0,0,8">
+                                        <DockPanel Grid.Row="0" Margin="{StaticResource Margin.StackLarge}">
                                             <TextBlock Text="{Binding SelectedMapPointSummary}"
                                                        TextWrapping="Wrap"
                                                        VerticalAlignment="Center"
@@ -371,7 +371,7 @@
                                                        FontStyle="Italic"
                                                        DockPanel.Dock="Right"/>
                                         </DockPanel>
-                                        <Grid Grid.Row="1" Margin="0,0,0,8">
+                                        <Grid Grid.Row="1" Margin="{StaticResource Margin.StackLarge}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
@@ -520,7 +520,7 @@
                     <StackPanel>
                         <TextBlock Text="Total structure damage by damage category"
                                    Style="{StaticResource Text.SectionTitle}"
-                                   Margin="0,0,0,8"/>
+                                   Margin="{StaticResource Margin.StackLarge}"/>
                         <ItemsControl ItemsSource="{Binding LegendItems}"
                                       Margin="{StaticResource Margin.CardGap}">
                             <ItemsControl.ItemsPanel>
