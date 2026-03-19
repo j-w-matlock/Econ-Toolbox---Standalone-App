@@ -68,8 +68,7 @@
                                 Margin="{StaticResource Margin.Stack}">
                             <StackPanel>
                                 <TextBlock Text="Custom region inputs"
-                                           FontWeight="SemiBold"
-                                           FontSize="14"
+                                           Style="{StaticResource Text.FormHeading}"
                                            Margin="{StaticResource Margin.StackSmall}"/>
                                 <TextBlock Text="Adjust flood season timing, growing season shift, and annual probability to reflect local watershed conditions."
                                            Style="{StaticResource Text.Caption}"
@@ -250,8 +249,7 @@
                         <Separator Margin="{StaticResource Margin.Stack}"/>
 
                         <TextBlock Text="What crop is planted on the acre?"
-                                   FontWeight="SemiBold"
-                                   FontSize="15"
+                                   Style="{StaticResource Text.SubsectionTitle}"
                                    Margin="{StaticResource Margin.Stack}"/>
                         <ComboBox ItemsSource="{Binding Crops}"
                                   SelectedItem="{Binding SelectedCrop}"
@@ -272,8 +270,7 @@
                                 Margin="{StaticResource Margin.Stack}">
                             <StackPanel>
                                 <TextBlock Text="Crop parameters"
-                                           FontWeight="SemiBold"
-                                           FontSize="14"
+                                           Style="{StaticResource Text.FormHeading}"
                                            Margin="{StaticResource Margin.StackSmall}"/>
                                 <TextBlock Text="Describe the crop and adjust the damage and impact multipliers to capture localized resilience."
                                            Style="{StaticResource Text.Caption}"
@@ -325,8 +322,7 @@
                                             HorizontalAlignment="Stretch"
                                             Margin="{StaticResource Margin.StackSmall}">
                                     <TextBlock Text="CropScape acreage summary"
-                                               FontWeight="SemiBold"
-                                               FontSize="14"
+                                               Style="{StaticResource Text.FormHeading}"
                                                VerticalAlignment="Center"/>
                                     <StackPanel Orientation="Horizontal"
                                                 HorizontalAlignment="Left"
@@ -396,8 +392,7 @@
                         <Separator Margin="{StaticResource Margin.Stack}"/>
 
                         <TextBlock Text="How resilient is the field during the season?"
-                                   FontWeight="SemiBold"
-                                   FontSize="15"
+                                   Style="{StaticResource Text.SubsectionTitle}"
                                    Margin="{StaticResource Margin.Stack}"/>
 
                         <ItemsControl ItemsSource="{Binding StageExposures}"
@@ -414,8 +409,7 @@
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                                                 <StackPanel Width="220">
                                                     <TextBlock Text="{Binding StageName}"
-                                                               FontWeight="SemiBold"
-                                                               FontSize="14"/>
+                                                               Style="{StaticResource Text.FormHeading}"/>
                                                     <TextBlock Text="{Binding StageWindow}"
                                                                Style="{StaticResource Text.Caption}"/>
                                                     <TextBlock Text="{Binding TimingWindowDisplay}"
@@ -510,13 +504,10 @@
                         Margin="{StaticResource Margin.TopLarge}">
                     <StackPanel>
                         <TextBlock Text="Modeled impact probability"
-                                   FontWeight="SemiBold"
-                                   FontSize="15"
+                                   Style="{StaticResource Text.SubsectionTitle}"
                                    Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Text="{Binding ModeledImpactProbabilityDisplay}"
-                                   FontSize="32"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource App.Accent}"
+                                   Style="{StaticResource Text.HeroMetric}"
                                    Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Text="{Binding ImpactSummary}"
                                    Style="{StaticResource Text.Body}"
@@ -524,8 +515,7 @@
                                    Margin="{StaticResource Margin.Stack}"/>
                         <Separator Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Text="Mean crop insight"
-                                   FontWeight="SemiBold"
-                                   FontSize="15"
+                                   Style="{StaticResource Text.SubsectionTitle}"
                                    Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Text="{Binding CropInsight}"
                                    Style="{StaticResource Text.Body}"
@@ -558,8 +548,7 @@
                         Margin="{StaticResource Margin.TopLarge}">
                     <StackPanel>
                         <TextBlock Text="Depth-duration-damage table"
-                                   FontWeight="SemiBold"
-                                   FontSize="15"
+                                   Style="{StaticResource Text.SubsectionTitle}"
                                    Margin="{StaticResource Margin.Stack}"/>
                         <DataGrid CanUserResizeColumns="True" ItemsSource="{Binding DepthDurationRows}"
                                   AutoGenerateColumns="False"
@@ -611,8 +600,7 @@
                     </Border.Style>
                     <StackPanel>
                         <TextBlock Text="CropScape acreage damage projection"
-                                   FontWeight="SemiBold"
-                                   FontSize="15"
+                                   Style="{StaticResource Text.SubsectionTitle}"
                                    Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Style="{StaticResource Text.Body}"
                                    TextWrapping="Wrap"
@@ -663,14 +651,12 @@
                                                   StrokeStartLineCap="Round"/>
                                     </Canvas>
                                     <TextBlock Text="Depth (ft)"
-                                               Foreground="{DynamicResource App.TextSecondary}"
-                                               FontSize="12"
+                                               Style="{StaticResource Text.ChartAxis}"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Bottom"
                                                Margin="0,0,0,6"/>
                                     <TextBlock Text="Damaged acres"
-                                               Foreground="{DynamicResource App.TextSecondary}"
-                                               FontSize="12"
+                                               Style="{StaticResource Text.ChartAxis}"
                                                HorizontalAlignment="Left"
                                                VerticalAlignment="Center"
                                                Margin="4,0,0,0">

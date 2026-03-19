@@ -139,12 +139,9 @@
                         Margin="0,0,0,12">
                     <StackPanel>
                         <TextBox Text="{Binding ChartTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 FontSize="16"
-                                 FontWeight="SemiBold"
+                                 Style="{StaticResource Text.ChartTitle}"
                                  HorizontalAlignment="Left"
-                                 Margin="0,0,0,12"
-                                 BorderThickness="0"
-                                 Background="Transparent"
+                                 Margin="{StaticResource Margin.CardGap}"
                                  ToolTip="Title shown above the frequency-damage chart and included in exports."
                                  TextAlignment="Left"
                                  HorizontalContentAlignment="Left"/>

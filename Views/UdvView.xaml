@@ -254,12 +254,9 @@
                 Margin="{StaticResource Margin.Stack}">
             <StackPanel>
                 <TextBox Text="{Binding ChartTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         FontSize="16"
-                         FontWeight="SemiBold"
+                         Style="{StaticResource Text.ChartTitle}"
                          HorizontalAlignment="Left"
-                         Margin="0,0,0,8"
-                         BorderThickness="0"
-                         Background="Transparent"
+                         Margin="{StaticResource Margin.StackLarge}"
                          TextAlignment="Left"
                          HorizontalContentAlignment="Left"/>
                 <TextBlock Text="Line chart showing how unit day values rise with higher point scores. The selected point overlays the active recreation and activity choice."

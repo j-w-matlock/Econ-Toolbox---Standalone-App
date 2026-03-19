@@ -254,8 +254,7 @@
                                                                 <TextBlock Text="{Binding Caption}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                                                                 <TextBlock Text="Dependency links visualize schedule logic; task dates and durations determine link placement."
                                                                            Margin="0,6,0,0"
-                                                                           FontSize="11"
-                                                                           TextWrapping="Wrap"/>
+                                                                           Style="{StaticResource Text.Tooltip}"/>
                                                             </StackPanel>
                                                         </ToolTip>
                                                     </Path.ToolTip>
@@ -292,13 +291,12 @@
                                                                 <TextBlock Text="{Binding Task.Name}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                                                                 <TextBlock Text="{Binding Task.StartDate, StringFormat=Start: {0:d}}"
                                                                            Margin="0,6,0,0"
-                                                                           FontSize="11"/>
+                                                                           Style="{StaticResource Text.Tooltip}"/>
                                                                 <TextBlock Text="{Binding Task.EndDate, StringFormat=Finish: {0:d}}"
-                                                                           FontSize="11"/>
+                                                                           Style="{StaticResource Text.Tooltip}"/>
                                                                 <TextBlock Text="Start and finish dates come from the task start date plus duration, which set bar placement."
                                                                            Margin="0,6,0,0"
-                                                                           FontSize="11"
-                                                                           TextWrapping="Wrap"/>
+                                                                           Style="{StaticResource Text.Tooltip}"/>
                                                             </StackPanel>
                                                         </ToolTip>
                                                     </Grid.ToolTip>

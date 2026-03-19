@@ -291,7 +291,7 @@
                                             <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative1LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 1. This modifies the loss factor used in adjusted demand."/>
                                             <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource WaterDemandInputBoxStyle}" Margin="0,4,0,0" TextAlignment="Center" Text="{Binding DataContext.Alternative2LossesAdjustment, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="Percent change applied to baseline system losses for Alternative Forecast 2. This modifies the loss factor used in adjusted demand."/>
 
-                                            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" FontSize="12" Foreground="{DynamicResource App.TextSecondary}" TextWrapping="Wrap">
+                                            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="{StaticResource Margin.TopSection}" Style="{StaticResource Text.BodySmall}" TextWrapping="Wrap">
                                                 Adjust the percentage change applied to each baseline rate to craft two alternative forecasts. Positive values increase the rate, while negative values decrease it. Baseline inputs remain unchanged.
                                             </TextBlock>
                                         </Grid>
@@ -367,12 +367,9 @@
                                     Margin="0,10,0,0">
                                 <StackPanel>
                                     <TextBox Text="{Binding DataContext.ChartTitle, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             FontSize="16"
-                                             FontWeight="SemiBold"
+                                             Style="{StaticResource Text.ChartTitle}"
                                              HorizontalAlignment="Center"
-                                             Margin="0,0,0,8"
-                                             BorderThickness="0"
-                                             Background="Transparent"
+                                             Margin="{StaticResource Margin.StackLarge}"
                                              TextAlignment="Center"
                                              HorizontalContentAlignment="Center"/>
                                     <TextBlock Text="Line chart plotting adjusted demand by scenario. Years sit on the X-axis and adjusted gallons per day on the Y-axis for each forecast line."

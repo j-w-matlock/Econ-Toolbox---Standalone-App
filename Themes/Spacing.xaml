@@ -43,6 +43,10 @@
     <Thickness x:Key="Margin.TopXSmall">0,2,0,0</Thickness>
     <Thickness x:Key="Margin.None">0</Thickness>
 
+    <!-- 12-pixel gap tokens used between cards and sections -->
+    <Thickness x:Key="Margin.CardGap">0,0,0,12</Thickness>
+    <Thickness x:Key="Margin.TopSection">0,12,0,0</Thickness>
+
     <!-- Layout sizing tokens -->
     <sys:Double x:Key="Layout.MaxContentWidth">10000</sys:Double>
     <sys:Double x:Key="Layout.CardMinWidth">240</sys:Double>

@@ -494,13 +494,13 @@
                                                                 </ListBox.ItemContainerStyle>
                                                         </ListBox>
                                                         <TextBlock Text="{Binding MapExtentTopLeft}"
+                                                                   Style="{StaticResource Text.Tooltip}"
                                                                    Foreground="{DynamicResource App.TextSecondary}"
-                                                                   FontSize="11"
                                                                    Canvas.Left="6"
                                                                    Canvas.Top="4"/>
                                                         <TextBlock Text="{Binding MapExtentBottomRight}"
+                                                                   Style="{StaticResource Text.Tooltip}"
                                                                    Foreground="{DynamicResource App.TextSecondary}"
-                                                                   FontSize="11"
                                                                    Canvas.Left="650"
                                                                    Canvas.Top="600"/>
                                                     </Canvas>
