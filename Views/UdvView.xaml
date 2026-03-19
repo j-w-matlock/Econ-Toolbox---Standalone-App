@@ -208,7 +208,7 @@
                         <Run Text="{Binding HistoricalObservationCount, Mode=OneWay, StringFormat=  ({0} values)}"/>
                     </TextBlock>
                 </StackPanel>
-                <TextBlock Margin="0,4,0,0"
+                <TextBlock Margin="{StaticResource Margin.TopSmall}"
                            Foreground="{DynamicResource App.Validation}"
                            Visibility="{Binding HasHistoricalDataError, Converter={StaticResource BoolToVisibilityConverter}}"
                            Text="{Binding HistoricalDataError}"/>
@@ -230,7 +230,7 @@
                                Style="{StaticResource Text.BodyStrong}"
                                ToolTip="Calculated unit day value based on the selected recreation type, activity, and point score."/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="{StaticResource Margin.TopSmall}">
                     <TextBlock Text="Annual Recreation Benefit:" Style="{StaticResource Text.SectionHeader}"/>
                     <TextBlock Text="{Binding AnnualRecreationBenefit, StringFormat={}{0:C2}}"
                                Margin="6,0,0,0"

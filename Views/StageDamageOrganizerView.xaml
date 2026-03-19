@@ -93,7 +93,7 @@
                                                            FontWeight="SemiBold"/>
                                                 <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
                                                          Style="{StaticResource Form.TextBox}"
-                                                         Margin="0,4,0,0"
+                                                         Margin="{StaticResource Margin.TopSmall}"
                                                          ToolTip="Edit the summary name for this file. Used for chart legends and CSV output. The label does not change calculations but affects how results are identified."/>
                                             </StackPanel>
                                         </DataTemplate>

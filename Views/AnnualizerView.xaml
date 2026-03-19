@@ -51,7 +51,7 @@
                                 <TextBlock Style="{StaticResource Text.Body}" Margin="0,4,0,12" TextWrapping="Wrap">
                                     Apply consistent timing, period, and IDC assumptions before refining each scenario below.
                                 </TextBlock>
-                                <Grid Margin="0,4,0,0">
+                                <Grid Margin="{StaticResource Margin.TopSmall}">
                                     <Grid.Resources>
                                         <Style TargetType="TextBlock" x:Key="AnnualizerLabelStyle">
                                             <Setter Property="FontWeight" Value="SemiBold"/>
