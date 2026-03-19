@@ -44,7 +44,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0"
-                      Margin="0,0,12,0">
+                      Margin="{StaticResource Margin.InlineLarge}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
@@ -59,7 +59,7 @@
                             <StackPanel Orientation="Horizontal"
                                         VerticalAlignment="Center"
                                         Grid.Column="0"
-                                        Margin="0,0,12,0">
+                                        Margin="{StaticResource Margin.InlineLarge}">
                                 <Button Command="{Binding ImportCsvCommand}"
                                         Style="{StaticResource Button.Action}"
                                         IsEnabled="{Binding IsBusy, Converter={StaticResource BoolInverseConverter}}">
@@ -81,7 +81,7 @@
 
                             <StackPanel Grid.Column="1"
                                         VerticalAlignment="Center"
-                                        Margin="0,0,12,0">
+                                        Margin="{StaticResource Margin.InlineLarge}">
                                 <TextBlock Text="Summary names (one per uploaded file)"
                                            Margin="0,0,0,4"/>
                                 <ItemsControl ItemsSource="{Binding Summaries}">

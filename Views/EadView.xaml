@@ -38,7 +38,7 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <Button Command="{Binding AddDamageColumnCommand}"
                                     Style="{StaticResource Button.Action}"
-                                    Margin="0,0,12,0"
+                                    Margin="{StaticResource Margin.InlineLarge}"
                                     ToolTip="Append a new damage column for an additional category or scenario. Additional columns create new damage curves included in calculations.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -47,7 +47,7 @@
                             </Button>
                             <Button Command="{Binding RemoveDamageColumnCommand}"
                                     Style="{StaticResource Button.Action}"
-                                    Margin="0,0,12,0"
+                                    Margin="{StaticResource Margin.InlineLarge}"
                                     ToolTip="Remove the most recently added damage column. Removing a column excludes its damage curve from calculations.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -56,7 +56,7 @@
                             </Button>
                             <Button Command="{Binding DeleteSelectedRowCommand}"
                                     Style="{StaticResource Button.Action}"
-                                    Margin="0,0,12,0"
+                                    Margin="{StaticResource Margin.InlineLarge}"
                                     ToolTip="Remove the currently selected input row from the table.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -65,7 +65,7 @@
                             </Button>
                             <Button Command="{Binding ResetTableCommand}"
                                     Style="{StaticResource Button.Action}"
-                                    Margin="0,0,12,0"
+                                    Margin="{StaticResource Margin.InlineLarge}"
                                     ToolTip="Reset the EAD input table back to the default probability and damage entries.">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -75,7 +75,7 @@
                             <CheckBox IsChecked="{Binding UseStage}"
                                       VerticalAlignment="Center"
                                       Content="Include Stage"
-                                      Margin="0,0,12,0"
+                                      Margin="{StaticResource Margin.InlineLarge}"
                                       ToolTip="Toggle to add a stage column so you can enter paired stage values. Stage values change how damages align with stage-frequency logic."/>
                             <CheckBox IsChecked="{Binding CalculateEqad}"
                                       VerticalAlignment="Center"
@@ -93,7 +93,7 @@
                             <TextBlock Grid.Column="0"
                                        Text="Analysis Period (Years)"
                                        VerticalAlignment="Center"
-                                       Margin="0,0,12,0"/>
+                                       Margin="{StaticResource Margin.InlineLarge}"/>
                             <TextBox Grid.Column="1"
                                      Text="{Binding AnalysisPeriod, Converter={StaticResource SafeNumberConverter}}"
                                      HorizontalContentAlignment="Right"

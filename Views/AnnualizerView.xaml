@@ -148,7 +148,7 @@
                                         </ComboBox.Style>
                                     </ComboBox>
 
-                                    <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="0,0,12,0">
+                                    <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" Margin="{StaticResource Margin.InlineLarge}">
                                         <TextBlock Text="Last Payment Timing" Style="{StaticResource AnnualizerLabelStyle}"/>
                                     </StackPanel>
                                     <ComboBox Grid.Row="6" Grid.Column="1"

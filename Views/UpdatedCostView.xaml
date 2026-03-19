@@ -386,7 +386,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                    <StackPanel Grid.Column="0" Margin="{StaticResource Margin.InlineLarge}">
                         <TextBlock Text="Pre-Construction Inputs" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Original ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
@@ -403,7 +403,7 @@
                                      ToolTip="ENR index value tied to the original pre-construction year. This value is used to compute ENR escalation ratios."/>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                    <StackPanel Grid.Column="1" Margin="{StaticResource Margin.InlineLarge}">
                         <TextBlock Text="Transition Inputs" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
                         <StackPanel Margin="0,0,0,8">
                             <TextBlock Text="Transition ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
