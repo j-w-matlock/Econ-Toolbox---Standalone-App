@@ -4,9 +4,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EconToolbox.Desktop.ViewModels
 {
-    public abstract class BaseViewModel : ObservableObject, IStatefulViewModel
+    public abstract class BaseViewModel : ObservableObject, IStatefulViewModel, IDisposable
     {
         private bool _isDirty;
+        private bool _disposed;
 
         protected BaseViewModel()
         {
@@ -55,6 +56,27 @@ namespace EconToolbox.Desktop.ViewModels
         public virtual void RestoreState(object state)
         {
             throw new NotSupportedException("State restore is not supported for this view model.");
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                PropertyChanged -= OnBasePropertyChanged;
+            }
+
+            _disposed = true;
         }
     }
 }

@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using EconToolbox.Desktop.Models;
-using EconToolbox.Desktop.Helpers;
 using EconToolbox.Desktop.Services;
 using System.Windows;
 
@@ -1367,6 +1366,27 @@ namespace EconToolbox.Desktop.ViewModels
             }
 
             return diagnostics;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (var entry in AnnualBenefitEntries)
+                {
+                    entry.PropertyChanged -= AnnualBenefitEntryOnPropertyChanged;
+                }
+
+                foreach (var entry in AnnualCostUpdateEntries)
+                {
+                    entry.PropertyChanged -= AnnualCostUpdateEntryOnPropertyChanged;
+                }
+
+                RewireFutureCostEntries(_futureCosts, null);
+                RewireFutureCostEntries(_idcEntries, null);
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

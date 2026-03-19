@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using EconToolbox.Desktop.Models;
 using EconToolbox.Desktop.Services;
 using EconToolbox.Desktop.ViewModels;
@@ -20,13 +21,13 @@ public class MainViewModelPaneToggleTests
         viewModel.ToggleLeftPaneCommand.Execute(null);
 
         Assert.IsFalse(viewModel.IsExplorerPaneVisible);
-        Assert.AreEqual(0, viewModel.ExplorerPaneWidth, 0.1);
-        Assert.AreEqual(312, layoutService.LastSaved?.ExplorerPaneWidth, 0.1);
+        Assert.AreEqual(0d, viewModel.ExplorerPaneWidth, 0.1);
+        Assert.AreEqual(312d, layoutService.LastSaved?.ExplorerPaneWidth ?? double.NaN, 0.1);
 
         viewModel.ToggleLeftPaneCommand.Execute(null);
 
         Assert.IsTrue(viewModel.IsExplorerPaneVisible);
-        Assert.AreEqual(312, viewModel.ExplorerPaneWidth, 0.1);
+        Assert.AreEqual(312d, viewModel.ExplorerPaneWidth, 0.1);
     }
 
     [TestMethod]
@@ -40,18 +41,45 @@ public class MainViewModelPaneToggleTests
         viewModel.ToggleRightPaneCommand.Execute(null);
 
         Assert.IsFalse(viewModel.IsDetailsPaneVisible);
-        Assert.AreEqual(0, viewModel.DetailsPaneWidth, 0.1);
-        Assert.AreEqual(376, layoutService.LastSaved?.DetailsPaneWidth, 0.1);
+        Assert.AreEqual(0d, viewModel.DetailsPaneWidth, 0.1);
+        Assert.AreEqual(376d, layoutService.LastSaved?.DetailsPaneWidth ?? double.NaN, 0.1);
 
         viewModel.ToggleRightPaneCommand.Execute(null);
 
         Assert.IsTrue(viewModel.IsDetailsPaneVisible);
-        Assert.AreEqual(376, viewModel.DetailsPaneWidth, 0.1);
+        Assert.AreEqual(376d, viewModel.DetailsPaneWidth, 0.1);
     }
 
     private static MainViewModel CreateMainViewModel(InMemoryLayoutSettingsService layoutService)
     {
-        return new MainViewModel(new ViewModelFactory(), new StubExcelExportService(), layoutService);
+        var serviceProvider = new StubServiceProvider();
+        return new MainViewModel(new ViewModelFactory(serviceProvider), new StubExcelExportService(), layoutService, new StubAppProgressService());
+    }
+
+    private sealed class StubServiceProvider : IServiceProvider
+    {
+        public object? GetService(Type serviceType)
+        {
+            return null;
+        }
+    }
+
+    private sealed class StubAppProgressService : IAppProgressService
+    {
+        public bool IsActive => false;
+        public double ProgressPercent => 0;
+        public string Message => string.Empty;
+
+        public event PropertyChangedEventHandler? PropertyChanged
+        {
+            add { }
+            remove { }
+        }
+
+        public void Start(string message, double percent = 0) { }
+        public void Report(string message, double percent) { }
+        public void Complete(string? message = null) { }
+        public void Fail(string message) { }
     }
 
     private sealed class InMemoryLayoutSettingsService : ILayoutSettingsService
