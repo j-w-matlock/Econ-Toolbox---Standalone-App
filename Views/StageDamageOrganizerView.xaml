@@ -83,7 +83,7 @@
                                         VerticalAlignment="Center"
                                         Margin="{StaticResource Margin.InlineLarge}">
                                 <TextBlock Text="Summary names (one per uploaded file)"
-                                           Margin="0,0,0,4"/>
+                                           Margin="{StaticResource Margin.Stack}"/>
                                 <ItemsControl ItemsSource="{Binding Summaries}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
@@ -104,7 +104,7 @@
                                             VerticalAlignment="Center">
                                     <TextBlock Text="Impact Area filter:"
                                                VerticalAlignment="Center"
-                                               Margin="0,0,8,0"/>
+                                               Margin="{StaticResource Margin.InlineMedium}"/>
                                     <ComboBox Width="220"
                                               ItemsSource="{Binding ImpactAreaOptions}"
                                               SelectedItem="{Binding SelectedImpactArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -363,7 +363,7 @@
                                                        TextWrapping="Wrap"
                                                        VerticalAlignment="Center"
                                                        Foreground="{DynamicResource App.TextSecondary}"
-                                                       Margin="0,0,8,0"
+                                                       Margin="{StaticResource Margin.InlineMedium}"
                                                        DockPanel.Dock="Left"/>
                                             <TextBlock Text="{Binding MapPointCountSummary}"
                                                        VerticalAlignment="Center"
@@ -403,7 +403,7 @@
                                             <TextBlock Grid.Column="4"
                                                        Text="{Binding MapZoomLabel}"
                                                        VerticalAlignment="Center"
-                                                       Margin="0,0,8,0"/>
+                                                       Margin="{StaticResource Margin.InlineMedium}"/>
                                             <Slider Grid.Column="5"
                                                     Width="200"
                                                     Minimum="0.5"

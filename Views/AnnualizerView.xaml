@@ -178,7 +178,7 @@
 
                                     <TextBlock Text="Annual Benefits and Cost Updates"
                                                Style="{StaticResource Text.SectionTitle}"
-                                               Margin="0,0,0,4"/>
+                                               Margin="{StaticResource Margin.Stack}"/>
                                     <TextBlock Grid.Row="1"
                                                Style="{StaticResource Text.Body}"
                                                Margin="{StaticResource Margin.CardGap}"
@@ -198,7 +198,7 @@
                                             <StackPanel>
                                                 <TextBlock Text="Annual Benefits"
                                                            Style="{StaticResource Text.SectionHeader}"
-                                                           Margin="0,0,0,4"/>
+                                                           Margin="{StaticResource Margin.Stack}"/>
                                                 <TextBlock Style="{StaticResource Text.Body}" Margin="{StaticResource Margin.StackLarge}" TextWrapping="Wrap">
                                                     Review annual benefits, apply an index factor to each row as needed, and use Include checkboxes to control the total.
                                                 </TextBlock>
@@ -291,7 +291,7 @@
                                             <StackPanel>
                                                 <TextBlock Text="Cost Updates"
                                                            Style="{StaticResource Text.SectionHeader}"
-                                                           Margin="0,0,0,4"/>
+                                                           Margin="{StaticResource Margin.Stack}"/>
                                                 <TextBlock Style="{StaticResource Text.Body}" Margin="{StaticResource Margin.StackLarge}" TextWrapping="Wrap">
                                                     Update past-year costs to current or future dollars by entering the original cost, fiscal years, and an index or interest factor.
                                                 </TextBlock>
@@ -536,13 +536,13 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                                 <UniformGrid Columns="3" HorizontalAlignment="Left" Margin="{StaticResource Margin.TopSection}" Rows="1">
-                                    <Button Command="{Binding AddScenarioComparisonCommand}" Width="150" Margin="0,0,8,0" Style="{StaticResource Button.Action}">
+                                    <Button Command="{Binding AddScenarioComparisonCommand}" Width="150" Margin="{StaticResource Margin.InlineMedium}" Style="{StaticResource Button.Action}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                             <TextBlock Text="Add Scenario"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Command="{Binding ComputeCommand}" Width="150" Margin="0,0,8,0" Style="{StaticResource Button.Action}">
+                                    <Button Command="{Binding ComputeCommand}" Width="150" Margin="{StaticResource Margin.InlineMedium}" Style="{StaticResource Button.Action}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
                                             <TextBlock Text="Calculate"/>

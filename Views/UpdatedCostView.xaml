@@ -848,7 +848,7 @@
                         <TextBlock Text="{Binding RrrUpdatedCost, Mode=OneWay, StringFormat=Updated Cost: {0:C2}}"
                                    Style="{StaticResource Text.BodyStrong}"
                                    ToolTip="Updated Cost = Present Value. This total feeds the annualized RR&amp;R amount."
-                                   Margin="0,0,0,4"/>
+                                   Margin="{StaticResource Margin.Stack}"/>
                         <TextBlock Text="{Binding RrrAnnualized, Mode=OneWay, StringFormat=Annualized: {0:C2}}"
                                    Style="{StaticResource Text.BodyStrong}"
                                    ToolTip="Annualized = Updated Cost × CRF. This annualized value is scaled by storage percent in total cost."/>

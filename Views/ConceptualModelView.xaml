@@ -74,7 +74,7 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,6">
                                 <Button Command="{Binding AddNodeCommand}"
                                         Style="{StaticResource Button.Action}"
-                                        Margin="0,0,8,0"
+                                        Margin="{StaticResource Margin.InlineMedium}"
                                         ToolTip="Add a node to the canvas.">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -122,7 +122,7 @@
                                     <TextBox Text="{Binding SelectedNode.StrokeThickness, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,8,0">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}">
                                     <TextBlock Text="Image" Style="{StaticResource Text.BodySmall}"/>
                                     <TextBox Text="{Binding SelectedNode.ImagePath, Mode=TwoWay}"
                                              IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
@@ -130,7 +130,7 @@
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,18,0,0">
                                     <Button Command="{Binding AttachImageCommand}"
                                             Style="{StaticResource Button.Action}"
-                                            Margin="0,0,8,0"
+                                            Margin="{StaticResource Margin.InlineMedium}"
                                             ToolTip="Attach an image to the selected node.">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -165,7 +165,7 @@
                                               SelectedValue="{Binding SelectedNode.LabelBrush, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,8,0">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}">
                                     <TextBlock Text="Label bold" Style="{StaticResource Text.BodySmall}"/>
                                     <CheckBox IsChecked="{Binding SelectedNode.LabelIsBold, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
@@ -179,13 +179,13 @@
                                        Style="{StaticResource Text.SectionTitle}"
                                        Margin="{StaticResource Margin.StackLarge}"/>
                             <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.StackLarge}">
-                                <StackPanel Margin="0,0,8,0" Width="140">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}" Width="140">
                                     <TextBlock Text="From" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding Nodes}"
                                               SelectedItem="{Binding LinkStartSelection, Mode=TwoWay}"
                                               DisplayMemberPath="Name"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,8,0" Width="140">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}" Width="140">
                                     <TextBlock Text="To" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding Nodes}"
                                               SelectedItem="{Binding LinkEndSelection, Mode=TwoWay}"
@@ -275,7 +275,7 @@
                                               SelectedValue="{Binding SelectedLink.LabelBrush, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,8,0">
+                                <StackPanel Margin="{StaticResource Margin.InlineMedium}">
                                     <TextBlock Text="Label bold" Style="{StaticResource Text.BodySmall}"/>
                                     <CheckBox IsChecked="{Binding SelectedLink.LabelIsBold, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
@@ -304,7 +304,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <Button Command="{Binding AddVertexCommand}"
                                         Style="{StaticResource Button.Action}"
-                                        Margin="0,0,8,0"
+                                        Margin="{StaticResource Margin.InlineMedium}"
                                         ToolTip="Insert a vertex to bend the selected link.">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
