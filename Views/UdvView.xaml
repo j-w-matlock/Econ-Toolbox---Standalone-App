@@ -355,7 +355,7 @@
                     </TextBlock>
                 </StackPanel>
             </Border>
-            <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+            <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>
@@ -372,7 +372,7 @@
                     </TextBlock>
                 </StackPanel>
             </Border>
-            <Border Style="{StaticResource Border.ResultInfo}" Margin="0,12,0,0">
+            <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopSection}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="" Style="{StaticResource Text.Icon.Section}"/>

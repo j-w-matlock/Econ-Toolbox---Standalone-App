@@ -82,7 +82,7 @@
                                       Content="Calculate EqAD"
                                       ToolTip="Enable equivalent expected annual damage (EqAD) using the analysis period, discount rate, and future damages column per USACE guidance."/>
                         </StackPanel>
-                        <Grid Margin="0,12,0,0"
+                        <Grid Margin="{StaticResource Margin.TopSection}"
                               Visibility="{Binding CalculateEqad, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>

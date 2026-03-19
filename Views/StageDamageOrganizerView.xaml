@@ -37,7 +37,7 @@
             </Border>
 
             <Grid Grid.Row="1"
-                  Margin="0,12,0,0">
+                  Margin="{StaticResource Margin.TopSection}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="*"/>
@@ -343,7 +343,7 @@
 
                             <Border Grid.Row="2"
                                     Style="{StaticResource Border.Card}"
-                                    Margin="0,12,0,0">
+                                    Margin="{StaticResource Margin.TopSection}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
