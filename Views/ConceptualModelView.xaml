@@ -157,7 +157,7 @@
                                               SelectedItem="{Binding SelectedNode.LabelFontSize, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedNode, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Label color" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelColorOptions}"
                                               DisplayMemberPath="Name"
@@ -178,7 +178,7 @@
                             <TextBlock Text="Connections"
                                        Style="{StaticResource Text.SectionTitle}"
                                        Margin="{StaticResource Margin.StackLarge}"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,0" Width="140">
                                     <TextBlock Text="From" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding Nodes}"
@@ -207,7 +207,7 @@
                                       CanUserAddRows="False"
                                       HeadersVisibility="Column"
                                       ColumnWidth="Auto"
-                                      Margin="0,0,0,8">
+                                      Margin="{StaticResource Margin.StackLarge}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="From"
                                                         Binding="{Binding StartNode.Name}"
@@ -239,7 +239,7 @@
                             <TextBlock Text="Link styling"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
-                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                            <UniformGrid Columns="2" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Stroke" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LineStrokeOptions}"
@@ -248,7 +248,7 @@
                                               SelectedValue="{Binding SelectedLink.Stroke, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Pattern" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LineStyleOptions}"
                                               DisplayMemberPath="Name"
@@ -260,14 +260,14 @@
                             <TextBlock Text="Label styling"
                                        Style="{StaticResource Text.SectionHeader}"
                                        Margin="0,0,0,6"/>
-                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                            <UniformGrid Columns="2" Margin="{StaticResource Margin.StackLarge}">
                                 <StackPanel Margin="0,0,8,8">
                                     <TextBlock Text="Label size" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelSizeOptions}"
                                               SelectedItem="{Binding SelectedLink.LabelFontSize, Mode=TwoWay}"
                                               IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}"/>
                                 </StackPanel>
-                                <StackPanel Margin="0,0,0,8">
+                                <StackPanel Margin="{StaticResource Margin.StackLarge}">
                                     <TextBlock Text="Label color" Style="{StaticResource Text.BodySmall}"/>
                                     <ComboBox ItemsSource="{Binding LabelColorOptions}"
                                               DisplayMemberPath="Name"
@@ -290,7 +290,7 @@
                                       CanUserAddRows="True"
                                       HeadersVisibility="Column"
                                       ColumnWidth="Auto"
-                                      Margin="0,0,0,8"
+                                      Margin="{StaticResource Margin.StackLarge}"
                                       IsEnabled="{Binding SelectedLink, Converter={StaticResource NullToBoolConverter}}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="X"

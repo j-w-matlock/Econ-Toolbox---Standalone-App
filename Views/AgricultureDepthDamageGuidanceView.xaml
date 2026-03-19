@@ -723,7 +723,7 @@
                                 <TextBlock Text="Damaged acres = CropScape acreage × damage percent for each representative depth-duration event."
                                            Style="{StaticResource Text.Caption}"
                                            TextWrapping="Wrap"
-                                           Margin="0,8,0,0"/>
+                                           Margin="{StaticResource Margin.TopLarge}"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

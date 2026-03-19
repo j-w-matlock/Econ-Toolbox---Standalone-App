@@ -163,7 +163,7 @@
                         The resulting P value shows how much of the joint facilities support your recommendation. Increasing the recommendation or decreasing total storage raises the percentage and, consequently, the share of downstream costs assigned to this project.
                     </TextBlock>
                 </Border>
-                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopLarge}">
                     <TextBlock TextWrapping="Wrap"
                                Style="{StaticResource Text.Body}">
                         • Storage utilization is computed as Percent = Storage Recommendation ÷ Total Usable Storage. The value is clamped to zero when either input is missing.
@@ -234,7 +234,7 @@
                         This total represents the joint-system expenses before scaling. When the storage percentage increases, more of this amount will be allocated to the recommended plan in the Total Annual Cost tab.
                     </TextBlock>
                 </Border>
-                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopLarge}">
                     <TextBlock TextWrapping="Wrap">
                         • Total Joint O&amp;M = Joint Operations Cost + Joint Maintenance Cost. The value is recalculated whenever either input changes.
                     </TextBlock>
@@ -388,14 +388,14 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Margin="{StaticResource Margin.InlineLarge}">
                         <TextBlock Text="Pre-Construction Inputs" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
-                        <StackPanel Margin="0,0,0,8">
+                        <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <TextBlock Text="Original ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrYear}"
                                      Foreground="{DynamicResource App.Link.PreEnr}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Year associated with the initial ENR index values. This year determines the starting ENR index used in escalation ratios."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,0,8">
+                        <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <TextBlock Text="Original ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding PreEnrIndexValue}"
                                      Foreground="{DynamicResource App.Link.PreEnr}"
@@ -405,14 +405,14 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="{StaticResource Margin.InlineLarge}">
                         <TextBlock Text="Transition Inputs" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
-                        <StackPanel Margin="0,0,0,8">
+                        <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <TextBlock Text="Transition ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrYear}"
                                      Foreground="{DynamicResource App.Link.TransitionEnr}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Year associated with the transition ENR index values. This year defines the transition ENR index used in ratio calculations."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,0,8">
+                        <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <TextBlock Text="Transition ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding TransitionEnrIndexValue}"
                                      Foreground="{DynamicResource App.Link.TransitionEnr}"
@@ -422,21 +422,21 @@
                     </StackPanel>
                     <StackPanel Grid.Column="2">
                         <TextBlock Text="Base-Year &amp; CWCCIS Settings" Style="{StaticResource UpdatedCostColumnHeaderTextStyle}"/>
-                        <StackPanel Margin="0,0,0,8">
+                        <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <TextBlock Text="1967 ENR Index Year" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding Enr1967Year}"
                                      Foreground="{DynamicResource App.Link.Enr1967}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="Year anchoring the ENR and CWCCIS indexing, typically 1967. This base year is used to normalize escalation factors."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,0,8">
+                        <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <TextBlock Text="1967 ENR Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding Enr1967IndexValue}"
                                      Foreground="{DynamicResource App.Link.Enr1967}"
                                      HorizontalContentAlignment="Right"
                                      ToolTip="ENR index value for the 1967 base year. This value anchors the ENR ratio applied to transition costs."/>
                         </StackPanel>
-                        <StackPanel Margin="0,0,0,8">
+                        <StackPanel Margin="{StaticResource Margin.StackLarge}">
                             <TextBlock Text="1967 CWCCIS Base Index Value" Style="{StaticResource UpdatedCostLabelTextStyle}"/>
                             <TextBox Text="{Binding CwccisBaseIndexValue}"
                                      Foreground="{DynamicResource App.Link.CwccisBase}"
@@ -695,7 +695,7 @@
                         </TextBlock>
                     </StackPanel>
                 </Border>
-                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopLarge}">
                     <TextBlock TextWrapping="Wrap"
                                Style="{StaticResource Text.Body}">
                         • ENR ratio (pre → transition) = Transition ENR Index ÷ Pre ENR Index, and Joint Use Transition = Joint Use Pre-1967 × ENR ratio.
@@ -860,7 +860,7 @@
                         Present Value aggregates each scheduled cost using the discount rate and base year. The Updated Cost matches that total, and the Annualized figure then applies your capital recovery factor. Larger future costs or slower discounting will elevate every downstream total.
                     </TextBlock>
                 </Border>
-                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopLarge}">
                     <TextBlock TextWrapping="Wrap"
                                Style="{StaticResource Text.Body}">
                         • PV Factor = 1 ÷ (1 + r)^(Year − Base Year); Present Value = Future Cost × PV Factor.
@@ -983,7 +983,7 @@
                         Cost 1 and Cost 2 let you compare alternative discounting assumptions. Lower discount rates or longer analysis periods increase the capital recovery factor and therefore annualized storage costs. Because joint O&amp;M and RR&amp;R values scale with the storage percentage, any change you make on earlier tabs will ripple into both scenarios here.
                     </TextBlock>
                 </Border>
-                <Border Style="{StaticResource Border.ResultInfo}" Margin="0,8,0,0">
+                <Border Style="{StaticResource Border.ResultInfo}" Margin="{StaticResource Margin.TopLarge}">
                     <TextBlock TextWrapping="Wrap"
                                Style="{StaticResource Text.Body}">
                         • Cost Recommendation = Total Updated Cost × Percent; Joint O&amp;M and RR&amp;R allocations scale as Total Joint O&amp;M × Percent and RRR Annualized × Percent.

@@ -56,7 +56,7 @@
                                   CanUserAddRows="True"
                                   HeadersVisibility="Column"
                                   ColumnWidth="Auto"
-                                  Margin="0,0,0,8">
+                                  Margin="{StaticResource Margin.StackLarge}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Task" Binding="{Binding Name, Mode=TwoWay}" Width="SizeToHeader">
                                         <DataGridTextColumn.HeaderStyle>

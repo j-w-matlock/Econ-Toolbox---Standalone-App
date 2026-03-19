@@ -100,7 +100,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                                 <StackPanel Orientation="Horizontal"
-                                            Margin="0,8,0,0"
+                                            Margin="{StaticResource Margin.TopLarge}"
                                             VerticalAlignment="Center">
                                     <TextBlock Text="Impact Area filter:"
                                                VerticalAlignment="Center"
@@ -122,7 +122,7 @@
                                 </Button>
                                 <Button Command="{Binding SavePivotTableCommand}"
                                         Style="{StaticResource Button.Action}"
-                                        Margin="0,8,0,0"
+                                        Margin="{StaticResource Margin.TopLarge}"
                                         IsEnabled="{Binding HasRecords}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
@@ -557,7 +557,7 @@
                                                       EmptyMessage="{Binding StatusMessage}"/>
                         </Border>
                         <TextBlock Text="{Binding FrequentAepLabelSummary}"
-                                   Margin="0,8,0,0"
+                                   Margin="{StaticResource Margin.TopLarge}"
                                    TextWrapping="Wrap"
                                    Foreground="{DynamicResource App.TextSecondary}"/>
                     </StackPanel>

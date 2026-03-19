@@ -131,11 +131,11 @@
 
                         <TextBlock Grid.Row="4"
                                    Grid.Column="0"
-                                   Margin="0,8,0,0"
+                                   Margin="{StaticResource Margin.TopLarge}"
                                    Text="PAOT"/>
                         <TextBlock Grid.Row="4"
                                    Grid.Column="1"
-                                   Margin="0,8,0,0"
+                                   Margin="{StaticResource Margin.TopLarge}"
                                    FontWeight="SemiBold"
                                    ToolTip="People at one time (PAOT) for camping. Calculated from campsites, occupancy, and daily turnover."
                                    Text="{Binding CampingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
@@ -236,8 +236,8 @@
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Text="PAOT"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for fishing, based on shoreline length, spacing, and group size." Text="{Binding FishingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="{StaticResource Margin.TopLarge}" Text="PAOT"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="{StaticResource Margin.TopLarge}" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for fishing, based on shoreline length, spacing, and group size." Text="{Binding FishingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,4,0,0" Text="Design day user capacity"/>
                         <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Design day user capacity for fishing. Converts PAOT using daily turnover." Text="{Binding FishingDailyCapacity, StringFormat={}{0:N0}}"/>
@@ -319,8 +319,8 @@
                                  HorizontalAlignment="Left"
                                  MinWidth="160"/>
 
-                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Text="PAOT"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for boating. Calculated from usable water surface, vessel spacing, and persons per vessel." Text="{Binding BoatingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="{StaticResource Margin.TopLarge}" Text="PAOT"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="{StaticResource Margin.TopLarge}" FontWeight="SemiBold" ToolTip="People at one time (PAOT) for boating. Calculated from usable water surface, vessel spacing, and persons per vessel." Text="{Binding BoatingPeopleAtOneTime, StringFormat={}{0:N0}}"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,4,0,0" Text="Design day user capacity"/>
                         <TextBlock Grid.Row="6" Grid.Column="1" Margin="0,4,0,0" FontWeight="SemiBold" ToolTip="Design day user capacity for boating. PAOT multiplied by daily turnover." Text="{Binding BoatingDailyCapacity, StringFormat={}{0:N0}}"/>

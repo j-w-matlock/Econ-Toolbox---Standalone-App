@@ -74,19 +74,19 @@
                 <StackPanel>
                     <TextBlock Text="Detour cost calculations" Style="{StaticResource Text.SectionTitle}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Additional miles per vehicle" ToolTip="Detour miles per affected vehicle: Alternative route minus original route."/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Additional miles per vehicle" ToolTip="Detour miles per affected vehicle: Alternative route minus original route."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AdditionalMilesPerVehicle, StringFormat={}{0:N2}}" ToolTip="Calculated detour miles per vehicle."/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding AdditionalMilesPerVehicleFormula}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Total additional mileage" ToolTip="Total extra miles traveled by all vehicles during flooding."/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Total additional mileage" ToolTip="Total extra miles traveled by all vehicles during flooding."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalAdditionalMileage, StringFormat={}{0:N2}}" ToolTip="Traffic count multiplied by additional miles per vehicle."/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding TotalAdditionalMileageFormula}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Additional operating costs per day" ToolTip="Daily operating cost burden from added detour mileage."/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Additional operating costs per day" ToolTip="Daily operating cost burden from added detour mileage."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AdditionalOperatingCostsPerDay, StringFormat={}{0:C2}}" ToolTip="Total additional mileage multiplied by operating cost per mile."/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding AdditionalOperatingCostsPerDayFormula}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Total additional detour costs" ToolTip="Total operating cost burden over the full flooding duration."/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Total additional detour costs" ToolTip="Total operating cost burden over the full flooding duration."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalAdditionalDetourCosts, StringFormat={}{0:C2}}" ToolTip="Daily additional operating costs multiplied by duration of flooding."/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding TotalAdditionalDetourCostsFormula}"/>
                 </StackPanel>
@@ -96,7 +96,7 @@
                 <StackPanel>
                     <TextBlock Text="Value of time and delay impacts" Style="{StaticResource Text.SectionTitle}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Hourly income" ToolTip="Median household income converted to hourly wages (2080 work-hours/year)."/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Hourly income" ToolTip="Median household income converted to hourly wages (2080 work-hours/year)."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding HourlyIncome, StringFormat={}{0:C2}}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding HourlyIncomeFormula}"/>
 
@@ -128,11 +128,11 @@
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding DelayImpactsPerDay, StringFormat={}{0:C2}}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding DelayImpactsPerDayFormula}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Total delay impacts" ToolTip="Daily delay impacts multiplied by flooding duration."/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Total delay impacts" ToolTip="Daily delay impacts multiplied by flooding duration."/>
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding TotalDelayImpacts, StringFormat={}{0:C2}}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding TotalDelayImpactsFormula}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Total traffic impacts" ToolTip="Combined total of delay impacts and detour operating costs."/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Total traffic impacts" ToolTip="Combined total of delay impacts and detour operating costs."/>
                     <TextBlock Style="{StaticResource Text.SectionTitleAccent}" Text="{Binding TotalTrafficImpacts, StringFormat={}{0:C2}}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding TotalTrafficImpactsFormula}"/>
 
@@ -140,7 +140,7 @@
                     <TextBlock Style="{StaticResource Text.BodyStrong}" Text="{Binding AnnualizedTrafficImpacts, StringFormat={}{0:C2}}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding AnnualizedTrafficImpactsFormula}"/>
 
-                    <TextBlock Margin="0,8,0,0" Text="Discounted total over analysis period" ToolTip="Present value of annualized impacts across the analysis period using the discount rate."/>
+                    <TextBlock Margin="{StaticResource Margin.TopLarge}" Text="Discounted total over analysis period" ToolTip="Present value of annualized impacts across the analysis period using the discount rate."/>
                     <TextBlock Style="{StaticResource Text.SectionTitleAccent}" Text="{Binding DiscountedTrafficImpactsOverAnalysisPeriod, StringFormat={}{0:C2}}"/>
                     <TextBlock Style="{StaticResource FormulaTextStyle}" Text="{Binding DiscountedTrafficImpactsOverAnalysisPeriodFormula}"/>
                 </StackPanel>

@@ -239,7 +239,7 @@
                                             BorderThickness="1"
                                             CornerRadius="8"
                                             Padding="12"
-                                            Margin="0,8,0,0">
+                                            Margin="{StaticResource Margin.TopLarge}">
                                         <Border.Style>
                                             <Style TargetType="Border" BasedOn="{StaticResource Border.Chart}">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
