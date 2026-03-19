@@ -212,8 +212,9 @@
                                                             Style="{StaticResource Button.ActionSecondaryCompact}"
                                                             Margin="0,0,0,8"/>
                                                 </WrapPanel>
-                                                <DataGrid ItemsSource="{Binding AnnualBenefitEntries}"
-                                                          SelectedItem="{Binding SelectedAnnualBenefitEntry, Mode=TwoWay}"
+                                                <DataGrid x:Name="AnnualBenefitsDataGrid"
+                                                          ItemsSource="{Binding AnnualBenefitEntries}"
+                                                          SelectedItem="{Binding SelectedAnnualBenefitEntry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                           AutoGenerateColumns="False"
                                                           CanUserAddRows="False"
                                                           CanUserDeleteRows="False"
@@ -221,8 +222,10 @@
                                                           Margin="0,0,0,8"
                                                           ColumnWidth="*"
                                                           HorizontalAlignment="Stretch"
-                                                          Height="180"
-                                                          MinHeight="180">
+                                                          MinHeight="180"
+                                                          SelectionMode="Single"
+                                                          SelectionUnit="FullRow"
+                                                          IsSynchronizedWithCurrentItem="True">
                                                     <DataGrid.Columns>
                                                         <DataGridCheckBoxColumn Header="Include"
                                                                                 Binding="{Binding IncludeInTotal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -302,8 +305,9 @@
                                                             Style="{StaticResource Button.ActionSecondaryCompact}"
                                                             Margin="0,0,0,8"/>
                                                 </WrapPanel>
-                                                <DataGrid ItemsSource="{Binding AnnualCostUpdateEntries}"
-                                                          SelectedItem="{Binding SelectedAnnualCostUpdateEntry, Mode=TwoWay}"
+                                                <DataGrid x:Name="CostUpdatesDataGrid"
+                                                          ItemsSource="{Binding AnnualCostUpdateEntries}"
+                                                          SelectedItem="{Binding SelectedAnnualCostUpdateEntry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                           AutoGenerateColumns="False"
                                                           CanUserAddRows="False"
                                                           CanUserDeleteRows="False"
@@ -311,8 +315,10 @@
                                                           Margin="0,0,0,8"
                                                           ColumnWidth="*"
                                                           HorizontalAlignment="Stretch"
-                                                          Height="180"
-                                                          MinHeight="180">
+                                                          MinHeight="180"
+                                                          SelectionMode="Single"
+                                                          SelectionUnit="FullRow"
+                                                          IsSynchronizedWithCurrentItem="True">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Cost"
                                                                             Binding="{Binding Cost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource CurrencyConverter}}"
