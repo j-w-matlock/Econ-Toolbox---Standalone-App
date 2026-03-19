@@ -535,7 +535,7 @@
                                         </DataGridTextColumn>
                                     </DataGrid.Columns>
                                 </DataGrid>
-                                <UniformGrid Columns="3" HorizontalAlignment="Left" Margin="0,10,0,0" Rows="1">
+                                <UniformGrid Columns="3" HorizontalAlignment="Left" Margin="{StaticResource Margin.TopSection}" Rows="1">
                                     <Button Command="{Binding AddScenarioComparisonCommand}" Width="150" Margin="0,0,8,0" Style="{StaticResource Button.Action}">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <TextBlock Text="" Style="{StaticResource Text.Icon.Action}"/>
